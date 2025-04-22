@@ -26,10 +26,10 @@ export default function RootLayout({
       <body>
         <DsfrProvider lang={lang}>
           <Header
-            brandTop="Ecopass"
+            brandTop="Écopass"
             homeLinkProps={{
               href: "/",
-              title: "Accueil - Ecopass",
+              title: "Accueil - Écopass",
             }}
           />
           {children}

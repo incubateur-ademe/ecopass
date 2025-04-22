@@ -1,10 +1,11 @@
 import { StartDsfrOnHydration } from "../dsfr-bootstrap";
+import Home from "../pages/Home";
 
-export default function Home() {
+export default function HomePage() {
   return (
     <>
       <StartDsfrOnHydration />
-      <h1>Ecopass</h1>
+      <Home />
     </>
   );
 }
