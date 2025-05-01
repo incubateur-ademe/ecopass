@@ -1,0 +1,9 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: ecopass
+      POSTGRES_DB: ecopass
+      POSTGRES_USER: ecopass
+    ports:
+      - "5432:5432"

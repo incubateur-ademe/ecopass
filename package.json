@@ -13,6 +13,10 @@
   "prisma": {
     "seed": "tsx prisma/seed/index.ts"
   },
+  "engines": {
+    "node": ">22.0.0",
+    "yarn": "1.22"
+  },
   "dependencies": {
     "@codegouvfr/react-dsfr": "^1.22.5",
     "@prisma/client": "6.6.0",
