@@ -1,5 +1,5 @@
 import { StartDsfrOnHydration } from "../dsfr-bootstrap";
-import Home from "../pages/Home";
+import Home from "../views/Home";
 
 export default function HomePage() {
   return (

@@ -1,4 +1,4 @@
-import PlanDuSite from "../../pages/PlanDuSite";
+import PlanDuSite from "../../views/PlanDuSite";
 
 const PlanDuSitePage = () => {
   return <PlanDuSite />;

@@ -1,4 +1,4 @@
-import PolitiqueDeConfidentialite from "../../pages/PolitiqueDeConfidentialite";
+import PolitiqueDeConfidentialite from "../../views/PolitiqueDeConfidentialite";
 
 const PolitiqueDeConfidentialitePage = () => {
   return <PolitiqueDeConfidentialite />;
