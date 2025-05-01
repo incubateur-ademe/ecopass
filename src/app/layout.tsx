@@ -2,6 +2,11 @@ import { getHtmlAttributes, DsfrHead } from "../dsfr-bootstrap/server-only-index
 import { DsfrProvider } from "../dsfr-bootstrap"
 import { Header } from "@codegouvfr/react-dsfr/Header"
 import { Footer } from "@codegouvfr/react-dsfr/Footer"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Écopass",
+}
 
 export default function RootLayout({ children }: { children: React.JSX.Element }) {
   const lang = "fr"
@@ -20,7 +25,9 @@ export default function RootLayout({ children }: { children: React.JSX.Element }
               title: "Accueil - Écopass",
             }}
           />
-          {children}
+          <main id='contenu' role='main' tabIndex={-1}>
+            {children}
+          </main>
           <Footer
             accessibility='non compliant'
             contentDescription='
