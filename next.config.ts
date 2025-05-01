@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     });
     return config;
   },
+  transpilePackages: ["@codegouvfr/react-dsfr"],
   turbopack: {},
 };
 
