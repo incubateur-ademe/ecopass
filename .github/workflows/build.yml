@@ -34,6 +34,8 @@ jobs:
         run: yarn build
       - name: Migrate db
         run: yarn prisma migrate deploy
+      - name: Start server
+        run: yarn start &
       - name: Create artifacts directory
         run: mkdir -p ${{ github.workspace }}/tmp/artifacts
       - name: Lighthouse Check
