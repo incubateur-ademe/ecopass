@@ -1,12 +1,18 @@
+import { Status } from "../../../prisma/src/prisma";
+import { parse } from "csv-parse/sync";
 import {
-  Accessory,
+  AccessoryType,
+  allAccessoryTypes,
+  allBusinesses,
+  allMaterialTypes,
+  allProductTypes,
   Business,
   Country,
-  Material,
-  Product,
+  MaterialType,
   ProductType,
+  ProductWithMaterialsAndAccessories,
 } from "../../types/Product";
-import { parse } from "csv-parse/sync";
+import { v4 as uuid } from "uuid";
 
 const columns = [
   "Identifiant",
@@ -39,7 +45,43 @@ const checkHeaders = (headers: string[]) => {
   }
 };
 
-export const parseCSV = async (content: string) => {
+const getBusiness = (business: string): Business => {
+  if (allBusinesses.includes(business as Business)) {
+    return business as Business;
+  }
+  throw new Error(`Business inconnu: ${business}`);
+};
+
+const getMaterialType = (material: string): MaterialType => {
+  if (allMaterialTypes.includes(material as MaterialType)) {
+    return material as MaterialType;
+  }
+  throw new Error(`MaterialType inconnu: ${material}`);
+};
+
+const getProductType = (type: string): ProductType => {
+  if (allProductTypes.includes(type as ProductType)) {
+    return type as ProductType;
+  }
+  throw new Error(`ProductType inconnu: ${type}`);
+};
+
+const getAccessoryType = (accessory: string): AccessoryType => {
+  if (allAccessoryTypes.includes(accessory as AccessoryType)) {
+    return accessory as AccessoryType;
+  }
+  throw new Error(`AccessoryType inconnu: ${accessory}`);
+};
+
+const getCountry = (country: string): Country => {
+  const result = Country[country as keyof typeof Country];
+  if (!result) {
+    throw new Error(`Country inconnu: ${country}`);
+  }
+  return result;
+};
+
+export const parseCSV = async (content: string, uploadId: string) => {
   const rows = parse(content, {
     columns: (headers: string[]) => {
       checkHeaders(headers);
@@ -52,46 +94,60 @@ export const parseCSV = async (content: string) => {
   }) as CSVRow[];
 
   return rows.map((row) => {
-    const materials: Product["materials"] = row["Matières"]
+    const productId = uuid();
+    const now = new Date();
+    const materials: ProductWithMaterialsAndAccessories["materials"] = row[
+      "Matières"
+    ]
       .split(",")
       .map((material) => {
         const [id, share] = material.trim().split(" ");
         return {
-          id: id as Material,
+          id: uuid(),
+          productId,
+          slug: getMaterialType(id),
           share: parseFloat(share.replace("%", "")) / 100,
         };
       });
-
     row["Origine des matières"].split(",").forEach((material) => {
       const [id, origin] = material.trim().split(" ");
       materials.find(
-        (existingMaterial) => existingMaterial.id === id
-      )!.country = origin as Country;
+        (existingMaterial) => existingMaterial.slug === getMaterialType(id)
+      )!.country = getCountry(origin);
     });
 
-    return {
-      id: row["Identifiant"],
-      type: row["Type"] as ProductType,
+    const product: ProductWithMaterialsAndAccessories = {
+      id: productId,
+      createdAt: now,
+      updatedAt: now,
+      uploadId,
+      status: Status.Pending,
+      ean: row["Identifiant"],
+      type: getProductType(row["Type"]),
       airTransportRatio: parseFloat(row["Part du transport aérien"]) / 100,
-      business: row["Taille de l'entreprise"] as Business,
+      business: getBusiness(row["Taille de l'entreprise"]),
       fading: row["Délavage"] === "Oui",
       mass: parseFloat(row["Masse"]),
       numberOfReferences: parseInt(row["Nombre de références"]),
       price: parseFloat(row["Prix"]),
       traceability: row["Traçabilité géographiqe"] === "Oui",
-      countryDyeing: row["Origine de l'ennoblissement/impression"] as Country,
-      countryFabric: row["Origine de tissage/tricotage"] as Country,
-      countryMaking: row["Origine confection"] as Country,
-      countrySpinning: row["Origine de filature"] as Country,
+      countryDyeing: getCountry(row["Origine de l'ennoblissement/impression"]),
+      countryFabric: getCountry(row["Origine de tissage/tricotage"]),
+      countryMaking: getCountry(row["Origine confection"]),
+      countrySpinning: getCountry(row["Origine de filature"]),
       upcycled: row["Remanufacturé"] === "Oui",
       accessories: row["Accessoires"].split(",").map((accessory) => {
         const values = accessory.trim().split(" ");
         return {
-          id: values.slice(0, values.length - 1).join(" ") as Accessory,
+          id: uuid(),
+          productId,
+          slug: getAccessoryType(values.slice(0, values.length - 1).join(" ")),
           quantity: parseFloat(values[values.length - 1]),
         };
       }),
       materials,
     };
+
+    return product;
   });
 };

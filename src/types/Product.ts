@@ -1,10 +1,12 @@
+import { Accessory, Material, Product } from "../../prisma/src/prisma";
+
 export enum Business {
   Small = "TPE/PME",
   WithServices = "Grande entreprise avec service de réparation",
   WithoutServices = "Grande entreprise sans service de réparation",
 }
 
-export enum Material {
+export enum MaterialType {
   ElasthaneLycra = "Elasthane (Lycra)",
   Acrylique = "Acrylique",
   Jute = "Jute",
@@ -37,7 +39,7 @@ export enum ProductType {
   MaillotDeBain = "Maillot de bain",
 }
 
-export enum Accessory {
+export enum AccessoryType {
   ZipLong = "Zip long",
   ZipCourt = "Zip court",
   BoutonEnPlastique = "Bouton en plastique",
@@ -66,28 +68,47 @@ export enum Country {
   Vietnam = "Vietnam",
 }
 
-export type Product = {
-  id: string;
-  type: ProductType;
+export const allBusinesses = Object.values(Business);
+export const allMaterialTypes = Object.values(MaterialType);
+export const allProductTypes = Object.values(ProductType);
+export const allAccessoryTypes = Object.values(AccessoryType);
+
+export type ProductWithMaterialsAndAccessories = Omit<
+  Product,
+  | "mass"
+  | "price"
+  | "airTransportRatio"
+  | "numberOfReferences"
+  | "fading"
+  | "traceability"
+  | "upcycled"
+  | "type"
+  | "business"
+  | "countryDyeing"
+  | "countryFabric"
+  | "countryMaking"
+  | "countrySpinning"
+> & {
   mass: number;
   price: number;
-  materials: {
-    country?: Country;
-    id: Material;
-    share: number;
-  }[];
   airTransportRatio: number;
+  numberOfReferences: number;
+  fading: boolean;
+  traceability: boolean;
+  upcycled: boolean;
+  type: ProductType;
   business: Business;
   countryDyeing: Country;
   countryFabric: Country;
   countryMaking: Country;
   countrySpinning: Country;
-  fading: boolean;
-  numberOfReferences: number;
-  traceability: boolean;
-  upcycled: boolean;
-  accessories: {
-    id: Accessory;
+  materials: (Omit<Material, "slug" | "country" | "share"> & {
+    slug: MaterialType;
+    country?: Country;
+    share: number;
+  })[];
+  accessories: (Omit<Accessory, "slug" | "quantity"> & {
+    slug: AccessoryType;
     quantity: number;
-  }[];
+  })[];
 };

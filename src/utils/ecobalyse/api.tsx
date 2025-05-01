@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Product } from "../../types/Product";
 import {
   EcobalyseCode,
   EcobalyseId,
@@ -13,10 +12,14 @@ import {
   materialMapping,
   productMapping,
 } from "./mappings";
+import { createProductScore } from "../../db/product";
+import { ProductWithMaterialsAndAccessories } from "../../types/Product";
 
 const baseUrl = "https://staging-ecobalyse.incubateur.net/api";
 
-const convertProductToEcobalyse = (product: Product): EcobalyseProduct => ({
+const convertProductToEcobalyse = (
+  product: ProductWithMaterialsAndAccessories
+): EcobalyseProduct => ({
   airTransportRatio: product.airTransportRatio,
   business: businessesMapping[product.business],
   countryDyeing: countryMapping[product.countryDyeing],
@@ -28,13 +31,13 @@ const convertProductToEcobalyse = (product: Product): EcobalyseProduct => ({
   materials: product.materials.map((material) => ({
     ...material,
     country: material.country ? countryMapping[material.country] : undefined,
-    id: materialMapping[material.id],
+    id: materialMapping[material.slug],
   })),
   numberOfReferences: product.numberOfReferences,
   price: product.price,
   traceability: product.traceability,
   trims: product.accessories.map((accessory) => ({
-    id: accessoryMapping[accessory.id],
+    id: accessoryMapping[accessory.slug],
     quantity: accessory.quantity,
   })),
   upcycled: product.upcycled,
@@ -55,35 +58,44 @@ export const getEcobalyseIds = async (
   return result.data;
 };
 
-export const getEcobalyseResults = async (products: Product[]) => {
-  const results: {
-    id: string;
-    score: number;
-    detail: { label: string; score: number }[];
-  }[] = [];
-  for (var i = 0; i < products.length; i++) {
-    const product = products[i];
-
-    const response = await axios.post<EcobalyseResponse>(
-      `${baseUrl}/textile/simulator/detailed`,
-      convertProductToEcobalyse(product)
-    );
-
-    results.push({
-      id: product.id,
-      score: response.data.impacts.ecs,
-      detail: [
-        ...response.data.lifeCycle.map((cycle) => ({
-          label: cycle.label,
-          score: cycle.impacts.ecs,
-        })),
-        {
-          label: "Transport",
-          score: response.data.transport.impacts.ecs,
-        },
-      ],
-    });
-  }
-
-  return results;
+const getEcobalyseResult = async (
+  product: ProductWithMaterialsAndAccessories
+) => {
+  const response = await axios.post<EcobalyseResponse>(
+    `${baseUrl}/textile/simulator/detailed`,
+    convertProductToEcobalyse(product)
+  );
+  return {
+    id: product.id,
+    score: response.data.impacts.ecs,
+    detail: [
+      ...response.data.lifeCycle.map((cycle) => ({
+        label: cycle.label,
+        score: cycle.impacts.ecs,
+      })),
+      {
+        label: "Transport",
+        score: response.data.transport.impacts.ecs,
+      },
+    ],
+  };
 };
+
+export const saveEcobalyseResults = async (
+  products: ProductWithMaterialsAndAccessories[]
+) =>
+  Promise.all(
+    products.map(async (product) => {
+      const result = await getEcobalyseResult(product);
+      console.log(
+        `Ecobalyse result for ${product.id}: ${result.score} (${JSON.stringify(
+          result.detail
+        )})`
+      );
+      await createProductScore({
+        productId: result.id,
+        score: result.score,
+      });
+      return result;
+    })
+  );

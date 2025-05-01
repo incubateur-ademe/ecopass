@@ -1,12 +1,12 @@
 "use server";
 
+import { createProducts } from "../db/product";
+import { createUpload } from "../db/upload";
 import { parseCSV } from "../utils/csv/parse";
-import { getEcobalyseResults } from "../utils/ecobalyse/api";
 
 export async function uploadCSV(file: File) {
   const content = await file.text();
-  const products = await parseCSV(content);
-  const scores = await getEcobalyseResults(products);
-
-  return scores;
+  const upload = await createUpload();
+  const products = await parseCSV(content, upload.id);
+  await createProducts(products);
 }

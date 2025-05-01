@@ -1,8 +1,8 @@
 import {
-  Accessory,
+  AccessoryType,
   Business,
   Country,
-  Material,
+  MaterialType,
   ProductType,
 } from "../../types/Product";
 
@@ -12,23 +12,23 @@ export const businessesMapping: Record<Business, string> = {
   [Business.WithoutServices]: "large-business-without-services",
 };
 
-export const materialMapping: Record<Material, string> = {
-  [Material.ElasthaneLycra]: "elasthane",
-  [Material.Acrylique]: "ei-acrylique",
-  [Material.Jute]: "ei-jute-kenaf",
-  [Material.Polypropylène]: "ei-pp",
-  [Material.Polyester]: "ei-pet",
-  [Material.PolyesterRecyclé]: "ei-pet-r",
-  [Material.Nylon]: "ei-pa",
-  [Material.Lin]: "ei-lin",
-  [Material.LaineParDéfaut]: "ei-laine-par-defaut",
-  [Material.LaineNouvelleFilière]: "ei-laine-nouvelle-filiere",
-  [Material.Coton]: "ei-coton",
-  [Material.CotonBiologique]: "ei-coton-organic",
-  [Material.Chanvre]: "ei-chanvre",
-  [Material.Viscose]: "ei-viscose",
-  [Material.CotonRecycléDéchetsPostConsommation]: "coton-rdpc",
-  [Material.CotonRecycléDéchetsDeProduction]: "coton-rdp",
+export const materialMapping: Record<MaterialType, string> = {
+  [MaterialType.ElasthaneLycra]: "elasthane",
+  [MaterialType.Acrylique]: "ei-acrylique",
+  [MaterialType.Jute]: "ei-jute-kenaf",
+  [MaterialType.Polypropylène]: "ei-pp",
+  [MaterialType.Polyester]: "ei-pet",
+  [MaterialType.PolyesterRecyclé]: "ei-pet-r",
+  [MaterialType.Nylon]: "ei-pa",
+  [MaterialType.Lin]: "ei-lin",
+  [MaterialType.LaineParDéfaut]: "ei-laine-par-defaut",
+  [MaterialType.LaineNouvelleFilière]: "ei-laine-nouvelle-filiere",
+  [MaterialType.Coton]: "ei-coton",
+  [MaterialType.CotonBiologique]: "ei-coton-organic",
+  [MaterialType.Chanvre]: "ei-chanvre",
+  [MaterialType.Viscose]: "ei-viscose",
+  [MaterialType.CotonRecycléDéchetsPostConsommation]: "coton-rdpc",
+  [MaterialType.CotonRecycléDéchetsDeProduction]: "coton-rdp",
 };
 
 export const productMapping: Record<ProductType, string> = {
@@ -45,11 +45,11 @@ export const productMapping: Record<ProductType, string> = {
   [ProductType.MaillotDeBain]: "maillot-de-bain",
 };
 
-export const accessoryMapping: Record<Accessory, string> = {
-  [Accessory.ZipLong]: "86b877ff-0d59-482f-bb34-3ff306b07496",
-  [Accessory.ZipCourt]: "0e8ea799-9b06-490c-a925-37564746c454",
-  [Accessory.BoutonEnPlastique]: "d56bb0d5-7999-4b8b-b076-94d79099b56a",
-  [Accessory.BoutonEnMétal]: "0c903fc7-279b-4375-8cfa-ca8133b8e973",
+export const accessoryMapping: Record<AccessoryType, string> = {
+  [AccessoryType.ZipLong]: "86b877ff-0d59-482f-bb34-3ff306b07496",
+  [AccessoryType.ZipCourt]: "0e8ea799-9b06-490c-a925-37564746c454",
+  [AccessoryType.BoutonEnPlastique]: "d56bb0d5-7999-4b8b-b076-94d79099b56a",
+  [AccessoryType.BoutonEnMétal]: "0c903fc7-279b-4375-8cfa-ca8133b8e973",
 };
 
 export const countryMapping: Record<Country, string> = {

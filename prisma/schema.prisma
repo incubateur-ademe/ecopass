@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "src/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Upload {
+  id String @id @default(uuid())
+
+  products Product[]
+  status   Status    @default(Pending)
+
+  @@map("uploads")
+}
+
+enum Status {
+  Pending
+  Processing
+  Done
+  Error
+}
+
+model Score {
+  id    String @id @default(uuid())
+  score Float
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @unique @map("product_id")
+
+  @@map("scores")
+}
+
+model Product {
+  id     String @id @default(uuid())
+  status Status @default(Pending)
+
+  ean String
+
+  // Encrypted string
+  type            String
+  business        String
+  countryDyeing   String @map("country_dyeing")
+  countryFabric   String @map("country_fabric")
+  countryMaking   String @map("country_making")
+  countrySpinning String @map("country_spinning")
+
+  // Encrypted number
+  mass               String
+  price              String
+  airTransportRatio  String @map("air_transport_ratio")
+  numberOfReferences String
+
+  // Encrypted boolean
+  fading       String
+  traceability String
+  upcycled     String
+
+  materials   Material[]
+  accessories Accessory[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  upload   Upload? @relation(fields: [uploadId], references: [id])
+  uploadId String? @map("upload_id")
+
+  score Score?
+
+  @@unique([ean, uploadId])
+  @@map("products")
+}
+
+model Material {
+  id      String  @id @default(uuid())
+  // Encrypted string
+  slug    String
+  country String?
+
+  // Encrypted number
+  share String
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  @@map("materials")
+}
+
+model Accessory {
+  id String @id @default(uuid())
+
+  // Encrypted string
+  slug String
+
+  // Encrypted number
+  quantity String
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  @@map("accessories")
+}
