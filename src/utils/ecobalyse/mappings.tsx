@@ -1,16 +1,10 @@
-import {
-  AccessoryType,
-  Business,
-  Country,
-  MaterialType,
-  ProductType,
-} from "../../types/Product";
+import { AccessoryType, Business, Country, MaterialType, ProductType } from "../../types/Product"
 
 export const businessesMapping: Record<Business, string> = {
   [Business.Small]: "small-business",
   [Business.WithServices]: "large-business-with-services",
   [Business.WithoutServices]: "large-business-without-services",
-};
+}
 
 export const materialMapping: Record<MaterialType, string> = {
   [MaterialType.ElasthaneLycra]: "elasthane",
@@ -29,7 +23,7 @@ export const materialMapping: Record<MaterialType, string> = {
   [MaterialType.Viscose]: "ei-viscose",
   [MaterialType.CotonRecycléDéchetsPostConsommation]: "coton-rdpc",
   [MaterialType.CotonRecycléDéchetsDeProduction]: "coton-rdp",
-};
+}
 
 export const productMapping: Record<ProductType, string> = {
   [ProductType.Chemise]: "chemise",
@@ -43,14 +37,14 @@ export const productMapping: Record<ProductType, string> = {
   [ProductType.CaleçonTissé]: "calecon",
   [ProductType.BoxerSlipTricoté]: "slip",
   [ProductType.MaillotDeBain]: "maillot-de-bain",
-};
+}
 
 export const accessoryMapping: Record<AccessoryType, string> = {
   [AccessoryType.ZipLong]: "86b877ff-0d59-482f-bb34-3ff306b07496",
   [AccessoryType.ZipCourt]: "0e8ea799-9b06-490c-a925-37564746c454",
   [AccessoryType.BoutonEnPlastique]: "d56bb0d5-7999-4b8b-b076-94d79099b56a",
   [AccessoryType.BoutonEnMétal]: "0c903fc7-279b-4375-8cfa-ca8133b8e973",
-};
+}
 
 export const countryMapping: Record<Country, string> = {
   [Country.RégionEuropeDeLOuest]: "REO",
@@ -72,4 +66,4 @@ export const countryMapping: Record<Country, string> = {
   [Country.Tunisie]: "TN",
   [Country.Turquie]: "TR",
   [Country.Vietnam]: "VN",
-};
+}

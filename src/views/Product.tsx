@@ -1,5 +1,5 @@
-import Block from "../components/Block/Block";
-import { ProductWithScore } from "../db/product";
+import Block from "../components/Block/Block"
+import { ProductWithScore } from "../db/product"
 
 const Product = ({ product }: { product: ProductWithScore }) => {
   return (
@@ -7,7 +7,7 @@ const Product = ({ product }: { product: ProductWithScore }) => {
       <p>{product.score?.score}</p>
       <p>Calculé le {product.createdAt.toDateString()}</p>
     </Block>
-  );
-};
+  )
+}
 
-export default Product;
+export default Product

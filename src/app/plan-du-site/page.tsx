@@ -1,7 +1,7 @@
-import PlanDuSite from "../../views/PlanDuSite";
+import PlanDuSite from "../../views/PlanDuSite"
 
 const PlanDuSitePage = () => {
-  return <PlanDuSite />;
-};
+  return <PlanDuSite />
+}
 
-export default PlanDuSitePage;
+export default PlanDuSitePage

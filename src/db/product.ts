@@ -1,4 +1,4 @@
-import { Prisma, Status } from "../../prisma/src/prisma";
+import { Prisma, Status } from "../../prisma/src/prisma"
 import {
   AccessoryType,
   Business,
@@ -6,18 +6,11 @@ import {
   MaterialType,
   ProductType,
   ProductWithMaterialsAndAccessories,
-} from "../types/Product";
-import {
-  decryptBoolean,
-  decryptNumber,
-  decryptString,
-  encrypt,
-} from "./encryption";
-import { prismaClient } from "./prismaClient";
+} from "../types/Product"
+import { decryptBoolean, decryptNumber, decryptString, encrypt } from "./encryption"
+import { prismaClient } from "./prismaClient"
 
-export const createProducts = async (
-  products: ProductWithMaterialsAndAccessories[]
-) =>
+export const createProducts = async (products: ProductWithMaterialsAndAccessories[]) =>
   prismaClient.$transaction(async (transaction) => {
     await transaction.product.createMany({
       data: products.map((product) => ({
@@ -38,7 +31,7 @@ export const createProducts = async (
         traceability: encrypt(product.traceability),
         upcycled: encrypt(product.upcycled),
       })),
-    });
+    })
     await Promise.all([
       transaction.material.createMany({
         data: products.flatMap((product) =>
@@ -47,7 +40,7 @@ export const createProducts = async (
             slug: encrypt(material.slug),
             country: material.country ? encrypt(material.country) : undefined,
             share: encrypt(material.share),
-          }))
+          })),
         ),
       }),
       transaction.accessory.createMany({
@@ -56,26 +49,24 @@ export const createProducts = async (
             ...accessory,
             slug: encrypt(accessory.slug),
             quantity: encrypt(accessory.quantity),
-          }))
+          })),
         ),
       }),
-    ]);
-  });
+    ])
+  })
 
 export const createProductScore = async (score: Prisma.ScoreCreateManyInput) =>
   prismaClient.$transaction(async (transaction) => {
     await transaction.score.create({
       data: score,
-    });
+    })
     await transaction.product.update({
       where: { id: score.productId },
       data: { status: Status.Done },
-    });
-  });
+    })
+  })
 
-export const getProductsToProcess = async (): Promise<
-  ProductWithMaterialsAndAccessories[]
-> => {
+export const getProductsToProcess = async (): Promise<ProductWithMaterialsAndAccessories[]> => {
   const products = await prismaClient.product.findMany({
     where: {
       status: Status.Pending,
@@ -88,7 +79,7 @@ export const getProductsToProcess = async (): Promise<
       createdAt: "asc",
     },
     take: 10,
-  });
+  })
 
   return products.map((product) => ({
     ...product,
@@ -108,9 +99,7 @@ export const getProductsToProcess = async (): Promise<
     materials: product.materials.map((material) => ({
       ...material,
       slug: decryptString<MaterialType>(material.slug),
-      country: material.country
-        ? decryptString<Country>(material.country)
-        : undefined,
+      country: material.country ? decryptString<Country>(material.country) : undefined,
       share: decryptNumber(material.share),
     })),
     accessories: product.accessories.map((accessory) => ({
@@ -118,8 +107,8 @@ export const getProductsToProcess = async (): Promise<
       slug: decryptString<AccessoryType>(accessory.slug),
       quantity: decryptNumber(accessory.quantity),
     })),
-  }));
-};
+  }))
+}
 
 export const getProductWithScore = async (ean: string) =>
   prismaClient.product.findFirst({
@@ -129,9 +118,6 @@ export const getProductWithScore = async (ean: string) =>
     },
     where: { ean },
     orderBy: { createdAt: "desc" },
-  });
+  })
 
-export type ProductWithScore = Exclude<
-  Awaited<ReturnType<typeof getProductWithScore>>,
-  null
->;
+export type ProductWithScore = Exclude<Awaited<ReturnType<typeof getProductWithScore>>, null>

@@ -1,7 +1,7 @@
-import Block from "../components/Block/Block";
+import Block from "../components/Block/Block"
 
 const PolitiqueDeConfidentialite = () => {
-  return <Block>TODO</Block>;
-};
+  return <Block>TODO</Block>
+}
 
-export default PolitiqueDeConfidentialite;
+export default PolitiqueDeConfidentialite

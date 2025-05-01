@@ -1,29 +1,29 @@
-"use client";
+"use client"
 
-import { Upload as UploadDSFR } from "@codegouvfr/react-dsfr/Upload";
-import { useEffect, useState } from "react";
-import { uploadCSV } from "../../serverFunctions/uploadCSV";
+import { Upload as UploadDSFR } from "@codegouvfr/react-dsfr/Upload"
+import { useEffect, useState } from "react"
+import { uploadCSV } from "../../serverFunctions/uploadCSV"
 
 const Upload = () => {
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null)
 
   useEffect(() => {
     if (file) {
       uploadCSV(file).then((scores) => {
-        console.log(scores);
-      });
+        console.log(scores)
+      })
     }
-  }, [file]);
+  }, [file])
 
   return (
     <UploadDSFR
-      hint=""
+      hint=''
       nativeInputProps={{
         accept: ".csv",
         onChange: (event) => setFile(event.target.files?.[0] || null),
       }}
     />
-  );
-};
+  )
+}
 
-export default Upload;
+export default Upload

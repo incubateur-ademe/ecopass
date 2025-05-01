@@ -1,4 +1,4 @@
-import { getEcobalyseCodes, getEcobalyseIds } from "../utils/ecobalyse/api";
+import { getEcobalyseCodes, getEcobalyseIds } from "../utils/ecobalyse/api"
 
 const getIds = async () => {
   const [countries, materials, products, trims] = await Promise.all([
@@ -6,12 +6,12 @@ const getIds = async () => {
     getEcobalyseIds("materials"),
     getEcobalyseIds("products"),
     getEcobalyseIds("trims"),
-  ]);
+  ])
 
-  console.log("Countries", countries);
-  console.log("Materials", materials);
-  console.log("Products", products);
-  console.log("Trims", trims);
-};
+  console.log("Countries", countries)
+  console.log("Materials", materials)
+  console.log("Products", products)
+  console.log("Trims", trims)
+}
 
-getIds();
+getIds()

@@ -1,15 +1,15 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   webpack: (config) => {
     config.module.rules.push({
       test: /\.woff2$/,
       type: "asset/resource",
-    });
-    return config;
+    })
+    return config
   },
   transpilePackages: ["@codegouvfr/react-dsfr"],
   turbopack: {},
-};
+}
 
-export default nextConfig;
+export default nextConfig

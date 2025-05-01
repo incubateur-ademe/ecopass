@@ -1,4 +1,4 @@
-import { Accessory, Material, Product } from "../../prisma/src/prisma";
+import { Accessory, Material, Product } from "../../prisma/src/prisma"
 
 export enum Business {
   Small = "TPE/PME",
@@ -68,10 +68,10 @@ export enum Country {
   Vietnam = "Vietnam",
 }
 
-export const allBusinesses = Object.values(Business);
-export const allMaterialTypes = Object.values(MaterialType);
-export const allProductTypes = Object.values(ProductType);
-export const allAccessoryTypes = Object.values(AccessoryType);
+export const allBusinesses = Object.values(Business)
+export const allMaterialTypes = Object.values(MaterialType)
+export const allProductTypes = Object.values(ProductType)
+export const allAccessoryTypes = Object.values(AccessoryType)
 
 export type ProductWithMaterialsAndAccessories = Omit<
   Product,
@@ -89,26 +89,26 @@ export type ProductWithMaterialsAndAccessories = Omit<
   | "countryMaking"
   | "countrySpinning"
 > & {
-  mass: number;
-  price: number;
-  airTransportRatio: number;
-  numberOfReferences: number;
-  fading: boolean;
-  traceability: boolean;
-  upcycled: boolean;
-  type: ProductType;
-  business: Business;
-  countryDyeing: Country;
-  countryFabric: Country;
-  countryMaking: Country;
-  countrySpinning: Country;
+  mass: number
+  price: number
+  airTransportRatio: number
+  numberOfReferences: number
+  fading: boolean
+  traceability: boolean
+  upcycled: boolean
+  type: ProductType
+  business: Business
+  countryDyeing: Country
+  countryFabric: Country
+  countryMaking: Country
+  countrySpinning: Country
   materials: (Omit<Material, "slug" | "country" | "share"> & {
-    slug: MaterialType;
-    country?: Country;
-    share: number;
-  })[];
+    slug: MaterialType
+    country?: Country
+    share: number
+  })[]
   accessories: (Omit<Accessory, "slug" | "quantity"> & {
-    slug: AccessoryType;
-    quantity: number;
-  })[];
-};
+    slug: AccessoryType
+    quantity: number
+  })[]
+}

@@ -1,5 +1,5 @@
-import Block from "../components/Block/Block";
-import Upload from "../components/Upload/Upload";
+import Block from "../components/Block/Block"
+import Upload from "../components/Upload/Upload"
 
 const Home = () => {
   return (
@@ -9,7 +9,7 @@ const Home = () => {
         <Upload />
       </Block>
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

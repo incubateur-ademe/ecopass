@@ -1,5 +1,5 @@
 const PlanDuSite = () => {
-  return <div>TODO</div>;
-};
+  return <div>TODO</div>
+}
 
-export default PlanDuSite;
+export default PlanDuSite

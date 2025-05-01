@@ -1,7 +1,7 @@
-import PolitiqueDeConfidentialite from "../../views/PolitiqueDeConfidentialite";
+import PolitiqueDeConfidentialite from "../../views/PolitiqueDeConfidentialite"
 
 const PolitiqueDeConfidentialitePage = () => {
-  return <PolitiqueDeConfidentialite />;
-};
+  return <PolitiqueDeConfidentialite />
+}
 
-export default PolitiqueDeConfidentialitePage;
+export default PolitiqueDeConfidentialitePage
