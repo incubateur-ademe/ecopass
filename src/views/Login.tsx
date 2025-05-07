@@ -1,0 +1,97 @@
+"use client"
+import Block from "../components/Block/Block"
+import { Input } from "@codegouvfr/react-dsfr/Input"
+import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup"
+import { FormEvent, useCallback } from "react"
+import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+
+const Login = () => {
+  const router = useRouter()
+
+  const submit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    const email = formData.get("email")
+    const password = formData.get("password")
+    if (email && password) {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (!result?.error) {
+        router.refresh()
+      }
+    }
+  }, [])
+
+  return (
+    <Block className='fr-grid-row fr-grid-row--center'>
+      <div className='fr-col-12 fr-col-md-8 fr-col-lg-6'>
+        <form onSubmit={submit}>
+          <fieldset className='fr-fieldset' aria-labelledby='legend'>
+            <legend className='fr-fieldset__legend' id='legend'>
+              <h1>Connexion à Écopass</h1>
+            </legend>
+            <p>
+              Si vous n'avez pas de compte, veuillez contacter{" "}
+              <Link href='' className='fr-link'>
+                l'équipe Écopass
+              </Link>
+            </p>
+            <div className='fr-fieldset__element'>
+              <fieldset className='fr-fieldset'>
+                <div className='fr-fieldset__element'>
+                  <span className='fr-hint-text'>Sauf mention contraire, tous les champs sont obligatoires.</span>
+                </div>
+                <div className='fr-fieldset__element'>
+                  <Input
+                    label='Email'
+                    hintText='Format attendu : nom@domaine.fr'
+                    nativeInputProps={{
+                      required: true,
+                      type: "email",
+                      name: "email",
+                    }}
+                  />
+                </div>
+                <div className='fr-fieldset__element'>
+                  <Input
+                    label='Mot de passe'
+                    nativeInputProps={{
+                      required: true,
+                      type: "password",
+                      name: "password",
+                    }}
+                  />
+                </div>
+                <div className='fr-fieldset__element'>
+                  <p>
+                    <Link href='/forget-password' className='fr-link'>
+                      Mot de passe oublié ?
+                    </Link>
+                  </p>
+                </div>
+              </fieldset>
+            </div>
+            <div className='fr-fieldset__element'>
+              <ButtonsGroup
+                buttons={[
+                  {
+                    children: "Se connecter",
+                    type: "submit",
+                  },
+                ]}
+              />
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </Block>
+  )
+}
+
+export default Login

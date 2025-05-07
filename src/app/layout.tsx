@@ -1,16 +1,19 @@
 import { getHtmlAttributes, DsfrHead } from "../dsfr-bootstrap/server-only-index"
 import { DsfrProvider } from "../dsfr-bootstrap"
-import { Header } from "@codegouvfr/react-dsfr/Header"
-import { Footer } from "@codegouvfr/react-dsfr/Footer"
+import Header from "../components/Header/Header"
+import { AuthProvider } from "../components/Provider/AuthProvider"
 import { Metadata } from "next"
+import Footer from "../components/Footer/Footer"
+import { auth } from "../services/auth/auth"
 
 export const metadata: Metadata = {
   title: "Écopass",
 }
 
-export default function RootLayout({ children }: { children: React.JSX.Element }) {
+export default async function RootLayout({ children }: { children: React.JSX.Element }) {
   const lang = "fr"
 
+  const session = await auth()
   return (
     <html lang={lang} {...getHtmlAttributes({ lang })}>
       <head>
@@ -18,33 +21,13 @@ export default function RootLayout({ children }: { children: React.JSX.Element }
       </head>
       <body>
         <DsfrProvider lang={lang}>
-          <Header
-            brandTop='Écopass'
-            homeLinkProps={{
-              href: "/",
-              title: "Accueil - Écopass",
-            }}
-          />
-          <main id='contenu' role='main' tabIndex={-1}>
-            {children}
-          </main>
-          <Footer
-            accessibility='non compliant'
-            contentDescription='
-    Ce message est à remplacer par les informations de votre site.
-
-    Comme exemple de contenu, vous pouvez indiquer les informations 
-    suivantes : Le site officiel d’information administrative pour les entreprises.
-    Retrouvez toutes les informations et démarches administratives nécessaires à la création, 
-    à la gestion et au développement de votre entreprise.
-    '
-            termsLinkProps={{
-              href: "#",
-            }}
-            websiteMapLinkProps={{
-              href: "#",
-            }}
-          />
+          <AuthProvider session={session}>
+            <Header session={session} />
+            <main id='contenu' role='main' tabIndex={-1}>
+              {children}
+            </main>
+            <Footer />
+          </AuthProvider>
         </DsfrProvider>
       </body>
     </html>

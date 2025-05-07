@@ -15,10 +15,19 @@ datasource db {
 }
 
 model Upload {
-  id String @id @default(uuid())
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
 
   products Product[]
-  status   Status    @default(Pending)
+
+  status Status @default(Pending)
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
+
+  version   Version @relation(fields: [versionId], references: [id])
+  versionId String
 
   @@map("uploads")
 }
@@ -31,13 +40,26 @@ enum Status {
 }
 
 model Score {
-  id    String @id @default(uuid())
-  score Float
+  id           String @id @default(uuid())
+  score        Float
+  standardized Float
 
   product   Product @relation(fields: [productId], references: [id])
   productId String  @unique @map("product_id")
 
   @@map("scores")
+}
+
+model Version {
+  id      String @id @default(uuid())
+  version String @unique
+  link    String
+
+  uploads Upload[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("versions")
 }
 
 model Product {
@@ -71,8 +93,8 @@ model Product {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
-  upload   Upload? @relation(fields: [uploadId], references: [id])
-  uploadId String? @map("upload_id")
+  upload   Upload @relation(fields: [uploadId], references: [id])
+  uploadId String @map("upload_id")
 
   score Score?
 
@@ -108,4 +130,28 @@ model Accessory {
   productId String
 
   @@map("accessories")
+}
+
+model Brand {
+  id   String @id @default(uuid())
+  name String
+
+  users User[]
+
+  @@map("brands")
+}
+
+model User {
+  id                   String    @id @default(cuid())
+  email                String    @unique
+  password             String
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+
+  brandId String?
+  brand   Brand?  @relation(fields: [brandId], references: [id])
+
+  uploads Upload[]
+
+  @@map("users")
 }

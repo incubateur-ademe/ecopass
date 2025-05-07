@@ -1,13 +1,8 @@
-import Block from "../components/Block/Block"
+import Product from "../components/Product/Product"
 import { ProductWithScore } from "../db/product"
 
-const Product = ({ product }: { product: ProductWithScore }) => {
-  return (
-    <Block>
-      <p>{product.score?.score}</p>
-      <p>Calculé le {product.createdAt.toDateString()}</p>
-    </Block>
-  )
+const ProductPage = ({ product }: { product: ProductWithScore }) => {
+  return <Product product={product} />
 }
 
-export default Product
+export default ProductPage

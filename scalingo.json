@@ -1,0 +1,13 @@
+{
+  "name": "ecopass",
+  "formation": {
+    "web": {
+      "amount": 1,
+      "size": "S"
+    },
+    "queue": {
+      "amount": 1,
+      "size": "S"
+    }
+  }
+}

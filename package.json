@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "predev": "react-dsfr update-icons",
-    "prebuild": "react-dsfr update-icons"
+    "prebuild": "react-dsfr update-icons",
+    "queue:watch": "tsx watch queue.ts",
+    "queue": "tsx queue.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed/index.ts"
@@ -21,9 +23,14 @@
     "@codegouvfr/react-dsfr": "^1.22.5",
     "@prisma/client": "6.6.0",
     "axios": "^1.8.4",
+    "bcrypt": "^5.1.1",
     "classnames": "^2.5.1",
     "csv-parse": "^5.6.0",
+    "csv-stringify": "^6.5.2",
+    "ejs": "^3.1.10",
     "next": "15.3.1",
+    "next-auth": "^4.24.11",
+    "nodemailer": "^7.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tsx": "^4.19.3",
@@ -31,7 +38,11 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@faker-js/faker": "^9.7.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/ejs": "^3.1.5",
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9.25.1",

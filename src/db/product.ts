@@ -11,49 +11,52 @@ import { decryptBoolean, decryptNumber, decryptString, encrypt } from "./encrypt
 import { prismaClient } from "./prismaClient"
 
 export const createProducts = async (products: ProductWithMaterialsAndAccessories[]) =>
-  prismaClient.$transaction(async (transaction) => {
-    await transaction.product.createMany({
-      data: products.map((product) => ({
-        ...product,
-        accessories: undefined,
-        materials: undefined,
-        type: encrypt(product.type),
-        business: encrypt(product.business),
-        countryDyeing: encrypt(product.countryDyeing),
-        countryFabric: encrypt(product.countryFabric),
-        countryMaking: encrypt(product.countryMaking),
-        countrySpinning: encrypt(product.countrySpinning),
-        mass: encrypt(product.mass),
-        price: encrypt(product.price),
-        airTransportRatio: encrypt(product.airTransportRatio),
-        numberOfReferences: encrypt(product.numberOfReferences),
-        fading: encrypt(product.fading),
-        traceability: encrypt(product.traceability),
-        upcycled: encrypt(product.upcycled),
-      })),
-    })
-    await Promise.all([
-      transaction.material.createMany({
-        data: products.flatMap((product) =>
-          product.materials.map((material) => ({
-            ...material,
-            slug: encrypt(material.slug),
-            country: material.country ? encrypt(material.country) : undefined,
-            share: encrypt(material.share),
-          })),
-        ),
-      }),
-      transaction.accessory.createMany({
-        data: products.flatMap((product) =>
-          product.accessories.map((accessory) => ({
-            ...accessory,
-            slug: encrypt(accessory.slug),
-            quantity: encrypt(accessory.quantity),
-          })),
-        ),
-      }),
-    ])
-  })
+  prismaClient.$transaction(
+    async (transaction) => {
+      await transaction.product.createMany({
+        data: products.map((product) => ({
+          ...product,
+          accessories: undefined,
+          materials: undefined,
+          type: encrypt(product.type),
+          business: encrypt(product.business),
+          countryDyeing: encrypt(product.countryDyeing),
+          countryFabric: encrypt(product.countryFabric),
+          countryMaking: encrypt(product.countryMaking),
+          countrySpinning: encrypt(product.countrySpinning),
+          mass: encrypt(product.mass),
+          price: encrypt(product.price),
+          airTransportRatio: encrypt(product.airTransportRatio),
+          numberOfReferences: encrypt(product.numberOfReferences),
+          fading: encrypt(product.fading),
+          traceability: encrypt(product.traceability),
+          upcycled: encrypt(product.upcycled),
+        })),
+      })
+      await Promise.all([
+        transaction.material.createMany({
+          data: products.flatMap((product) =>
+            product.materials.map((material) => ({
+              ...material,
+              slug: encrypt(material.slug),
+              country: material.country ? encrypt(material.country) : undefined,
+              share: encrypt(material.share),
+            })),
+          ),
+        }),
+        transaction.accessory.createMany({
+          data: products.flatMap((product) =>
+            product.accessories.map((accessory) => ({
+              ...accessory,
+              slug: encrypt(accessory.slug),
+              quantity: encrypt(accessory.quantity),
+            })),
+          ),
+        }),
+      ])
+    },
+    { timeout: 60000 },
+  )
 
 export const createProductScore = async (score: Prisma.ScoreCreateManyInput) =>
   prismaClient.$transaction(async (transaction) => {
@@ -113,11 +116,42 @@ export const getProductsToProcess = async (): Promise<ProductWithMaterialsAndAcc
 export const getProductWithScore = async (ean: string) =>
   prismaClient.product.findFirst({
     select: {
+      ean: true,
       createdAt: true,
-      score: { select: { score: true } },
+      score: { select: { score: true, standardized: true } },
+      upload: { select: { version: { select: { version: true } } } },
     },
     where: { ean },
     orderBy: { createdAt: "desc" },
   })
 
 export type ProductWithScore = Exclude<Awaited<ReturnType<typeof getProductWithScore>>, null>
+
+const getProducts = async (where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId">, take?: number) => {
+  const products = await prismaClient.product.findMany({
+    where: {
+      score: { isNot: null },
+      ...where,
+    },
+    select: {
+      ean: true,
+      createdAt: true,
+      score: { select: { score: true, standardized: true } },
+    },
+    orderBy: [{ ean: "asc" }, { createdAt: "desc" }],
+    take,
+  })
+
+  const uniqueProducts = new Map<string, (typeof products)[number]>()
+  for (const product of products) {
+    if (!uniqueProducts.has(product.ean)) {
+      uniqueProducts.set(product.ean, product)
+    }
+  }
+
+  return Array.from(uniqueProducts.values())
+}
+
+export const getProductsByUserId = async (userId: string) => getProducts({ upload: { userId } }, 10)
+
+export const getProductsByUploadId = async (uploadId: string) => getProducts({ uploadId })

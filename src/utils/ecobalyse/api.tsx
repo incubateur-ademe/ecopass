@@ -3,8 +3,10 @@ import { EcobalyseCode, EcobalyseId, EcobalyseProduct, EcobalyseResponse } from 
 import { accessoryMapping, businessesMapping, countryMapping, materialMapping, productMapping } from "./mappings"
 import { createProductScore } from "../../db/product"
 import { ProductWithMaterialsAndAccessories } from "../../types/Product"
+import { prismaClient } from "../../db/prismaClient"
+import { Status } from "../../../prisma/src/prisma"
 
-const baseUrl = "https://staging-ecobalyse.incubateur.net/api"
+const baseUrl = "https://ecobalyse.beta.gouv.fr/versions/v5.0.1/api"
 
 const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories): EcobalyseProduct => ({
   airTransportRatio: product.airTransportRatio,
@@ -67,12 +69,22 @@ const getEcobalyseResult = async (product: ProductWithMaterialsAndAccessories) =
 export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAccessories[]) =>
   Promise.all(
     products.map(async (product) => {
-      const result = await getEcobalyseResult(product)
-      console.log(`Ecobalyse result for ${product.id}: ${result.score} (${JSON.stringify(result.detail)})`)
-      await createProductScore({
-        productId: result.id,
-        score: result.score,
-      })
-      return result
+      try {
+        const result = await getEcobalyseResult(product)
+
+        await createProductScore({
+          productId: result.id,
+          score: result.score,
+          standardized: (result.score / product.mass) * 0.1,
+        })
+
+        return result
+      } catch (error) {
+        console.error("Error fetching Ecobalyse result:", error)
+        await prismaClient.product.update({
+          where: { id: product.id },
+          data: { status: Status.Error },
+        })
+      }
     }),
   )

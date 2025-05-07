@@ -4,6 +4,7 @@ import {
   AccessoryType,
   allAccessoryTypes,
   allBusinesses,
+  allCountries,
   allMaterialTypes,
   allProductTypes,
   Business,
@@ -46,39 +47,38 @@ const checkHeaders = (headers: string[]) => {
 }
 
 const getBusiness = (business: string): Business => {
-  if (allBusinesses.includes(business as Business)) {
+  if (allBusinesses.map((type) => type.toLowerCase()).includes(business.toLowerCase())) {
     return business as Business
   }
   throw new Error(`Business inconnu: ${business}`)
 }
 
 const getMaterialType = (material: string): MaterialType => {
-  if (allMaterialTypes.includes(material as MaterialType)) {
+  if (allMaterialTypes.map((type) => type.toLowerCase()).includes(material.toLowerCase())) {
     return material as MaterialType
   }
   throw new Error(`MaterialType inconnu: ${material}`)
 }
 
 const getProductType = (type: string): ProductType => {
-  if (allProductTypes.includes(type as ProductType)) {
+  if (allProductTypes.map((type) => type.toLowerCase()).includes(type.toLowerCase())) {
     return type as ProductType
   }
   throw new Error(`ProductType inconnu: ${type}`)
 }
 
 const getAccessoryType = (accessory: string): AccessoryType => {
-  if (allAccessoryTypes.includes(accessory as AccessoryType)) {
+  if (allAccessoryTypes.map((type) => type.toLowerCase()).includes(accessory.toLowerCase())) {
     return accessory as AccessoryType
   }
   throw new Error(`AccessoryType inconnu: ${accessory}`)
 }
 
 const getCountry = (country: string): Country => {
-  const result = Country[country as keyof typeof Country]
-  if (!result) {
-    throw new Error(`Country inconnu: ${country}`)
+  if (allCountries.map((type) => type.toLowerCase()).includes(country.toLowerCase())) {
+    return country as Country
   }
-  return result
+  throw new Error(`Country inconnu: ${country}`)
 }
 
 export const parseCSV = async (content: string, uploadId: string) => {
@@ -97,16 +97,16 @@ export const parseCSV = async (content: string, uploadId: string) => {
     const productId = uuid()
     const now = new Date()
     const materials: ProductWithMaterialsAndAccessories["materials"] = row["Matières"].split(",").map((material) => {
-      const [id, share] = material.trim().split(" ")
+      const [id, share] = material.trim().split(";")
       return {
         id: uuid(),
         productId,
         slug: getMaterialType(id),
-        share: parseFloat(share.replace("%", "")) / 100,
+        share: parseFloat(share.trim().replace("%", "")) / 100,
       }
     })
     row["Origine des matières"].split(",").forEach((material) => {
-      const [id, origin] = material.trim().split(" ")
+      const [id, origin] = material.trim().split(";")
       materials.find((existingMaterial) => existingMaterial.slug === getMaterialType(id))!.country = getCountry(origin)
     })
 
@@ -130,15 +130,18 @@ export const parseCSV = async (content: string, uploadId: string) => {
       countryMaking: getCountry(row["Origine confection"]),
       countrySpinning: getCountry(row["Origine de filature"]),
       upcycled: row["Remanufacturé"] === "Oui",
-      accessories: row["Accessoires"].split(",").map((accessory) => {
-        const values = accessory.trim().split(" ")
-        return {
-          id: uuid(),
-          productId,
-          slug: getAccessoryType(values.slice(0, values.length - 1).join(" ")),
-          quantity: parseFloat(values[values.length - 1]),
-        }
-      }),
+      accessories: row["Accessoires"]
+        .split(",")
+        .filter((accessory) => accessory.trim())
+        .map((accessory) => {
+          const [id, quantity] = accessory.trim().split(";")
+          return {
+            id: uuid(),
+            productId,
+            slug: getAccessoryType(id.trim()),
+            quantity: parseFloat(quantity.trim()),
+          }
+        }),
       materials,
     }
 

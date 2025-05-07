@@ -21,6 +21,7 @@ const eslintConfig = [
     plugins: ["prettier", "jsx-a11y"],
     rules: {
       "prettier/prettier": "error",
+      "react/no-unescaped-entities": "off",
     },
   }),
 ]
