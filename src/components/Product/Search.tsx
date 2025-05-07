@@ -22,7 +22,7 @@ const Search = () => {
           },
         }}
       />
-      <Button linkProps={{ href: `/produits/${ean}` }}>Rechercher</Button>
+      <Button linkProps={{ href: `/produits/${ean}`, prefetch: false }}>Rechercher</Button>
     </>
   )
 }
