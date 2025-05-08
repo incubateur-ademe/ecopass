@@ -18,6 +18,14 @@ const Header = ({ session }: { session: Session | null }) => {
           </Badge>
         </>
       }
+      navigation={
+        session
+          ? [
+              { linkProps: { href: "/" }, text: "Accueil" },
+              { linkProps: { href: "/produits" }, text: "Produits" },
+            ]
+          : []
+      }
       quickAccessItems={[
         session
           ? {
