@@ -1,12 +1,11 @@
 "use client"
-
 import { Upload as UploadDSFR } from "@codegouvfr/react-dsfr/Upload"
 import { useCallback, useState } from "react"
-import { uploadCSV } from "../../serverFunctions/uploadCSV"
 import { useRouter } from "next/navigation"
 import LoadingButton from "../Button/LoadingButton"
 import styles from "./Upload.module.css"
 import Link from "next/link"
+import { uploadFile } from "../../serverFunctions/upload"
 
 const Upload = () => {
   const [file, setFile] = useState<File | null>(null)
@@ -16,7 +15,7 @@ const Upload = () => {
   const upload = useCallback(() => {
     if (file) {
       setUploading(true)
-      uploadCSV(file).then(() => {
+      uploadFile(file).then(() => {
         setUploading(false)
         router.refresh()
       })
@@ -37,9 +36,9 @@ const Upload = () => {
       </p>
       <UploadDSFR
         disabled={uploading}
-        hint='Format CSV uniquement, 5mb max'
+        hint='Format CSV ou JSON uniquement, 5mb max'
         nativeInputProps={{
-          accept: ".csv",
+          accept: ".csv,.json",
           onChange: (event) => setFile(event.target.files?.[0] || null),
         }}
       />

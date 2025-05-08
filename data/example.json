@@ -1,0 +1,18 @@
+{
+  "ean": "2",
+  "business": "large-business-without-services",
+  "countrySpinning": "CN",
+  "mass": 0.15,
+  "materials": [
+    {
+      "id": "ei-coton",
+      "share": 1
+    }
+  ],
+  "numberOfReferences": 100000,
+  "price": 10,
+  "product": "tshirt",
+  "traceability": false,
+  "trims": [],
+  "upcycled": false
+}
