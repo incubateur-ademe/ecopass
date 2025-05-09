@@ -1,5 +1,6 @@
 "use server"
 
+import { UploadType } from "../../prisma/src/prisma"
 import { createProducts } from "../db/product"
 import { createUpload } from "../db/upload"
 import { auth } from "../services/auth/auth"
@@ -14,7 +15,7 @@ export async function uploadFile(file: File) {
   }
 
   const content = await file.text()
-  const upload = await createUpload(session.user.id, file.name)
+  const upload = await createUpload(session.user.id, UploadType.FILE, file.name)
   let products: ProductWithMaterialsAndAccessories[] = []
   try {
     const json = JSON.parse(content)

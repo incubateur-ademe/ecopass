@@ -36,6 +36,7 @@ const users = async () => {
           email: `user-${i}-${j}@test.fr`,
           brandId: brand.id,
           password,
+          apiKey: faker.string.uuid(),
         })),
       })
     }),

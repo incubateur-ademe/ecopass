@@ -14,10 +14,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UploadType {
+  API
+  FILE
+}
+
 model Upload {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now()) @map("created_at")
+  id        String     @id @default(uuid())
+  name      String?
+  createdAt DateTime   @default(now()) @map("created_at")
+  type      UploadType
 
   products Product[]
 
@@ -147,6 +153,7 @@ model User {
   password             String
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
+  apiKey               String?   @unique @map("api_key")
 
   brandId String?
   brand   Brand?  @relation(fields: [brandId], references: [id])

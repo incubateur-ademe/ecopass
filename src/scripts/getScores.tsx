@@ -3,6 +3,7 @@ import { parseCSV } from "../utils/csv/parse"
 import { checkUploadsStatus, createUpload, failUpload } from "../db/upload"
 import { createProducts } from "../db/product"
 import { prismaClient } from "../db/prismaClient"
+import { UploadType } from "../../prisma/src/prisma"
 
 const getScores = async (file: string) => {
   const content = fs.readFileSync(file, { encoding: "utf-8" })
@@ -10,7 +11,7 @@ const getScores = async (file: string) => {
   if (!randomUser) {
     throw new Error("No user found")
   }
-  const upload = await createUpload(randomUser.id, file)
+  const upload = await createUpload(randomUser.id, UploadType.FILE, file)
   try {
     const products = await parseCSV(content, upload.id)
     await createProducts(products)

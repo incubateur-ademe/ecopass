@@ -1,7 +1,7 @@
-import { Status } from "../../prisma/src/prisma"
+import { Status, UploadType } from "../../prisma/src/prisma"
 import { prismaClient } from "./prismaClient"
 
-export const createUpload = async (userId: string, name: string) =>
+export const createUpload = async (userId: string, uploadType: UploadType, name?: string) =>
   prismaClient.$transaction(async (transaction) => {
     const lastVersion = await transaction.version.findFirst({
       orderBy: { createdAt: "desc" },
@@ -12,7 +12,7 @@ export const createUpload = async (userId: string, name: string) =>
     }
 
     return transaction.upload.create({
-      data: { userId: userId, name, versionId: lastVersion.id },
+      data: { userId: userId, name, versionId: lastVersion.id, type: uploadType },
       select: { id: true },
     })
   })

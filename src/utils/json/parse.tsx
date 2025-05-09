@@ -8,6 +8,7 @@ import {
 } from "../../types/Product"
 import { Status } from "../../../prisma/src/prisma"
 
+// TODO : add a proper type check with zod
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseJson = (json: any[], uploadId: string) => {
   return json.map((item) => {
@@ -39,7 +40,7 @@ export const parseJson = (json: any[], uploadId: string) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       materials: item.materials.map((material: any) => ({ ...material, productId, slug: MaterialType.Acrylique })),
     }
-    console.log("Parsed product:", product)
+
     return product
   })
 }
