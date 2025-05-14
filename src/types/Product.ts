@@ -69,7 +69,6 @@ export enum Country {
 }
 
 export const allCountries = Object.values(Country)
-export const allBusinesses = Object.values(Business)
 export const allMaterialTypes = Object.values(MaterialType)
 export const allProductTypes = Object.values(ProductType)
 export const allAccessoryTypes = Object.values(AccessoryType)

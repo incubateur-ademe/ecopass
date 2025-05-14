@@ -3,7 +3,6 @@ import { parse } from "csv-parse/sync"
 import {
   AccessoryType,
   allAccessoryTypes,
-  allBusinesses,
   allCountries,
   allMaterialTypes,
   allProductTypes,
@@ -14,69 +13,85 @@ import {
   ProductWithMaterialsAndAccessories,
 } from "../../types/Product"
 import { v4 as uuid } from "uuid"
+import { businesses } from "../types/business"
 
-const columns = [
-  "Identifiant",
-  "Date de mise sur le marché",
-  "Type",
-  "Masse",
-  "Remanufacturé",
-  "Nombre de références",
-  "Prix",
-  "Taille de l'entreprise",
-  "Traçabilité géographiqe",
-  "Matières",
-  "Origine des matières",
-  "Origine de filature",
-  "Origine de tissage/tricotage",
-  "Origine de l'ennoblissement/impression",
-  "Type d'impression",
-  "Origine confection",
-  "Délavage",
-  "Part du transport aérien",
-  "Accessoires",
-] as const
+const columns: Record<string, string> = {
+  identifiant: "Identifiant",
+  datedemisesurlemarche: "Date de mise sur le marché",
+  type: "Type",
+  masse: "Masse",
+  remanufacture: "Remanufacturé",
+  nombredereferences: "Nombre de références",
+  prix: "Prix",
+  tailledelentreprise: "Taille de l'entreprise",
+  traçabilitegeographiqe: "Traçabilité géographiqe",
+  matieres: "Matières",
+  originedesmatieres: "Origine des matières",
+  originedefilature: "Origine de filature",
+  originedetissagetricotage: "Origine de tissage/tricotage",
+  originedelennoblissementimpression: "Origine de l'ennoblissement/impression",
+  typedimpression: "Type d'impression",
+  origineconfection: "Origine confection",
+  delavage: "Délavage",
+  partdutransportaerien: "Part du transport aérien",
+  accessoires: "Accessoires",
+}
 
-type CSVRow = Record<(typeof columns)[number], string>
+const columnsValues = Object.keys(columns)
+type CSVRow = Record<(typeof columnsValues)[number], string>
+
+const simplifyValue = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/[ \/']/g, "")
+    .replace(/[éè]/g, "e")
+    .replace(/ç/g, "c")
 
 const checkHeaders = (headers: string[]) => {
-  const missingHeaders = columns.filter((header) => !headers.includes(header))
+  const formattedHeaders = headers.map((header) => simplifyValue(header))
+
+  const missingHeaders = columnsValues.filter((header) => !formattedHeaders.includes(header))
   if (missingHeaders.length > 0) {
-    throw new Error(`Colonne(s) manquante(s): ${missingHeaders.join(", ")}`)
+    throw new Error(`Colonne(s) manquante(s): ${missingHeaders.map((header) => columns[header]).join(", ")}`)
   }
 }
 
 const getBusiness = (business: string): Business => {
-  if (allBusinesses.map((type) => type.toLowerCase()).includes(business.toLowerCase())) {
-    return business as Business
+  const value = businesses[simplifyValue(business)]
+  if (value) {
+    return value as Business
   }
   throw new Error(`Business inconnu: ${business}`)
 }
-
 const getMaterialType = (material: string): MaterialType => {
-  if (allMaterialTypes.map((type) => type.toLowerCase()).includes(material.toLowerCase())) {
-    return material as MaterialType
+  const value = allMaterialTypes.find((type) => simplifyValue(type) === simplifyValue(material))
+  if (value) {
+    return value as MaterialType
   }
   throw new Error(`MaterialType inconnu: ${material}`)
 }
 
 const getProductType = (type: string): ProductType => {
-  if (allProductTypes.map((type) => type.toLowerCase()).includes(type.toLowerCase())) {
-    return type as ProductType
+  const value = allProductTypes.find((productType) => simplifyValue(productType) === simplifyValue(type))
+  if (value) {
+    return value as ProductType
   }
   throw new Error(`ProductType inconnu: ${type}`)
 }
 
 const getAccessoryType = (accessory: string): AccessoryType => {
-  if (allAccessoryTypes.map((type) => type.toLowerCase()).includes(accessory.toLowerCase())) {
-    return accessory as AccessoryType
+  const value = allAccessoryTypes.find((type) => simplifyValue(type) === simplifyValue(accessory))
+  if (value) {
+    return value as AccessoryType
   }
   throw new Error(`AccessoryType inconnu: ${accessory}`)
 }
 
 const getCountry = (country: string): Country => {
-  if (allCountries.map((type) => type.toLowerCase()).includes(country.toLowerCase())) {
-    return country as Country
+  const value = allCountries.find((type) => simplifyValue(type) === simplifyValue(country))
+  if (value) {
+    return value as Country
   }
   throw new Error(`Country inconnu: ${country}`)
 }
