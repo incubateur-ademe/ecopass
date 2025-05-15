@@ -68,11 +68,6 @@ export enum Country {
   Vietnam = "Vietnam",
 }
 
-export const allCountries = Object.values(Country)
-export const allMaterialTypes = Object.values(MaterialType)
-export const allProductTypes = Object.values(ProductType)
-export const allAccessoryTypes = Object.values(AccessoryType)
-
 export type ProductWithMaterialsAndAccessories = Omit<
   Product,
   | "mass"

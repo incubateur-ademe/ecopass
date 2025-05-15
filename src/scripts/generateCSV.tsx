@@ -1,7 +1,11 @@
 import fs from "fs"
 import { faker } from "@faker-js/faker"
-import { allAccessoryTypes, allBusinesses, allCountries, allMaterialTypes, allProductTypes } from "../types/Product"
 import { stringify } from "csv-stringify/sync"
+import { productTypes } from "../utils/types/productType"
+import { businesses } from "../utils/types/business"
+import { countries } from "../utils/types/country"
+import { materials } from "../utils/types/material"
+import { accessories } from "../utils/types/accessory"
 
 const generateShares = () => {
   const n = Math.floor(Math.random() * 5) + 1
@@ -16,12 +20,12 @@ const generate = (name: string, length?: string) => {
     const materialsShare = generateShares()
     return {
       ean: `0${faker.string.numeric(12)}`,
-      type: faker.helpers.arrayElement(allProductTypes),
-      business: faker.helpers.arrayElement(allBusinesses),
-      countryDyeing: faker.helpers.arrayElement(allCountries),
-      countryFabric: faker.helpers.arrayElement(allCountries),
-      countryMaking: faker.helpers.arrayElement(allCountries),
-      countrySpinning: faker.helpers.arrayElement(allCountries),
+      type: faker.helpers.arrayElement(Object.keys(productTypes)),
+      business: faker.helpers.arrayElement(Object.keys(businesses)),
+      countryDyeing: faker.helpers.arrayElement(Object.keys(countries)),
+      countryFabric: faker.helpers.arrayElement(Object.keys(countries)),
+      countryMaking: faker.helpers.arrayElement(Object.keys(countries)),
+      countrySpinning: faker.helpers.arrayElement(Object.keys(countries)),
       mass: faker.number.float({ min: 0, max: 5 }),
       price: faker.number.float({ min: 1, max: 1000 }),
       airTransportRatio: faker.number.float({ min: 0, max: 1 }),
@@ -31,14 +35,14 @@ const generate = (name: string, length?: string) => {
       upcycled: faker.datatype.boolean(),
       materials: materialsShare.map((share) => {
         return {
-          slug: faker.helpers.arrayElement(allMaterialTypes),
-          country: faker.helpers.arrayElement(allCountries),
+          slug: faker.helpers.arrayElement(Object.keys(materials)),
+          country: faker.helpers.arrayElement(Object.keys(countries)),
           share,
         }
       }),
       accessories: Array.from({ length: Math.floor(Math.random() * 3) }, () => {
         return {
-          slug: faker.helpers.arrayElement(allAccessoryTypes),
+          slug: faker.helpers.arrayElement(Object.keys(accessories)),
           quantity: faker.number.int({ min: 1, max: 5 }),
         }
       }),
