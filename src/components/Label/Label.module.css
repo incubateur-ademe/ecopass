@@ -1,29 +1,39 @@
 .label {
   background-image: url("/images/ce-noir.svg");
   background-size: cover;
-  min-width: 27rem;
-  width: fit-content;
-  height: auto;
+  width: 8.94375rem;
+  height: 4.7625rem;
   aspect-ratio: 9.375/5;
-  padding: 1.5rem 1.5rem 4rem 5rem;
+  padding: 0.3125rem 0.5rem 0.5rem 0.5rem;
   text-align: right;
   color: black;
 }
 
+.secondary {
+  background-image: url("/images/ce-bleu.svg");
+  color: #000091;
+}
+
 .title {
   text-transform: uppercase;
-  font-size: 1.25rem;
+  font-size: 0.4375rem;
+  margin: 0;
+  line-height: normal;
+  b {
+    font-weight: 700;
+  }
 }
 
 .subtitle {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.53125rem;
+  margin: 0;
+  line-height: normal;
 }
 
 .score {
-  font-size: 5rem;
+  font-size: 2.125rem;
   font-weight: 800;
-  margin-bottom: 2rem;
+  margin: 0;
 }
 
 .impact {
@@ -31,6 +41,14 @@
   color: white;
   width: fit-content;
   float: right;
-  padding: 0.5rem;
-  border-radius: 16px;
+  line-height: normal;
+  padding: 0.125rem 0.1875rem;
+  border-radius: 0.1875rem;
+  font-size: 0.5625rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.secondaryBackground {
+  background-color: #000091;
 }
