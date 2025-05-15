@@ -34,6 +34,6 @@ export const decryptBoolean = (data: string) => {
   return decrypted === "true"
 }
 
-export const decryptString = <T>(data: string): T => {
-  return decrypt(data) as T
+export const decryptString = (data: string) => {
+  return decrypt(data)
 }

@@ -23,7 +23,11 @@ const Uploads = async () => {
         formatDate(upload.createdAt),
         upload.name,
         upload.status === Status.Pending ? `${upload.status} (${upload.done}/${upload.total})` : upload.status,
-        <Download uploadId={upload.id} key={`download-${upload.id}`} disabled={upload.status !== Status.Done} />,
+        <Download
+          uploadId={upload.id}
+          key={`download-${upload.id}`}
+          disabled={upload.status !== Status.Done && upload.status !== Status.Error}
+        />,
       ])}
     />
   )

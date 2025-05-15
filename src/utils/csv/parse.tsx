@@ -1,4 +1,3 @@
-import { Status } from "../../../prisma/src/prisma"
 import { parse } from "csv-parse/sync"
 import {
   AccessoryType,
@@ -40,13 +39,15 @@ const columns: Record<string, string> = {
 const columnsValues = Object.keys(columns)
 type CSVRow = Record<(typeof columnsValues)[number], string>
 
-const simplifyValue = (value: string) =>
+const simplifyValue = (value: string | null) =>
   value
-    .trim()
-    .toLowerCase()
-    .replace(/[ \/']/g, "")
-    .replace(/[éè]/g, "e")
-    .replace(/ç/g, "c")
+    ? value
+        .trim()
+        .toLowerCase()
+        .replace(/[ \/']/g, "")
+        .replace(/[éè]/g, "e")
+        .replace(/ç/g, "c")
+    : ""
 
 const checkHeaders = (headers: string[]) => {
   const formattedHeaders = headers.map((header) => simplifyValue(header))
@@ -55,22 +56,33 @@ const checkHeaders = (headers: string[]) => {
   if (missingHeaders.length > 0) {
     throw new Error(`Colonne(s) manquante(s): ${missingHeaders.map((header) => columns[header]).join(", ")}`)
   }
+
+  return formattedHeaders.map((header) => columns[header])
 }
 
-const getValue = <T,>(mapping: Record<string, T>, key: string, typeName: string): T => {
+const getValue = <T,>(mapping: Record<string, T>, key: string): T => {
   const simplifiedKey = simplifyValue(key)
   const value = mapping[simplifiedKey]
   if (value !== undefined) {
     return value
   }
-  throw new Error(`${typeName} inconnu(e): ${key}`)
+  return key as T
+}
+
+const getBooleanValue = (value: string) => {
+  const simplifiedValue = simplifyValue(value)
+  if (simplifiedValue === "oui" || simplifiedValue === "yes" || simplifiedValue === "true") {
+    return true
+  } else if (simplifiedValue === "non" || simplifiedValue === "no" || simplifiedValue === "false") {
+    return false
+  }
+  return value
 }
 
 export const parseCSV = async (content: string, uploadId: string) => {
   const rows = parse(content, {
     columns: (headers: string[]) => {
-      checkHeaders(headers)
-      return headers
+      return checkHeaders(headers)
     },
     delimiter: ",",
     skip_empty_lines: true,
@@ -88,37 +100,37 @@ export const parseCSV = async (content: string, uploadId: string) => {
         return {
           id: uuid(),
           productId,
-          slug: getValue<MaterialType>(materials, id, "Materière"),
+          slug: getValue<MaterialType>(materials, id),
           share: parseFloat(share.trim().replace("%", "")) / 100,
         }
       })
     row["Origine des matières"].split(",").forEach((material) => {
       const [id, origin] = material.trim().split(";")
       productMaterials.find(
-        (existingMaterial) => existingMaterial.slug === getValue<MaterialType>(materials, id, "Materière"),
-      )!.country = getValue<Country>(countries, origin, "Pays")
+        (existingMaterial) => existingMaterial.slug === getValue<MaterialType>(materials, id),
+      )!.country = getValue<Country>(countries, origin)
     })
 
-    const product: ProductWithMaterialsAndAccessories = {
+    return {
       id: productId,
       createdAt: now,
       updatedAt: now,
       uploadId,
-      status: Status.Pending,
       ean: row["Identifiant"],
-      type: getValue<ProductType>(productTypes, row["Type"], "Produit"),
+      type: getValue<ProductType>(productTypes, row["Type"]),
       airTransportRatio: parseFloat(row["Part du transport aérien"]) / 100,
-      business: getValue<Business>(businesses, row["Taille de l'entreprise"], "Business"),
-      fading: row["Délavage"] === "Oui",
+      business: getValue<Business>(businesses, row["Taille de l'entreprise"]),
+      fading: getBooleanValue(row["Délavage"]),
       mass: parseFloat(row["Masse"]),
       numberOfReferences: parseInt(row["Nombre de références"]),
       price: parseFloat(row["Prix"]),
-      traceability: row["Traçabilité géographiqe"] === "Oui",
-      countryDyeing: getValue<Country>(countries, row["Origine de l'ennoblissement/impression"], "Pays"),
-      countryFabric: getValue<Country>(countries, row["Origine de tissage/tricotage"], "Pays"),
-      countryMaking: getValue<Country>(countries, row["Origine confection"], "Pays"),
-      countrySpinning: getValue<Country>(countries, row["Origine de filature"], "Pays"),
-      upcycled: row["Remanufacturé"] === "Oui",
+      traceability: getBooleanValue(row["Traçabilité géographique"]),
+      countryDyeing: getValue<Country>(countries, row["Origine de l'ennoblissement/impression"]),
+      countryFabric: getValue<Country>(countries, row["Origine de tissage/tricotage"]),
+      countryMaking: getValue<Country>(countries, row["Origine confection"]),
+      countrySpinning: getValue<Country>(countries, row["Origine de filature"]),
+      upcycled: getBooleanValue(row["Remanufacturé"]),
+      materials: productMaterials,
       accessories: row["Accessoires"]
         .split(",")
         .filter((accessory) => accessory.trim())
@@ -127,13 +139,10 @@ export const parseCSV = async (content: string, uploadId: string) => {
           return {
             id: uuid(),
             productId,
-            slug: getValue<AccessoryType>(accessories, id.trim(), "Accéssoire"),
+            slug: getValue<AccessoryType>(accessories, id.trim()),
             quantity: parseFloat(quantity.trim()),
           }
         }),
-      materials: productMaterials,
-    }
-
-    return product
+    } as ProductWithMaterialsAndAccessories
   })
 }

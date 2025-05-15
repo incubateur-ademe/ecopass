@@ -1,12 +1,5 @@
-import { Prisma, Status } from "../../prisma/src/prisma"
-import {
-  AccessoryType,
-  Business,
-  Country,
-  MaterialType,
-  ProductType,
-  ProductWithMaterialsAndAccessories,
-} from "../types/Product"
+import { Accessory, Material, Prisma, Product, Score, Status } from "../../prisma/src/prisma"
+import { ProductWithMaterialsAndAccessories } from "../types/Product"
 import { decryptBoolean, decryptNumber, decryptString, encrypt } from "./encryption"
 import { prismaClient } from "./prismaClient"
 
@@ -69,7 +62,38 @@ export const createProductScore = async (score: Prisma.ScoreCreateManyInput) =>
     })
   })
 
-export const getProductsToProcess = async (): Promise<ProductWithMaterialsAndAccessories[]> => {
+const decryptProduct = (
+  products: (Product & { materials: Material[]; accessories: Accessory[]; score?: Score | null })[],
+) =>
+  products.map((product) => ({
+    ...product,
+    type: decryptString(product.type),
+    business: decryptString(product.business),
+    countryDyeing: decryptString(product.countryDyeing),
+    countryFabric: decryptString(product.countryFabric),
+    countryMaking: decryptString(product.countryMaking),
+    countrySpinning: decryptString(product.countrySpinning),
+    mass: decryptNumber(product.mass),
+    price: decryptNumber(product.price),
+    airTransportRatio: decryptNumber(product.airTransportRatio),
+    numberOfReferences: decryptNumber(product.numberOfReferences),
+    fading: decryptBoolean(product.fading),
+    traceability: decryptBoolean(product.traceability),
+    upcycled: decryptBoolean(product.upcycled),
+    materials: product.materials.map((material) => ({
+      ...material,
+      slug: decryptString(material.slug),
+      country: material.country ? decryptString(material.country) : undefined,
+      share: decryptNumber(material.share),
+    })),
+    accessories: product.accessories.map((accessory) => ({
+      ...accessory,
+      slug: decryptString(accessory.slug),
+      quantity: decryptNumber(accessory.quantity),
+    })),
+  }))
+
+export const getProductsToProcess = async () => {
   const products = await prismaClient.product.findMany({
     where: {
       status: Status.Pending,
@@ -84,33 +108,7 @@ export const getProductsToProcess = async (): Promise<ProductWithMaterialsAndAcc
     take: 10,
   })
 
-  return products.map((product) => ({
-    ...product,
-    type: decryptString<ProductType>(product.type),
-    business: decryptString<Business>(product.business),
-    countryDyeing: decryptString<Country>(product.countryDyeing),
-    countryFabric: decryptString<Country>(product.countryFabric),
-    countryMaking: decryptString<Country>(product.countryMaking),
-    countrySpinning: decryptString<Country>(product.countrySpinning),
-    mass: decryptNumber(product.mass),
-    price: decryptNumber(product.price),
-    airTransportRatio: decryptNumber(product.airTransportRatio),
-    numberOfReferences: decryptNumber(product.numberOfReferences),
-    fading: decryptBoolean(product.fading),
-    traceability: decryptBoolean(product.traceability),
-    upcycled: decryptBoolean(product.upcycled),
-    materials: product.materials.map((material) => ({
-      ...material,
-      slug: decryptString<MaterialType>(material.slug),
-      country: material.country ? decryptString<Country>(material.country) : undefined,
-      share: decryptNumber(material.share),
-    })),
-    accessories: product.accessories.map((accessory) => ({
-      ...accessory,
-      slug: decryptString<AccessoryType>(accessory.slug),
-      quantity: decryptNumber(accessory.quantity),
-    })),
-  }))
+  return decryptProduct(products)
 }
 
 export const getProductWithScore = async (ean: string) =>
@@ -154,4 +152,27 @@ const getProducts = async (where: Pick<Prisma.ProductWhereInput, "upload" | "upl
 
 export const getProductsByUserId = async (userId: string) => getProducts({ upload: { userId } }, 10)
 
-export const getProductsByUploadId = async (uploadId: string) => getProducts({ uploadId })
+export const getProductsByUploadId = async (uploadId: string) => {
+  const products = await prismaClient.product.findMany({
+    where: {
+      uploadId,
+    },
+    include: {
+      materials: true,
+      accessories: true,
+      score: true,
+    },
+  })
+  return decryptProduct(products)
+}
+
+export const failProducts = async (ids: string[]) => {
+  await prismaClient.product.updateMany({
+    where: {
+      id: { in: ids },
+    },
+    data: {
+      status: Status.Error,
+    },
+  })
+}
