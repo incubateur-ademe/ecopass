@@ -17,6 +17,7 @@ const Upload = () => {
       setUploading(true)
       uploadFile(file).then(() => {
         setUploading(false)
+        setFile(null)
         router.refresh()
       })
     }

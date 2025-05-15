@@ -24,7 +24,7 @@ const columns: Record<string, string> = {
   nombredereferences: "Nombre de références",
   prix: "Prix",
   tailledelentreprise: "Taille de l'entreprise",
-  traçabilitegeographiqe: "Traçabilité géographiqe",
+  tracabilitegeographique: "Traçabilité géographique",
   matieres: "Matières",
   originedesmatieres: "Origine des matières",
   originedefilature: "Origine de filature",
