@@ -22,7 +22,7 @@ const Header = ({ session }: { session: Session | null }) => {
         session
           ? [
               { linkProps: { href: "/" }, text: "Accueil" },
-              { linkProps: { href: "/produits" }, text: "Produits" },
+              { linkProps: { href: "/recherche" }, text: "Recherche" },
             ]
           : []
       }
