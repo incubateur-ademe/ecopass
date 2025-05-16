@@ -33,6 +33,8 @@ export const parseJson = (json: any[], uploadId: string) => {
       countryFabric: item.countryFabric,
       countryMaking: item.countryMaking,
       countrySpinning: item.countrySpinning,
+      impression: item.printing ? item.printing.kind : undefined,
+      impressionPercentage: item.printing ? item.printing.ratio : undefined,
       upcycled: item.upcycled,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       accessories: item.trims.map((accessory: any) => ({ ...accessory, productId, slug: AccessoryType.BoutonEnMétal })),
