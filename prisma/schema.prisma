@@ -21,7 +21,8 @@ model Upload {
 
   products Product[]
 
-  status Status @default(Pending)
+  status Status  @default(Pending)
+  error  String?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String @map("user_id")

@@ -1,6 +1,16 @@
 import { Status } from "../../prisma/src/prisma"
 import { prismaClient } from "./prismaClient"
 
+export const getUploadById = async (id: string) =>
+  prismaClient.upload.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      status: true,
+      error: true,
+    },
+  })
+
 export const createUpload = async (userId: string, name: string) =>
   prismaClient.$transaction(async (transaction) => {
     const lastVersion = await transaction.version.findFirst({
@@ -23,10 +33,10 @@ const completeUpload = async (id: string) =>
     data: { status: Status.Done },
   })
 
-export const failUpload = async (id: string) =>
+export const failUpload = async (id: string, message?: string) =>
   prismaClient.upload.update({
     where: { id },
-    data: { status: Status.Error },
+    data: { status: Status.Error, error: message },
   })
 
 export const getUploadsByUserId = async (userId: string) => {

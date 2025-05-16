@@ -3,10 +3,23 @@ import { Status } from "../../prisma/src/prisma"
 import { getProductsByUploadId } from "../db/product"
 import { stringify } from "csv-stringify/sync"
 import { productValidation } from "../services/validation/product"
+import { getUploadById } from "../db/upload"
 
 export const exportUpload = async (uploadId: string) => {
-  const products = await getProductsByUploadId(uploadId)
+  const upload = await getUploadById(uploadId)
+  if (!upload) {
+    return "Fichier introuvable"
+  }
 
+  if (upload.status !== Status.Done && upload.status !== Status.Error) {
+    return "Fichier en cours de traitement"
+  }
+
+  if (upload.status === Status.Error && upload.error) {
+    return upload.error
+  }
+
+  const products = await getProductsByUploadId(uploadId)
   return stringify(
     products.map((product) => {
       let error = ""
