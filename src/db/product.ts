@@ -17,6 +17,8 @@ export const createProducts = async (products: ProductWithMaterialsAndAccessorie
           countryFabric: encrypt(product.countryFabric),
           countryMaking: encrypt(product.countryMaking),
           countrySpinning: encrypt(product.countrySpinning),
+          impression: encrypt(product.impression),
+          impressionPercentage: encrypt(product.impressionPercentage),
           mass: encrypt(product.mass),
           price: encrypt(product.price),
           airTransportRatio: encrypt(product.airTransportRatio),
@@ -80,6 +82,8 @@ const decryptProduct = (
     fading: decryptBoolean(product.fading),
     traceability: decryptBoolean(product.traceability),
     upcycled: decryptBoolean(product.upcycled),
+    impression: decryptString(product.impression),
+    impressionPercentage: decryptNumber(product.impressionPercentage),
     materials: product.materials.map((material) => ({
       ...material,
       slug: decryptString(material.slug),

@@ -3,6 +3,7 @@ import {
   AccessoryType,
   Business,
   Country,
+  Impression,
   MaterialType,
   ProductType,
   ProductWithMaterialsAndAccessories,
@@ -12,9 +13,88 @@ import { materials } from "../types/material"
 import { countries } from "../types/country"
 import { productTypes } from "../types/productType"
 import { businesses } from "../types/business"
-import { accessories } from "../types/accessory"
+import { Status } from "../../../prisma/src/prisma"
+import { impressions } from "../types/impression"
 
-const columns: Record<string, string> = {
+type ColumnType = [
+  "identifiant",
+  "datedemisesurlemarche",
+  "type",
+  "masse",
+  "remanufacture",
+  "nombredereferences",
+  "prix",
+  "tailledelentreprise",
+  "tracabilitegeographique",
+  "matiere1",
+  "matiere1pourcentage",
+  "matiere1origine",
+  "matiere2",
+  "matiere2pourcentage",
+  "matiere2origine",
+  "matiere3",
+  "matiere3pourcentage",
+  "matiere3origine",
+  "matiere4",
+  "matiere4pourcentage",
+  "matiere4origine",
+  "matiere5",
+  "matiere5pourcentage",
+  "matiere5origine",
+  "matiere6",
+  "matiere6pourcentage",
+  "matiere6origine",
+  "matiere7",
+  "matiere7pourcentage",
+  "matiere7origine",
+  "matiere8",
+  "matiere8pourcentage",
+  "matiere8origine",
+  "matiere9",
+  "matiere9pourcentage",
+  "matiere9origine",
+  "matiere10",
+  "matiere10pourcentage",
+  "matiere10origine",
+  "matiere11",
+  "matiere11pourcentage",
+  "matiere11origine",
+  "matiere12",
+  "matiere12pourcentage",
+  "matiere12origine",
+  "matiere13",
+  "matiere13pourcentage",
+  "matiere13origine",
+  "matiere14",
+  "matiere14pourcentage",
+  "matiere14origine",
+  "matiere15",
+  "matiere15pourcentage",
+  "matiere15origine",
+  "matiere16",
+  "matiere16pourcentage",
+  "matiere16origine",
+  "originedefilature",
+  "originedetissagetricotage",
+  "originedelennoblissementimpression",
+  "typedimpression",
+  "pourcentagedimpression",
+  "origineconfection",
+  "delavage",
+  "partdutransportaerien",
+  "accessoire1",
+  "accessoire1quantite",
+  "accessoire2",
+  "accessoire2quantite",
+  "accessoire3",
+  "accessoire3quantite",
+  "accessoire4",
+  "accessoire4quantite",
+]
+
+type CSVRow = Record<ColumnType[number], string>
+
+const columns: Partial<Record<ColumnType[number], string>> = {
   identifiant: "Identifiant",
   datedemisesurlemarche: "Date de mise sur le marché",
   type: "Type",
@@ -24,20 +104,22 @@ const columns: Record<string, string> = {
   prix: "Prix",
   tailledelentreprise: "Taille de l'entreprise",
   tracabilitegeographique: "Traçabilité géographique",
-  matieres: "Matières",
-  originedesmatieres: "Origine des matières",
+  matiere1: "Matière 1",
+  matiere1pourcentage: "Matière 1 pourcentage",
+  matiere1origine: "Matière 1 origine",
   originedefilature: "Origine de filature",
   originedetissagetricotage: "Origine de tissage/tricotage",
   originedelennoblissementimpression: "Origine de l'ennoblissement/impression",
   typedimpression: "Type d'impression",
+  pourcentagedimpression: "Pourcentage d'impression",
   origineconfection: "Origine confection",
   delavage: "Délavage",
   partdutransportaerien: "Part du transport aérien",
-  accessoires: "Accessoires",
+  accessoire1: "Accessoire 1",
+  accessoire1quantite: "Accessoire 1 quantité",
 }
 
 const columnsValues = Object.keys(columns)
-type CSVRow = Record<(typeof columnsValues)[number], string>
 
 const simplifyValue = (value: string | null) =>
   value
@@ -54,10 +136,12 @@ const checkHeaders = (headers: string[]) => {
 
   const missingHeaders = columnsValues.filter((header) => !formattedHeaders.includes(header))
   if (missingHeaders.length > 0) {
-    throw new Error(`Colonne(s) manquante(s): ${missingHeaders.map((header) => columns[header]).join(", ")}`)
+    throw new Error(
+      `Colonne(s) manquante(s): ${missingHeaders.map((header) => columns[header as keyof typeof columns]).join(", ")}`,
+    )
   }
 
-  return formattedHeaders.map((header) => columns[header])
+  return formattedHeaders
 }
 
 const getValue = <T,>(mapping: Record<string, T>, key: string): T => {
@@ -79,6 +163,8 @@ const getBooleanValue = (value: string) => {
   return value
 }
 
+const getNumberValue = (value: string) => parseFloat(simplifyValue(value).replace(",", "."))
+
 export const parseCSV = async (content: string, uploadId: string) => {
   const rows = parse(content, {
     columns: (headers: string[]) => {
@@ -93,56 +179,51 @@ export const parseCSV = async (content: string, uploadId: string) => {
   return rows.map((row) => {
     const productId = uuid()
     const now = new Date()
-    const productMaterials: ProductWithMaterialsAndAccessories["materials"] = row["Matières"]
-      .split(",")
-      .map((material) => {
-        const [id, share] = material.trim().split(";")
-        return {
-          id: uuid(),
-          productId,
-          slug: getValue<MaterialType>(materials, id),
-          share: parseFloat(share.trim().replace("%", "")) / 100,
-        }
-      })
-    row["Origine des matières"].split(",").forEach((material) => {
-      const [id, origin] = material.trim().split(";")
-      productMaterials.find(
-        (existingMaterial) => existingMaterial.slug === getValue<MaterialType>(materials, id),
-      )!.country = getValue<Country>(countries, origin)
-    })
 
     return {
       id: productId,
       createdAt: now,
       updatedAt: now,
       uploadId,
-      ean: row["Identifiant"],
-      type: getValue<ProductType>(productTypes, row["Type"]),
-      airTransportRatio: parseFloat(row["Part du transport aérien"]) / 100,
-      business: getValue<Business>(businesses, row["Taille de l'entreprise"]),
-      fading: getBooleanValue(row["Délavage"]),
-      mass: parseFloat(row["Masse"]),
-      numberOfReferences: parseInt(row["Nombre de références"]),
-      price: parseFloat(row["Prix"]),
-      traceability: getBooleanValue(row["Traçabilité géographique"]),
-      countryDyeing: getValue<Country>(countries, row["Origine de l'ennoblissement/impression"]),
-      countryFabric: getValue<Country>(countries, row["Origine de tissage/tricotage"]),
-      countryMaking: getValue<Country>(countries, row["Origine confection"]),
-      countrySpinning: getValue<Country>(countries, row["Origine de filature"]),
-      upcycled: getBooleanValue(row["Remanufacturé"]),
-      materials: productMaterials,
-      accessories: row["Accessoires"]
-        .split(",")
-        .filter((accessory) => accessory.trim())
-        .map((accessory) => {
-          const [id, quantity] = accessory.trim().split(";")
-          return {
-            id: uuid(),
-            productId,
-            slug: getValue<AccessoryType>(accessories, id.trim()),
-            quantity: parseFloat(quantity.trim()),
-          }
-        }),
+      status: Status.Pending,
+      ean: row["identifiant"],
+      type: getValue<ProductType>(productTypes, row["type"]),
+      airTransportRatio: parseFloat(row["partdutransportaerien"]) / 100,
+      business: getValue<Business>(businesses, row["tailledelentreprise"]),
+      fading: getBooleanValue(row["delavage"]),
+      mass: getNumberValue(row["masse"]),
+      numberOfReferences: parseInt(row["nombredereferences"]),
+      price: getNumberValue(row["prix"]),
+      traceability: getBooleanValue(row["tracabilitegeographique"]),
+      countryDyeing: getValue<Country>(countries, row["originedelennoblissementimpression"]),
+      countryFabric: getValue<Country>(countries, row["originedetissagetricotage"]),
+      countryMaking: getValue<Country>(countries, row["origineconfection"]),
+      countrySpinning: getValue<Country>(countries, row["originedefilature"]),
+      impression: getValue<Impression>(impressions, row["typedimpression"]),
+      impressionPercentage: getNumberValue(row["pourcentagedimpression"].trim().replace("%", "")) / 100,
+      upcycled: getBooleanValue(row["remanufacture"]),
+      materials: Array.from({ length: 16 })
+        .map((_, index) => ({
+          id: uuid(),
+          productId,
+          //@ts-expect-error : managed from 1 to 16
+          slug: getValue<MaterialType>(materials, row[`matiere${index + 1}`]),
+          //@ts-expect-error : managed from 1 to 16
+          share: getNumberValue(row[`matiere${index + 1}pourcentage`].trim().replace("%", "")) / 100,
+          //@ts-expect-error : managed from 1 to 16
+          country: getValue<Country>(countries, row[`matiere${index + 1}origine`]),
+        }))
+        .filter((material) => material.slug),
+      accessories: Array.from({ length: 16 })
+        .map((_, index) => ({
+          id: uuid(),
+          productId,
+          //@ts-expect-error : managed from 1 to 16
+          slug: getValue<AccessoryType>(materials, row[`accessoire${index + 1}`]),
+          //@ts-expect-error : managed from 1 to 16
+          quantity: getNumberValue(row[`accessoire${index + 1}quantite`]),
+        }))
+        .filter((accessory) => accessory.slug),
     } as ProductWithMaterialsAndAccessories
   })
 }

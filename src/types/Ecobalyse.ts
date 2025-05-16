@@ -5,6 +5,7 @@ export type EcobalyseProduct = {
   countryFabric: string
   countryMaking: string
   countrySpinning: string
+  printing?: { kind: string; ratio: number }
   fading: boolean
   mass: number
   materials: {

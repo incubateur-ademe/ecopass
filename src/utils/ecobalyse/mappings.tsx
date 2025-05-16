@@ -1,4 +1,4 @@
-import { AccessoryType, Business, Country, MaterialType, ProductType } from "../../types/Product"
+import { AccessoryType, Business, Country, Impression, MaterialType, ProductType } from "../../types/Product"
 
 export const businessesMapping: Record<Business, string> = {
   [Business.Small]: "small-business",
@@ -66,4 +66,9 @@ export const countryMapping: Record<Country, string> = {
   [Country.Tunisie]: "TN",
   [Country.Turquie]: "TR",
   [Country.Vietnam]: "VN",
+}
+
+export const impressionMapping: Record<Impression, string> = {
+  [Impression.Pigmentaire]: "pigment",
+  [Impression.FixéLavé]: "substantive",
 }

@@ -1,5 +1,5 @@
 import z from "zod"
-import { AccessoryType, Business, Country, MaterialType, ProductType } from "../../types/Product"
+import { AccessoryType, Business, Country, Impression, MaterialType, ProductType } from "../../types/Product"
 import { Status } from "../../../prisma/src/prisma"
 
 const materialValidation = z.object({
@@ -45,6 +45,11 @@ export const productValidation = z.object({
   countryFabric: z.nativeEnum(Country, { errorMap: () => ({ message: "Origine de tissage/tricotage invalide" }) }),
   countryMaking: z.nativeEnum(Country, { errorMap: () => ({ message: "Origine confection invalide" }) }),
   countrySpinning: z.nativeEnum(Country, { errorMap: () => ({ message: "Origine de filature invalide" }) }),
+  impression: z.nativeEnum(Impression, { errorMap: () => ({ message: "Type d'impression invalide" }) }),
+  impressionPercentage: z
+    .number()
+    .min(0, "Le pourcentage d'impression doit être un nombre positif")
+    .max(1, "Le pourcentage d'impression doit être inférieur ou égal à 100"),
   materials: z.array(materialValidation).refine((materials) => {
     const totalShare = materials.reduce((acc, material) => acc + material.share, 0)
     return totalShare === 1

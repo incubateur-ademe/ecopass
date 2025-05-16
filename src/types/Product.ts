@@ -1,5 +1,10 @@
 import { Accessory, Material, Product } from "../../prisma/src/prisma"
 
+export enum Impression {
+  Pigmentaire = "Pigmentaire",
+  FixéLavé = "Fixé-lavé",
+}
+
 export enum Business {
   Small = "TPE/PME",
   WithServices = "Grande entreprise avec service de réparation",
@@ -83,6 +88,8 @@ export type ProductWithMaterialsAndAccessories = Omit<
   | "countryFabric"
   | "countryMaking"
   | "countrySpinning"
+  | "impression"
+  | "impressionPercentage"
 > & {
   mass: number
   price: number
@@ -97,6 +104,8 @@ export type ProductWithMaterialsAndAccessories = Omit<
   countryFabric: Country
   countryMaking: Country
   countrySpinning: Country
+  impression: Impression
+  impressionPercentage: number
   materials: (Omit<Material, "slug" | "country" | "share"> & {
     slug: MaterialType
     country?: Country

@@ -1,6 +1,13 @@
 import axios from "axios"
 import { EcobalyseCode, EcobalyseId, EcobalyseProduct, EcobalyseResponse } from "../../types/Ecobalyse"
-import { accessoryMapping, businessesMapping, countryMapping, materialMapping, productMapping } from "./mappings"
+import {
+  accessoryMapping,
+  businessesMapping,
+  countryMapping,
+  impressionMapping,
+  materialMapping,
+  productMapping,
+} from "./mappings"
 import { createProductScore } from "../../db/product"
 import { ProductWithMaterialsAndAccessories } from "../../types/Product"
 import { prismaClient } from "../../db/prismaClient"
@@ -15,6 +22,9 @@ const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories):
   countryFabric: countryMapping[product.countryFabric],
   countryMaking: countryMapping[product.countryFabric],
   countrySpinning: countryMapping[product.countrySpinning],
+  printing: product.impression
+    ? { kind: impressionMapping[product.impression], ratio: product.impressionPercentage }
+    : undefined,
   fading: product.fading,
   mass: product.mass,
   materials: product.materials.map((material) => ({
@@ -46,6 +56,7 @@ export const getEcobalyseIds = async (type: "materials" | "products" | "trims") 
 }
 
 const getEcobalyseResult = async (product: ProductWithMaterialsAndAccessories) => {
+  console.log(convertProductToEcobalyse(product))
   const response = await axios.post<EcobalyseResponse>(
     `${baseUrl}/textile/simulator/detailed`,
     convertProductToEcobalyse(product),

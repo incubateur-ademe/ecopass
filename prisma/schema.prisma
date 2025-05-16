@@ -76,12 +76,14 @@ model Product {
   countryFabric   String @map("country_fabric")
   countryMaking   String @map("country_making")
   countrySpinning String @map("country_spinning")
+  impression      String
 
   // Encrypted number
-  mass               String
-  price              String
-  airTransportRatio  String @map("air_transport_ratio")
-  numberOfReferences String
+  mass                 String
+  price                String
+  airTransportRatio    String @map("air_transport_ratio")
+  numberOfReferences   String
+  impressionPercentage String @map("impression_percentage")
 
   // Encrypted boolean
   fading       String
