@@ -56,7 +56,6 @@ export const getEcobalyseIds = async (type: "materials" | "products" | "trims") 
 }
 
 const getEcobalyseResult = async (product: ProductWithMaterialsAndAccessories) => {
-  console.log(convertProductToEcobalyse(product))
   const response = await axios.post<EcobalyseResponse>(
     `${baseUrl}/textile/simulator/detailed`,
     convertProductToEcobalyse(product),

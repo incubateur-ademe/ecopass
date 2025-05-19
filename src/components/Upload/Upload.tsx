@@ -27,7 +27,6 @@ const Upload = () => {
       })
     }
   }, [file])
-  console.log(file, uploading, success)
   return (
     <>
       <p>
