@@ -126,7 +126,7 @@ const simplifyValue = (value: string | null) =>
     ? value
         .trim()
         .toLowerCase()
-        .replace(/[ \/']/g, "")
+        .replace(/[ \/'()]/g, "")
         .replace(/[éè]/g, "e")
         .replace(/ç/g, "c")
     : ""
@@ -187,6 +187,7 @@ export const parseCSV = async (content: string, uploadId: string) => {
       uploadId,
       status: Status.Pending,
       ean: row["identifiant"],
+      date: new Date(row["datedemisesurlemarche"]),
       type: getValue<ProductType>(productTypes, row["type"]),
       airTransportRatio: parseFloat(row["partdutransportaerien"]) / 100,
       business: getValue<Business>(businesses, row["tailledelentreprise"]),

@@ -19,17 +19,17 @@ const generate = (name: string, length?: string) => {
   const products = Array.from({ length: numberOfRows }, () => {
     const materialsShare = generateShares()
     return {
-      ean: `0${faker.string.numeric(12)}`,
+      ean: faker.string.numeric(13),
       type: faker.helpers.arrayElement(Object.keys(productTypes)),
-      business: faker.helpers.arrayElement(Object.keys(businesses)),
+      business: faker.helpers.arrayElement(["", ...Object.keys(businesses)]),
       countryDyeing: faker.helpers.arrayElement(Object.keys(countries)),
       countryFabric: faker.helpers.arrayElement(Object.keys(countries)),
       countryMaking: faker.helpers.arrayElement(Object.keys(countries)),
       countrySpinning: faker.helpers.arrayElement(Object.keys(countries)),
-      mass: faker.number.float({ min: 0, max: 5 }),
+      mass: faker.number.float({ min: 0.01 }),
       price: faker.number.float({ min: 1, max: 1000 }),
       airTransportRatio: faker.number.float({ min: 0, max: 1 }),
-      numberOfReferences: faker.number.int({ min: 100, max: 1_000_000 }),
+      numberOfReferences: faker.number.int({ min: 1, max: 999_999 }),
       fading: faker.datatype.boolean(),
       traceability: faker.datatype.boolean(),
       upcycled: faker.datatype.boolean(),

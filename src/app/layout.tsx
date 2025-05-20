@@ -5,6 +5,7 @@ import { AuthProvider } from "../components/Provider/AuthProvider"
 import { Metadata } from "next"
 import Footer from "../components/Footer/Footer"
 import { auth } from "../services/auth/auth"
+import "../css/reset.css"
 
 export const metadata: Metadata = {
   title: "Écopass",

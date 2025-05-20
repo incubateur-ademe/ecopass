@@ -1,5 +1,7 @@
+import Documentation from "../../views/Documentation"
+
 const DocumentationPage = () => {
-  return <div>TODO</div>
+  return <Documentation />
 }
 
 export default DocumentationPage
