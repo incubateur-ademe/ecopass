@@ -92,20 +92,20 @@ export type ProductWithMaterialsAndAccessories = Omit<
   | "impressionPercentage"
 > & {
   mass: number
-  price: number
-  airTransportRatio: number
-  numberOfReferences: number
-  fading: boolean
-  traceability: boolean
-  upcycled: boolean
+  price?: number
+  airTransportRatio?: number
+  numberOfReferences?: number
+  fading?: boolean
+  traceability?: boolean
+  upcycled?: boolean
   type: ProductType
-  business: Business
-  countryDyeing: Country
-  countryFabric: Country
-  countryMaking: Country
-  countrySpinning: Country
-  impression: Impression
-  impressionPercentage: number
+  business?: Business
+  countryDyeing?: Country
+  countryFabric?: Country
+  countryMaking?: Country
+  countrySpinning?: Country
+  impression?: Impression
+  impressionPercentage?: number
   materials: (Omit<Material, "slug" | "country" | "share"> & {
     slug: MaterialType
     country?: Country

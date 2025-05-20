@@ -41,8 +41,13 @@ export const productValidation = z.object({
   numberOfReferences: z
     .number()
     .min(1, "Le nombre de références doit être supérieur à 1")
-    .max(999999, "Le nombre de références doit être inférieur à 999 999"),
-  price: z.number().min(1, "Le prix doit être supérieur à 1 €").max(1000, "Le prix doit être inférieur à 1000 €"),
+    .max(999999, "Le nombre de références doit être inférieur à 999 999")
+    .optional(),
+  price: z
+    .number()
+    .min(1, "Le prix doit être supérieur à 1 €")
+    .max(1000, "Le prix doit être inférieur à 1000 €")
+    .optional(),
   traceability: z.boolean(),
   countryDyeing: z
     .nativeEnum(Country, {

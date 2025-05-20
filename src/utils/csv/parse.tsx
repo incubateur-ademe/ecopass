@@ -163,7 +163,10 @@ const getBooleanValue = (value: string) => {
   return value
 }
 
-const getNumberValue = (value: string) => parseFloat(simplifyValue(value).replace(",", "."))
+const getNumberValue = (value: string, factor?: number) => {
+  const result = parseFloat(simplifyValue(value).replace(",", "."))
+  return isNaN(result) ? undefined : result * (factor || 1)
+}
 
 export const parseCSV = async (content: string, uploadId: string) => {
   const rows = parse(content, {
@@ -189,7 +192,7 @@ export const parseCSV = async (content: string, uploadId: string) => {
       ean: row["identifiant"],
       date: new Date(row["datedemisesurlemarche"]),
       type: getValue<ProductType>(productTypes, row["type"]),
-      airTransportRatio: parseFloat(row["partdutransportaerien"]) / 100,
+      airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),
       business: getValue<Business>(businesses, row["tailledelentreprise"]),
       fading: getBooleanValue(row["delavage"]),
       mass: getNumberValue(row["masse"]),
@@ -201,7 +204,7 @@ export const parseCSV = async (content: string, uploadId: string) => {
       countryMaking: getValue<Country>(countries, row["origineconfection"]),
       countrySpinning: getValue<Country>(countries, row["originedefilature"]),
       impression: getValue<Impression>(impressions, row["typedimpression"]),
-      impressionPercentage: getNumberValue(row["pourcentagedimpression"].trim().replace("%", "")) / 100,
+      impressionPercentage: getNumberValue(row["pourcentagedimpression"].trim().replace("%", ""), 0.01),
       upcycled: getBooleanValue(row["remanufacture"]),
       materials: Array.from({ length: 16 })
         .map((_, index) => ({

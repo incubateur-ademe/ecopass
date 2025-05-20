@@ -17,14 +17,15 @@ const baseUrl = "https://ecobalyse.beta.gouv.fr/versions/v5.0.1/api"
 
 const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories): EcobalyseProduct => ({
   airTransportRatio: product.airTransportRatio,
-  business: businessesMapping[product.business],
-  countryDyeing: countryMapping[product.countryDyeing],
-  countryFabric: countryMapping[product.countryFabric],
-  countryMaking: countryMapping[product.countryFabric],
-  countrySpinning: countryMapping[product.countrySpinning],
-  printing: product.impression
-    ? { kind: impressionMapping[product.impression], ratio: product.impressionPercentage }
-    : undefined,
+  business: product.business ? businessesMapping[product.business] : undefined,
+  countryDyeing: product.countryDyeing ? countryMapping[product.countryDyeing] : undefined,
+  countryFabric: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
+  countryMaking: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
+  countrySpinning: product.countrySpinning ? countryMapping[product.countrySpinning] : undefined,
+  printing:
+    product.impression && product.impressionPercentage
+      ? { kind: impressionMapping[product.impression], ratio: product.impressionPercentage }
+      : undefined,
   fading: product.fading,
   mass: product.mass,
   materials: product.materials.map((material) => ({

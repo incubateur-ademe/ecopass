@@ -1,24 +1,24 @@
 export type EcobalyseProduct = {
-  airTransportRatio: number
-  business: string
-  countryDyeing: string
-  countryFabric: string
-  countryMaking: string
-  countrySpinning: string
+  airTransportRatio?: number
+  business?: string
+  countryDyeing?: string
+  countryFabric?: string
+  countryMaking?: string
+  countrySpinning?: string
   printing?: { kind: string; ratio: number }
-  fading: boolean
+  fading?: boolean
   mass: number
   materials: {
     country?: string
     id: string
     share: number
   }[]
-  numberOfReferences: number
-  price: number
+  numberOfReferences?: number
+  price?: number
   product: string
-  traceability: boolean
+  traceability?: boolean
   trims: { id: string; quantity: number }[]
-  upcycled: boolean
+  upcycled?: boolean
 }
 
 export type EcobalyseImpacts = {

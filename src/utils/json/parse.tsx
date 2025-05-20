@@ -21,6 +21,7 @@ export const parseJson = (json: any[], uploadId: string) => {
       uploadId,
       status: Status.Pending,
       ean: item.ean,
+      date: new Date(item.date),
       type: ProductType.Pull,
       airTransportRatio: item.airTransportRatio,
       business: Business.Small,
