@@ -19,6 +19,7 @@ import { impressions } from "../types/impression"
 type ColumnType = [
   "identifiant",
   "datedemisesurlemarche",
+  "score",
   "type",
   "masse",
   "remanufacture",
@@ -191,6 +192,7 @@ export const parseCSV = async (content: string, uploadId: string) => {
       status: Status.Pending,
       ean: row["identifiant"],
       date: new Date(row["datedemisesurlemarche"]),
+      declaredScore: getNumberValue(row["score"]),
       type: getValue<ProductType>(productTypes, row["type"]),
       airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),
       business: getValue<Business>(businesses, row["tailledelentreprise"]),

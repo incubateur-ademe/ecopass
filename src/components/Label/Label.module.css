@@ -9,11 +9,6 @@
   color: black;
 }
 
-.secondary {
-  background-image: url("/images/ce-bleu.svg");
-  color: #000091;
-}
-
 .title {
   text-transform: uppercase;
   font-size: 0.4375rem;
@@ -47,8 +42,4 @@
   font-size: 0.5625rem;
   font-weight: 500;
   margin: 0;
-}
-
-.secondaryBackground {
-  background-color: #000091;
 }

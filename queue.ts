@@ -17,10 +17,16 @@ const runQueue = async () => {
           id: product.id,
           ...productValidation.safeParse(product),
         }))
-        console.log(products, validatedProducts)
         await Promise.all([
           saveEcobalyseResults(validatedProducts.filter((result) => result.success).map((result) => result.data)),
-          failProducts(validatedProducts.filter((result) => !result.success).map((result) => result.id)),
+          failProducts(
+            validatedProducts
+              .filter((result) => !result.success)
+              .map((result) => ({
+                id: result.id,
+                error: result.error.issues.map((issue) => issue.message).join(", "),
+              })),
+          ),
         ])
         await checkUploadsStatus(products.map((product) => product.uploadId))
       }

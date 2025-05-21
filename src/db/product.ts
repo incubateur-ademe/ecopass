@@ -170,13 +170,16 @@ export const getProductsByUploadId = async (uploadId: string) => {
   return decryptProduct(products)
 }
 
-export const failProducts = async (ids: string[]) => {
-  await prismaClient.product.updateMany({
-    where: {
-      id: { in: ids },
-    },
-    data: {
-      status: Status.Error,
-    },
-  })
+export const failProducts = async (products: { id: string; error: string }[]) => {
+  await Promise.all(
+    products.map((product) =>
+      prismaClient.product.update({
+        where: { id: product.id },
+        data: {
+          status: Status.Error,
+          error: product.error,
+        },
+      }),
+    ),
+  )
 }

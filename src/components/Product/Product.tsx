@@ -10,14 +10,7 @@ const Product = ({ product }: { product: ProductWithScore }) => {
       <p>Code EAN : {product.ean}</p>
       <p>Version : {product.upload.version.version}</p>
       <p>Calculé le : {formatDate(product.createdAt)}</p>
-      {product.score ? (
-        <>
-          <Label product={product.score} secondary />
-          <Label product={product.score} />
-        </>
-      ) : (
-        <p>Pas de score</p>
-      )}
+      {product.score ? <Label product={product.score} /> : <p>Pas de score</p>}
     </Block>
   )
 }

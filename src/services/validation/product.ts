@@ -26,8 +26,10 @@ export const productValidation = z.object({
   status: z.nativeEnum(Status, { errorMap: () => ({ message: "Statut invalide" }) }),
   createdAt: z.date(),
   updatedAt: z.date(),
+  error: z.string().nullable(),
   ean: z.string().regex(/^\d{8}$|^\d{13}$/, "L'EAN doit contenir 8 ou 13 chiffres"),
   date: z.date({ errorMap: () => ({ message: "Date de mise sur le marché invalide" }) }),
+  declaredScore: z.number().nullable(),
   type: z.nativeEnum(ProductType, { errorMap: () => ({ message: "Type de produit invalide" }) }),
   airTransportRatio: z
     .number()

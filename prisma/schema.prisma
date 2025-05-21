@@ -69,11 +69,13 @@ model Version {
 }
 
 model Product {
-  id     String @id @default(uuid())
-  status Status @default(Pending)
+  id     String  @id @default(uuid())
+  status Status  @default(Pending)
+  error  String?
 
-  ean  String
-  date DateTime
+  ean           String
+  date          DateTime
+  declaredScore Float?   @map("declared_score")
 
   // Encrypted string
   type            String

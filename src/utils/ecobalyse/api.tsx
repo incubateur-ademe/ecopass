@@ -8,7 +8,7 @@ import {
   materialMapping,
   productMapping,
 } from "./mappings"
-import { createProductScore } from "../../db/product"
+import { createProductScore, failProducts } from "../../db/product"
 import { ProductWithMaterialsAndAccessories } from "../../types/Product"
 import { prismaClient } from "../../db/prismaClient"
 import { Status } from "../../../prisma/src/prisma"
@@ -82,7 +82,15 @@ export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAcce
     products.map(async (product) => {
       try {
         const result = await getEcobalyseResult(product)
-
+        console.log(product.declaredScore, result.score)
+        if (product.declaredScore && product.declaredScore !== result.score) {
+          failProducts([
+            {
+              id: product.id,
+              error: `Le score déclaré (${product.declaredScore}) ne correspond pas au score calculé (${result.score})`,
+            },
+          ])
+        }
         await createProductScore({
           productId: result.id,
           score: result.score,
