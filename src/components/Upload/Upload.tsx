@@ -29,7 +29,7 @@ const Upload = () => {
   }, [file])
   return (
     <>
-      <p>
+      <p className='fr-mb-4w'>
         Si vous avez besoin d'aide, vous pouvez télécharger{" "}
         <Link href='/exemple/exemple.csv' className='fr-link'>
           un exemple
