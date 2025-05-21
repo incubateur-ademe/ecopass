@@ -82,9 +82,8 @@ export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAcce
     products.map(async (product) => {
       try {
         const result = await getEcobalyseResult(product)
-        console.log(product.declaredScore, result.score)
         if (product.declaredScore && product.declaredScore !== result.score) {
-          failProducts([
+          return failProducts([
             {
               id: product.id,
               error: `Le score déclaré (${product.declaredScore}) ne correspond pas au score calculé (${result.score})`,

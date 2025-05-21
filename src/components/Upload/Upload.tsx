@@ -27,7 +27,14 @@ const Upload = () => {
       })
     }
   }, [file])
-  return (
+  return success ? (
+    <Alert
+      className='fr-mt-4w'
+      title='Fichier correctement téléchargé'
+      severity='success'
+      description="L'analyse de vos produits peut prendre un peu de temps, vous pouvez suivre la progression dans le tableau 'Mes fichiers' et nous vous enverrons un mail lorsqu'il sera completement analysé."
+    />
+  ) : (
     <>
       <p className='fr-mb-4w'>
         Si vous avez besoin d'aide, vous pouvez télécharger{" "}
@@ -50,14 +57,6 @@ const Upload = () => {
       <LoadingButton disabled={!file} onClick={upload} loading={uploading} className={styles.button}>
         Uploader mon fichier
       </LoadingButton>
-      {success && (
-        <Alert
-          className='fr-mt-4w'
-          title='Fichier correctement téléchargé'
-          severity='success'
-          description="L'analyse de vos produits peut prendre un peu de temps, vous pouvez suivre la progression dans le tableau 'Mes fichiers' et nous vous enverrons un mail lorsqu'il sera completement analysé."
-        />
-      )}
     </>
   )
 }

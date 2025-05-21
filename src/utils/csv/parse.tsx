@@ -155,6 +155,10 @@ const getValue = <T,>(mapping: Record<string, T>, key: string): T => {
 }
 
 const getBooleanValue = (value: string) => {
+  if (value === "") {
+    return undefined
+  }
+
   const simplifiedValue = simplifyValue(value)
   if (simplifiedValue === "oui" || simplifiedValue === "yes" || simplifiedValue === "true") {
     return true
@@ -164,9 +168,13 @@ const getBooleanValue = (value: string) => {
   return value
 }
 
-const getNumberValue = (value: string, factor?: number) => {
+const getNumberValue = (value: string, factor?: number, defaultValue?: number) => {
+  if (value === "") {
+    return undefined
+  }
+
   const result = parseFloat(simplifyValue(value).replace(",", "."))
-  return isNaN(result) ? undefined : result * (factor || 1)
+  return isNaN(result) ? defaultValue || value : result * (factor || 1)
 }
 
 export const parseCSV = async (content: string, uploadId: string) => {
@@ -183,7 +191,7 @@ export const parseCSV = async (content: string, uploadId: string) => {
   return rows.map((row) => {
     const productId = uuid()
     const now = new Date()
-
+    const date = Date.parse(row["datedemisesurlemarche"])
     return {
       id: productId,
       createdAt: now,
@@ -191,8 +199,8 @@ export const parseCSV = async (content: string, uploadId: string) => {
       uploadId,
       status: Status.Pending,
       ean: row["identifiant"],
-      date: new Date(row["datedemisesurlemarche"]),
-      declaredScore: getNumberValue(row["score"]),
+      date: Number.isNaN(date) ? null : new Date(date),
+      declaredScore: getNumberValue(row["score"], 1, -1),
       type: getValue<ProductType>(productTypes, row["type"]),
       airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),
       business: getValue<Business>(businesses, row["tailledelentreprise"]),
@@ -220,13 +228,13 @@ export const parseCSV = async (content: string, uploadId: string) => {
           country: getValue<Country>(countries, row[`matiere${index + 1}origine`]),
         }))
         .filter((material) => material.slug),
-      accessories: Array.from({ length: 16 })
+      accessories: Array.from({ length: 4 })
         .map((_, index) => ({
           id: uuid(),
           productId,
-          //@ts-expect-error : managed from 1 to 16
+          //@ts-expect-error : managed from 1 to 4
           slug: getValue<AccessoryType>(materials, row[`accessoire${index + 1}`]),
-          //@ts-expect-error : managed from 1 to 16
+          //@ts-expect-error : managed from 1 to 4
           quantity: getNumberValue(row[`accessoire${index + 1}quantite`]),
         }))
         .filter((accessory) => accessory.slug),

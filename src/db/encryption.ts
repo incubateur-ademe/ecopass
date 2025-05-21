@@ -27,12 +27,17 @@ function decrypt(data: string) {
 export const decryptNumber = (data: string) => {
   const decrypted = decrypt(data)
   const value = parseFloat(decrypted)
-  return isNaN(value) ? undefined : value
+  return isNaN(value) ? (decrypted === "" ? undefined : decrypted) : value
 }
 
 export const decryptBoolean = (data: string) => {
   const decrypted = decrypt(data)
-  return decrypted === "true"
+  if (decrypted === "true") {
+    return true
+  } else if (decrypted === "false") {
+    return false
+  }
+  return decrypted === "" ? undefined : decrypted
 }
 
 export const decryptString = (data: string) => {
