@@ -19,6 +19,7 @@ import { impressions } from "../types/impression"
 type ColumnType = [
   "identifiant",
   "datedemisesurlemarche",
+  "marque",
   "score",
   "categorie",
   "masse",
@@ -200,6 +201,7 @@ export const parseCSV = async (content: string, uploadId: string) => {
       status: Status.Pending,
       gtin: row["identifiant"],
       date: Number.isNaN(date) ? null : new Date(date),
+      brand: row["marque"],
       declaredScore: getNumberValue(row["score"], 1, -1),
       category: getValue<ProductCategory>(productCategories, row["categorie"]),
       airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),

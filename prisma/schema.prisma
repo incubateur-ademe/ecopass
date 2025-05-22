@@ -75,6 +75,7 @@ model Product {
 
   gtin          String
   date          DateTime?
+  brand         String?
   declaredScore Float?    @map("declared_score")
 
   // Encrypted string

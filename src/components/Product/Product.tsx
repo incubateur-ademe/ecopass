@@ -7,6 +7,7 @@ const Product = ({ product }: { product: ProductWithScore }) => {
   return (
     <Block>
       <h1>Coût environnemental</h1>
+      <p>Marque : {product.brand}</p>
       <p>Code GTIN : {product.gtin}</p>
       <p>Version : {product.upload.version.version}</p>
       <p>Calculé le : {formatDate(product.createdAt)}</p>

@@ -20,6 +20,7 @@ export const parseJson = (json: any[], uploadId: string) => {
       updatedAt: now,
       uploadId,
       error: null,
+      brand: item.brand,
       status: Status.Pending,
       gtin: item.gtin,
       date: new Date(item.date),

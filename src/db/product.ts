@@ -119,6 +119,7 @@ export const getProductWithScore = async (gtin: string) =>
   prismaClient.product.findFirst({
     select: {
       gtin: true,
+      brand: true,
       createdAt: true,
       score: { select: { score: true, standardized: true } },
       upload: { select: { version: { select: { version: true } } } },
