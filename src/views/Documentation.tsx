@@ -28,6 +28,9 @@ const Documentation = () => (
           <b>Date de mise sur le marché</b>
         </li>
         <li>
+          <b>Marque</b> (optionnel) : marque du produit.
+        </li>
+        <li>
           <b>Score</b> (optionnel) : score Écobalyse, si vous l'avez calculé. Attention, si il est diffférent de notre
           calcul, le produit sera en erreur.
           <p className='fr-hint-text'>si pas de valeur définie, on utilise le score calculé par Écopass.</p>
