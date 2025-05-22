@@ -11,7 +11,7 @@ export const createProducts = async (products: ProductWithMaterialsAndAccessorie
           ...product,
           accessories: undefined,
           materials: undefined,
-          type: encrypt(product.type),
+          category: encrypt(product.category),
           business: encrypt(product.business),
           countryDyeing: encrypt(product.countryDyeing),
           countryFabric: encrypt(product.countryFabric),
@@ -69,7 +69,7 @@ const decryptProduct = (
 ) =>
   products.map((product) => ({
     ...product,
-    type: decryptString(product.type),
+    category: decryptString(product.category),
     business: decryptString(product.business),
     countryDyeing: decryptString(product.countryDyeing),
     countryFabric: decryptString(product.countryFabric),

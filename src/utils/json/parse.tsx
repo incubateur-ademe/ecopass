@@ -3,7 +3,7 @@ import {
   AccessoryType,
   Business,
   MaterialType,
-  ProductType,
+  ProductCategory,
   ProductWithMaterialsAndAccessories,
 } from "../../types/Product"
 import { Status } from "../../../prisma/src/prisma"
@@ -24,7 +24,7 @@ export const parseJson = (json: any[], uploadId: string) => {
       ean: item.ean,
       date: new Date(item.date),
       declaredScore: item.declaredScore,
-      type: ProductType.Pull,
+      category: ProductCategory.Pull,
       airTransportRatio: item.airTransportRatio,
       business: Business.Small,
       fading: item.fading,

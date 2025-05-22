@@ -1,5 +1,5 @@
 import z from "zod"
-import { AccessoryType, Business, Country, Impression, MaterialType, ProductType } from "../../types/Product"
+import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 import { Status } from "../../../prisma/src/prisma"
 
 const materialValidation = z.object({
@@ -32,7 +32,7 @@ export const productValidation = z.object({
   ean: z.string().regex(/^\d{8}$|^\d{13}$/, "L'EAN doit contenir 8 ou 13 chiffres"),
   date: z.date({ message: "Date de mise sur le marché invalide" }),
   declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
-  type: z.nativeEnum(ProductType, { message: "Type de produit invalide" }),
+  category: z.nativeEnum(ProductCategory, { message: "Catégorie de produit invalide" }),
   airTransportRatio: z
     .number({ message: "La part de transport aérien doit être un pourcentage" })
     .min(0, "La part de transport aérien doit être supérieure à 0%")

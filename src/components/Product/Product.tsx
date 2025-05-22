@@ -1,7 +1,7 @@
 import { ProductWithScore } from "../../db/product"
 import { formatDate } from "../../services/format"
 import Block from "../Block/Block"
-import Label from "../Label/Label"
+import Label from "../Label/LabelSVG"
 
 const Product = ({ product }: { product: ProductWithScore }) => {
   return (

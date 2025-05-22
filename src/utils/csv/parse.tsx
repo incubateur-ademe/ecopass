@@ -5,13 +5,13 @@ import {
   Country,
   Impression,
   MaterialType,
-  ProductType,
+  ProductCategory,
   ProductWithMaterialsAndAccessories,
 } from "../../types/Product"
 import { v4 as uuid } from "uuid"
 import { materials } from "../types/material"
 import { countries } from "../types/country"
-import { productTypes } from "../types/productType"
+import { productCategories } from "../types/productCategory"
 import { businesses } from "../types/business"
 import { Status } from "../../../prisma/src/prisma"
 import { impressions } from "../types/impression"
@@ -20,7 +20,7 @@ type ColumnType = [
   "identifiant",
   "datedemisesurlemarche",
   "score",
-  "type",
+  "categorie",
   "masse",
   "remanufacture",
   "nombredereferences",
@@ -98,7 +98,7 @@ type CSVRow = Record<ColumnType[number], string>
 const columns: Partial<Record<ColumnType[number], string>> = {
   identifiant: "Identifiant",
   datedemisesurlemarche: "Date de mise sur le marché",
-  type: "Type",
+  categorie: "Catégorie",
   masse: "Masse",
   remanufacture: "Remanufacturé",
   nombredereferences: "Nombre de références",
@@ -201,7 +201,7 @@ export const parseCSV = async (content: string, uploadId: string) => {
       ean: row["identifiant"],
       date: Number.isNaN(date) ? null : new Date(date),
       declaredScore: getNumberValue(row["score"], 1, -1),
-      type: getValue<ProductType>(productTypes, row["type"]),
+      category: getValue<ProductCategory>(productCategories, row["categorie"]),
       airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),
       business: getValue<Business>(businesses, row["tailledelentreprise"]),
       fading: getBooleanValue(row["delavage"]),

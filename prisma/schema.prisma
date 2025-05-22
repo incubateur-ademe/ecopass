@@ -78,7 +78,7 @@ model Product {
   declaredScore Float?    @map("declared_score")
 
   // Encrypted string
-  type            String
+  category        String
   business        String
   countryDyeing   String @map("country_dyeing")
   countryFabric   String @map("country_fabric")

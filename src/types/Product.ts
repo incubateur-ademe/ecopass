@@ -30,7 +30,7 @@ export enum MaterialType {
   CotonRecycléDéchetsDeProduction = "Coton recyclé (déchets de production)",
 }
 
-export enum ProductType {
+export enum ProductCategory {
   Chemise = "Chemise",
   Jean = "Jean",
   JupeRobe = "Jupe / Robe",
@@ -82,7 +82,7 @@ export type ProductWithMaterialsAndAccessories = Omit<
   | "fading"
   | "traceability"
   | "upcycled"
-  | "type"
+  | "category"
   | "business"
   | "countryDyeing"
   | "countryFabric"
@@ -98,7 +98,7 @@ export type ProductWithMaterialsAndAccessories = Omit<
   fading?: boolean
   traceability?: boolean
   upcycled?: boolean
-  type: ProductType
+  category: ProductCategory
   business?: Business
   countryDyeing?: Country
   countryFabric?: Country

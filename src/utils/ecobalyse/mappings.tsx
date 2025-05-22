@@ -1,4 +1,4 @@
-import { AccessoryType, Business, Country, Impression, MaterialType, ProductType } from "../../types/Product"
+import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 
 export const businessesMapping: Record<Business, string> = {
   [Business.Small]: "small-business",
@@ -25,18 +25,18 @@ export const materialMapping: Record<MaterialType, string> = {
   [MaterialType.CotonRecycléDéchetsDeProduction]: "coton-rdp",
 }
 
-export const productMapping: Record<ProductType, string> = {
-  [ProductType.Chemise]: "chemise",
-  [ProductType.Jean]: "jean",
-  [ProductType.JupeRobe]: "jupe",
-  [ProductType.ManteauVeste]: "manteau",
-  [ProductType.PantalonShort]: "pantalon",
-  [ProductType.Pull]: "pull",
-  [ProductType.TShirtPolo]: "tshirt",
-  [ProductType.Chaussettes]: "chaussettes",
-  [ProductType.CaleçonTissé]: "calecon",
-  [ProductType.BoxerSlipTricoté]: "slip",
-  [ProductType.MaillotDeBain]: "maillot-de-bain",
+export const productMapping: Record<ProductCategory, string> = {
+  [ProductCategory.Chemise]: "chemise",
+  [ProductCategory.Jean]: "jean",
+  [ProductCategory.JupeRobe]: "jupe",
+  [ProductCategory.ManteauVeste]: "manteau",
+  [ProductCategory.PantalonShort]: "pantalon",
+  [ProductCategory.Pull]: "pull",
+  [ProductCategory.TShirtPolo]: "tshirt",
+  [ProductCategory.Chaussettes]: "chaussettes",
+  [ProductCategory.CaleçonTissé]: "calecon",
+  [ProductCategory.BoxerSlipTricoté]: "slip",
+  [ProductCategory.MaillotDeBain]: "maillot-de-bain",
 }
 
 export const accessoryMapping: Record<AccessoryType, string> = {

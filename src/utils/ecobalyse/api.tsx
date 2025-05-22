@@ -41,7 +41,7 @@ const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories):
     quantity: accessory.quantity,
   })),
   upcycled: product.upcycled,
-  product: productMapping[product.type],
+  product: productMapping[product.category],
 })
 
 export const getEcobalyseCodes = async (type: "countries") => {

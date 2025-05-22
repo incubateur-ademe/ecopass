@@ -1,7 +1,7 @@
 import fs from "fs"
 import { faker } from "@faker-js/faker"
 import { stringify } from "csv-stringify/sync"
-import { productTypes } from "../utils/types/productType"
+import { productCategories } from "../utils/types/productCategory"
 import { businesses } from "../utils/types/business"
 import { countries } from "../utils/types/country"
 import { materials } from "../utils/types/material"
@@ -20,7 +20,7 @@ const generate = (name: string, length?: string) => {
     const materialsShare = generateShares()
     return {
       ean: faker.string.numeric(13),
-      type: faker.helpers.arrayElement(Object.keys(productTypes)),
+      cattegory: faker.helpers.arrayElement(Object.keys(productCategories)),
       business: faker.helpers.arrayElement(["", ...Object.keys(businesses)]),
       countryDyeing: faker.helpers.arrayElement(Object.keys(countries)),
       countryFabric: faker.helpers.arrayElement(Object.keys(countries)),
@@ -53,7 +53,7 @@ const generate = (name: string, length?: string) => {
     products.map((product) => [
       product.ean,
       new Date().toISOString(),
-      product.type,
+      product.cattegory,
       product.mass,
       product.upcycled,
       product.numberOfReferences,
@@ -76,7 +76,7 @@ const generate = (name: string, length?: string) => {
       columns: [
         "Identifiant",
         "Date de mise sur le marché",
-        "Type",
+        "Catégorie",
         "Masse",
         "Remanufacturé",
         "Nombre de références",
