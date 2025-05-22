@@ -4,7 +4,7 @@ import { Suspense } from "react"
 import Uploads from "../components/Upload/Uploads"
 import Products from "../components/Product/Products"
 import Upload from "../components/Upload/Upload"
-import Label from "../components/Label/LabelSVG"
+import Label from "../components/Label/Label"
 
 const Home = ({ connected }: { connected?: boolean }) => {
   return (
