@@ -60,6 +60,7 @@ export const getUploadsByUserId = async (userId: string) => {
     ...upload,
     products: undefined,
     total: upload.products.length,
+    success: upload.products.filter((product) => product.status === Status.Done).length,
     done: upload.products.filter((product) => product.status === Status.Done || product.status === Status.Error).length,
   }))
 }

@@ -4,7 +4,7 @@ import { auth } from "../../services/auth/auth"
 import { getUploadsByUserId } from "../../db/upload"
 import Download from "./Download"
 import { Status } from "../../../prisma/src/prisma"
-import { formatDate } from "../../services/format"
+import { formatDateTime } from "../../services/format"
 import Table from "../Table/Table"
 
 const statusTitle: Record<Status, string> = {
@@ -26,13 +26,14 @@ const Uploads = async () => {
     <Table
       caption='Mes fichiers'
       noCaption
-      headers={["Date", "Nom", "Statut", "Résultat"]}
+      headers={["Date de dépot", "Nom du fichier", "Statut", "Nombre de produits validés", "Résultat"]}
       data={uploads.map((upload) => [
-        formatDate(upload.createdAt),
+        formatDateTime(upload.createdAt),
         upload.name,
         upload.status === Status.Pending
           ? `${statusTitle[upload.status]} (${upload.done}/${upload.total})`
           : statusTitle[upload.status],
+        upload.status === Status.Error || upload.status === Status.Done ? `${upload.success}/${upload.total}` : "",
         <Download
           uploadId={upload.id}
           key={`download-${upload.id}`}

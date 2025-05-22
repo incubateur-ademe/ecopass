@@ -1,13 +1,13 @@
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
-import RechercheView from "../../views/Recherche"
+import Products from "../../views/Products"
 
-const RecherchePage = () => {
+const ProductsPage = () => {
   return (
     <>
       <StartDsfrOnHydration />
-      <RechercheView />
+      <Products />
     </>
   )
 }
 
-export default RecherchePage
+export default ProductsPage

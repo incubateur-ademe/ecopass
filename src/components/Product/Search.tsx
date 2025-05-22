@@ -7,7 +7,7 @@ const Search = () => {
   const [gtin, setGTIN] = useState("")
   return (
     <>
-      <p>Veuillez rentrer le code GTIN du produit que vous chercher</p>
+      <p>Veuillez rentrer le code GTIN du produit que vous cherchez</p>
       <Input
         label='Code GTIN'
         hideLabel

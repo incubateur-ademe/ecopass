@@ -36,10 +36,12 @@ const Login = () => {
             <legend className='fr-fieldset__legend' id='legend'>
               <h1>Connexion à Écopass</h1>
             </legend>
-            <p>
-              Si vous n'avez pas de compte, veuillez contacter{" "}
-              <Link href='' className='fr-link'>
-                l'équipe Écopass
+            <p className='fr-mb-4w'>
+              Le portail de déclaration de l’affichage environnemental est actuellement en beta privé. Si vous
+              rencontrez des difficultés à vous connecter, veuillez contacter l’équipe de l’affichage environnemental à
+              cette adresse{" "}
+              <Link href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`} className='fr-link'>
+                {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
               </Link>
             </p>
             <div className='fr-fieldset__element'>

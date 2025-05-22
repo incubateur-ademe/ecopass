@@ -115,12 +115,13 @@ export const getProductsToProcess = async () => {
   return decryptProduct(products)
 }
 
-export const getProductWithScore = async (gtin: string) =>
-  prismaClient.product.findFirst({
+export const getProductWithScore = async (gtin: string) => {
+  const result = await prismaClient.product.findFirst({
     select: {
       gtin: true,
       brand: true,
       createdAt: true,
+      category: true,
       score: { select: { score: true, standardized: true } },
       upload: {
         select: { version: { select: { version: true } }, user: { select: { brand: { select: { name: true } } } } },
@@ -129,6 +130,11 @@ export const getProductWithScore = async (gtin: string) =>
     where: { gtin },
     orderBy: { createdAt: "desc" },
   })
+  if (result) {
+    return { ...result, category: decryptString(result.category) }
+  }
+  return null
+}
 
 export type ProductWithScore = Exclude<Awaited<ReturnType<typeof getProductWithScore>>, null>
 
@@ -141,6 +147,7 @@ const getProducts = async (where: Pick<Prisma.ProductWhereInput, "upload" | "upl
     select: {
       gtin: true,
       createdAt: true,
+      category: true,
       score: { select: { score: true, standardized: true } },
     },
     orderBy: [{ gtin: "asc" }, { createdAt: "desc" }],
@@ -154,7 +161,24 @@ const getProducts = async (where: Pick<Prisma.ProductWhereInput, "upload" | "upl
     }
   }
 
-  return Array.from(uniqueProducts.values())
+  return Array.from(
+    uniqueProducts.values().map((product) => ({
+      ...product,
+      category: decryptString(product.category),
+    })),
+  )
+}
+
+export const getProductsCountByUserId = async (userId: string) => {
+  const result = await prismaClient.product.groupBy({
+    by: ["gtin"],
+    where: {
+      upload: { userId },
+      status: Status.Done,
+    },
+    _count: { gtin: true },
+  })
+  return result.length
 }
 
 export const getProductsByUserId = async (userId: string) => getProducts({ upload: { userId } }, 10)

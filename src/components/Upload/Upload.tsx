@@ -32,7 +32,13 @@ const Upload = () => {
       className='fr-mt-4w'
       title='Fichier correctement téléchargé'
       severity='success'
-      description="L'analyse de vos produits peut prendre un peu de temps, vous pouvez suivre la progression dans le tableau 'Mes fichiers' et nous vous enverrons un mail lorsqu'il sera completement analysé."
+      description={
+        <>
+          Nous analysons votre fichier pour vérifier qu’il contient l’ensemble des informations reglementaires, au bon
+          format. Cette étape peut prendre quelques minutes.{" "}
+          <b>Vous revevrez un mail de conformation suite à cette analyse</b>. Vous pouvez fermer cet onglet.
+        </>
+      }
     />
   ) : (
     <>
@@ -41,12 +47,17 @@ const Upload = () => {
         <Link href='/exemple/exemple.csv' className='fr-link'>
           un exemple
         </Link>
-        , ou consulter{" "}
+        , consulter{" "}
         <Link href='/documentation' className='fr-link'>
           la documentation
+        </Link>{" "}
+        ou contacter notre support à cette adresse{" "}
+        <Link className='fr-link' href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}>
+          {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
         </Link>
       </p>
       <UploadDSFR
+        label='Déposez votre fichier pour déclarer vos produits.'
         disabled={uploading}
         hint='Format CSV ou JSON uniquement, 5mb max'
         nativeInputProps={{

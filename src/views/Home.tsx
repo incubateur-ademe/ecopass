@@ -1,10 +1,7 @@
 import Link from "next/link"
 import Block from "../components/Block/Block"
-import { Suspense } from "react"
-import Uploads from "../components/Upload/Uploads"
-import Products from "../components/Product/Products"
-import Upload from "../components/Upload/Upload"
 import Label from "../components/Label/Label"
+import Button from "@codegouvfr/react-dsfr/Button"
 
 const Home = ({ connected }: { connected?: boolean }) => {
   return (
@@ -12,10 +9,12 @@ const Home = ({ connected }: { connected?: boolean }) => {
       <Block>
         <h1>Affichage environnemental</h1>
         <h2>Déclarez le cout environnemental de vos produits textiles</h2>
-        <Label product={{ score: 360, standardized: 154 }} />
       </Block>
       {!connected ? (
         <>
+          <Block>
+            <Label product={{ score: 360, standardized: 154 }} />
+          </Block>
           <Block>
             <p>
               Si vous souhaitez deposer un produit sur le portail, veuillez{" "}
@@ -37,27 +36,20 @@ const Home = ({ connected }: { connected?: boolean }) => {
           </Block>
         </>
       ) : (
-        <>
-          <Block>
-            <Upload />
-          </Block>
-          <Block>
-            <div className='fr-grid-row fr-grid-row--center'>
-              <div className='fr-col-12 fr-col-lg-6'>
-                <h2>Mes fichiers</h2>
-                <Suspense>
-                  <Uploads />
-                </Suspense>
-              </div>
-              <div className='fr-col-12 fr-col-lg-6'>
-                <h2>Mes Produits</h2>
-                <Suspense>
-                  <Products />
-                </Suspense>
-              </div>
+        <Block>
+          <div className='fr-grid-row'>
+            <div className='fr-col-12 fr-col-md-6'>
+              <h3>Mes déclarations</h3>
+              <p className='fr-mb-1w'>Déclarer mes produits et suivre leur status.</p>
+              <Button linkProps={{ href: "/declarations" }}>Mes déclarations</Button>
             </div>
-          </Block>
-        </>
+            <div className='fr-col-12 fr-col-md-6'>
+              <h3>Mes produits</h3>
+              <p className='fr-mb-1w'>Consulter mes produits déclarés.</p>
+              <Button linkProps={{ href: "/produits" }}>Mes produits</Button>
+            </div>
+          </div>
+        </Block>
       )}
     </>
   )
