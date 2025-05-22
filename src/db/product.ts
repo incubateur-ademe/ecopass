@@ -122,7 +122,9 @@ export const getProductWithScore = async (gtin: string) =>
       brand: true,
       createdAt: true,
       score: { select: { score: true, standardized: true } },
-      upload: { select: { version: { select: { version: true } } } },
+      upload: {
+        select: { version: { select: { version: true } }, user: { select: { brand: { select: { name: true } } } } },
+      },
     },
     where: { gtin },
     orderBy: { createdAt: "desc" },
