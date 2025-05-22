@@ -23,7 +23,7 @@ export const authOptions = {
           where: { email: credentials.email },
         })
 
-        if (!user) {
+        if (!user || !user.password) {
           throw new Error("No user found with this email")
         }
 
