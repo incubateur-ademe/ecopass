@@ -6,7 +6,7 @@ const Documentation = () => (
     <Block>
       <h1>Documentation du format CSV Écopass</h1>
       <p>
-        Pour importer vos produits sur la plateforme Écopass, vous devez fournir un fichier CSV respectant le format
+        Pour importer vos produits sur le portail Écopass, vous devez fournir un fichier CSV respectant le format
         suivant.
       </p>
       <p>

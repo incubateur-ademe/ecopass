@@ -18,7 +18,7 @@ const Home = ({ connected }: { connected?: boolean }) => {
         <>
           <Block>
             <p>
-              Si vous souhaitez deposer un produit sur la plateforme, veuillez{" "}
+              Si vous souhaitez deposer un produit sur le portail, veuillez{" "}
               <Link href='/login' className='fr-link'>
                 vous connecter
               </Link>
