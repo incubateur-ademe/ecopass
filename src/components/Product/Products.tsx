@@ -19,12 +19,12 @@ const Products = async () => {
     <Table
       caption='Mes produits'
       noCaption
-      headers={["Date", "EAN", "Score", ""]}
+      headers={["Date", "GTIN", "Score", ""]}
       data={products.map((product) => [
         formatDate(product.createdAt),
-        product.ean,
+        product.gtin,
         formatNumber(product.score?.score),
-        <Button linkProps={{ href: `/produits/${product.ean}` }} key={product.ean}>
+        <Button linkProps={{ href: `/produits/${product.gtin}` }} key={product.gtin}>
           Voir le produit
         </Button>,
       ])}

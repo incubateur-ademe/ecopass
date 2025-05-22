@@ -22,7 +22,7 @@ const Documentation = () => (
       <h3>Informations produit</h3>
       <ul>
         <li>
-          <b>Identifiant</b> : code EAN du produit. Ce dernier doit être composé de 8 ou 13 chiffres.
+          <b>Identifiant</b> : code GTIN du produit. Ce dernier doit être composé de 8 ou 13 chiffres.
         </li>
         <li>
           <b>Date de mise sur le marché</b>

@@ -115,15 +115,15 @@ export const getProductsToProcess = async () => {
   return decryptProduct(products)
 }
 
-export const getProductWithScore = async (ean: string) =>
+export const getProductWithScore = async (gtin: string) =>
   prismaClient.product.findFirst({
     select: {
-      ean: true,
+      gtin: true,
       createdAt: true,
       score: { select: { score: true, standardized: true } },
       upload: { select: { version: { select: { version: true } } } },
     },
-    where: { ean },
+    where: { gtin },
     orderBy: { createdAt: "desc" },
   })
 
@@ -136,18 +136,18 @@ const getProducts = async (where: Pick<Prisma.ProductWhereInput, "upload" | "upl
       ...where,
     },
     select: {
-      ean: true,
+      gtin: true,
       createdAt: true,
       score: { select: { score: true, standardized: true } },
     },
-    orderBy: [{ ean: "asc" }, { createdAt: "desc" }],
+    orderBy: [{ gtin: "asc" }, { createdAt: "desc" }],
     take,
   })
 
   const uniqueProducts = new Map<string, (typeof products)[number]>()
   for (const product of products) {
-    if (!uniqueProducts.has(product.ean)) {
-      uniqueProducts.set(product.ean, product)
+    if (!uniqueProducts.has(product.gtin)) {
+      uniqueProducts.set(product.gtin, product)
     }
   }
 

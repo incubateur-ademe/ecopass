@@ -29,7 +29,7 @@ export const productValidation = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   error: z.string().nullable(),
-  ean: z.string().regex(/^\d{8}$|^\d{13}$/, "L'EAN doit contenir 8 ou 13 chiffres"),
+  gtin: z.string().regex(/^\d{8}$|^\d{13}$/, "L'GTIN doit contenir 8 ou 13 chiffres"),
   date: z.date({ message: "Date de mise sur le marché invalide" }),
   declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
   category: z.nativeEnum(ProductCategory, { message: "Catégorie de produit invalide" }),

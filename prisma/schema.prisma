@@ -73,7 +73,7 @@ model Product {
   status Status  @default(Pending)
   error  String?
 
-  ean           String
+  gtin          String
   date          DateTime?
   declaredScore Float?    @map("declared_score")
 
@@ -109,7 +109,7 @@ model Product {
 
   score Score?
 
-  @@unique([ean, uploadId])
+  @@unique([gtin, uploadId])
   @@map("products")
 }
 

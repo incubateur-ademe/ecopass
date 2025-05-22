@@ -198,7 +198,7 @@ export const parseCSV = async (content: string, uploadId: string) => {
       updatedAt: now,
       uploadId,
       status: Status.Pending,
-      ean: row["identifiant"],
+      gtin: row["identifiant"],
       date: Number.isNaN(date) ? null : new Date(date),
       declaredScore: getNumberValue(row["score"], 1, -1),
       category: getValue<ProductCategory>(productCategories, row["categorie"]),

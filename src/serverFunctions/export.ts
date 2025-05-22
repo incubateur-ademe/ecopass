@@ -25,11 +25,11 @@ export const exportUpload = async (uploadId: string) => {
       if (product.status === Status.Error) {
         error = product.error || "Erreur inconnue"
       }
-      return [product.ean, product.score?.score, error]
+      return [product.gtin, product.score?.score, error]
     }),
     {
       header: true,
-      columns: ["EAN", "Score", "Erreur"],
+      columns: ["GTIN", "Score", "Erreur"],
     },
   )
 }
