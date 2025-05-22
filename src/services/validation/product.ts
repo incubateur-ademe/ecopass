@@ -8,7 +8,7 @@ const materialValidation = z.object({
   slug: z.nativeEnum(MaterialType, { message: "Type de matière invalide" }),
   share: z
     .number({ message: "La part de la matière doit être un pourcentage" })
-    .min(0, "La part de la matière doit être superieure à 0%")
+    .min(0, "La part de la matière doit être supérieure à 0%")
     .max(1, "La part de la matière doit être inférieure à 100%"),
   country: z.nativeEnum(Country, { message: "Origine de la matière invalide" }).optional(),
 })
@@ -52,7 +52,7 @@ export const productValidation = z.object({
     .min(1, "Le prix doit être supérieur à 1 €")
     .max(1000, "Le prix doit être inférieur à 1000 €")
     .optional(),
-  traceability: z.boolean({ message: "Tracabilité doit valoir 'Oui' ou 'Non'" }).optional(),
+  traceability: z.boolean({ message: "Traçabilité doit valoir 'Oui' ou 'Non'" }).optional(),
   countryDyeing: z
     .nativeEnum(Country, {
       errorMap: () => ({ message: "Origine de l'ennoblissement/impression invalide" }),
