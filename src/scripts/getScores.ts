@@ -1,6 +1,6 @@
 import fs from "fs"
 import { parseCSV } from "../utils/csv/parse"
-import { checkUploadsStatus, createUpload, failUpload } from "../db/upload"
+import { checkUploadsStatus, createUpload, updateUploadToError } from "../db/upload"
 import { createProducts } from "../db/product"
 import { prismaClient } from "../db/prismaClient"
 import chardet from "chardet"
@@ -19,7 +19,7 @@ const getScores = async (file: string) => {
     await checkUploadsStatus([upload.id])
   } catch (error) {
     console.error("Error processing file:", error)
-    await failUpload(upload.id)
+    await updateUploadToError(upload.id)
   }
 }
 

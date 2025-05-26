@@ -1,4 +1,6 @@
 import { Status } from "../../prisma/src/prisma"
+import { sendUploadErrorEmail } from "../services/emails/email"
+import { completeUpload } from "../services/upload"
 import { prismaClient } from "./prismaClient"
 
 export const getUploadById = async (id: string) =>
@@ -23,17 +25,23 @@ export const createUpload = async (userId: string, name: string) =>
 
     return transaction.upload.create({
       data: { userId: userId, name, versionId: lastVersion.id },
-      select: { id: true },
+      select: {
+        id: true,
+        user: { select: { email: true } },
+        name: true,
+        createdAt: true,
+        products: { select: { status: true } },
+      },
     })
   })
 
-const completeUpload = async (id: string) =>
+export const updateUploadToDone = async (id: string) =>
   prismaClient.upload.update({
     where: { id },
     data: { status: Status.Done },
   })
 
-export const failUpload = async (id: string, message?: string) =>
+export const updateUploadToError = async (id: string, message?: string) =>
   prismaClient.upload.update({
     where: { id },
     data: { status: Status.Error, error: message },
@@ -72,20 +80,34 @@ export const checkUploadsStatus = async (uploadsId: string[]) => {
     },
     select: {
       id: true,
+      name: true,
+      createdAt: true,
+      user: { select: { email: true } },
       products: {
         select: { status: true },
       },
     },
   })
+
   return Promise.all(
-    uploads.map(async (upload) => {
-      const allDone = upload.products.every((product) => product.status === Status.Done)
-      const allError = upload.products.some((product) => product.status === Status.Error)
-      if (allDone) {
-        return completeUpload(upload.id)
-      } else if (allError) {
-        return failUpload(upload.id)
-      }
-    }),
+    uploads
+      .filter((upload) =>
+        upload.products.every((product) => product.status === Status.Done || product.status === Status.Error),
+      )
+      .map(async (upload) => {
+        const allDone = upload.products.every((product) => product.status === Status.Done)
+        if (allDone) {
+          return completeUpload(upload)
+        } else {
+          sendUploadErrorEmail(
+            upload.user.email,
+            upload.name,
+            upload.createdAt,
+            upload.products.length,
+            upload.products.filter((product) => product.status === Status.Done).length,
+          )
+          return failUpload(upload.id)
+        }
+      }),
   )
 }

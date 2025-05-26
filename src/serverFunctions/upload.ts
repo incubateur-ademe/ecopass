@@ -1,8 +1,9 @@
 "use server"
 
 import { createProducts } from "../db/product"
-import { createUpload, failUpload } from "../db/upload"
+import { createUpload } from "../db/upload"
 import { auth } from "../services/auth/auth"
+import { failUpload } from "../services/upload"
 import { ProductWithMaterialsAndAccessories } from "../types/Product"
 import { parseCSV } from "../utils/csv/parse"
 import { parseJson } from "../utils/json/parse"
@@ -13,7 +14,7 @@ export async function uploadFile(file: File) {
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
   }
-  let upload: { id: string } | undefined
+  let upload
 
   try {
     const content = await file.text()
@@ -35,7 +36,7 @@ export async function uploadFile(file: File) {
         if (error && typeof error === "object" && "message" in error) {
           message = error.message as string
         }
-        await failUpload(upload.id, message)
+        await failUpload(upload, message)
         return
       }
     }
@@ -43,7 +44,7 @@ export async function uploadFile(file: File) {
   } catch (error) {
     console.error("Error processing file:", error)
     if (upload) {
-      await failUpload(upload.id, "Erreur inconnue lors du traitement du fichier")
+      await failUpload(upload, "Erreur inconnue lors du traitement du fichier")
     }
     return "Erreur inconnue lors du traitement du fichier"
   }

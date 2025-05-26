@@ -45,3 +45,39 @@ export const sendResetEmail = async (toEmail: string, token: string) => {
     }),
   )
 }
+
+export const sendUploadSuccessEmail = async (toEmail: string, name: string, date: Date) => {
+  return send(
+    [toEmail],
+    "Déclaration validée ✅",
+    await getHtml("upload-success", {
+      name,
+      date: date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+      time: date.toLocaleTimeString("fr-FR", { timeZone: "Europe/Paris" }),
+      link: `${process.env.NEXTAUTH_URL}/produits`,
+    }),
+  )
+}
+
+export const sendUploadErrorEmail = async (
+  toEmail: string,
+  name: string,
+  date: Date,
+  total: number,
+  success: number,
+) => {
+  return send(
+    [toEmail],
+    "Erreurs à corriger ❌",
+    await getHtml("upload-error", {
+      name,
+      date: date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+      time: date.toLocaleTimeString("fr-FR", { timeZone: "Europe/Paris" }),
+      total,
+      success,
+      error: total - success,
+      link: `${process.env.NEXTAUTH_URL}/declarations`,
+      support: process.env.NEXT_PUBLIC_SUPPORT_MAIL,
+    }),
+  )
+}

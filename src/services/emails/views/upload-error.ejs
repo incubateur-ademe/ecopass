@@ -1,0 +1,29 @@
+<html>
+  <body>
+    <p>Bonjour,</p>
+    <p>
+      Votr déclaration affichage environnementale <b><%= name %></b> déposé le <%= date %> à <%= time %> présente des
+      <b>erreurs</b>.
+    </p>
+    <% if(total === 0) { %>
+      <p>Nous n'avons pas réussi à analyser votre fichier.</p>
+    <% } else { %>
+    <p>Sur les <%= total %> produits déclarés :</p>
+    <ul>
+      <li><%= success %> ont bien été validés ✅</li>
+      <li><%= error %> présentent une ou plusieurs erreurs ❌</li>
+    </ul>
+    <% } %>
+    <p>
+      Nous vous invitons à vous connecter à votre espace pour télécharger le fichier depuis
+      <a href="<%= link %>">votre tableau de suivi</a> pour identifier les modifications à apporter. Vous pourrez
+      ensuite redéposer votre déclaration.
+    </p>
+    <p>
+      Si vous rencontrez des difficultés, vous pouvez contacter le support à cette adresse :
+      <a href="mailto:<%= support %>"><%= support %></a>
+    </p>
+    <p>Bonne journée,</p>
+    <p>L'équipe du portail de déclaration de l'affichage environnementale</p>
+  </body>
+</html>
