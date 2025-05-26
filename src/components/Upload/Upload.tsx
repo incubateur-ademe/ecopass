@@ -21,7 +21,6 @@ const Upload = () => {
       setSuccess(false)
       setUploading(true)
       uploadFile(file).then((error) => {
-        console.log(error)
         setUploading(false)
         setFile(null)
         if (error) {

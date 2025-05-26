@@ -196,7 +196,7 @@ export const parseCSV = async (content: string, encoding: string | null, uploadI
       // Ignore errors and try the next delimiter
     }
   }
-  console.log("Best delimiter found:", bestDelimiter)
+
   const rows = parse(content, {
     columns: (headers: string[]) => {
       return checkHeaders(headers)
