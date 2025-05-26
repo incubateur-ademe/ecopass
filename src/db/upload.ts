@@ -1,6 +1,5 @@
 import { Status } from "../../prisma/src/prisma"
-import { sendUploadErrorEmail } from "../services/emails/email"
-import { completeUpload } from "../services/upload"
+import { completeUpload, failUpload } from "../services/upload"
 import { prismaClient } from "./prismaClient"
 
 export const getUploadById = async (id: string) =>
@@ -99,14 +98,7 @@ export const checkUploadsStatus = async (uploadsId: string[]) => {
         if (allDone) {
           return completeUpload(upload)
         } else {
-          sendUploadErrorEmail(
-            upload.user.email,
-            upload.name,
-            upload.createdAt,
-            upload.products.length,
-            upload.products.filter((product) => product.status === Status.Done).length,
-          )
-          return failUpload(upload.id)
+          return failUpload(upload)
         }
       }),
   )

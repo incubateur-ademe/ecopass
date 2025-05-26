@@ -7,7 +7,7 @@ export const failUpload = async (
     user: Pick<User, "email">
     products: Pick<Product, "status">[]
   },
-  message: string,
+  message?: string,
 ) => {
   sendUploadErrorEmail(
     upload.user.email,
