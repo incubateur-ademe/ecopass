@@ -6,8 +6,8 @@ import { prismaClient } from "../db/prismaClient"
 import chardet from "chardet"
 
 const getScores = async (file: string) => {
-  const content = fs.readFileSync(file)
-  const encoding = chardet.detect(content)
+  const encoding = chardet.detect(fs.readFileSync(file)) as BufferEncoding
+  const content = fs.readFileSync(file, { encoding })
   const randomUser = await prismaClient.user.findFirst()
   if (!randomUser) {
     throw new Error("No user found")
