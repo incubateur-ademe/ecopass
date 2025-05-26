@@ -3,8 +3,11 @@ import { ProductWithMaterialsAndAccessories } from "../types/Product"
 import { decryptBoolean, decryptNumber, decryptString, encrypt } from "./encryption"
 import { prismaClient } from "./prismaClient"
 
-export const createProducts = async (products: ProductWithMaterialsAndAccessories[]) =>
-  prismaClient.$transaction(
+export const createProducts = async (products: ProductWithMaterialsAndAccessories[]) => {
+  const uniqueProducts = products.filter(
+    (product, index) => products.findIndex((p) => p.gtin === product.gtin) === index,
+  )
+  return prismaClient.$transaction(
     async (transaction) => {
       await transaction.product.createMany({
         data: products.map((product) => ({
@@ -30,7 +33,7 @@ export const createProducts = async (products: ProductWithMaterialsAndAccessorie
       })
       await Promise.all([
         transaction.material.createMany({
-          data: products.flatMap((product) =>
+          data: uniqueProducts.flatMap((product) =>
             product.materials.map((material) => ({
               ...material,
               slug: encrypt(material.slug),
@@ -40,7 +43,7 @@ export const createProducts = async (products: ProductWithMaterialsAndAccessorie
           ),
         }),
         transaction.accessory.createMany({
-          data: products.flatMap((product) =>
+          data: uniqueProducts.flatMap((product) =>
             product.accessories.map((accessory) => ({
               ...accessory,
               slug: encrypt(accessory.slug),
@@ -52,6 +55,7 @@ export const createProducts = async (products: ProductWithMaterialsAndAccessorie
     },
     { timeout: 60000 },
   )
+}
 
 export const createProductScore = async (score: Prisma.ScoreCreateManyInput) =>
   prismaClient.$transaction(async (transaction) => {

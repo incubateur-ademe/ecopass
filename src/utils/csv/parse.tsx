@@ -178,15 +178,34 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
   return isNaN(result) ? defaultValue || value : result * (factor || 1)
 }
 
-export const parseCSV = async (content: string, uploadId: string) => {
+const delimiters = [",", ";", "\t"]
+export const parseCSV = async (content: string, encoding: string | null, uploadId: string) => {
+  let bestDelimiter = ","
+  for (const delimiter of delimiters) {
+    try {
+      parse(content, {
+        columns: (headers: string[]) => {
+          return checkHeaders(headers)
+        },
+        delimiter,
+        to_line: 1,
+        skip_empty_lines: true,
+      })
+      bestDelimiter = delimiter
+    } catch {
+      // Ignore errors and try the next delimiter
+    }
+  }
+  console.log("Best delimiter found:", bestDelimiter)
   const rows = parse(content, {
     columns: (headers: string[]) => {
       return checkHeaders(headers)
     },
-    delimiter: ",",
+    delimiter: bestDelimiter,
     skip_empty_lines: true,
     trim: true,
     bom: true,
+    encoding: (encoding as BufferEncoding) || "utf-8",
   }) as CSVRow[]
 
   return rows.map((row) => {

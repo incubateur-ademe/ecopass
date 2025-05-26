@@ -6,31 +6,45 @@ import { auth } from "../services/auth/auth"
 import { ProductWithMaterialsAndAccessories } from "../types/Product"
 import { parseCSV } from "../utils/csv/parse"
 import { parseJson } from "../utils/json/parse"
+import chardet from "chardet"
 
 export async function uploadFile(file: File) {
   const session = await auth()
   if (!session || !session.user) {
-    return
+    return "Utilisateur non authentifié"
   }
+  let upload: { id: string } | undefined
 
-  const content = await file.text()
-  const upload = await createUpload(session.user.id, file.name)
-  let products: ProductWithMaterialsAndAccessories[] = []
   try {
-    const json = JSON.parse(content)
-    products = parseJson(Array.isArray(json) ? json : [json], upload.id)
-  } catch (error) {
-    console.error("Error parsing JSON:", error)
+    const content = await file.text()
+    upload = await createUpload(session.user.id, file.name)
+    let products: ProductWithMaterialsAndAccessories[] = []
     try {
-      products = await parseCSV(content, upload.id)
+      const json = JSON.parse(content)
+      products = parseJson(Array.isArray(json) ? json : [json], upload.id)
     } catch (error) {
-      let message = "Ereur lors de l'analyse du fichier CSV"
-      if (error && typeof error === "object" && "message" in error) {
-        message = error.message as string
+      console.error("Error parsing JSON:", error)
+      try {
+        const buffer = await file.arrayBuffer()
+        const uint8Array = new Uint8Array(buffer)
+        const encoding = chardet.detect(uint8Array)
+
+        products = await parseCSV(content, encoding, upload.id)
+      } catch (error) {
+        let message = "Ereur lors de l'analyse du fichier CSV"
+        if (error && typeof error === "object" && "message" in error) {
+          message = error.message as string
+        }
+        await failUpload(upload.id, message)
+        return
       }
-      await failUpload(upload.id, message)
-      return
     }
+    await createProducts(products)
+  } catch (error) {
+    console.error("Error processing file:", error)
+    if (upload) {
+      await failUpload(upload.id, "Erreur inconnue lors du traitement du fichier")
+    }
+    return "Erreur inconnue lors du traitement du fichier"
   }
-  await createProducts(products)
 }

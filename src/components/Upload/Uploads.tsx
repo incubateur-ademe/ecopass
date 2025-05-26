@@ -33,7 +33,9 @@ const Uploads = async () => {
         upload.status === Status.Pending
           ? `${statusTitle[upload.status]} (${upload.done}/${upload.total})`
           : statusTitle[upload.status],
-        upload.status === Status.Error || upload.status === Status.Done ? `${upload.success}/${upload.total}` : "",
+        (upload.status === Status.Error || upload.status === Status.Done) && upload.total > 0
+          ? `${upload.success}/${upload.total}`
+          : "",
         <Download
           uploadId={upload.id}
           key={`download-${upload.id}`}
