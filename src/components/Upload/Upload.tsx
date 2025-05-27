@@ -92,7 +92,7 @@ const Upload = () => {
         }}
       />
       <LoadingButton disabled={!file || sizeError} onClick={upload} loading={uploading} className={styles.button}>
-        Uploader mon fichier
+        Envoyer mon fichier pour validation
       </LoadingButton>
       {uploading && longTime && (
         <p>Le temps de chargement peut être long si le fichier est volumineux. Veuillez ne pas quitter la page.</p>
