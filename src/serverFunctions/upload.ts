@@ -1,4 +1,5 @@
 "use server"
+
 import { createProducts } from "../db/product"
 import { createUpload } from "../db/upload"
 import { auth } from "../services/auth/auth"
@@ -8,7 +9,8 @@ import { parseCSV } from "../utils/csv/parse"
 import chardet from "chardet"
 
 const getEncoding = async (file: File) => {
-  const buffer = await file.arrayBuffer()
+  const blob = file.slice(0, 1024)
+  const buffer = await blob.arrayBuffer()
   const uint8Array = new Uint8Array(buffer)
   const encoding = chardet.detect(uint8Array) as BufferEncoding | null
   return encoding
@@ -26,9 +28,7 @@ export async function uploadFile(file: File) {
     let products: ProductWithMaterialsAndAccessories[] = []
     try {
       const encoding = await getEncoding(file)
-      let content = await file.text()
-      products = await parseCSV(content, encoding, upload.id)
-      content = ""
+      products = await parseCSV(file, encoding, upload.id)
     } catch (error) {
       let message = "Ereur lors de l'analyse du fichier CSV"
       if (error && typeof error === "object" && "message" in error) {

@@ -1,4 +1,4 @@
-import { parse } from "csv-parse/sync"
+import { parse } from "csv-parse"
 import {
   AccessoryType,
   Business,
@@ -16,6 +16,7 @@ import { businesses } from "../types/business"
 import { Status } from "../../../prisma/src/prisma"
 import { impressions } from "../types/impression"
 import { accessories } from "../types/accessory"
+import { Readable } from "stream"
 
 type ColumnType = [
   "identifiant",
@@ -180,17 +181,31 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
 }
 
 const delimiters = [",", ";", "\t"]
-export const parseCSV = async (content: string, encoding: string | null, uploadId: string) => {
+export const parseCSV = async (file: File, encoding: string | null, uploadId: string) => {
   let bestDelimiter = ","
   for (const delimiter of delimiters) {
     try {
-      parse(content, {
-        columns: (headers: string[]) => {
-          return checkHeaders(headers)
-        },
-        delimiter,
-        to_line: 1,
-        skip_empty_lines: true,
+      const buffer = Buffer.from(await file.arrayBuffer())
+      const stream = Readable.from(buffer)
+      await new Promise((resolve, reject) => {
+        stream
+          .pipe(
+            parse({
+              columns: (headers: string[]) => {
+                return checkHeaders(headers)
+              },
+              delimiter,
+              to_line: 1,
+              skip_empty_lines: true,
+            }),
+          )
+          .on("data", () => {})
+          .on("end", () => {
+            resolve(null)
+          })
+          .on("error", (error) => {
+            reject(error)
+          })
       })
       bestDelimiter = delimiter
     } catch {
@@ -198,16 +213,33 @@ export const parseCSV = async (content: string, encoding: string | null, uploadI
     }
   }
 
-  const rows = parse(content, {
-    columns: (headers: string[]) => {
-      return checkHeaders(headers)
-    },
-    delimiter: bestDelimiter,
-    skip_empty_lines: true,
-    trim: true,
-    bom: true,
-    encoding: (encoding as BufferEncoding) || "utf-8",
-  }) as CSVRow[]
+  const buffer = Buffer.from(await file.arrayBuffer())
+  const stream = Readable.from(buffer)
+  const rows: CSVRow[] = []
+  await new Promise((resolve, reject) => {
+    stream
+      .pipe(
+        parse({
+          columns: (headers: string[]) => {
+            return checkHeaders(headers)
+          },
+          delimiter: bestDelimiter,
+          skip_empty_lines: true,
+          trim: true,
+          bom: true,
+          encoding: (encoding as BufferEncoding) || "utf-8",
+        }),
+      )
+      .on("data", (row) => {
+        rows.push(row)
+      })
+      .on("end", () => {
+        resolve(rows)
+      })
+      .on("error", (error) => {
+        reject(error)
+      })
+  })
 
   return rows.map((row) => {
     const productId = uuid()
