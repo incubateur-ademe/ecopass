@@ -38,7 +38,7 @@ const Upload = () => {
     }
   }, [file])
 
-  const sizeError = file ? file.size > 5 * 1024 * 1024 : false
+  const sizeError = file ? file.size > 1 * 1024 * 1024 : false
 
   return success || error ? (
     <Alert
@@ -83,9 +83,9 @@ const Upload = () => {
       <UploadDSFR
         label='Déposez votre fichier pour déclarer vos produits.'
         disabled={uploading}
-        hint='Format CSV uniquement, 5mb max'
+        hint='Format CSV uniquement, 1mb max'
         state={sizeError ? "error" : "default"}
-        stateRelatedMessage={sizeError ? "Le fichier doit faire moins de 5mb" : ""}
+        stateRelatedMessage={sizeError ? "Le fichier doit faire moins de 1mb" : ""}
         nativeInputProps={{
           accept: ".csv",
           onChange: (event) => setFile(event.target.files?.[0] || null),

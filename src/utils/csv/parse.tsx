@@ -173,12 +173,6 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
 
 const delimiters = [",", ";", "\t"]
 export const parseCSV = async (file: File, encoding: string | null, uploadId: string) => {
-  console.log("Start")
-  console.log("Memory:", process.memoryUsage().heapUsed / 1024 / 1024, "MB")
-  console.log("Memory:", process.memoryUsage().heapTotal / 1024 / 1024, "MB")
-  console.log("Memory:", process.memoryUsage().rss / 1024 / 1024, "MB")
-  console.log("Memory:", process.memoryUsage().arrayBuffers / 1024 / 1024, "MB")
-  console.log("Memory:", process.memoryUsage().external / 1024 / 1024, "MB")
   const buffer = Buffer.from(await file.arrayBuffer())
 
   let bestDelimiter = ","
@@ -305,11 +299,5 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
     stream.on("error", reject)
   })
 
-  console.log("Done")
-  console.log("Memory:", process.memoryUsage().heapUsed / 1024 / 1024, "MB")
-  console.log("Memory:", process.memoryUsage().heapTotal / 1024 / 1024, "MB")
-  console.log("Memory:", process.memoryUsage().rss / 1024 / 1024, "MB")
-  console.log("Memory:", process.memoryUsage().arrayBuffers / 1024 / 1024, "MB")
-  console.log("Memory:", process.memoryUsage().external / 1024 / 1024, "MB")
   return { products, materials, accessories }
 }
