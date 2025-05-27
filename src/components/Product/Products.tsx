@@ -16,7 +16,7 @@ const Products = async () => {
   const products = await getProductsByUserId(session.user.id)
 
   return products.length === 0 ? (
-    <p>Vous n'avez pas encore déclarés de produits</p>
+    <p>Vous n'avez pas encore déclaré de produits</p>
   ) : (
     <>
       <p className='fr-mb-4w'>Vous avez {productsCount} produits déclarés</p>
