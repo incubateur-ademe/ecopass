@@ -13,18 +13,13 @@ const Upload = () => {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
   const [uploading, setUploading] = useState(false)
-  const [longTime, setLongTime] = useState(false)
 
   const router = useRouter()
   const upload = useCallback(() => {
-    setLongTime(false)
     setError("")
     setSuccess(false)
     setUploading(true)
     if (file) {
-      setTimeout(() => {
-        setLongTime(true)
-      }, 10000)
       uploadFile(file).then((error) => {
         setUploading(false)
         setFile(null)
@@ -94,9 +89,6 @@ const Upload = () => {
       <LoadingButton disabled={!file || sizeError} onClick={upload} loading={uploading} className={styles.button}>
         Envoyer mon fichier pour validation
       </LoadingButton>
-      {uploading && longTime && (
-        <p>Le temps de chargement peut être long si le fichier est volumineux. Veuillez ne pas quitter la page.</p>
-      )}
     </>
   )
 }
