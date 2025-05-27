@@ -215,8 +215,9 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
   }
 
   const stream = Readable.from(buffer)
-  const rows: CSVRow[] = []
+  const products: ProductWithMaterialsAndAccessories[] = []
 
+  const now = new Date()
   await new Promise<void>((resolve, reject) => {
     const parser = parse({
       columns: (headers: string[]) => checkHeaders(headers),
@@ -229,66 +230,63 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
 
     stream.pipe(parser)
 
-    parser.on("data", (row) => {
-      rows.push(row)
+    parser.on("data", (row: CSVRow) => {
+      const productId = uuid()
+      const date = Date.parse(row["datedemisesurlemarche"])
+      products.push({
+        id: productId,
+        createdAt: now,
+        updatedAt: now,
+        uploadId,
+        status: Status.Pending,
+        gtin: row["identifiant"],
+        date: Number.isNaN(date) ? null : new Date(date),
+        brand: row["marque"],
+        declaredScore: getNumberValue(row["score"], 1, -1),
+        category: getValue<ProductCategory>(productCategories, row["categorie"]),
+        airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),
+        business: getValue<Business>(businesses, row["tailledelentreprise"]),
+        fading: getBooleanValue(row["delavage"]),
+        mass: getNumberValue(row["masse"]),
+        numberOfReferences: parseInt(row["nombredereferences"]),
+        price: getNumberValue(row["prix"]),
+        traceability: getBooleanValue(row["tracabilitegeographique"]),
+        countryDyeing: getValue<Country>(countries, row["originedelennoblissementimpression"]),
+        countryFabric: getValue<Country>(countries, row["originedetissagetricotage"]),
+        countryMaking: getValue<Country>(countries, row["origineconfection"]),
+        countrySpinning: getValue<Country>(countries, row["originedefilature"]),
+        impression: getValue<Impression>(impressions, row["typedimpression"]),
+        impressionPercentage: getNumberValue(row["pourcentagedimpression"].trim().replace("%", ""), 0.01),
+        upcycled: getBooleanValue(row["remanufacture"]),
+        materials: Array.from({ length: 16 })
+          .map((_, index) => ({
+            id: uuid(),
+            productId,
+            //@ts-expect-error : managed from 1 to 16
+            slug: getValue<MaterialType>(materials, row[`matiere${index + 1}`]),
+            //@ts-expect-error : managed from 1 to 16
+            share: getNumberValue(row[`matiere${index + 1}pourcentage`].trim().replace("%", "")) / 100,
+            //@ts-expect-error : managed from 1 to 16
+            country: getValue<Country>(countries, row[`matiere${index + 1}origine`]),
+          }))
+          .filter((material) => material.slug),
+        accessories: Array.from({ length: 4 })
+          .map((_, index) => ({
+            id: uuid(),
+            productId,
+            //@ts-expect-error : managed from 1 to 4
+            slug: getValue<AccessoryType>(accessories, row[`accessoire${index + 1}`]),
+            //@ts-expect-error : managed from 1 to 4
+            quantity: getNumberValue(row[`accessoire${index + 1}quantite`]),
+          }))
+          .filter((accessory) => accessory.slug),
+      } as ProductWithMaterialsAndAccessories)
     })
 
-    parser.on("end", () => resolve())
+    parser.on("end", resolve)
     parser.on("error", reject)
     stream.on("error", reject)
   })
 
-  return rows.map((row) => {
-    const productId = uuid()
-    const now = new Date()
-    const date = Date.parse(row["datedemisesurlemarche"])
-    return {
-      id: productId,
-      createdAt: now,
-      updatedAt: now,
-      uploadId,
-      status: Status.Pending,
-      gtin: row["identifiant"],
-      date: Number.isNaN(date) ? null : new Date(date),
-      brand: row["marque"],
-      declaredScore: getNumberValue(row["score"], 1, -1),
-      category: getValue<ProductCategory>(productCategories, row["categorie"]),
-      airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),
-      business: getValue<Business>(businesses, row["tailledelentreprise"]),
-      fading: getBooleanValue(row["delavage"]),
-      mass: getNumberValue(row["masse"]),
-      numberOfReferences: parseInt(row["nombredereferences"]),
-      price: getNumberValue(row["prix"]),
-      traceability: getBooleanValue(row["tracabilitegeographique"]),
-      countryDyeing: getValue<Country>(countries, row["originedelennoblissementimpression"]),
-      countryFabric: getValue<Country>(countries, row["originedetissagetricotage"]),
-      countryMaking: getValue<Country>(countries, row["origineconfection"]),
-      countrySpinning: getValue<Country>(countries, row["originedefilature"]),
-      impression: getValue<Impression>(impressions, row["typedimpression"]),
-      impressionPercentage: getNumberValue(row["pourcentagedimpression"].trim().replace("%", ""), 0.01),
-      upcycled: getBooleanValue(row["remanufacture"]),
-      materials: Array.from({ length: 16 })
-        .map((_, index) => ({
-          id: uuid(),
-          productId,
-          //@ts-expect-error : managed from 1 to 16
-          slug: getValue<MaterialType>(materials, row[`matiere${index + 1}`]),
-          //@ts-expect-error : managed from 1 to 16
-          share: getNumberValue(row[`matiere${index + 1}pourcentage`].trim().replace("%", "")) / 100,
-          //@ts-expect-error : managed from 1 to 16
-          country: getValue<Country>(countries, row[`matiere${index + 1}origine`]),
-        }))
-        .filter((material) => material.slug),
-      accessories: Array.from({ length: 4 })
-        .map((_, index) => ({
-          id: uuid(),
-          productId,
-          //@ts-expect-error : managed from 1 to 4
-          slug: getValue<AccessoryType>(accessories, row[`accessoire${index + 1}`]),
-          //@ts-expect-error : managed from 1 to 4
-          quantity: getNumberValue(row[`accessoire${index + 1}quantite`]),
-        }))
-        .filter((accessory) => accessory.slug),
-    } as ProductWithMaterialsAndAccessories
-  })
+  return products
 }
