@@ -33,6 +33,8 @@ const Upload = () => {
     }
   }, [file])
 
+  const sizeError = file ? file.size > 10 * 1024 * 1024 : false
+
   return success || error ? (
     <Alert
       className='fr-mt-4w'
@@ -47,7 +49,7 @@ const Upload = () => {
           </>
         ) : (
           <>
-            Une erreur inconnues est survenue lors de l'analyse du fichier. Si l'erreur persiste n'hesitez pas à nous
+            Une erreur inconnue est survenue lors de l'analyse du fichier. Si l'erreur persiste n'hesitez pas à nous
             envoyer votre fichier par mail, à l'adresse suivante, pour analyse plus approfondie.
             <br />
             <Link className='fr-link' href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}>
@@ -76,13 +78,15 @@ const Upload = () => {
       <UploadDSFR
         label='Déposez votre fichier pour déclarer vos produits.'
         disabled={uploading}
-        hint='Format CSV ou JSON uniquement, 5mb max'
+        hint='Format CSV uniquement, 10mb max'
+        state={sizeError ? "error" : "default"}
+        stateRelatedMessage={sizeError ? "Le fichier doit faire moins de 10mb" : ""}
         nativeInputProps={{
-          accept: ".csv,.json",
+          accept: ".csv",
           onChange: (event) => setFile(event.target.files?.[0] || null),
         }}
       />
-      <LoadingButton disabled={!file} onClick={upload} loading={uploading} className={styles.button}>
+      <LoadingButton disabled={!file || sizeError} onClick={upload} loading={uploading} className={styles.button}>
         Uploader mon fichier
       </LoadingButton>
     </>

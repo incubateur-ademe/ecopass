@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@codegouvfr/react-dsfr"],
   turbopack: {},
   experimental: {
-    serverActions: { bodySizeLimit: "5mb" },
+    serverActions: { bodySizeLimit: "10mb" },
   },
 }
 

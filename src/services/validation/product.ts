@@ -2,6 +2,8 @@ import z from "zod"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 import { Status } from "../../../prisma/src/prisma"
 
+const epsilon = 1e-10
+
 const materialValidation = z.object({
   id: z.string(),
   productId: z.string(),
@@ -70,7 +72,7 @@ export const productValidation = z.object({
     .optional(),
   materials: z.array(materialValidation).refine((materials) => {
     const totalShare = materials.reduce((acc, material) => acc + material.share, 0)
-    return totalShare === 1
+    return Math.abs(totalShare - 1) < epsilon
   }, "La somme des parts de matières doit être égale à 100%"),
   accessories: z.array(accessoryValidation),
 })

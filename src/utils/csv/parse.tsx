@@ -15,6 +15,7 @@ import { productCategories } from "../types/productCategory"
 import { businesses } from "../types/business"
 import { Status } from "../../../prisma/src/prisma"
 import { impressions } from "../types/impression"
+import { accessories } from "../types/accessory"
 
 type ColumnType = [
   "identifiant",
@@ -254,7 +255,7 @@ export const parseCSV = async (content: string, encoding: string | null, uploadI
           id: uuid(),
           productId,
           //@ts-expect-error : managed from 1 to 4
-          slug: getValue<AccessoryType>(materials, row[`accessoire${index + 1}`]),
+          slug: getValue<AccessoryType>(accessories, row[`accessoire${index + 1}`]),
           //@ts-expect-error : managed from 1 to 4
           quantity: getNumberValue(row[`accessoire${index + 1}quantite`]),
         }))

@@ -17,6 +17,10 @@ const runQueue = async () => {
           id: product.id,
           ...productValidation.safeParse(product),
         }))
+        console.log(
+          products.map((x) => x.materials.reduce((acc, m) => acc + m.share, 0)),
+          validatedProducts,
+        )
         await Promise.all([
           saveEcobalyseResults(validatedProducts.filter((result) => result.success).map((result) => result.data)),
           failProducts(
