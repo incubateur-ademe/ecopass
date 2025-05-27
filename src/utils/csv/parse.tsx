@@ -4,6 +4,8 @@ import { v4 as uuid } from "uuid"
 import { countries } from "../types/country"
 import { productCategories } from "../types/productCategory"
 import { businesses } from "../types/business"
+import { materials as allMaterials } from "../types/material"
+import { accessories as allAccessories } from "../types/accessory"
 import { Accessory, Material, Product, Status } from "../../../prisma/src/prisma"
 import { impressions } from "../types/impression"
 import { Readable } from "stream"
@@ -259,7 +261,7 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
           id: uuid(),
           productId,
           //@ts-expect-error : managed from 1 to 16
-          slug: getValue<MaterialType>(materials, row[`matiere${index + 1}`]),
+          slug: getValue<MaterialType>(allMaterials, row[`matiere${index + 1}`]),
           //@ts-expect-error : managed from 1 to 16
           share: getNumberValue(row[`matiere${index + 1}pourcentage`].trim().replace("%", "")) / 100,
           //@ts-expect-error : managed from 1 to 16
@@ -280,7 +282,7 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
           id: uuid(),
           productId,
           //@ts-expect-error : managed from 1 to 4
-          slug: getValue<AccessoryType>(accessories, row[`accessoire${index + 1}`]),
+          slug: getValue<AccessoryType>(allAccessories, row[`accessoire${index + 1}`]),
           //@ts-expect-error : managed from 1 to 4
           quantity: getNumberValue(row[`accessoire${index + 1}quantite`]),
         }))
