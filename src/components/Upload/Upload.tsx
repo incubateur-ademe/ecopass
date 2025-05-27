@@ -48,9 +48,9 @@ const Upload = () => {
       description={
         success ? (
           <>
-            Nous analysons votre fichier pour vérifier qu’il contient l’ensemble des informations reglementaires, au bon
+            Nous analysons votre fichier pour vérifier qu’il contient l’ensemble des informations réglementaires, au bon
             format. Cette étape peut prendre quelques minutes.{" "}
-            <b>Vous revevrez un mail de conformation suite à cette analyse</b>. Vous pouvez fermer cet onglet.
+            <b>Vous recevrez un mail de confirmation suite à cette analyse</b>. Vous pouvez fermer cet onglet.
           </>
         ) : (
           <>
