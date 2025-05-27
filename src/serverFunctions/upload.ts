@@ -36,11 +36,11 @@ export async function uploadFile(file: File) {
       await createProducts(products)
 
       console.log("Done")
-      console.log("Memory:", process.memoryUsage().heapUsed / 1024 / 1024, "MB")
-      console.log("Memory:", process.memoryUsage().heapTotal / 1024 / 1024, "MB")
-      console.log("Memory:", process.memoryUsage().rss / 1024 / 1024, "MB")
-      console.log("Memory:", process.memoryUsage().arrayBuffers / 1024 / 1024, "MB")
-      console.log("Memory:", process.memoryUsage().external / 1024 / 1024, "MB")
+      console.log("Memory heap used:", process.memoryUsage().heapUsed / 1024 / 1024, "MB")
+      console.log("Memory heap total:", process.memoryUsage().heapTotal / 1024 / 1024, "MB")
+      console.log("Memory rss:", process.memoryUsage().rss / 1024 / 1024, "MB")
+      console.log("Memory array buffers:", process.memoryUsage().arrayBuffers / 1024 / 1024, "MB")
+      console.log("Memory external:", process.memoryUsage().external / 1024 / 1024, "MB")
     } catch (error) {
       let message = "Ereur lors de l'analyse du fichier CSV"
       if (error && typeof error === "object" && "message" in error) {
