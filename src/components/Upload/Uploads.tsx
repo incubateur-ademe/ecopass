@@ -20,6 +20,7 @@ const Uploads = async () => {
     return null
   }
   const uploads = await getUploadsByUserId(session.user.id)
+
   return uploads.length === 0 ? (
     <p>Aucun fichier pour le moment</p>
   ) : (
