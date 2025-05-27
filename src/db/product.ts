@@ -101,7 +101,7 @@ const decryptProduct = (
     })),
   }))
 
-export const getProductsToProcess = async () => {
+export const getProductsToProcess = async (take: number) => {
   const products = await prismaClient.product.findMany({
     where: {
       status: Status.Pending,
@@ -113,7 +113,7 @@ export const getProductsToProcess = async () => {
     orderBy: {
       createdAt: "asc",
     },
-    take: 10,
+    take,
   })
 
   return decryptProduct(products)

@@ -5,10 +5,11 @@ import { saveEcobalyseResults } from "./src/utils/ecobalyse/api"
 
 const sleep = () => new Promise((resolve) => setTimeout(resolve, 2000))
 
+const batchSize = parseInt(process.env.BATCH_SIZE || "10", 10)
 const runQueue = async () => {
   while (true) {
     try {
-      const products = await getProductsToProcess()
+      const products = await getProductsToProcess(batchSize)
       if (products.length === 0) {
         await sleep()
       } else {
@@ -17,10 +18,7 @@ const runQueue = async () => {
           id: product.id,
           ...productValidation.safeParse(product),
         }))
-        console.log(
-          products.map((x) => x.materials.reduce((acc, m) => acc + m.share, 0)),
-          validatedProducts,
-        )
+
         await Promise.all([
           saveEcobalyseResults(validatedProducts.filter((result) => result.success).map((result) => result.data)),
           failProducts(
