@@ -31,7 +31,7 @@ export const sendWelcomeEmail = async (toEmail: string, token: string) => {
     [toEmail],
     "Bienvenue sur Écopass",
     await getHtml("welcome", {
-      resetLink: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
+      resetLink: `${process.env.URL}/reset-password/${token}`,
     }),
   )
 }
@@ -41,7 +41,7 @@ export const sendResetEmail = async (toEmail: string, token: string) => {
     [toEmail],
     "Changez votre mot de passe",
     await getHtml("reset", {
-      resetLink: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
+      resetLink: `${process.env.URL}/reset-password/${token}`,
     }),
   )
 }
@@ -54,7 +54,7 @@ export const sendUploadSuccessEmail = async (toEmail: string, name: string, date
       name,
       date: date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
       time: date.toLocaleTimeString("fr-FR", { timeZone: "Europe/Paris" }),
-      link: `${process.env.NEXTAUTH_URL}/produits`,
+      link: `${process.env.URL}/produits`,
     }),
   )
 }
@@ -76,7 +76,7 @@ export const sendUploadErrorEmail = async (
       total,
       success,
       error: total - success,
-      link: `${process.env.NEXTAUTH_URL}/declarations`,
+      link: `${process.env.URL}/declarations`,
       support: process.env.NEXT_PUBLIC_SUPPORT_MAIL,
     }),
   )
