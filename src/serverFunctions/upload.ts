@@ -9,6 +9,12 @@ import { parseCSV } from "../utils/csv/parse"
 import { parseJson } from "../utils/json/parse"
 import chardet from "chardet"
 
+const getEncoding = async (file: File) => {
+  const buffer = await file.arrayBuffer()
+  const uint8Array = new Uint8Array(buffer)
+  return chardet.detect(uint8Array) as BufferEncoding | null
+}
+
 export async function uploadFile(file: File) {
   const session = await auth()
   if (!session || !session.user) {
@@ -26,10 +32,7 @@ export async function uploadFile(file: File) {
     } catch (error) {
       console.error("Error parsing JSON:", error)
       try {
-        const buffer = await file.arrayBuffer()
-        const uint8Array = new Uint8Array(buffer)
-        const encoding = chardet.detect(uint8Array)
-
+        const encoding = await getEncoding(file)
         products = await parseCSV(content, encoding, upload.id)
       } catch (error) {
         let message = "Ereur lors de l'analyse du fichier CSV"
