@@ -1,22 +1,13 @@
 import { parse } from "csv-parse"
-import {
-  AccessoryType,
-  Business,
-  Country,
-  Impression,
-  MaterialType,
-  ProductCategory,
-  ProductWithMaterialsAndAccessories,
-} from "../../types/Product"
+import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 import { v4 as uuid } from "uuid"
-import { materials } from "../types/material"
 import { countries } from "../types/country"
 import { productCategories } from "../types/productCategory"
 import { businesses } from "../types/business"
-import { Status } from "../../../prisma/src/prisma"
+import { Accessory, Material, Product, Status } from "../../../prisma/src/prisma"
 import { impressions } from "../types/impression"
-import { accessories } from "../types/accessory"
 import { Readable } from "stream"
+import { encrypt } from "../../db/encryption"
 
 type ColumnType = [
   "identifiant",
@@ -182,7 +173,12 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
 
 const delimiters = [",", ";", "\t"]
 export const parseCSV = async (file: File, encoding: string | null, uploadId: string) => {
+  console.log("Start")
   console.log("Memory:", process.memoryUsage().heapUsed / 1024 / 1024, "MB")
+  console.log("Memory:", process.memoryUsage().heapTotal / 1024 / 1024, "MB")
+  console.log("Memory:", process.memoryUsage().rss / 1024 / 1024, "MB")
+  console.log("Memory:", process.memoryUsage().arrayBuffers / 1024 / 1024, "MB")
+  console.log("Memory:", process.memoryUsage().external / 1024 / 1024, "MB")
   const buffer = Buffer.from(await file.arrayBuffer())
 
   let bestDelimiter = ","
@@ -215,7 +211,10 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
   }
 
   const stream = Readable.from(buffer)
-  const products: ProductWithMaterialsAndAccessories[] = []
+
+  const products: Product[] = []
+  const materials: Material[] = []
+  const accessories: Accessory[] = []
 
   const now = new Date()
   await new Promise<void>((resolve, reject) => {
@@ -234,6 +233,7 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
       const productId = uuid()
       const date = Date.parse(row["datedemisesurlemarche"])
       products.push({
+        error: null,
         id: productId,
         createdAt: now,
         updatedAt: now,
@@ -242,45 +242,62 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
         gtin: row["identifiant"],
         date: Number.isNaN(date) ? null : new Date(date),
         brand: row["marque"],
-        declaredScore: getNumberValue(row["score"], 1, -1),
-        category: getValue<ProductCategory>(productCategories, row["categorie"]),
-        airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),
-        business: getValue<Business>(businesses, row["tailledelentreprise"]),
-        fading: getBooleanValue(row["delavage"]),
-        mass: getNumberValue(row["masse"]),
-        numberOfReferences: parseInt(row["nombredereferences"]),
-        price: getNumberValue(row["prix"]),
-        traceability: getBooleanValue(row["tracabilitegeographique"]),
-        countryDyeing: getValue<Country>(countries, row["originedelennoblissementimpression"]),
-        countryFabric: getValue<Country>(countries, row["originedetissagetricotage"]),
-        countryMaking: getValue<Country>(countries, row["origineconfection"]),
-        countrySpinning: getValue<Country>(countries, row["originedefilature"]),
-        impression: getValue<Impression>(impressions, row["typedimpression"]),
-        impressionPercentage: getNumberValue(row["pourcentagedimpression"].trim().replace("%", ""), 0.01),
-        upcycled: getBooleanValue(row["remanufacture"]),
-        materials: Array.from({ length: 16 })
-          .map((_, index) => ({
-            id: uuid(),
-            productId,
-            //@ts-expect-error : managed from 1 to 16
-            slug: getValue<MaterialType>(materials, row[`matiere${index + 1}`]),
-            //@ts-expect-error : managed from 1 to 16
-            share: getNumberValue(row[`matiere${index + 1}pourcentage`].trim().replace("%", "")) / 100,
-            //@ts-expect-error : managed from 1 to 16
-            country: getValue<Country>(countries, row[`matiere${index + 1}origine`]),
-          }))
-          .filter((material) => material.slug),
-        accessories: Array.from({ length: 4 })
-          .map((_, index) => ({
-            id: uuid(),
-            productId,
-            //@ts-expect-error : managed from 1 to 4
-            slug: getValue<AccessoryType>(accessories, row[`accessoire${index + 1}`]),
-            //@ts-expect-error : managed from 1 to 4
-            quantity: getNumberValue(row[`accessoire${index + 1}quantite`]),
-          }))
-          .filter((accessory) => accessory.slug),
-      } as ProductWithMaterialsAndAccessories)
+        declaredScore: getNumberValue(row["score"], 1, -1) as number,
+        category: encrypt(getValue<ProductCategory>(productCategories, row["categorie"])),
+        airTransportRatio: encrypt(getNumberValue(row["partdutransportaerien"], 0.01)),
+        business: encrypt(getValue<Business>(businesses, row["tailledelentreprise"])),
+        fading: encrypt(getBooleanValue(row["delavage"])),
+        mass: encrypt(getNumberValue(row["masse"])),
+        numberOfReferences: encrypt(parseInt(row["nombredereferences"])),
+        price: encrypt(getNumberValue(row["prix"])),
+        traceability: encrypt(getBooleanValue(row["tracabilitegeographique"])),
+        countryDyeing: encrypt(getValue<Country>(countries, row["originedelennoblissementimpression"])),
+        countryFabric: encrypt(getValue<Country>(countries, row["originedetissagetricotage"])),
+        countryMaking: encrypt(getValue<Country>(countries, row["origineconfection"])),
+        countrySpinning: encrypt(getValue<Country>(countries, row["originedefilature"])),
+        impression: encrypt(getValue<Impression>(impressions, row["typedimpression"])),
+        impressionPercentage: encrypt(getNumberValue(row["pourcentagedimpression"].trim().replace("%", ""), 0.01)),
+        upcycled: encrypt(getBooleanValue(row["remanufacture"])),
+      })
+
+      Array.from({ length: 16 })
+        .map((_, index) => ({
+          id: uuid(),
+          productId,
+          //@ts-expect-error : managed from 1 to 16
+          slug: getValue<MaterialType>(materials, row[`matiere${index + 1}`]),
+          //@ts-expect-error : managed from 1 to 16
+          share: getNumberValue(row[`matiere${index + 1}pourcentage`].trim().replace("%", "")) / 100,
+          //@ts-expect-error : managed from 1 to 16
+          country: getValue<Country>(countries, row[`matiere${index + 1}origine`]),
+        }))
+        .filter((material) => material.slug)
+        .forEach((material) => {
+          materials.push({
+            ...material,
+            slug: encrypt(material.slug),
+            country: material.country ? encrypt(material.country) : null,
+            share: encrypt(material.share),
+          })
+        })
+
+      Array.from({ length: 4 })
+        .map((_, index) => ({
+          id: uuid(),
+          productId,
+          //@ts-expect-error : managed from 1 to 4
+          slug: getValue<AccessoryType>(accessories, row[`accessoire${index + 1}`]),
+          //@ts-expect-error : managed from 1 to 4
+          quantity: getNumberValue(row[`accessoire${index + 1}quantite`]),
+        }))
+        .filter((accessory) => accessory.slug)
+        .forEach((accessory) => {
+          accessories.push({
+            ...accessory,
+            slug: encrypt(accessory.slug),
+            quantity: encrypt(accessory.quantity),
+          })
+        })
     })
 
     parser.on("end", resolve)
@@ -288,5 +305,11 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
     stream.on("error", reject)
   })
 
-  return products
+  console.log("Done")
+  console.log("Memory:", process.memoryUsage().heapUsed / 1024 / 1024, "MB")
+  console.log("Memory:", process.memoryUsage().heapTotal / 1024 / 1024, "MB")
+  console.log("Memory:", process.memoryUsage().rss / 1024 / 1024, "MB")
+  console.log("Memory:", process.memoryUsage().arrayBuffers / 1024 / 1024, "MB")
+  console.log("Memory:", process.memoryUsage().external / 1024 / 1024, "MB")
+  return { products, materials, accessories }
 }

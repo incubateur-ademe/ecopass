@@ -110,7 +110,6 @@ model Product {
 
   score Score?
 
-  @@unique([gtin, uploadId])
   @@map("products")
 }
 

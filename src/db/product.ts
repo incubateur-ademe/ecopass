@@ -1,55 +1,27 @@
 import { Accessory, Material, Prisma, Product, Score, Status } from "../../prisma/src/prisma"
-import { ProductWithMaterialsAndAccessories } from "../types/Product"
-import { decryptBoolean, decryptNumber, decryptString, encrypt } from "./encryption"
+import { decryptBoolean, decryptNumber, decryptString } from "./encryption"
 import { prismaClient } from "./prismaClient"
 
-export const createProducts = async (products: ProductWithMaterialsAndAccessories[]) => {
-  const uniqueProducts = products.filter(
-    (product, index) => products.findIndex((p) => p.gtin === product.gtin) === index,
-  )
+export const createProducts = async ({
+  products,
+  materials,
+  accessories,
+}: {
+  products: Product[]
+  materials: Material[]
+  accessories: Accessory[]
+}) => {
   return prismaClient.$transaction(
     async (transaction) => {
       await transaction.product.createMany({
-        data: products.map((product) => ({
-          ...product,
-          accessories: undefined,
-          materials: undefined,
-          category: encrypt(product.category),
-          business: encrypt(product.business),
-          countryDyeing: encrypt(product.countryDyeing),
-          countryFabric: encrypt(product.countryFabric),
-          countryMaking: encrypt(product.countryMaking),
-          countrySpinning: encrypt(product.countrySpinning),
-          impression: encrypt(product.impression),
-          impressionPercentage: encrypt(product.impressionPercentage),
-          mass: encrypt(product.mass),
-          price: encrypt(product.price),
-          airTransportRatio: encrypt(product.airTransportRatio),
-          numberOfReferences: encrypt(product.numberOfReferences),
-          fading: encrypt(product.fading),
-          traceability: encrypt(product.traceability),
-          upcycled: encrypt(product.upcycled),
-        })),
+        data: products,
       })
       await Promise.all([
         transaction.material.createMany({
-          data: uniqueProducts.flatMap((product) =>
-            product.materials.map((material) => ({
-              ...material,
-              slug: encrypt(material.slug),
-              country: material.country ? encrypt(material.country) : undefined,
-              share: encrypt(material.share),
-            })),
-          ),
+          data: materials,
         }),
         transaction.accessory.createMany({
-          data: uniqueProducts.flatMap((product) =>
-            product.accessories.map((accessory) => ({
-              ...accessory,
-              slug: encrypt(accessory.slug),
-              quantity: encrypt(accessory.quantity),
-            })),
-          ),
+          data: accessories,
         }),
       ])
     },
