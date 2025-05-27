@@ -182,62 +182,60 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
 
 const delimiters = [",", ";", "\t"]
 export const parseCSV = async (file: File, encoding: string | null, uploadId: string) => {
-  let bestDelimiter = ","
+  console.log("Memory:", process.memoryUsage().heapUsed / 1024 / 1024, "MB")
   const buffer = Buffer.from(await file.arrayBuffer())
+
+  let bestDelimiter = ","
+
   for (const delimiter of delimiters) {
+    const stream = Readable.from(buffer)
+
     try {
-      const stream = Readable.from(buffer)
-      await new Promise((resolve, reject) => {
-        stream
-          .pipe(
-            parse({
-              columns: (headers: string[]) => {
-                return checkHeaders(headers)
-              },
-              delimiter,
-              to_line: 1,
-              skip_empty_lines: true,
-            }),
-          )
-          .on("data", () => {})
-          .on("end", () => {
-            resolve(null)
-          })
-          .on("error", (error) => {
-            reject(error)
-          })
+      await new Promise<void>((resolve, reject) => {
+        const parser = parse({
+          columns: (headers: string[]) => checkHeaders(headers),
+          delimiter,
+          to_line: 1,
+          skip_empty_lines: true,
+        })
+
+        stream.pipe(parser)
+
+        parser.on("data", () => {})
+        parser.on("end", () => resolve())
+        parser.on("error", reject)
+        stream.on("error", reject)
       })
+
       bestDelimiter = delimiter
+      break
     } catch {
-      // Ignore errors and try the next delimiter
+      stream.destroy()
     }
   }
 
   const stream = Readable.from(buffer)
   const rows: CSVRow[] = []
-  await new Promise((resolve, reject) => {
-    stream
-      .pipe(
-        parse({
-          columns: (headers: string[]) => {
-            return checkHeaders(headers)
-          },
-          delimiter: bestDelimiter,
-          skip_empty_lines: true,
-          trim: true,
-          bom: true,
-          encoding: (encoding as BufferEncoding) || "utf-8",
-        }),
-      )
-      .on("data", (row) => {
-        rows.push(row)
-      })
-      .on("end", () => {
-        resolve(rows)
-      })
-      .on("error", (error) => {
-        reject(error)
-      })
+
+  await new Promise<void>((resolve, reject) => {
+    const parser = parse({
+      columns: (headers: string[]) => checkHeaders(headers),
+      delimiter: bestDelimiter,
+      skip_empty_lines: true,
+      trim: true,
+      bom: true,
+      encoding: (encoding as BufferEncoding) || "utf-8",
+    })
+
+    stream.pipe(parser)
+
+    parser.on("data", (row) => {
+      rows.push(row)
+    })
+
+    parser.on("end", () => resolve())
+    parser.on("error", reject)
+    stream.on("error", reject)
   })
 
   return rows.map((row) => {
