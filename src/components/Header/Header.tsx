@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation"
 
 const Header = ({ session }: { session: Session | null }) => {
   const pathname = usePathname()
-  console.log(pathname)
   return (
     <HeaderDSFR
       brandTop='Écopass'
