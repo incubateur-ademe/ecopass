@@ -25,7 +25,7 @@ const Product = ({ product }: { product: ProductWithScore }) => {
         Déposé le : <b>{formatDate(product.createdAt)}</b>
       </p>
       <p>
-        Version : <b>{product.upload.version.version}</b>
+        Version Écobalyse: <b>{product.upload.version.version}</b>
       </p>
       {product.score && (
         <>
