@@ -15,17 +15,18 @@ const Login = () => {
   const [error, setError] = useState(false)
 
   const submit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const email = formData.get("email")
     const password = formData.get("password")
     if (email && password) {
-      setError(true)
+      setError(false)
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
       })
-      console.log(result)
+
       if (!result?.error) {
         router.refresh()
       } else {
@@ -97,7 +98,7 @@ const Login = () => {
             </div>
           </fieldset>
         </form>
-        {!error && (
+        {error && (
           <Alert
             title='Une erreur est survenue lors de la connexion. Veuillez vérifier vos identifiants et réessayer.'
             severity='error'
