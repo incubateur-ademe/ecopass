@@ -37,7 +37,7 @@ const Home = ({ connected }: { connected?: boolean }) => {
         </>
       ) : (
         <Block>
-          <div className='fr-grid-row'>
+          <div className='fr-grid-row fr-grid-row--gutters'>
             <div className='fr-col-12 fr-col-md-6'>
               <h3>Mes déclarations</h3>
               <p className='fr-mb-1w'>Déclarer mes produits et suivre leur status.</p>
