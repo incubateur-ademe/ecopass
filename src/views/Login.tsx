@@ -40,7 +40,7 @@ const Login = () => {
               Le portail de déclaration de l’affichage environnemental est actuellement en beta privé. Si vous
               rencontrez des difficultés à vous connecter, veuillez contacter l’équipe de l’affichage environnemental à
               cette adresse{" "}
-              <Link href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`} className='fr-link'>
+              <Link href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`} className='fr-link' prefetch={false}>
                 {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
               </Link>
             </p>
@@ -72,7 +72,7 @@ const Login = () => {
                 </div>
                 <div className='fr-fieldset__element'>
                   <p>
-                    <Link href='/forget-password' className='fr-link'>
+                    <Link href='/forget-password' className='fr-link' prefetch={false}>
                       Mot de passe oublié ?
                     </Link>
                   </p>

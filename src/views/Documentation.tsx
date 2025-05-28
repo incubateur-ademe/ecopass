@@ -11,7 +11,7 @@ const Documentation = () => (
       </p>
       <p>
         Vous pouvez télécharger{" "}
-        <Link className='fr-link' href='/exemple/exemple.csv'>
+        <Link className='fr-link' href='/exemple/exemple.csv' prefetch={false}>
           un fichier d'exemple
         </Link>
         .

@@ -19,9 +19,11 @@ Retrouvez toutes les informations et démarches administratives nécessaires à 
 '
       termsLinkProps={{
         href: "/politique-de-confidentialite",
+        prefetch: false,
       }}
       websiteMapLinkProps={{
         href: "/plan-du-site",
+        prefetch: false,
       }}
     />
   )
