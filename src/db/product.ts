@@ -114,7 +114,11 @@ export const getProductWithScore = async (gtin: string) => {
 
 export type ProductWithScore = Exclude<Awaited<ReturnType<typeof getProductWithScore>>, null>
 
-const getProducts = async (where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId">, take?: number) => {
+const getProducts = async (
+  where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId">,
+  skip?: number,
+  take?: number,
+) => {
   const products = await prismaClient.product.findMany({
     where: {
       score: { isNot: null },
@@ -128,6 +132,7 @@ const getProducts = async (where: Pick<Prisma.ProductWhereInput, "upload" | "upl
     },
     orderBy: [{ gtin: "asc" }, { createdAt: "desc" }],
     take,
+    skip,
   })
 
   const uniqueProducts = new Map<string, (typeof products)[number]>()
@@ -145,6 +150,8 @@ const getProducts = async (where: Pick<Prisma.ProductWhereInput, "upload" | "upl
   )
 }
 
+export type Products = Awaited<ReturnType<typeof getProducts>>
+
 export const getProductsCountByUserId = async (userId: string) => {
   const result = await prismaClient.product.groupBy({
     by: ["gtin"],
@@ -157,7 +164,8 @@ export const getProductsCountByUserId = async (userId: string) => {
   return result.length
 }
 
-export const getProductsByUserId = async (userId: string) => getProducts({ upload: { userId } }, 10)
+export const getProductsByUserId = async (userId: string, page?: number, size?: number) =>
+  getProducts({ upload: { userId } }, (page || 0) * (size || 10), size || 10)
 
 export const getProductsByUploadId = async (uploadId: string) => {
   const products = await prismaClient.product.findMany({
