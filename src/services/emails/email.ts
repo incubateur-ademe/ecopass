@@ -29,7 +29,7 @@ const send = (toEmail: string[], subject: string, html: string) => {
 export const sendWelcomeEmail = async (toEmail: string, token: string) => {
   return send(
     [toEmail],
-    "Bienvenue sur Écopass",
+    "Bienvenue sur le portail de déclaration de l'Affichage environnemental",
     await getHtml("welcome", {
       resetLink: `${process.env.URL}/reset-password/${token}`,
     }),

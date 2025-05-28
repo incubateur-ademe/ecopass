@@ -9,14 +9,14 @@ const Header = ({ session }: { session: Session | null }) => {
   const pathname = usePathname()
   return (
     <HeaderDSFR
-      brandTop='Écopass'
+      brandTop='Affichage environnemental'
       homeLinkProps={{
         href: "/",
-        title: "Accueil - Écopass",
+        title: "Accueil - Affichage environnemental",
       }}
       serviceTitle={
         <>
-          Écopass
+          Affichage environnemental
           <Badge as='span' noIcon severity='success'>
             Beta
           </Badge>

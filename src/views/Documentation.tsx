@@ -4,10 +4,10 @@ import Block from "../components/Block/Block"
 const Documentation = () => (
   <>
     <Block>
-      <h1>Documentation du format CSV Écopass</h1>
+      <h1>Documentation du format CSV</h1>
       <p>
-        Pour importer vos produits sur le portail Écopass, vous devez fournir un fichier CSV respectant le format
-        suivant.
+        Pour importer vos produits sur le portail de déclaration de l'Affichage environnemental, vous devez fournir un
+        fichier CSV respectant le format suivant.
       </p>
       <p>
         Vous pouvez télécharger{" "}
@@ -33,7 +33,7 @@ const Documentation = () => (
         <li>
           <b>Score</b> (optionnel) : score Écobalyse, si vous l'avez calculé. Attention, si il est diffférent de notre
           calcul, le produit sera en erreur.
-          <p className='fr-hint-text'>si pas de valeur définie, on utilise le score calculé par Écopass.</p>
+          <p className='fr-hint-text'>si pas de valeur définie, on utilise le score calculé.</p>
         </li>
         <li>
           <b>Type</b> : type de produit à choisir dans la liste suivante :

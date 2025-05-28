@@ -1,3 +1,4 @@
+import { Card } from "@codegouvfr/react-dsfr/Card"
 import Link from "next/link"
 import Block from "../components/Block/Block"
 import Label from "../components/Label/Label"
@@ -16,13 +17,7 @@ const Home = ({ connected }: { connected?: boolean }) => {
             <Label product={{ score: 360, standardized: 154 }} />
           </Block>
           <Block>
-            <p>
-              Si vous souhaitez deposer un produit sur le portail, veuillez{" "}
-              <Link href='/login' className='fr-link'>
-                vous connecter
-              </Link>
-              .
-            </p>
+            <Button linkProps={{ href: "/login" }}>Se connecter</Button>
           </Block>
           <Block>
             <p>
@@ -39,14 +34,26 @@ const Home = ({ connected }: { connected?: boolean }) => {
         <Block>
           <div className='fr-grid-row fr-grid-row--gutters'>
             <div className='fr-col-12 fr-col-md-6'>
-              <h3>Mes déclarations</h3>
-              <p className='fr-mb-1w'>Déclarer mes produits et suivre leur status.</p>
-              <Button linkProps={{ href: "/declarations" }}>Mes déclarations</Button>
+              <Card
+                background
+                border
+                enlargeLink
+                title='Mes déclarations'
+                titleAs='h3'
+                desc='Déclarer mes produits et suivre leur status.'
+                linkProps={{ href: "/declarations" }}
+              />
             </div>
             <div className='fr-col-12 fr-col-md-6'>
-              <h3>Mes produits</h3>
-              <p className='fr-mb-1w'>Consulter mes produits déclarés.</p>
-              <Button linkProps={{ href: "/produits" }}>Mes produits</Button>
+              <Card
+                background
+                border
+                enlargeLink
+                title='Mes produits'
+                titleAs='h3'
+                desc='Consulter mes produits déclarés.'
+                linkProps={{ href: "/produits" }}
+              />
             </div>
           </div>
         </Block>

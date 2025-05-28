@@ -34,7 +34,7 @@ const Login = () => {
         <form onSubmit={submit}>
           <fieldset className='fr-fieldset' aria-labelledby='legend'>
             <legend className='fr-fieldset__legend' id='legend'>
-              <h1>Connexion à Écopass</h1>
+              <h1>Connexion</h1>
             </legend>
             <p className='fr-mb-4w'>
               Le portail de déclaration de l’affichage environnemental est actuellement en beta privé. Si vous

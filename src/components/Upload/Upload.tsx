@@ -37,16 +37,18 @@ const Upload = () => {
 
   return (
     <>
-      <p className='fr-mb-4w'>
-        Si vous avez besoin d'aide, vous pouvez télécharger{" "}
+      <p>
+        Vous pouvez télécharger{" "}
         <Link href='/exemple/exemple.csv' className='fr-link'>
           un exemple
-        </Link>
-        , consulter{" "}
+        </Link>{" "}
+        ou consulter{" "}
         <Link href='/documentation' className='fr-link'>
           la documentation
-        </Link>{" "}
-        ou contacter notre support à cette adresse{" "}
+        </Link>
+      </p>
+      <p className='fr-mb-4w'>
+        Si vous avez besoin d'aide, veuillez contacter notre support à l'adresse suivante :{" "}
         <Link className='fr-link' href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}>
           {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
         </Link>

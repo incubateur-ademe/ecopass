@@ -3,10 +3,10 @@ import { Footer as FooterDSFR } from "@codegouvfr/react-dsfr/Footer"
 const Footer = () => {
   return (
     <FooterDSFR
-      brandTop='Écopass'
+      brandTop='Affichage environnemental'
       homeLinkProps={{
         href: "/",
-        title: "Accueil - Écopass",
+        title: "Accueil - Affichage environnemental",
       }}
       accessibility='non compliant'
       contentDescription='

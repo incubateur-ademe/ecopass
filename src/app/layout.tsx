@@ -8,7 +8,7 @@ import { auth } from "../services/auth/auth"
 import "../css/reset.css"
 
 export const metadata: Metadata = {
-  title: "Écopass",
+  title: "Affichage environnemental",
 }
 
 export default async function RootLayout({ children }: { children: React.JSX.Element }) {
