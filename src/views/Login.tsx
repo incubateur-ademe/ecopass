@@ -1,29 +1,35 @@
 "use client"
+
 import Block from "../components/Block/Block"
 import { Input } from "@codegouvfr/react-dsfr/Input"
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup"
-import { FormEvent, useCallback } from "react"
+import { FormEvent, useCallback, useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 
 const Login = () => {
   const router = useRouter()
 
+  const [error, setError] = useState(false)
+
   const submit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const email = formData.get("email")
     const password = formData.get("password")
     if (email && password) {
+      setError(true)
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
       })
-
+      console.log(result)
       if (!result?.error) {
         router.refresh()
+      } else {
+        setError(true)
       }
     }
   }, [])
@@ -91,6 +97,12 @@ const Login = () => {
             </div>
           </fieldset>
         </form>
+        {!error && (
+          <Alert
+            title='Une erreur est survenue lors de la connexion. Veuillez vérifier vos identifiants et réessayer.'
+            severity='error'
+          />
+        )}
       </div>
     </Block>
   )
