@@ -1,8 +1,13 @@
+"use client"
+
 import { Header as HeaderDSFR } from "@codegouvfr/react-dsfr/Header"
 import { Badge } from "@codegouvfr/react-dsfr/Badge"
 import { Session } from "next-auth"
+import { usePathname } from "next/navigation"
 
 const Header = ({ session }: { session: Session | null }) => {
+  const pathname = usePathname()
+  console.log(pathname)
   return (
     <HeaderDSFR
       brandTop='Écopass'
@@ -21,9 +26,13 @@ const Header = ({ session }: { session: Session | null }) => {
       navigation={
         session
           ? [
-              { linkProps: { href: "/" }, text: "Accueil" },
-              { linkProps: { href: "/declarations" }, text: "Mes déclarations" },
-              { linkProps: { href: "/produits" }, text: "Mes produits" },
+              { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
+              {
+                linkProps: { href: "/declarations" },
+                text: "Mes déclarations",
+                isActive: pathname.startsWith("/declarations"),
+              },
+              { linkProps: { href: "/produits" }, text: "Mes produits", isActive: pathname.startsWith("/produits") },
             ]
           : []
       }

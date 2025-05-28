@@ -15,6 +15,7 @@ export default async function RootLayout({ children }: { children: React.JSX.Ele
   const lang = "fr"
 
   const session = await auth()
+
   return (
     <html lang={lang} {...getHtmlAttributes({ lang })}>
       <head>
