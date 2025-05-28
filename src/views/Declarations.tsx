@@ -2,7 +2,7 @@ import Block from "../components/Block/Block"
 import Upload from "../components/Upload/Upload"
 import Uploads from "../components/Upload/Uploads"
 
-const Declarations = () => {
+const Declarations = ({ page }: { page: number }) => {
   return (
     <>
       <Block>
@@ -12,7 +12,7 @@ const Declarations = () => {
       </Block>
       <Block>
         <h2>Mes fichiers</h2>
-        <Uploads />
+        <Uploads page={page} />
       </Block>
     </>
   )

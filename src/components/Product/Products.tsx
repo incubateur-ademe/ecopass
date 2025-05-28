@@ -40,14 +40,16 @@ const Products = async ({ page }: { page: number }) => {
           </Button>,
         ])}
       />
-      <Pagination
-        count={Math.floor(productsCount / 10)}
-        defaultPage={page}
-        getPageLinkProps={(page) => ({
-          href: `/produits?page=${page}`,
-        })}
-        showFirstLast
-      />
+      {productsCount > 10 && (
+        <Pagination
+          count={Math.ceil(productsCount / 10)}
+          defaultPage={page}
+          getPageLinkProps={(page) => ({
+            href: `/produits?page=${page}`,
+          })}
+          showFirstLast
+        />
+      )}
     </>
   )
 }

@@ -46,7 +46,12 @@ export const updateUploadToError = async (id: string, message?: string) =>
     data: { status: Status.Error, error: message },
   })
 
-export const getUploadsByUserId = async (userId: string) => {
+export const getuploadsCountByUserId = async (userId: string) =>
+  prismaClient.upload.count({
+    where: { userId },
+  })
+
+export const getUploadsByUserId = async (userId: string, skip?: number, take?: number) => {
   const uploads = await prismaClient.upload.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
@@ -61,7 +66,8 @@ export const getUploadsByUserId = async (userId: string) => {
         },
       },
     },
-    take: 10,
+    take: take || 10,
+    skip: (skip || 0) * (take || 10),
   })
   return uploads.map((upload) => ({
     ...upload,
