@@ -7,6 +7,7 @@ import Download from "./Download"
 import { Status } from "../../../prisma/src/prisma"
 import { formatDateTime } from "../../services/format"
 import Table from "../Table/Table"
+import styles from "./Uploads.module.css"
 
 const statusTitle: Record<Status, string> = {
   [Status.Done]: "Déclaration validée",
@@ -28,6 +29,7 @@ const Uploads = async ({ page }: { page: number }) => {
   ) : (
     <>
       <Table
+        className={styles.table}
         fixed
         caption='Mes fichiers'
         noCaption

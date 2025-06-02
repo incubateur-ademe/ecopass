@@ -1,4 +1,5 @@
 "use server"
+
 import { getProductsByUserId, getProductsCountByUserId } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
@@ -6,6 +7,7 @@ import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
 import { formatDate, formatNumber } from "../../services/format"
 import Table from "../Table/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
+import styles from "./Products.module.css"
 
 const Products = async ({ page }: { page: number }) => {
   const session = await auth()
@@ -26,6 +28,7 @@ const Products = async ({ page }: { page: number }) => {
       </p>
       <Search />
       <Table
+        className={styles.table}
         fixed
         caption='Mes produits'
         noCaption
