@@ -1,0 +1,13 @@
+.image {
+  max-width: 400px;
+  height: auto;
+  border-radius: 50%;
+
+  @media screen and (max-width: 767px) {
+    max-width: 300px;
+  }
+}
+
+.title {
+  color: var(--blue-france-sun-113-625);
+}

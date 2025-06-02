@@ -1,3 +1,7 @@
 .container {
-  margin-block: 1rem 3rem;
+  padding-block: 1rem 3rem;
+}
+
+.secondary {
+  background-color: var(--background-default-grey-hover);
 }
