@@ -3,7 +3,7 @@ import { Footer as FooterDSFR } from "@codegouvfr/react-dsfr/Footer"
 const Footer = () => {
   return (
     <FooterDSFR
-      brandTop='Affichage environnemental'
+      brandTop='République Française'
       homeLinkProps={{
         href: "/",
         title: "Accueil - Affichage environnemental",

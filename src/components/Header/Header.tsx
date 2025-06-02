@@ -9,7 +9,7 @@ const Header = ({ session }: { session: Session | null }) => {
   const pathname = usePathname()
   return (
     <HeaderDSFR
-      brandTop='Affichage environnemental'
+      brandTop='République Française'
       homeLinkProps={{
         href: "/",
         title: "Accueil - Affichage environnemental",
