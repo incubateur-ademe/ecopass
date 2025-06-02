@@ -20,7 +20,7 @@ export const authOptions = {
         }
 
         const user = await prismaClient.user.findUnique({
-          where: { email: credentials.email },
+          where: { email: credentials.email.toLowerCase() },
         })
 
         if (!user || !user.password) {
