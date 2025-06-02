@@ -4,6 +4,11 @@ import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import EmptyProduct from "../../../views/EmptyProduct"
 import { auth } from "../../../services/auth/auth"
 import { redirect } from "next/navigation"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Produit - Affichage environnemental",
+}
 
 type Props = {
   params: Promise<{ id: string }>

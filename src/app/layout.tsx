@@ -9,6 +9,8 @@ import "../css/reset.css"
 
 export const metadata: Metadata = {
   title: "Affichage environnemental",
+  description:
+    "Ce portail a pour objectif de répondre aux articles R 541-246 et R 541-250  du Décret relatif à l'affichage environnemental textile, et de permettre ainsi aux marques de déclarer le coût environnemental de leurs produits, afin de rendre ce résultat accessible au grand public.",
 }
 
 export default async function RootLayout({ children }: { children: React.JSX.Element }) {
