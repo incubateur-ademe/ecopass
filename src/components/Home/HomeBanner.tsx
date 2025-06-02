@@ -15,7 +15,11 @@ const HomeBanner = ({ withConnection = true }: HomeBannerProps) => {
           <h1 className={classNames("fr-mb-8w", styles.title)}>
             Déclarez le coût environnemental de vos produits textiles
           </h1>
-          {withConnection && <Button linkProps={{ href: "/login" }}>Se connecter</Button>}
+          {withConnection && (
+            <Button linkProps={{ href: "/login" }} iconId='fr-icon-arrow-right-line' iconPosition='right' size='large'>
+              Se connecter
+            </Button>
+          )}
         </div>
         <Image
           className={classNames("fr-col-12 fr-col-md-6", styles.image)}
