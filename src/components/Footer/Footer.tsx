@@ -18,7 +18,7 @@ const Footer = () => {
         href: "/plan-du-site",
         prefetch: false,
       }}
-      domains={["ecologie.gouv.fr", "affichage-environnemental.ademe.fr", "ecobalyse.beta.gouv.fr"]}
+      domains={["ecologie.gouv.fr", "ecobalyse.beta.gouv.fr", "beta.gouv.fr", "ademe.fr"]}
     />
   )
 }
