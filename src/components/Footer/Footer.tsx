@@ -9,14 +9,7 @@ const Footer = () => {
         title: "Accueil - Affichage environnemental",
       }}
       accessibility='non compliant'
-      contentDescription='
-Ce message est à remplacer par les informations de votre site.
-
-Comme exemple de contenu, vous pouvez indiquer les informations 
-suivantes : Le site officiel d’information administrative pour les entreprises.
-Retrouvez toutes les informations et démarches administratives nécessaires à la création, 
-à la gestion et au développement de votre entreprise.
-'
+      contentDescription='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
       termsLinkProps={{
         href: "/politique-de-confidentialite",
         prefetch: false,
@@ -25,7 +18,7 @@ Retrouvez toutes les informations et démarches administratives nécessaires à 
         href: "/plan-du-site",
         prefetch: false,
       }}
-      domains={["affichage-environnemental.ademe.fr", "ecobalyse.beta.gouv.fr"]}
+      domains={["ecologie.gouv.fr", "affichage-environnemental.ademe.fr", "ecobalyse.beta.gouv.fr"]}
     />
   )
 }
