@@ -8,6 +8,10 @@
   }
 }
 
+.small {
+  max-width: 200px;
+}
+
 .title {
   color: var(--blue-france-sun-113-625);
 }

@@ -12,17 +12,20 @@ const HomeBanner = ({ withConnection = true }: HomeBannerProps) => {
     <>
       <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle'>
         <div className='fr-col-12 fr-col-md-6'>
-          <h1 className={classNames("fr-mb-8w", styles.title)}>
-            Déclarez le coût environnemental de vos produits textiles
-          </h1>
+          <h1 className={styles.title}>Déclarez le coût environnemental de vos produits textiles</h1>
           {withConnection && (
-            <Button linkProps={{ href: "/login" }} iconId='fr-icon-arrow-right-line' iconPosition='right' size='large'>
+            <Button
+              linkProps={{ href: "/login" }}
+              iconId='fr-icon-arrow-right-line'
+              iconPosition='right'
+              size='large'
+              className='fr-mt-8w'>
               Se connecter
             </Button>
           )}
         </div>
         <Image
-          className={classNames("fr-col-12 fr-col-md-6", styles.image)}
+          className={classNames("fr-col-12 fr-col-md-6", styles.image, { [styles.small]: !withConnection })}
           src='/images/tshirt.jpg'
           alt=''
           width={400}
