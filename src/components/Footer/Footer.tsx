@@ -25,6 +25,7 @@ Retrouvez toutes les informations et démarches administratives nécessaires à 
         href: "/plan-du-site",
         prefetch: false,
       }}
+      domains={["affichage-environnemental.ademe.fr", "ecobalyse.beta.gouv.fr"]}
     />
   )
 }
