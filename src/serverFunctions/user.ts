@@ -14,7 +14,7 @@ export const resetPassword = async (email: string) => {
 export const changePassword = async (email: string, token: string, password: string) => {
   const user = await prismaClient.user.findFirst({
     where: {
-      email,
+      email: email.toLowerCase(),
       resetPasswordToken: token,
       resetPasswordExpires: { gte: new Date() },
     },

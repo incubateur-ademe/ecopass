@@ -15,7 +15,7 @@ const getHtml = (file: string, data?: Data) => ejs.renderFile(`./src/services/em
 
 const send = (toEmail: string[], subject: string, html: string) => {
   const mail = {
-    to: toEmail.join(","),
+    to: toEmail.map((email) => email.toLowerCase()).join(","),
     from: process.env.NEXT_PUBLIC_SUPPORT_MAIL,
     subject,
     html,

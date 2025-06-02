@@ -9,7 +9,7 @@ export const signPassword = async (password: string) => {
 }
 
 export const generateResetToken = async (email: string, hours?: number) => {
-  const user = await prismaClient.user.findUnique({ where: { email } })
+  const user = await prismaClient.user.findUnique({ where: { email: email.toLowerCase() } })
   if (!user) {
     throw new Error("Utilisateur introuvable")
   }
@@ -20,7 +20,7 @@ export const generateResetToken = async (email: string, hours?: number) => {
   expires.setHours(expires.getHours() + (hours || 1))
 
   await prismaClient.user.update({
-    where: { email },
+    where: { email: email.toLowerCase() },
     data: {
       resetPasswordToken: resetToken,
       resetPasswordExpires: expires,
