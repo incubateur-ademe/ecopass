@@ -1,4 +1,5 @@
 import { Footer as FooterDSFR } from "@codegouvfr/react-dsfr/Footer"
+import Link from "next/link"
 
 const Footer = () => {
   return (
@@ -9,7 +10,17 @@ const Footer = () => {
         title: "Accueil - Affichage environnemental",
       }}
       accessibility='non compliant'
-      contentDescription='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+      contentDescription={
+        <>
+          Le portail de déclaration de l’affichage environnemental est un service développé le par l’Agence de la
+          transition écologique , le Commissariat général au développement durable et le Ministère de la Transition
+          Écologique. Ce service est actuellement en beta privé. Vous pouvez contactez l’équipe par mail à l’adresse{" "}
+          <Link href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'>
+            affichage-environnemental@ecobalyse.beta.gouv.fr
+          </Link>
+          .
+        </>
+      }
       termsLinkProps={{
         href: "/politique-de-confidentialite",
         prefetch: false,
