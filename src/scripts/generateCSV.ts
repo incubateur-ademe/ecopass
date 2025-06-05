@@ -36,7 +36,7 @@ const generate = (name: string, length?: string) => {
     const materialsShare = generateShares()
     return {
       gtin: faker.string.numeric(13),
-      cattegory: faker.helpers.arrayElement(Object.keys(productCategories)),
+      category: faker.helpers.arrayElement(Object.keys(productCategories)),
       business: faker.helpers.arrayElement(["", ...Object.keys(businesses)]),
       countryDyeing: faker.helpers.arrayElement(Object.keys(countries)),
       countryFabric: faker.helpers.arrayElement(Object.keys(countries)),
@@ -73,7 +73,7 @@ const generate = (name: string, length?: string) => {
       new Date().toISOString(),
       faker.company.name(),
       "",
-      product.cattegory,
+      product.category,
       product.mass,
       product.upcycled ? "Oui" : "Non",
       product.numberOfReferences,
