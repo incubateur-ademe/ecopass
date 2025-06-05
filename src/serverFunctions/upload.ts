@@ -7,11 +7,20 @@ import { failUpload } from "../services/upload"
 import { parseCSV } from "../utils/csv/parse"
 import chardet from "chardet"
 
+const encodingMap: Record<string, BufferEncoding> = {
+  "iso-8859-1": "latin1",
+}
+
 const getEncoding = async (file: File) => {
   const blob = file.slice(0, 1024)
   const buffer = await blob.arrayBuffer()
   const uint8Array = new Uint8Array(buffer)
-  return chardet.detect(uint8Array) as BufferEncoding | null
+  const detected = chardet.detect(uint8Array)
+  if (detected && detected.toLowerCase() in encodingMap) {
+    return encodingMap[detected.toLowerCase()]
+  }
+
+  return detected
 }
 
 export const uploadFile = async (file: File) => {

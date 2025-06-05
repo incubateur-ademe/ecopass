@@ -175,6 +175,7 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
 
 const delimiters = [",", ";", "\t"]
 export const parseCSV = async (file: File, encoding: string | null, uploadId: string) => {
+  const encodingToUse = (encoding as BufferEncoding) || "utf-8"
   const buffer = Buffer.from(await file.arrayBuffer())
 
   let bestDelimiter = ","
@@ -189,6 +190,7 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
           delimiter,
           to_line: 1,
           skip_empty_lines: true,
+          encoding: encodingToUse,
         })
 
         stream.pipe(parser)
@@ -220,7 +222,7 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
       skip_empty_lines: true,
       trim: true,
       bom: true,
-      encoding: (encoding as BufferEncoding) || "utf-8",
+      encoding: encodingToUse,
     })
 
     stream.pipe(parser)
