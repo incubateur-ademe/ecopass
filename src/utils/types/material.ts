@@ -18,7 +18,6 @@ export const materials: Record<string, MaterialType> = {
   // Polypropylène
   polypropylene: MaterialType.Polypropylène,
   eipp: MaterialType.Polypropylène,
-  polypropylène: MaterialType.Polypropylène,
 
   // Polyester
   polyester: MaterialType.Polyester,
@@ -36,7 +35,7 @@ export const materials: Record<string, MaterialType> = {
   // Lin
   lin: MaterialType.Lin,
   eilin: MaterialType.Lin,
-  flax: MaterialType.Lin,
+  linen: MaterialType.Lin,
 
   // Laine
   lainepardefaut: MaterialType.LaineParDéfaut,
@@ -46,7 +45,7 @@ export const materials: Record<string, MaterialType> = {
   // Laine nouvelle filière
   lainenouvellefiliere: MaterialType.LaineNouvelleFilière,
   eilainenouvellefiliere: MaterialType.LaineNouvelleFilière,
-  newwool: MaterialType.LaineNouvelleFilière,
+  newsupplychainwool: MaterialType.LaineNouvelleFilière,
 
   // Coton
   coton: MaterialType.Coton,
@@ -70,10 +69,10 @@ export const materials: Record<string, MaterialType> = {
   // Coton recyclé (déchets postconsommation)
   cotonrecycledechetspostconsommation: MaterialType.CotonRecycléDéchetsPostConsommation,
   cotonrdpc: MaterialType.CotonRecycléDéchetsPostConsommation,
-  postconsumerrecycledcotton: MaterialType.CotonRecycléDéchetsPostConsommation,
+  recycledcottonpostconsumerwaste: MaterialType.CotonRecycléDéchetsPostConsommation,
 
   // Coton recyclé (déchets de production)
   cotonrecycledechetsdeproduction: MaterialType.CotonRecycléDéchetsDeProduction,
   cotonrdp: MaterialType.CotonRecycléDéchetsDeProduction,
-  preconsumerrecycledcotton: MaterialType.CotonRecycléDéchetsDeProduction,
+  recycledcottonproductionwaste: MaterialType.CotonRecycléDéchetsDeProduction,
 }

@@ -6,14 +6,18 @@ const Block = ({
   children,
   className,
   secondary,
+  noMargin,
 }: {
   children: ReactNode
   className?: string
   secondary?: boolean
+  noMargin?: boolean
 }) => {
   return (
     <div className={secondary ? styles.secondary : ""}>
-      <div className={classNames("fr-container", styles.container, className)}>{children}</div>
+      <div className={classNames("fr-container", styles.container, className, { [styles.noMargin]: noMargin })}>
+        {children}
+      </div>
     </div>
   )
 }

@@ -2,6 +2,10 @@
   padding-block: 3rem;
 }
 
+.noMargin {
+  padding-top: 0;
+}
+
 .secondary {
   background-color: var(--background-default-grey-hover);
 }

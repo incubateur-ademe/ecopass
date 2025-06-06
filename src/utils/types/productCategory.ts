@@ -48,7 +48,7 @@ export const productCategories: Record<string, ProductCategory> = {
   // Boxer / Slip (tricoté)
   boxersliptricote: ProductCategory.BoxerSlipTricoté,
   slip: ProductCategory.BoxerSlipTricoté,
-  knittedboxerslip: ProductCategory.BoxerSlipTricoté,
+  knittedboxer: ProductCategory.BoxerSlipTricoté,
 
   // Maillot de bain
   maillotdebain: ProductCategory.MaillotDeBain,
