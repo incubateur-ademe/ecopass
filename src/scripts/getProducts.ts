@@ -5,7 +5,7 @@ import { stringify } from "csv-stringify/sync"
 
 async function main(email: string) {
   const user = await prismaClient.user.findUnique({
-    where: { email },
+    where: { email: email.toLowerCase() },
     include: {
       uploads: {
         include: {
