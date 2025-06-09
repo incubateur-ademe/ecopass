@@ -82,7 +82,7 @@ export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAcce
     products.map(async (product) => {
       try {
         const result = await getEcobalyseResult(product)
-        if (product.declaredScore && product.declaredScore !== result.score) {
+        if (product.declaredScore && Math.round(product.declaredScore) !== Math.round(result.score)) {
           return failProducts([
             {
               id: product.id,
