@@ -3,7 +3,7 @@ import crypto from "crypto"
 import { sendWelcomeEmail } from "../services/emails/email"
 
 const main = async (email: string) => {
-  const user = await prismaClient.user.findUnique({ where: { email } })
+  const user = await prismaClient.user.findUnique({ where: { email: email.toLowerCase() } })
   if (!user) {
     throw new Error("Utilisateur introuvable")
   }
@@ -14,13 +14,13 @@ const main = async (email: string) => {
   expires.setHours(expires.getHours() + 24 * 7)
 
   await prismaClient.user.update({
-    where: { email },
+    where: { email: email.toLowerCase() },
     data: {
       resetPasswordToken: resetToken,
       resetPasswordExpires: expires,
     },
   })
-  await sendWelcomeEmail(email, resetToken)
+  await sendWelcomeEmail(email.toLowerCase(), resetToken)
 }
 
 main(process.argv[2])

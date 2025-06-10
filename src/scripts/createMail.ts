@@ -1,6 +1,6 @@
 import { prismaClient } from "../db/prismaClient"
 
-const email = ""
+const email = "todo"
 const brandName = ""
 
 export const createMail = async () => {
@@ -10,7 +10,7 @@ export const createMail = async () => {
   }
 
   const user = await prismaClient.user.findUnique({
-    where: { email },
+    where: { email: email.toLowerCase() },
   })
   if (user) {
     console.log("User alreay exists")
@@ -32,7 +32,7 @@ export const createMail = async () => {
 
   await prismaClient.user.create({
     data: {
-      email,
+      email: email.toLowerCase(),
       brandId: brand.id,
       password: "",
     },
