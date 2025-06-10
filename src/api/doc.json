@@ -1,0 +1,305 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API du portail de déclaration de l'Affichage Environnemental",
+    "description": "Cette API est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api]). Il faut en plus rajouter les informations réglementaires de son produit, à savoir : GTIN, Date de mise sur le marché et la marque.",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://affichage-environnemental.ecobalyse.beta.gouv.fr/api"
+    }
+  ],
+  "paths": {
+    "/produit": {
+      "post": {
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Déclaration"],
+        "summary": "Déclare un produit sur le portail de l'Affichage Environnemental",
+        "requestBody": {
+          "description": "Requête modélisant les paramètres du produit à déclarer",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductQuery"
+              },
+              "examples": {
+                "tShirtFrance": {
+                  "$ref": "#/components/examples/tShirtFrance"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Déclaration validée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericSuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidParametersError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "description": "Cette clé API, permet de vous identifier. Vous pouvez gerer vos clés dans la rubrique *API*\n",
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "UUID"
+      }
+    },
+    "examples": {
+      "tShirtFrance": {
+        "summary": "T-Shirt France 100% Coton",
+        "value": {
+          "gtin": "1234567890123",
+          "date": "2023-10-01",
+          "marque": "Ma Marque",
+          "mass": 0.17,
+          "materials": [
+            {
+              "id": "ei-coton",
+              "share": 1,
+              "country": "FR"
+            }
+          ],
+          "product": "tshirt",
+          "countrySpinning": "FR",
+          "countryFabric": "FR",
+          "countryDyeing": "FR",
+          "countryMaking": "FR",
+          "fabricProcess": "knitting-mix"
+        }
+      }
+    },
+    "schemas": {
+      "ProductQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gtin", "date", "mass", "materials", "product"],
+        "properties": {
+          "gtin": {
+            "type": "string",
+            "description": "Code GTIN du produit, format EAN-13 (13 chiffres) ou EAN-8 (8 chiffres)"
+          },
+          "date": {
+            "type": "string",
+            "description": "Date de mise sur le marché du produit, au format YYYY-MM-DD",
+            "format": "date"
+          },
+          "marque": {
+            "type": "string",
+            "description": "Marque du produit"
+          },
+          "mass": {
+            "type": "number",
+            "description": "Masse du produit fini, en kilogrammes",
+            "minimum": 0.01,
+            "example": 0.17
+          },
+          "product": {
+            "type": "string",
+            "description": "Identifiant du produit (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/api/textile/products`)\n",
+            "enum": [
+              "calecon",
+              "chaussettes",
+              "chemise",
+              "jean",
+              "jupe",
+              "maillot",
+              "manteau",
+              "pantalon",
+              "pull",
+              "slip",
+              "tshirt"
+            ]
+          },
+          "materials": {
+            "type": "array",
+            "description": "Liste des matières composant le vêtement",
+            "items": {
+              "$ref": "#/components/schemas/ProductQueryMaterial"
+            },
+            "minItems": 1
+          },
+          "airTransportRatio": {
+            "type": "number",
+            "description": "Part de **transport aérien** entre l'étape de **Confection** et l'étape de **Distribution**, entre `0` et `1`\n",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "business": {
+            "type": "string",
+            "description": "Type d'entreprise et d'offre de services :\n\n- `small-business`: PME/TPE\n- `large-business-with-services`: Grande entreprise avec service de réparation\n- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation\n",
+            "enum": ["small-business", "large-business-with-services", "large-business-without-services"]
+          },
+          "countryDyeing": {
+            "type": "string",
+            "description": "Code pays pour l'étape de **Teinture** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/apitextile/countries`)\n",
+            "minLength": 2,
+            "maxLength": 2
+          },
+          "countryFabric": {
+            "type": "string",
+            "description": "Code pays pour l'étape de **Tissage/Tricotage** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/apitextile/countries`)\n",
+            "minLength": 2,
+            "maxLength": 2
+          },
+          "countryMaking": {
+            "type": "string",
+            "description": "Code pays pour l'étape de **Confection** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/apitextile/countries`)\n",
+            "minLength": 2,
+            "maxLength": 2
+          },
+          "countrySpinning": {
+            "type": "string",
+            "description": "Code pays pour l'étape de **Filature** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/apitextile/countries`).\nSi non spécifié, le pays de filature pris en considération est celui de production de\nla matière la plus représentée dans le mix.\n",
+            "minLength": 2,
+            "maxLength": 2
+          },
+          "fading": {
+            "type": "boolean",
+            "description": "Active l'application du **procédé de délavage** pour l'étape de confection d'un produit.\n"
+          },
+          "numberOfReferences": {
+            "description": "Nombre de références au catalogue de la marque.\n",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 999999
+          },
+          "price": {
+            "description": "Prix du produit, en Euros (€).\n",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "printing": {
+            "type": "object",
+            "description": "Ce paramètre permet de préciser le type d'impression effectuée sur le produit.\nPar exemple, `{\"kind\": \"pigment\", \"ratio\": 0.1}` signifie impression pigmentaire sur 10%\nde la superficie du vêtement.\n",
+            "required": ["kind"],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "description": "Type de procédé d'impression pouvant prendre les valeurs suivantes :\n- `pigment` pour une impression pigmentaire ;\n- `substantive` pour une impression fixé/lavé ;\n",
+                "enum": ["pigment", "substantive"]
+              },
+              "ratio": {
+                "type": "number",
+                "description": "Pourcentage de surface teinte, exprimé entre `0` et `1`\n"
+              }
+            }
+          },
+          "traceability": {
+            "description": "Traçabilité renforcée\n",
+            "type": "boolean"
+          },
+          "trims": {
+            "description": "Liste des accessoires du vêtement (boutons, zip, etc).\nLa liste des accessoires disponibles est accessible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/api/textile/trims`.\n",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "upcycled": {
+            "description": "Produit remanufacturé\n",
+            "type": "boolean"
+          }
+        }
+      },
+      "ProductQueryMaterial": {
+        "type": "object",
+        "description": "Liste des matières composant le produit\n",
+        "additionalProperties": false,
+        "required": ["id", "share"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifiant de la matière, la liste des matières disponibles est accessible sur le\npoint d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/api/textile/materials`\n"
+          },
+          "share": {
+            "type": "number",
+            "description": "Part du produit que cette matière représente (entre `0` et `1`)\n",
+            "minimum": 0.01,
+            "maximum": 1
+          },
+          "country": {
+            "type": "string",
+            "description": "Code du pays d'origine de la matière",
+            "minLength": 2,
+            "maxLength": 2
+          }
+        }
+      },
+      "InvalidParametersError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "description": "Un dictionnaire dont la clé est le nom d'un champ en erreur et la valeur le message d'erreur.\n",
+            "properties": {
+              "decoding": {
+                "type": "string",
+                "description": "Une erreur de décodage JSON"
+              },
+              "general": {
+                "type": "string",
+                "description": "Une erreur d'ordre général"
+              }
+            },
+            "additionalProperties": {
+              "type": "string",
+              "description": "Une erreur particulière pour un champ spécifique"
+            }
+          },
+          "documentation": {
+            "type": "string",
+            "description": "Lien hypertexte vers la documentation de l'API\n"
+          }
+        }
+      },
+      "GenericSuccessResponse": {
+        "type": "object",
+        "description": "Déclaration réussie.",
+        "properties": {
+          "result": {
+            "type": "string",
+            "enum": ["success"]
+          }
+        }
+      }
+    }
+  },
+  "version": "v0.1.0"
+}

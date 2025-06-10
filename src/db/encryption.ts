@@ -1,4 +1,6 @@
 import crypto from "crypto"
+import { ProductAPIValidation } from "../services/validation/api"
+import { ParsedProduct } from "../types/Product"
 
 const ALGO = "aes-256-gcm"
 const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, "hex")
@@ -43,4 +45,41 @@ export const decryptBoolean = (data: string) => {
 export const decryptString = (data: string) => {
   const decrypted = decrypt(data)
   return decrypted || undefined
+}
+
+export function encryptProductFields(product: ProductAPIValidation | ParsedProduct) {
+  return {
+    product: {
+      gtin: product.gtin,
+      date: product.date,
+      brand: product.brand || null,
+      declaredScore: product.declaredScore || null,
+      category: encrypt(product.product),
+      airTransportRatio: encrypt(product.airTransportRatio),
+      business: encrypt(product.business),
+      fading: encrypt(product.fading),
+      mass: encrypt(product.mass),
+      numberOfReferences: encrypt(product.numberOfReferences),
+      price: encrypt(product.price),
+      traceability: encrypt(product.traceability),
+      countryDyeing: encrypt(product.countryDyeing),
+      countryFabric: encrypt(product.countryFabric),
+      countryMaking: encrypt(product.countryMaking),
+      countrySpinning: encrypt(product.countrySpinning),
+      impression: encrypt(product.printing?.kind),
+      impressionPercentage: encrypt(product.printing?.ratio),
+      upcycled: encrypt(product.upcycled),
+      materials: undefined,
+      accessories: undefined,
+    },
+    materials: product.materials.map((material) => ({
+      slug: encrypt(material.id),
+      country: material.country ? encrypt(material.country) : null,
+      share: encrypt(material.share),
+    })),
+    accessories: product.trims?.map((trim) => ({
+      slug: encrypt(trim.id),
+      quantity: encrypt(trim.quantity),
+    })),
+  }
 }

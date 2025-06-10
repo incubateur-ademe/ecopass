@@ -1,5 +1,6 @@
 "use server"
 
+import { UploadType } from "../../prisma/src/prisma"
 import { createProducts } from "../db/product"
 import { createUpload } from "../db/upload"
 import { auth } from "../services/auth/auth"
@@ -30,7 +31,7 @@ export const uploadFile = async (file: File) => {
   }
 
   try {
-    const upload = await createUpload(session.user.id, file.name)
+    const upload = await createUpload(session.user.id, UploadType.FILE, file.name)
     new Promise<void>(async (resolve) => {
       try {
         const encoding = await getEncoding(file)

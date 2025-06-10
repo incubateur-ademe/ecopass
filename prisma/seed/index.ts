@@ -20,6 +20,7 @@ const products = async () => {
 
 const users = async () => {
   await prisma.brand.deleteMany({})
+  await prisma.aPIKey.deleteMany({})
   await prisma.user.deleteMany({})
 
   const brands = await prisma.brand.createManyAndReturn({
@@ -29,17 +30,24 @@ const users = async () => {
   })
 
   const password = await signPassword("password")
-  await Promise.all(
-    brands.map((brand, i) => {
-      return prisma.user.createMany({
-        data: Array.from({ length: 5 }).map((_, j) => ({
-          email: `user-${i}-${j}@test.fr`,
-          brandId: brand.id,
-          password,
-        })),
-      })
-    }),
-  )
+  const allUsers = await prisma.user.createManyAndReturn({
+    data: brands.flatMap((brand, i) =>
+      Array.from({ length: 5 }).map((_, j) => ({
+        email: `user-${i}-${j}@test.fr`,
+        brandId: brand.id,
+        password,
+      })),
+    ),
+  })
+
+  await prisma.aPIKey.createMany({
+    data: allUsers.flatMap((user) =>
+      Array.from({ length: faker.number.int({ min: 0, max: 3 }) }).map(() => ({
+        userId: user.id,
+        name: faker.lorem.words(faker.number.int({ min: 1, max: 3 })),
+      })),
+    ),
+  })
 }
 
 const seeds = async () => {

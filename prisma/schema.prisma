@@ -14,10 +14,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UploadType {
+  API
+  FILE
+}
+
 model Upload {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now()) @map("created_at")
+  id        String     @id @default(uuid())
+  name      String?
+  createdAt DateTime   @default(now()) @map("created_at")
+  type      UploadType
 
   // Comment gerer le fait que ce qu'on stock a deja ete interprete ?
   // Enregistrer le fichier directment ? crypté ? 
@@ -162,7 +168,21 @@ model User {
   brandId String?
   brand   Brand?  @relation(fields: [brandId], references: [id])
 
+  apiKeys APIKey[]
   uploads Upload[]
 
   @@map("users")
+}
+
+model APIKey {
+  id        String    @id @default(uuid())
+  key       String    @unique @default(uuid())
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  lastUsed  DateTime? @map("last_used")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("api_keys")
 }
