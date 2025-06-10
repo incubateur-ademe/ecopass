@@ -1,6 +1,6 @@
-import crypto from "crypto"
 import { prismaClient } from "../../db/prismaClient"
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 import { sendResetEmail } from "../emails/email"
 
 export const signPassword = async (password: string) => {
@@ -8,22 +8,31 @@ export const signPassword = async (password: string) => {
   return bcrypt.hashSync(password, salt)
 }
 
-export const generateResetToken = async (email: string, hours?: number) => {
+export const generateResetToken = async (email: string) => {
   const user = await prismaClient.user.findUnique({ where: { email: email.toLowerCase() } })
   if (!user) {
     throw new Error("Utilisateur introuvable")
   }
 
-  const resetToken = crypto.randomBytes(32).toString("hex")
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined")
+  }
 
   const expires = new Date()
-  expires.setHours(expires.getHours() + (hours || 1))
+  expires.setHours(expires.getHours() + 2)
+
+  const resetToken = jwt.sign(
+    {
+      email: email.toLowerCase(),
+      exp: Math.floor(expires.getTime() / 1000),
+    },
+    process.env.JWT_SECRET,
+  )
 
   await prismaClient.user.update({
     where: { email: email.toLowerCase() },
     data: {
       resetPasswordToken: resetToken,
-      resetPasswordExpires: expires,
     },
   })
   await sendResetEmail(email, resetToken)
