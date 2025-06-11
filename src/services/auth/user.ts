@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid"
 import { prismaClient } from "../../db/prismaClient"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
@@ -20,10 +21,11 @@ export const generateResetToken = async (email: string) => {
 
   const expires = new Date()
   expires.setHours(expires.getHours() + 2)
-
+  const token = uuid()
   const resetToken = jwt.sign(
     {
       email: email.toLowerCase(),
+      uuid: token,
       exp: Math.floor(expires.getTime() / 1000),
     },
     process.env.JWT_SECRET,
@@ -32,7 +34,7 @@ export const generateResetToken = async (email: string) => {
   await prismaClient.user.update({
     where: { email: email.toLowerCase() },
     data: {
-      resetPasswordToken: resetToken,
+      resetPasswordToken: token,
     },
   })
   await sendResetEmail(email, resetToken)

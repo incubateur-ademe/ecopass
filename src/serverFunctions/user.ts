@@ -24,7 +24,7 @@ export const changePassword = async (token: string, password: string) => {
   const user = await prismaClient.user.findFirst({
     where: {
       email: decoded.email.toLowerCase(),
-      resetPasswordToken: token,
+      resetPasswordToken: decoded.uuid,
     },
   })
 

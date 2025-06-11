@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid"
 import { prismaClient } from "../db/prismaClient"
 import jwt from "jsonwebtoken"
 import { sendWelcomeEmail } from "../services/emails/email"
@@ -14,10 +15,11 @@ const main = async (email: string) => {
 
   const expires = new Date()
   expires.setHours(expires.getHours() + 24 * 7)
-
+  const token = uuid()
   const resetToken = jwt.sign(
     {
       email: email.toLowerCase(),
+      uuid: token,
       exp: Math.floor(expires.getTime() / 1000),
     },
     process.env.JWT_SECRET,
@@ -26,7 +28,7 @@ const main = async (email: string) => {
   await prismaClient.user.update({
     where: { email: email.toLowerCase() },
     data: {
-      resetPasswordToken: resetToken,
+      resetPasswordToken: token,
     },
   })
   await sendWelcomeEmail(email.toLowerCase(), resetToken)
