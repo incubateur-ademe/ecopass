@@ -10,7 +10,7 @@ const Documentation = () => (
         fichier CSV.
       </p>
       <p>
-        Ce dernier peut comporter des valeurs en français, anglais, ou si vous utilisez déjà l'API Écobalyse, les
+        Ce dernier peut comporter des valeurs en français, anglais, ou si vous utilisez déjà l'API Ecobalyse, les
         valeurs de cette dernière.
       </p>
     </Block>

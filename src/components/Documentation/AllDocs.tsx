@@ -9,7 +9,7 @@ const AllDocs = () => {
       tabs={[
         { label: "Français", content: <Fr /> },
         { label: "English", content: <En /> },
-        { label: "Écobalyse", content: <Ecobalyse /> },
+        { label: "Ecobalyse", content: <Ecobalyse /> },
       ]}
     />
   )

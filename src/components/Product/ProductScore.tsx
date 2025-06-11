@@ -33,10 +33,10 @@ const ProductScore = ({ product }: { product: ProductWithScore }) => {
   return (
     <>
       <p>
-        Coût environnemental : <b>{Math.round(product.score!.score)} points</b>
+        Coût environnemental : <b>{Math.round(product.score!.score)} points</b>
       </p>
       <p>
-        Coût environnemental pour 100g : <b>{Math.round(product.score!.standardized)} points</b>
+        Coût environnemental pour 100g : <b>{Math.round(product.score!.standardized)} points</b>
       </p>
       <div className='fr-mt-4w'>
         <div className='fr-mb-2w'>

@@ -59,7 +59,7 @@ const Login = () => {
                 <div className='fr-fieldset__element'>
                   <Input
                     label='Email'
-                    hintText='Format attendu : nom@domaine.fr'
+                    hintText='Format attendu : nom@domaine.fr'
                     nativeInputProps={{
                       required: true,
                       type: "email",
