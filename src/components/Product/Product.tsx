@@ -20,13 +20,13 @@ const Product = ({ product }: { product: ProductWithScore }) => {
         </b>
       </p>
       <p>
-        Code GTIN : <b>{product.gtin}</b>
+        Code GTIN : <b>{product.gtin}</b>
       </p>
       <p>
-        Déposé le : <b>{formatDate(product.createdAt)}</b>
+        Déposé le : <b>{formatDate(product.createdAt)}</b>
       </p>
       <p>
-        Version Écobalyse: <b>{product.upload.version.version}</b>
+        Version Ecobalyse : <b>{product.upload.version.version}</b>
       </p>
       <div className='fr-mt-4w'>{product.score ? <ProductScore product={product} /> : <p>Pas de score</p>}</div>
     </Block>
