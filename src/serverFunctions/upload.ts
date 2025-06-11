@@ -39,7 +39,11 @@ export const uploadFile = async (file: File) => {
       } catch (error) {
         let message = "Ereur lors de l'analyse du fichier CSV"
         if (error && typeof error === "object" && "message" in error) {
-          message = error.message as string
+          if ("code" in error && error.code === "CSV_RECORD_INCONSISTENT_COLUMNS") {
+            message = "Le fichier CSV contient des lignes avec un nombre de colonnes différent"
+          } else {
+            message = error.message as string
+          }
         }
         await failUpload(upload, message)
         resolve()
