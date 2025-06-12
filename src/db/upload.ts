@@ -1,4 +1,4 @@
-import { Status } from "../../prisma/src/prisma"
+import { Status, UploadType } from "../../prisma/src/prisma"
 import { completeUpload, failUpload } from "../services/upload"
 import { prismaClient } from "./prismaClient"
 
@@ -12,7 +12,7 @@ export const getUploadById = async (id: string) =>
     },
   })
 
-export const createUpload = async (userId: string, name: string) =>
+export const createUpload = async (userId: string, uploadType: UploadType, name?: string) =>
   prismaClient.$transaction(async (transaction) => {
     const lastVersion = await transaction.version.findFirst({
       orderBy: { createdAt: "desc" },
@@ -23,7 +23,7 @@ export const createUpload = async (userId: string, name: string) =>
     }
 
     return transaction.upload.create({
-      data: { userId: userId, name, versionId: lastVersion.id },
+      data: { userId: userId, name, versionId: lastVersion.id, type: uploadType },
       select: {
         id: true,
         user: { select: { email: true } },
@@ -48,12 +48,12 @@ export const updateUploadToError = async (id: string, message?: string) =>
 
 export const getuploadsCountByUserId = async (userId: string) =>
   prismaClient.upload.count({
-    where: { userId },
+    where: { userId, type: UploadType.FILE },
   })
 
 export const getUploadsByUserId = async (userId: string, skip?: number, take?: number) => {
   const uploads = await prismaClient.upload.findMany({
-    where: { userId },
+    where: { userId, type: UploadType.FILE },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,

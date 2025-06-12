@@ -34,6 +34,7 @@
     "nodemailer": "^7.0.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "swagger-ui-react": "^5.24.0",
     "tsx": "^4.19.4",
     "uuid": "^11.1.0",
     "zod": "^3.25.56"
@@ -47,6 +48,7 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/swagger-ui-react": "^5.18.0",
     "eslint": "^9.28.0",
     "eslint-config-next": "15.3.3",
     "eslint-config-prettier": "^10.1.5",

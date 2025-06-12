@@ -56,13 +56,9 @@ export const getEcobalyseIds = async (type: "materials" | "products" | "trims") 
   return result.data
 }
 
-const getEcobalyseResult = async (product: ProductWithMaterialsAndAccessories) => {
-  const response = await axios.post<EcobalyseResponse>(
-    `${baseUrl}/textile/simulator/detailed`,
-    convertProductToEcobalyse(product),
-  )
+export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
+  const response = await axios.post<EcobalyseResponse>(`${baseUrl}/textile/simulator/detailed`, product)
   return {
-    id: product.id,
     score: response.data.impacts.ecs,
     detail: [
       ...response.data.lifeCycle.map((cycle) => ({
@@ -77,11 +73,18 @@ const getEcobalyseResult = async (product: ProductWithMaterialsAndAccessories) =
   }
 }
 
+const computeProductResult = async (product: ProductWithMaterialsAndAccessories) => {
+  return {
+    id: product.id,
+    ...(await computeEcobalyseScore(convertProductToEcobalyse(product))),
+  }
+}
+
 export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAccessories[]) =>
   Promise.all(
     products.map(async (product) => {
       try {
-        const result = await getEcobalyseResult(product)
+        const result = await computeProductResult(product)
         if (product.declaredScore && Math.round(product.declaredScore) !== Math.round(result.score)) {
           return failProducts([
             {
