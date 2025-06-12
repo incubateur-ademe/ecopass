@@ -3,6 +3,7 @@
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
 import { generateResetToken, signPassword } from "../services/auth/user"
+import jwt from "jsonwebtoken"
 
 export const resetPassword = async (email: string) => {
   try {
@@ -12,12 +13,18 @@ export const resetPassword = async (email: string) => {
   }
 }
 
-export const changePassword = async (email: string, token: string, password: string) => {
+export const changePassword = async (token: string, password: string) => {
+  let decoded: jwt.JwtPayload
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET || "") as jwt.JwtPayload
+  } catch {
+    return "Token invalide ou expiré"
+  }
+
   const user = await prismaClient.user.findFirst({
     where: {
-      email: email.toLowerCase(),
-      resetPasswordToken: token,
-      resetPasswordExpires: { gte: new Date() },
+      email: decoded.email.toLowerCase(),
+      resetPasswordToken: decoded.uuid,
     },
   })
 
@@ -32,7 +39,6 @@ export const changePassword = async (email: string, token: string, password: str
     data: {
       password: hashedPassword,
       resetPasswordToken: null,
-      resetPasswordExpires: null,
     },
   })
 }
