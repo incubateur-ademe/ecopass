@@ -1,24 +1,10 @@
-import { forwardRef, Ref } from "react"
 import { ProductWithScore } from "../../db/product"
-const getSize = (value: number) => {
-  if (value < 10) {
-    return 12
-  }
-  if (value < 100) {
-    return 7
-  }
-  if (value < 1000) {
-    return 1
-  }
-  return -5
-}
-const Label = (
-  { product: { score, standardized } }: { product: Exclude<ProductWithScore["score"], null> },
-  ref: Ref<SVGSVGElement>,
-) => {
+import { getSize } from "../../utils/label/size"
+
+const Label = ({ product: { score, standardized } }: { product: Exclude<ProductWithScore["score"], null> }) => {
   const size = getSize(standardized)
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' width='144' height='77' viewBox='0 0 144 77' fill='none' ref={ref}>
+    <svg xmlns='http://www.w3.org/2000/svg' width='144' height='77' viewBox='0 0 144 77' fill='none'>
       <g>
         <path
           d='M36.2 76.2C16.3 76.2 0.199997 59.1 0.199997 38.1C0.199997 17.1 16.4 0 36.2 0H137.8C140.7 0 143.1 2.4 143.1 5.4V70.7C143.1 73.7 140.7 76.1 137.8 76.1H36.2V76.2Z'
@@ -64,4 +50,4 @@ const Label = (
   )
 }
 
-export default forwardRef(Label)
+export default Label

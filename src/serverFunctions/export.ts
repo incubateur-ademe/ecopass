@@ -3,11 +3,22 @@ import { Status } from "../../prisma/src/prisma"
 import { getProductsByUploadId } from "../db/product"
 import { stringify } from "csv-stringify/sync"
 import { getUploadById } from "../db/upload"
+import { auth } from "../services/auth/auth"
+import { createExport } from "../db/export"
 
 export const exportUpload = async (uploadId: string) => {
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+
   const upload = await getUploadById(uploadId)
   if (!upload) {
     return "Fichier introuvable"
+  }
+
+  if (upload.userId !== session.user.id) {
+    return "Vous n'êtes pas autorisé à accéder à ce fichier"
   }
 
   if (upload.status !== Status.Done && upload.status !== Status.Error) {
@@ -32,4 +43,13 @@ export const exportUpload = async (uploadId: string) => {
       columns: ["GTIN", "Score", "Erreur"],
     },
   )
+}
+
+export const exportProducts = async () => {
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+
+  return createExport(session.user.id)
 }
