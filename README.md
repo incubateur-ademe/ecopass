@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ecopass
 
-## Getting Started
+Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration et la gestion du coût environnemental des produits textiles.
 
-First, run the development server:
+## Prérequis
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js (>= 22)
+- Docker (pour PostgreSQL et Maildev)
+- Yarn
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Cloner le dépôt**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```sh
+   git clone git@github.com:incubateur-ademe/ecopass.git
+   cd ecopass
+   ```
 
-## Learn More
+2. **Configurer les variables d'environnement**
 
-To learn more about Next.js, take a look at the following resources:
+   Copiez le fichier `.env.dist` en `.env` et adaptez les valeurs `secret` si besoin :
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```sh
+   cp .env.dist .env
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Lancer les services Docker**
 
-## Deploy on Vercel
+   ```sh
+   docker compose up -d
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   Cela démarre :
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   - PostgreSQL (base de données)
+   - Maildev (serveur mail pour tests)
+
+4. **Installer les dépendances**
+
+   ```sh
+   yarn install
+   ```
+
+5. **Initialiser Prisma**
+
+   Le projet utilise Prisma comme ORM. Les scripts suivants initialisent le schema de la base et ajoute des fixtures.
+
+   ```sh
+   npx prisma generate
+   npx prisma migrate deploy
+   npx prisma db seed
+   ```
+
+6. **Démarrer l'application**
+
+   Vous pouvez vous logger avec les utilisateurs `user-X-Y@test.fr` (X et Y entre 0 et 4)
+
+   ```sh
+   yarn dev
+   ```
+
+7. **Lancer la queue**
+
+   Pour processer les téléchargements de zip et les produits déposés sur la plateforme vous devez lancer la queue :
+
+   ```sh
+   yarn queue:watch
+   ```
+
+## Accès
+
+- Application : [http://localhost:3000](http://localhost:3000)
+- Maildev : [http://localhost:1080](http://localhost:1080)
+
+## Statut
+
+_Beta_ — Merci de remonter tout bug ou suggestion via les issues du dépôt.
+
+---
+
+**Note :**  
+Ce projet utilise Next.js (App Router), Prisma, PostgreSQL, Maildev et des variables d'environnement pour la configuration.
