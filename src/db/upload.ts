@@ -7,6 +7,7 @@ export const getUploadById = async (id: string) =>
     where: { id },
     select: {
       id: true,
+      userId: true,
       status: true,
       error: true,
     },

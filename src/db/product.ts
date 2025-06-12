@@ -91,18 +91,20 @@ export const getProductsToProcess = async (take: number) => {
   return decryptProduct(products)
 }
 
+const productWithScoreSelect = {
+  gtin: true,
+  brand: true,
+  createdAt: true,
+  category: true,
+  score: { select: { score: true, standardized: true } },
+  upload: {
+    select: { version: { select: { version: true } }, user: { select: { brand: { select: { name: true } } } } },
+  },
+} satisfies Prisma.ProductSelect
+
 export const getProductWithScore = async (gtin: string) => {
   const result = await prismaClient.product.findFirst({
-    select: {
-      gtin: true,
-      brand: true,
-      createdAt: true,
-      category: true,
-      score: { select: { score: true, standardized: true } },
-      upload: {
-        select: { version: { select: { version: true } }, user: { select: { brand: { select: { name: true } } } } },
-      },
-    },
+    select: productWithScoreSelect,
     where: { gtin },
     orderBy: { createdAt: "desc" },
   })
@@ -115,7 +117,7 @@ export const getProductWithScore = async (gtin: string) => {
 export type ProductWithScore = Exclude<Awaited<ReturnType<typeof getProductWithScore>>, null>
 
 const getProducts = async (
-  where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId">,
+  where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId" | "createdAt">,
   skip?: number,
   take?: number,
 ) => {
@@ -124,12 +126,7 @@ const getProducts = async (
       score: { isNot: null },
       ...where,
     },
-    select: {
-      gtin: true,
-      createdAt: true,
-      category: true,
-      score: { select: { score: true, standardized: true } },
-    },
+    select: productWithScoreSelect,
     orderBy: [{ gtin: "asc" }, { createdAt: "desc" }],
     take,
     skip,
@@ -194,3 +191,6 @@ export const failProducts = async (products: { id: string; error: string }[]) =>
     ),
   )
 }
+
+export const getProductsByUserIdBefore = async (userId: string, before: Date) =>
+  getProducts({ upload: { userId }, createdAt: { lt: before } })
