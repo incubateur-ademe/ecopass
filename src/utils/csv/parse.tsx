@@ -254,7 +254,7 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
         countryMaking: encrypt(getValue<Country>(countries, row["origineconfection"])),
         countrySpinning: encrypt(getValue<Country>(countries, row["originedefilature"])),
         impression: encrypt(getValue<Impression>(impressions, row["typedimpression"])),
-        impressionPercentage: encrypt(getNumberValue(row["pourcentagedimpression"].trim().replace("%", ""), 0.01)),
+        impressionPercentage: encrypt(getNumberValue(row["pourcentagedimpression"]?.trim().replace("%", ""), 0.01)),
         upcycled: encrypt(getBooleanValue(row["remanufacture"])),
       })
 
@@ -265,7 +265,7 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
           //@ts-expect-error : managed from 1 to 16
           slug: getValue<MaterialType>(allMaterials, row[`matiere${index + 1}`]),
           //@ts-expect-error : managed from 1 to 16
-          share: getNumberValue(row[`matiere${index + 1}pourcentage`].trim().replace("%", "")) / 100,
+          share: getNumberValue(row[`matiere${index + 1}pourcentage`]?.trim().replace("%", "")) / 100,
           //@ts-expect-error : managed from 1 to 16
           country: getValue<Country>(countries, row[`matiere${index + 1}origine`]),
         }))
