@@ -13,6 +13,22 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: "2mb" },
   },
+  headers: async () => [
+    {
+      source: "/(.*)",
+      headers: [
+        {
+          key: "X-Content-Type-Options",
+          value: "nosniff",
+        },
+        {
+          key: "Content-Security-Policy",
+          value:
+            "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none';",
+        },
+      ],
+    },
+  ],
 }
 
 export default nextConfig
