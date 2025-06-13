@@ -1,4 +1,12 @@
+import helmet from "helmet"
 import type { NextConfig } from "next"
+
+const csp: Record<string, string[]> = {
+  ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+  "img-src": ["'self'", "data:"],
+  "connect-src": ["'self'"],
+  "script-src": ["'self'", "'unsafe-inline'"],
+}
 
 const nextConfig: NextConfig = {
   webpack: (config) => {
@@ -23,8 +31,9 @@ const nextConfig: NextConfig = {
         },
         {
           key: "Content-Security-Policy",
-          value:
-            "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none';",
+          value: Object.keys(csp)
+            .map((key) => `${key} ${csp[key].join(" ")}`)
+            .join(";"),
         },
       ],
     },
