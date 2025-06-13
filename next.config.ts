@@ -3,6 +3,7 @@ import type { NextConfig } from "next"
 
 const csp: Record<string, string[]> = {
   ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+  "default-src": ["'none'"],
   "img-src": ["'self'", "data:"],
   "connect-src": ["'self'"],
   "script-src": ["'self'", "'unsafe-inline'"],
