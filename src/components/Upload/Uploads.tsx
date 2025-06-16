@@ -37,8 +37,8 @@ const Uploads = async ({ page }: { page: number }) => {
         data={uploads.map((upload) => [
           formatDateTime(upload.createdAt),
           upload.name,
-          upload.status === Status.Pending
-            ? `${statusTitle[upload.status]} (${upload.done}/${upload.total})`
+          upload.status === Status.Processing
+            ? `${statusTitle[upload.status]} ${upload.total > 0 ? `(${upload.done}/${upload.total})` : ""}`
             : statusTitle[upload.status],
           (upload.status === Status.Error || upload.status === Status.Done) && upload.total > 0
             ? `${upload.success}/${upload.total}`

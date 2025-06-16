@@ -174,9 +174,8 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
 }
 
 const delimiters = [",", ";", "\t"]
-export const parseCSV = async (file: File, encoding: string | null, uploadId: string) => {
+export const parseCSV = async (buffer: Buffer, encoding: string | null, uploadId: string) => {
   const encodingToUse = (encoding as BufferEncoding) || "utf-8"
-  const buffer = Buffer.from(await file.arrayBuffer())
 
   let bestDelimiter = ","
 

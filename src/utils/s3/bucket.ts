@@ -10,7 +10,7 @@ const s3 = new S3Client({
   },
 })
 
-export const uploadFileToS3 = async (name: string, file: PutObjectCommandInput["Body"], tag: "export") =>
+export const uploadFileToS3 = async (name: string, file: PutObjectCommandInput["Body"], tag: "export" | "upload") =>
   s3.send(
     new PutObjectCommand({
       Bucket: process.env.S3_BUCKET_NAME!,

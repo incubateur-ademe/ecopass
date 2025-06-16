@@ -1,3 +1,4 @@
+import { truncate } from "fs"
 import { Status, UploadType } from "../../prisma/src/prisma"
 import { completeUpload, failUpload } from "../services/upload"
 import { prismaClient } from "./prismaClient"
@@ -45,6 +46,12 @@ export const updateUploadToError = async (id: string, message?: string) =>
   prismaClient.upload.update({
     where: { id },
     data: { status: Status.Error, error: message },
+  })
+
+export const updateUploadToPending = async (id: string) =>
+  prismaClient.upload.update({
+    where: { id },
+    data: { status: Status.Processing },
   })
 
 export const getuploadsCountByUserId = async (userId: string) =>
@@ -110,3 +117,16 @@ export const checkUploadsStatus = async (uploadsId: string[]) => {
       }),
   )
 }
+
+export const getFirstUpload = async () =>
+  prismaClient.upload.findFirst({
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      user: { select: { email: true } },
+      products: { select: { status: true } },
+    },
+    where: { status: Status.Pending },
+    orderBy: { createdAt: "asc" },
+  })
