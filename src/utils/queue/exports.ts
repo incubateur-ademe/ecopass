@@ -1,9 +1,8 @@
 import { completeExport, getFirstExport } from "../../db/export"
 import { getProductsByUserIdBefore, ProductWithScore } from "../../db/product"
 import JSZip from "jszip"
-import fs from "fs/promises"
-import path from "path"
 import { getSVG } from "../label/svg"
+import { uploadFileToS3 } from "../s3/bucket"
 
 const renderLabelSVG = (product: ProductWithScore) => {
   if (!product.score) {
@@ -17,6 +16,7 @@ export const processExportsQueue = async () => {
   if (!exportToProcess) {
     return
   }
+
   console.log(`Processing export ${exportToProcess.name}`)
   const products = await getProductsByUserIdBefore(exportToProcess.userId, exportToProcess.createdAt)
   if (!products.length) return
@@ -33,11 +33,7 @@ export const processExportsQueue = async () => {
   }
 
   const zipContent = await zip.generateAsync({ type: "nodebuffer" })
-  const exportName = exportToProcess.name || `export_${exportToProcess.id}`
-  const exportDir = path.join(process.cwd(), "exports")
-  await fs.mkdir(exportDir, { recursive: true })
-  const zipPath = path.join(exportDir, `${exportName}.zip`)
-  await fs.writeFile(zipPath, zipContent)
+  await uploadFileToS3(`exports/${exportToProcess.name}.zip`, zipContent, "export")
 
   await completeExport(exportToProcess.id)
   console.log(`${products.length} products processed and export completed`)

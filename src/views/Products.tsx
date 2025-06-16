@@ -24,7 +24,7 @@ const ProductsPage = ({ page, productsCount }: { page: number; productsCount: nu
           <p>
             Pour télécharger l'affichage environnemental de vos produits, veuillez cliquer sur le bouton ci dessous.
           </p>
-          <p>Note : seul vos 5 derniers export sont disponibles.</p>
+          <p>Note : Vos exports restent disponibles 30 jours.</p>
           <br />
           <NewExport />
           <Suspense>

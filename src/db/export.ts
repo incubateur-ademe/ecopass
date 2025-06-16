@@ -10,12 +10,14 @@ export const createExport = async (userId: string) =>
     },
   })
 
-export const getExportsByUserId = async (userId: string) =>
-  prismaClient.export.findMany({
-    where: { userId },
+export const getExportsByUserId = async (userId: string) => {
+  const date = new Date()
+  date.setDate(date.getDate() - 30)
+  return prismaClient.export.findMany({
+    where: { userId, createdAt: { gte: date } },
     orderBy: { createdAt: "desc" },
-    take: 5,
   })
+}
 
 export const getFirstExport = async () =>
   prismaClient.export.findFirst({
@@ -27,4 +29,12 @@ export const completeExport = async (exportId: string) =>
   prismaClient.export.update({
     where: { id: exportId },
     data: { status: Status.Done },
+  })
+
+export const getExportByName = async (userId: string, name: string) =>
+  prismaClient.export.findFirst({
+    where: {
+      userId,
+      name,
+    },
   })
