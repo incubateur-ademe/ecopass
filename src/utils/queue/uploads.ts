@@ -24,9 +24,9 @@ export const processUploadsToQueue = async () => {
   }
 
   console.log("Processing upload:", upload.id)
+  const buffer = await downloadFileFromS3(`uploads/${upload.id}`)
   try {
     await updateUploadToPending(upload.id)
-    const buffer = await downloadFileFromS3(`uploads/${upload.id}`)
     const encoding = await getEncoding(buffer)
     const csvData = await parseCSV(buffer, encoding, upload.id)
     await createProducts(csvData)
