@@ -1,4 +1,3 @@
-import { truncate } from "fs"
 import { Status, UploadType } from "../../prisma/src/prisma"
 import { completeUpload, failUpload } from "../services/upload"
 import { prismaClient } from "./prismaClient"
