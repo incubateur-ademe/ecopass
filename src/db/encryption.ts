@@ -1,9 +1,11 @@
 import crypto from "crypto"
 import { ProductAPIValidation } from "../services/validation/api"
 import { ParsedProduct } from "../types/Product"
+import JSZip from "jszip"
 
 const ALGO = "aes-256-gcm"
 const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, "hex")
+const STORAGE_KEY = Buffer.from(process.env.STORAGE_ENCRYPTION_KEY!, "hex")
 const IV_LENGTH = 12
 
 export function encrypt(value: string | number | boolean | undefined): string {
@@ -82,4 +84,31 @@ export function encryptProductFields(product: ProductAPIValidation | ParsedProdu
       quantity: encrypt(trim.quantity),
     })),
   }
+}
+
+export const encryptAndZipFile = async (buffer: Buffer, filename: string) => {
+  const iv = crypto.randomBytes(IV_LENGTH)
+  const cipher = crypto.createCipheriv(ALGO, STORAGE_KEY, iv)
+
+  const zip = new JSZip()
+  zip.file(filename, buffer)
+  const zippedBuffer = await zip.generateAsync({ type: "nodebuffer" })
+
+  const encrypted = Buffer.concat([cipher.update(zippedBuffer), cipher.final()])
+  const tag = cipher.getAuthTag()
+  const encryptedZip = Buffer.concat([iv, encrypted, tag])
+  return encryptedZip
+}
+
+export const decryptAndDezipFile = async (encryptedBuffer: Buffer) => {
+  const iv = encryptedBuffer.subarray(0, IV_LENGTH)
+  const tag = encryptedBuffer.subarray(encryptedBuffer.length - 16)
+  const encryptedData = encryptedBuffer.subarray(IV_LENGTH, encryptedBuffer.length - 16)
+
+  const decipher = crypto.createDecipheriv(ALGO, STORAGE_KEY, iv)
+  decipher.setAuthTag(tag)
+  const decrypted = Buffer.concat([decipher.update(encryptedData), decipher.final()])
+
+  const dezipped = await JSZip.loadAsync(decrypted)
+  return dezipped.files[Object.keys(dezipped.files)[0]].async("nodebuffer")
 }

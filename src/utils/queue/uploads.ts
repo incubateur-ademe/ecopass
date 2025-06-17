@@ -4,6 +4,7 @@ import { createProducts } from "../../db/product"
 import { failUpload } from "../../services/upload"
 import { getFirstUpload, updateUploadToPending } from "../../db/upload"
 import { downloadFileFromS3 } from "../s3/bucket"
+import { decryptAndDezipFile } from "../../db/encryption"
 
 const encodingMap: Record<string, BufferEncoding> = {
   "iso-8859-1": "latin1",
@@ -17,6 +18,12 @@ const getEncoding = async (buffer: Buffer) => {
 
   return detected
 }
+
+const getFile = async (uploadId: string) => {
+  const zip = await downloadFileFromS3(`uploads/${uploadId}`)
+  return decryptAndDezipFile(zip)
+}
+
 export const processUploadsToQueue = async () => {
   const upload = await getFirstUpload()
   if (!upload) {
@@ -24,7 +31,7 @@ export const processUploadsToQueue = async () => {
   }
 
   console.log("Processing upload:", upload.id)
-  const buffer = await downloadFileFromS3(`uploads/${upload.id}`)
+  const buffer = await getFile(upload.id)
   try {
     await updateUploadToPending(upload.id)
     const encoding = await getEncoding(buffer)
