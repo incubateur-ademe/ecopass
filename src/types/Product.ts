@@ -75,6 +75,7 @@ export enum Country {
 
 export type ProductWithMaterialsAndAccessories = Omit<
   Product,
+  | "date"
   | "mass"
   | "price"
   | "airTransportRatio"
@@ -91,6 +92,7 @@ export type ProductWithMaterialsAndAccessories = Omit<
   | "impression"
   | "impressionPercentage"
 > & {
+  date: Date
   mass: number
   price?: number
   airTransportRatio?: number

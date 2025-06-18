@@ -229,7 +229,6 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
 
     parser.on("data", (row: CSVRow) => {
       const productId = uuid()
-      const date = Date.parse(row["datedemisesurlemarche"])
       products.push({
         error: null,
         id: productId,
@@ -238,7 +237,7 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
         uploadId,
         status: Status.Pending,
         gtin: row["identifiant"],
-        date: Number.isNaN(date) ? null : new Date(date),
+        date: row["datedemisesurlemarche"],
         brand: row["marque"],
         declaredScore: getNumberValue(row["score"], 1, -1) as number,
         category: encrypt(getValue<ProductCategory>(productCategories, row["categorie"])),
