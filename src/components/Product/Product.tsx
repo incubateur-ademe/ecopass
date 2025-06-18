@@ -28,7 +28,9 @@ const Product = ({ product }: { product: ProductWithScore }) => {
       <p>
         Version Ecobalyse : <b>{product.upload.version.version}</b>
       </p>
-      <div className='fr-mt-4w'>{product.score ? <ProductScore product={product} /> : <p>Pas de score</p>}</div>
+      <div className='fr-mt-4w'>
+        {product.score ? <ProductScore score={product.score} gtin={product.gtin} /> : <p>Pas de score</p>}
+      </div>
     </Block>
   )
 }

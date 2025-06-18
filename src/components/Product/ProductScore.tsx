@@ -1,21 +1,19 @@
 "use client"
+
 import { ProductWithScore } from "../../db/product"
 import { getSVG } from "../../utils/label/svg"
-import Label from "../Label/LabelSVG"
+import Label from "../Label/Label"
 import Button from "@codegouvfr/react-dsfr/Button"
 
-const ProductScore = ({ product }: { product: ProductWithScore }) => {
+const ProductScore = ({ score, gtin }: { score: Exclude<ProductWithScore["score"], null>; gtin: string }) => {
   const download = () => {
-    if (!product.score) {
-      return
-    }
-    const blob = new Blob([getSVG(product.score?.score, product.score?.standardized)], {
+    const blob = new Blob([getSVG(score?.score, score?.standardized)], {
       type: "image/svg+xml;charset=utf-8",
     })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `${product.gtin}.svg`
+    a.download = `${gtin}.svg`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -25,14 +23,14 @@ const ProductScore = ({ product }: { product: ProductWithScore }) => {
   return (
     <>
       <p>
-        Coût environnemental : <b>{Math.round(product.score!.score)} points</b>
+        Coût environnemental : <b>{Math.round(score!.score)} points</b>
       </p>
       <p>
-        Coût environnemental pour 100g : <b>{Math.round(product.score!.standardized)} points</b>
+        Coût environnemental pour 100g : <b>{Math.round(score!.standardized)} points</b>
       </p>
       <div className='fr-mt-4w'>
         <div className='fr-mb-2w'>
-          <Label product={product.score!} />
+          <Label product={score} />
         </div>
         <Button onClick={download}>Télécharger le .svg</Button>
       </div>

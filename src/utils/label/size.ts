@@ -6,7 +6,10 @@ export const getSize = (value: number) => {
     return 7
   }
   if (value < 1000) {
-    return 1
+    return -1
   }
-  return -5
+  if (value < 10000) {
+    return -7
+  }
+  return -12
 }
