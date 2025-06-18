@@ -228,11 +228,10 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, uploadId
 
     parser.on("data", (row: CSVRow) => {
       const productId = uuid()
-      const dateValue = Date.parse(row["datedemisesurlemarche"])
 
       const rawProduct = {
         gtin: row["identifiant"],
-        date: Number.isNaN(dateValue) ? new Date() : new Date(dateValue),
+        date: row["datedemisesurlemarche"],
         brand: row["marque"],
         declaredScore: getNumberValue(row["score"], 1, -1) as number | undefined,
         product: getValue<ProductCategory>(productCategories, row["categorie"]),

@@ -50,10 +50,14 @@ export const decryptString = (data: string) => {
 }
 
 export function encryptProductFields(product: ProductAPIValidation | ParsedProduct) {
+  const date =
+    product.date instanceof Date
+      ? `${product.date.getDate().toString().padStart(2, "0")}/${(product.date.getMonth() + 1).toString().padStart(2, "0")}/${product.date.getFullYear()}`
+      : product.date
   return {
     product: {
       gtin: product.gtin,
-      date: product.date,
+      date: date,
       brand: product.brand || null,
       declaredScore: product.declaredScore || null,
       category: encrypt(product.product),
@@ -87,6 +91,7 @@ export function encryptProductFields(product: ProductAPIValidation | ParsedProdu
 }
 
 export const encryptAndZipFile = async (buffer: Buffer, filename: string) => {
+  console.log(IV_LENGTH, ALGO, STORAGE_KEY)
   const iv = crypto.randomBytes(IV_LENGTH)
   const cipher = crypto.createCipheriv(ALGO, STORAGE_KEY, iv)
 
