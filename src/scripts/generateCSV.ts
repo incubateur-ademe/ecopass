@@ -34,8 +34,10 @@ const generate = (name: string, length?: string) => {
   const numberOfRows = length ? parseInt(length) : 10000
   const products = Array.from({ length: numberOfRows }, () => {
     const materialsShare = generateShares()
+    const date = faker.date.past()
     return {
       gtin: faker.string.numeric(13),
+      date: `${date.getDate().toString().padStart(2, "0")}/${date.getMonth() + 1}/${date.getFullYear()}`,
       category: faker.helpers.arrayElement(Object.keys(productCategories)),
       business: faker.helpers.arrayElement(["", ...Object.keys(businesses)]),
       countryDyeing: faker.helpers.arrayElement(Object.keys(countries)),
@@ -70,7 +72,7 @@ const generate = (name: string, length?: string) => {
   const csv = stringify(
     products.map((product) => [
       product.gtin,
-      new Date().toISOString(),
+      product.date,
       faker.company.name(),
       "",
       product.category,

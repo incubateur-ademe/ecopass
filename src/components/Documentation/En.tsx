@@ -13,7 +13,7 @@ const En = () => {
           <b>Identifiant</b>: GTIN code of the product. It must be composed of 8 or 13 digits.
         </li>
         <li>
-          <b>Date de mise sur le marché</b>: Release date of the product.
+          <b>Date de mise sur le marché</b>: release date of the product in the french format DD/MM/YY.
         </li>
         <li>
           <b>Marque</b> (optional): product brand.

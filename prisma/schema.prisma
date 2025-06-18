@@ -80,9 +80,9 @@ model Product {
   error  String?
 
   gtin          String
-  date          DateTime?
+  date          String?
   brand         String?
-  declaredScore Float?    @map("declared_score")
+  declaredScore Float?  @map("declared_score")
 
   // Encrypted string
   category        String
