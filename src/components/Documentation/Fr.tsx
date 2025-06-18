@@ -13,7 +13,7 @@ const Fr = () => {
           <b>Identifiant</b> : code GTIN du produit. Ce dernier doit être composé de 8 ou 13 chiffres.
         </li>
         <li>
-          <b>Date de mise sur le marché</b>
+          <b>Date de mise sur le marché : au format JJ/MM/YY.</b>
         </li>
         <li>
           <b>Marque</b> (optionnel) : marque du produit.

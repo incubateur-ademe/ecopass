@@ -33,7 +33,15 @@ export const productValidation = z.object({
   error: z.string().nullable(),
   brand: z.string().nullable(),
   gtin: z.string().regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres"),
-  date: z.date({ message: "Date de mise sur le marché invalide" }),
+  date: z
+    .string({ message: "Date de mise sur le marché invalide" })
+    .refine((val) => /^\d{2}\/\d{1,2}\/\d{2,4}$/.test(val), {
+      message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)",
+    })
+    .transform((val) => {
+      const [day, month, year] = val.split("/")
+      return new Date(`${year}-${month}-${day}`)
+    }),
   declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
   category: z.nativeEnum(ProductCategory, { message: "Catégorie de produit invalide" }),
   airTransportRatio: z
