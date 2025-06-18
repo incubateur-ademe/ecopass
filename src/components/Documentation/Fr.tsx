@@ -19,7 +19,7 @@ const Fr = () => {
           <b>Marque</b> (optionnel) : marque du produit.
         </li>
         <li>
-          <b>Score</b> (optionnel) : score Ecobalyse, si vous l'avez calculé. Attention, si il est diffférent de notre
+          <b>Score</b> (optionnel) : score Ecobalyse, si vous l'avez calculé. Attention, si il est différent de notre
           calcul, le produit sera en erreur.
           <p className='fr-hint-text'>si pas de valeur définie, on utilise le score calculé.</p>
         </li>
