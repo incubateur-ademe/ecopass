@@ -5,7 +5,7 @@ export type EcobalyseProduct = {
   countryFabric?: string
   countryMaking?: string
   countrySpinning?: string
-  printing?: { kind: string; ratio: number }
+  printing?: { kind: string; ratio?: number }
   fading?: boolean
   mass: number
   materials: {
@@ -17,7 +17,7 @@ export type EcobalyseProduct = {
   price?: number
   product: string
   traceability?: boolean
-  trims: { id: string; quantity: number }[]
+  trims?: { id: string; quantity: number }[]
   upcycled?: boolean
 }
 

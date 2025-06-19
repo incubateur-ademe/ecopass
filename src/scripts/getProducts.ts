@@ -181,7 +181,7 @@ async function main(email: string) {
 
 const email = process.argv[2]
 if (!email) {
-  console.error("Usage: ts-node scripts/getUserProductsDecrypted.ts <email>")
+  console.error("Usage: ts-node src/scripts/getProducts.ts <email>")
   process.exit(1)
 }
 

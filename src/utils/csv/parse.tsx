@@ -9,7 +9,7 @@ import { accessories as allAccessories } from "../types/accessory"
 import { Accessory, Material, Product, Status } from "../../../prisma/src/prisma"
 import { impressions } from "../types/impression"
 import { Readable } from "stream"
-import { encrypt } from "../../db/encryption"
+import { encryptProductFields } from "../../db/encryption"
 
 type ColumnType = [
   "identifiant",
@@ -174,9 +174,8 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
 }
 
 const delimiters = [",", ";", "\t"]
-export const parseCSV = async (file: File, encoding: string | null, uploadId: string) => {
+export const parseCSV = async (buffer: Buffer, encoding: string | null, uploadId: string) => {
   const encodingToUse = (encoding as BufferEncoding) || "utf-8"
-  const buffer = Buffer.from(await file.arrayBuffer())
 
   let bestDelimiter = ","
 
@@ -210,7 +209,7 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
 
   const stream = Readable.from(buffer)
 
-  const products: Product[] = []
+  const products: (Product & { materials: undefined; accessories: undefined })[] = []
   const materials: Material[] = []
   const accessories: Accessory[] = []
 
@@ -229,6 +228,73 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
 
     parser.on("data", (row: CSVRow) => {
       const productId = uuid()
+
+      const rawProduct = {
+        gtin: row["identifiant"],
+        date: row["datedemisesurlemarche"],
+        brand: row["marque"],
+        declaredScore: getNumberValue(row["score"], 1, -1) as number | undefined,
+        product: getValue<ProductCategory>(productCategories, row["categorie"]),
+        airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),
+        business: getValue<Business>(businesses, row["tailledelentreprise"]),
+        fading: getBooleanValue(row["delavage"]),
+        mass: getNumberValue(row["masse"]),
+        numberOfReferences: parseInt(row["nombredereferences"]),
+        price: getNumberValue(row["prix"]),
+        traceability: getBooleanValue(row["tracabilitegeographique"]),
+        countryDyeing: getValue<Country>(countries, row["originedelennoblissementimpression"]),
+        countryFabric: getValue<Country>(countries, row["originedetissagetricotage"]),
+        countryMaking: getValue<Country>(countries, row["origineconfection"]),
+        countrySpinning: getValue<Country>(countries, row["originedefilature"]),
+        printing:
+          row["typedimpression"] || row["pourcentagedimpression"]
+            ? {
+                kind: getValue<Impression>(impressions, row["typedimpression"]),
+                ratio: getNumberValue((row["pourcentagedimpression"] || "").trim().replace("%", ""), 0.01),
+              }
+            : undefined,
+        upcycled: getBooleanValue(row["remanufacture"]),
+        materials: Array.from({ length: 16 })
+          .map((_, index) => {
+            //@ts-expect-error : managed from 1 to 16
+            const id = getValue<MaterialType>(allMaterials, row[`matiere${index + 1}`])
+            //@ts-expect-error : managed from 1 to 16
+            const shareRaw = row[`matiere${index + 1}pourcentage`]
+            const share = shareRaw ? getNumberValue(shareRaw.trim().replace("%", "")) : undefined
+            //@ts-expect-error : managed from 1 to 16
+            const country = getValue<Country>(countries, row[`matiere${index + 1}origine`])
+            return id ? { id, share: typeof share === "number" ? share / 100 : undefined, country } : null
+          })
+          .filter((material) => material !== null)
+          .filter((material) => material.id && typeof material.share === "number"),
+        trims: Array.from({ length: 4 })
+          .map((_, index) => {
+            //@ts-expect-error : managed from 1 to 4
+            const id = getValue<AccessoryType>(allAccessories, row[`accessoire${index + 1}`])
+            //@ts-expect-error : managed from 1 to 4
+            const quantity = getNumberValue(row[`accessoire${index + 1}quantite`])
+            return id ? { id, quantity } : null
+          })
+          .filter((accessory) => accessory !== null)
+          .filter((accessory) => accessory.id && typeof accessory.quantity === "number"),
+      }
+      const encrypted = encryptProductFields(rawProduct)
+      encrypted.materials.forEach((material) => {
+        materials.push({
+          id: uuid(),
+          productId,
+          ...material,
+        })
+      })
+
+      encrypted.accessories?.forEach((accessory) => {
+        accessories.push({
+          id: uuid(),
+          productId,
+          ...accessory,
+        })
+      })
+
       products.push({
         error: null,
         id: productId,
@@ -236,65 +302,8 @@ export const parseCSV = async (file: File, encoding: string | null, uploadId: st
         updatedAt: now,
         uploadId,
         status: Status.Pending,
-        gtin: row["identifiant"],
-        date: row["datedemisesurlemarche"],
-        brand: row["marque"],
-        declaredScore: getNumberValue(row["score"], 1, -1) as number,
-        category: encrypt(getValue<ProductCategory>(productCategories, row["categorie"])),
-        airTransportRatio: encrypt(getNumberValue(row["partdutransportaerien"], 0.01)),
-        business: encrypt(getValue<Business>(businesses, row["tailledelentreprise"])),
-        fading: encrypt(getBooleanValue(row["delavage"])),
-        mass: encrypt(getNumberValue(row["masse"])),
-        numberOfReferences: encrypt(parseInt(row["nombredereferences"])),
-        price: encrypt(getNumberValue(row["prix"])),
-        traceability: encrypt(getBooleanValue(row["tracabilitegeographique"])),
-        countryDyeing: encrypt(getValue<Country>(countries, row["originedelennoblissementimpression"])),
-        countryFabric: encrypt(getValue<Country>(countries, row["originedetissagetricotage"])),
-        countryMaking: encrypt(getValue<Country>(countries, row["origineconfection"])),
-        countrySpinning: encrypt(getValue<Country>(countries, row["originedefilature"])),
-        impression: encrypt(getValue<Impression>(impressions, row["typedimpression"])),
-        impressionPercentage: encrypt(getNumberValue(row["pourcentagedimpression"]?.trim().replace("%", ""), 0.01)),
-        upcycled: encrypt(getBooleanValue(row["remanufacture"])),
+        ...encrypted.product,
       })
-
-      Array.from({ length: 16 })
-        .map((_, index) => ({
-          id: uuid(),
-          productId,
-          //@ts-expect-error : managed from 1 to 16
-          slug: getValue<MaterialType>(allMaterials, row[`matiere${index + 1}`]),
-          //@ts-expect-error : managed from 1 to 16
-          share: getNumberValue(row[`matiere${index + 1}pourcentage`]?.trim().replace("%", "")) / 100,
-          //@ts-expect-error : managed from 1 to 16
-          country: getValue<Country>(countries, row[`matiere${index + 1}origine`]),
-        }))
-        .filter((material) => material.slug)
-        .forEach((material) => {
-          materials.push({
-            ...material,
-            slug: encrypt(material.slug),
-            country: material.country ? encrypt(material.country) : null,
-            share: encrypt(material.share),
-          })
-        })
-
-      Array.from({ length: 4 })
-        .map((_, index) => ({
-          id: uuid(),
-          productId,
-          //@ts-expect-error : managed from 1 to 4
-          slug: getValue<AccessoryType>(allAccessories, row[`accessoire${index + 1}`]),
-          //@ts-expect-error : managed from 1 to 4
-          quantity: getNumberValue(row[`accessoire${index + 1}quantite`]),
-        }))
-        .filter((accessory) => accessory.slug)
-        .forEach((accessory) => {
-          accessories.push({
-            ...accessory,
-            slug: encrypt(accessory.slug),
-            quantity: encrypt(accessory.quantity),
-          })
-        })
     })
 
     parser.on("end", resolve)

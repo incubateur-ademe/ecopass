@@ -1,37 +1,14 @@
-import { failProducts, getProductsToProcess } from "./src/db/product"
-import { checkUploadsStatus } from "./src/db/upload"
-import { productValidation } from "./src/services/validation/product"
-import { saveEcobalyseResults } from "./src/utils/ecobalyse/api"
+import { processExportsQueue } from "./src/utils/queue/exports"
+import { processProductsQueue } from "./src/utils/queue/products"
+import { sleep } from "./src/utils/queue/sleep"
+import { processUploadsToQueue } from "./src/utils/queue/uploads"
 
-const sleep = () => new Promise((resolve) => setTimeout(resolve, 2000))
-
-const batchSize = parseInt(process.env.BATCH_SIZE || "10", 10)
 const runQueue = async () => {
   while (true) {
     try {
-      const products = await getProductsToProcess(batchSize)
-      if (products.length === 0) {
-        await sleep()
-      } else {
-        console.log(`Processing ${products.length} products...`)
-        const validatedProducts = products.map((product) => ({
-          id: product.id,
-          ...productValidation.safeParse(product),
-        }))
-
-        await Promise.all([
-          saveEcobalyseResults(validatedProducts.filter((result) => result.success).map((result) => result.data)),
-          failProducts(
-            validatedProducts
-              .filter((result) => !result.success)
-              .map((result) => ({
-                id: result.id,
-                error: result.error.issues.map((issue) => issue.message).join(", "),
-              })),
-          ),
-        ])
-        await checkUploadsStatus(products.map((product) => product.uploadId))
-      }
+      await processUploadsToQueue()
+      await processProductsQueue()
+      await processExportsQueue()
     } catch (error) {
       console.error("Error processing queue:", error)
       await sleep()

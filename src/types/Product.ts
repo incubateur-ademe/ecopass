@@ -118,3 +118,38 @@ export type ProductWithMaterialsAndAccessories = Omit<
     quantity: number
   })[]
 }
+
+export type ParsedProduct = {
+  gtin: string
+  date: string
+  brand: string
+  declaredScore: number | undefined
+  product: ProductCategory
+  airTransportRatio: string | number | undefined
+  business: Business
+  fading: string | boolean | undefined
+  mass: string | number | undefined
+  numberOfReferences: number
+  price: string | number | undefined
+  traceability: string | boolean | undefined
+  countryDyeing: Country
+  countryFabric: Country
+  countryMaking: Country
+  countrySpinning: Country
+  printing:
+    | {
+        kind: Impression
+        ratio: string | number | undefined
+      }
+    | undefined
+  upcycled: string | boolean | undefined
+  materials: {
+    id: string
+    share: number | undefined
+    country?: string
+  }[]
+  trims: {
+    id: string
+    quantity: string | number | undefined
+  }[]
+}

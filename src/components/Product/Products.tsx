@@ -1,6 +1,5 @@
 "use server"
-
-import { getProductsByUserId, getProductsCountByUserId } from "../../db/product"
+import { getProductsByUserId } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
@@ -9,23 +8,16 @@ import Table from "../Table/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import styles from "./Products.module.css"
 
-const Products = async ({ page }: { page: number }) => {
+const Products = async ({ page, productsCount }: { page: number; productsCount: number }) => {
   const session = await auth()
   if (!session || !session.user) {
     return null
   }
 
-  const productsCount = await getProductsCountByUserId(session.user.id)
   const products = await getProductsByUserId(session.user.id, page - 1)
 
-  return products.length === 0 ? (
-    <p>Vous n'avez pas encore déclaré de produits</p>
-  ) : (
+  return (
     <>
-      <p className='fr-mb-4w'>
-        Vous avez <b>{productsCount}</b>{" "}
-        {productsCount > 1 ? <span>produits déclarés</span> : <span>produit déclaré</span>}
-      </p>
       <Search />
       <Table
         className={styles.table}

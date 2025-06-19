@@ -46,7 +46,7 @@ export const sendResetEmail = async (toEmail: string, token: string) => {
   )
 }
 
-export const sendUploadSuccessEmail = async (toEmail: string, name: string, date: Date) => {
+export const sendUploadSuccessEmail = async (toEmail: string, name: string | null, date: Date) => {
   return send(
     [toEmail],
     "Déclaration validée ✅",
@@ -61,7 +61,7 @@ export const sendUploadSuccessEmail = async (toEmail: string, name: string, date
 
 export const sendUploadErrorEmail = async (
   toEmail: string,
-  name: string,
+  name: string | null,
   date: Date,
   total: number,
   success: number,

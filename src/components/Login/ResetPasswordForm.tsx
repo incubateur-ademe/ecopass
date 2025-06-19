@@ -23,10 +23,9 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
     setPasswordDoesNotMatch(false)
 
     const formData = new FormData(event.currentTarget)
-    const email = formData.get("email")
     const password = formData.get("password")
     const confirmPassword = formData.get("confirmPassword")
-    if (email && confirmPassword && password) {
+    if (confirmPassword && password) {
       const validation = validatePassword(password.toString())
       if (Object.values(validation).some((value) => value !== true)) {
         setWeakPassword(true)
@@ -38,7 +37,7 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
         return
       }
 
-      const result = await changePassword(email.toString(), token, password.toString())
+      const result = await changePassword(token, password.toString())
       if (result) {
         setError(result)
       } else {
@@ -59,17 +58,6 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
               <fieldset className='fr-fieldset'>
                 <div className='fr-fieldset__element'>
                   <span className='fr-hint-text'>Sauf mention contraire, tous les champs sont obligatoires.</span>
-                </div>
-                <div className='fr-fieldset__element'>
-                  <Input
-                    label='Email'
-                    hintText='Format attendu : nom@domaine.fr'
-                    nativeInputProps={{
-                      required: true,
-                      type: "email",
-                      name: "email",
-                    }}
-                  />
                 </div>
                 <div className='fr-fieldset__element'>
                   <Input

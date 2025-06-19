@@ -1,4 +1,4 @@
-import { Status } from "../../prisma/src/prisma"
+import { Status, UploadType } from "../../prisma/src/prisma"
 import { completeUpload, failUpload } from "../services/upload"
 import { prismaClient } from "./prismaClient"
 
@@ -7,12 +7,13 @@ export const getUploadById = async (id: string) =>
     where: { id },
     select: {
       id: true,
+      userId: true,
       status: true,
       error: true,
     },
   })
 
-export const createUpload = async (userId: string, name: string) =>
+export const createUpload = async (userId: string, uploadType: UploadType, name?: string) =>
   prismaClient.$transaction(async (transaction) => {
     const lastVersion = await transaction.version.findFirst({
       orderBy: { createdAt: "desc" },
@@ -23,7 +24,7 @@ export const createUpload = async (userId: string, name: string) =>
     }
 
     return transaction.upload.create({
-      data: { userId: userId, name, versionId: lastVersion.id },
+      data: { userId: userId, name, versionId: lastVersion.id, type: uploadType },
       select: {
         id: true,
         user: { select: { email: true } },
@@ -46,14 +47,20 @@ export const updateUploadToError = async (id: string, message?: string) =>
     data: { status: Status.Error, error: message },
   })
 
+export const updateUploadToPending = async (id: string) =>
+  prismaClient.upload.update({
+    where: { id },
+    data: { status: Status.Processing },
+  })
+
 export const getuploadsCountByUserId = async (userId: string) =>
   prismaClient.upload.count({
-    where: { userId },
+    where: { userId, type: UploadType.FILE },
   })
 
 export const getUploadsByUserId = async (userId: string, skip?: number, take?: number) => {
   const uploads = await prismaClient.upload.findMany({
-    where: { userId },
+    where: { userId, type: UploadType.FILE },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -109,3 +116,16 @@ export const checkUploadsStatus = async (uploadsId: string[]) => {
       }),
   )
 }
+
+export const getFirstUpload = async () =>
+  prismaClient.upload.findFirst({
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      user: { select: { email: true } },
+      products: { select: { status: true } },
+    },
+    where: { status: Status.Pending },
+    orderBy: { createdAt: "asc" },
+  })
