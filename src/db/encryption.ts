@@ -91,7 +91,6 @@ export function encryptProductFields(product: ProductAPIValidation | ParsedProdu
 }
 
 export const encryptAndZipFile = async (buffer: Buffer, filename: string) => {
-  console.log(IV_LENGTH, ALGO, STORAGE_KEY)
   const iv = crypto.randomBytes(IV_LENGTH)
   const cipher = crypto.createCipheriv(ALGO, STORAGE_KEY, iv)
 
