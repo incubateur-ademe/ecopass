@@ -7,6 +7,14 @@
 -- CreateEnum
 CREATE TYPE "UploadType" AS ENUM ('API', 'FILE');
 
+
 -- AlterTable
-ALTER TABLE "uploads" ADD COLUMN     "type" "UploadType" NOT NULL,
-ALTER COLUMN "name" DROP NOT NULL;
+ALTER TABLE "uploads" ADD COLUMN "type" "UploadType";
+
+-- Mets à jour toutes les anciennes lignes avec la valeur par défaut 'FILE'
+UPDATE "uploads" SET "type" = 'FILE';
+
+-- Rends la colonne NOT NULL
+ALTER TABLE "uploads" ALTER COLUMN "type" SET NOT NULL;
+
+ALTER TABLE "uploads" ALTER COLUMN "name" DROP NOT NULL;
