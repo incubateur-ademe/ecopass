@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "API du portail de déclaration de l'Affichage Environnemental",
-    "description": "Cette API est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api). Il faut en plus rajouter les informations réglementaires de son produit, à savoir : GTIN, date de mise sur le marché et la marque.",
+    "description": "Cette API est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api). Il faut en plus rajouter les informations réglementaires de son produit, à savoir : GTIN, date de mise sur le marché et la marque.",
     "version": "0.1.0"
   },
   "servers": [
@@ -152,7 +152,7 @@
           },
           "business": {
             "type": "string",
-            "description": "Type d'entreprise et d'offre de services :\n\n- `small-business`: PME/TPE\n- `large-business-with-services`: Grande entreprise avec service de réparation\n- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation\n",
+            "description": "Type d'entreprise et d'offre de services :\n\n- `small-business` : PME/TPE\n- `large-business-with-services` : Grande entreprise avec service de réparation\n- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation\n",
             "enum": ["small-business", "large-business-with-services", "large-business-without-services"]
           },
           "countryDyeing": {
@@ -202,7 +202,7 @@
             "properties": {
               "kind": {
                 "type": "string",
-                "description": "Type de procédé d'impression pouvant prendre les valeurs suivantes :\n- `pigment` pour une impression pigmentaire ;\n- `substantive` pour une impression fixé/lavé ;\n",
+                "description": "Type de procédé d'impression pouvant prendre les valeurs suivantes :\n- `pigment` pour une impression pigmentaire ;\n- `substantive` pour une impression fixé/lavé ;\n",
                 "enum": ["pigment", "substantive"]
               },
               "ratio": {
