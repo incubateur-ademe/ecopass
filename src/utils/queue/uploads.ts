@@ -8,6 +8,7 @@ import { decryptAndDezipFile } from "../../db/encryption"
 
 const encodingMap: Record<string, BufferEncoding> = {
   "iso-8859-1": "latin1",
+  "windows-1252": "latin1",
 }
 
 const getEncoding = async (buffer: Buffer) => {
