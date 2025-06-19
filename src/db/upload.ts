@@ -126,6 +126,6 @@ export const getFirstUpload = async () =>
       user: { select: { email: true } },
       products: { select: { status: true } },
     },
-    where: { status: Status.Pending },
+    where: { status: Status.Pending, type: UploadType.FILE },
     orderBy: { createdAt: "asc" },
   })
