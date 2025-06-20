@@ -73,7 +73,7 @@ const generate = (name: string, length?: string) => {
     products.map((product) => [
       product.gtin,
       product.date,
-      faker.company.name(),
+      "",
       "",
       product.category,
       product.mass,

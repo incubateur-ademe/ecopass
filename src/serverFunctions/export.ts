@@ -45,11 +45,11 @@ export const exportUpload = async (uploadId: string) => {
   )
 }
 
-export const exportProducts = async () => {
+export const exportProducts = async (brand?: string) => {
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
   }
 
-  return createExport(session.user.id)
+  return createExport(session.user.id, brand)
 }

@@ -5,14 +5,14 @@ import { exportProducts } from "../../serverFunctions/export"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { useRouter } from "next/navigation"
 
-const NewExport = () => {
+const NewExport = ({ brand }: { brand?: string }) => {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const onClick = useCallback(() => {
     setIsLoading(true)
     setSuccess(false)
-    exportProducts().then(() => {
+    exportProducts(brand).then(() => {
       setIsLoading(false)
       setSuccess(true)
       router.refresh()
