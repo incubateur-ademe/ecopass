@@ -10,6 +10,7 @@ import { Accessory, Material, Product, Status } from "../../../prisma/src/prisma
 import { impressions } from "../types/impression"
 import { Readable } from "stream"
 import { encryptProductFields } from "../../db/encryption"
+import { FileUpload } from "../../db/upload"
 
 type ColumnType = [
   "identifiant",
@@ -174,7 +175,7 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
 }
 
 const delimiters = [",", ";", "\t"]
-export const parseCSV = async (buffer: Buffer, encoding: string | null, uploadId: string) => {
+export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: Exclude<FileUpload, null>) => {
   const encodingToUse = (encoding as BufferEncoding) || "utf-8"
 
   let bestDelimiter = ","
@@ -232,7 +233,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, uploadId
       const rawProduct = {
         gtin: row["identifiant"],
         date: row["datedemisesurlemarche"],
-        brand: row["marque"],
+        brand: row["marque"] || upload.user.brand?.name || "",
         declaredScore: getNumberValue(row["score"], 1, -1) as number | undefined,
         product: getValue<ProductCategory>(productCategories, row["categorie"]),
         airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),
@@ -300,7 +301,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, uploadId
         id: productId,
         createdAt: now,
         updatedAt: now,
-        uploadId,
+        uploadId: upload.id,
         status: Status.Pending,
         ...encrypted.product,
       })

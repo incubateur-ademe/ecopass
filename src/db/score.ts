@@ -1,4 +1,5 @@
 import { Prisma, Status, UploadType } from "../../prisma/src/prisma"
+import { APIUser } from "../services/auth/auth"
 import { ProductAPIValidation } from "../services/validation/api"
 import { encryptProductFields } from "./encryption"
 import { prismaClient } from "./prismaClient"
@@ -8,7 +9,7 @@ export const createScores = async (scores: Prisma.ScoreCreateManyInput[]) =>
     data: scores,
   })
 
-export const createScore = async (userId: string, product: ProductAPIValidation, score: number) =>
+export const createScore = async (user: Exclude<APIUser, null>["user"], product: ProductAPIValidation, score: number) =>
   prismaClient.$transaction(async (transaction) => {
     const lastVersion = await transaction.version.findFirst({
       orderBy: { createdAt: "desc" },
@@ -27,9 +28,10 @@ export const createScore = async (userId: string, product: ProductAPIValidation,
         product: {
           create: {
             ...encrypted.product,
+            brand: encrypted.product.brand || user.brand?.name || "",
             status: Status.Done,
             upload: {
-              create: { userId: userId, versionId: lastVersion.id, type: UploadType.API },
+              create: { userId: user.id, versionId: lastVersion.id, type: UploadType.API },
             },
             materials: {
               createMany: {
