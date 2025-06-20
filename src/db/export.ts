@@ -1,20 +1,21 @@
 import { Status } from "../../prisma/src/prisma"
 import { prismaClient } from "./prismaClient"
 
-export const createExport = async (userId: string) =>
+export const createExport = async (userId: string, brand?: string) =>
   prismaClient.export.create({
     data: {
       userId,
       name: `affichage-environnemental-${new Date().toISOString()}`,
       status: Status.Pending,
+      brand,
     },
   })
 
-export const getExportsByUserId = async (userId: string) => {
+export const getExportsByUserIdAndBrand = async (userId: string, brand?: string) => {
   const date = new Date()
   date.setDate(date.getDate() - 30)
   return prismaClient.export.findMany({
-    where: { userId, createdAt: { gte: date } },
+    where: { userId, createdAt: { gte: date }, brand: brand || null },
     orderBy: { createdAt: "desc" },
   })
 }

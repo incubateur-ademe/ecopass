@@ -81,7 +81,7 @@ model Product {
 
   gtin          String
   date          String?
-  brand         String?
+  brand         String
   declaredScore Float?  @map("declared_score")
 
   // Encrypted string
@@ -192,7 +192,8 @@ model Export {
   status    Status   @default(Pending)
   createdAt DateTime @default(now()) @map("created_at")
 
-  name String
+  name  String
+  brand String?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String @map("user_id")

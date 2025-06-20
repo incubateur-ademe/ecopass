@@ -1,5 +1,5 @@
 import { completeExport, getFirstExport } from "../../db/export"
-import { getProductsByUserIdBefore, ProductWithScore } from "../../db/product"
+import { getProductsByUserIdAndBrandBefore, ProductWithScore } from "../../db/product"
 import JSZip from "jszip"
 import { getSVG } from "../label/svg"
 import { uploadFileToS3 } from "../s3/bucket"
@@ -18,7 +18,11 @@ export const processExportsQueue = async () => {
   }
 
   console.log(`Processing export ${exportToProcess.name}`)
-  const products = await getProductsByUserIdBefore(exportToProcess.userId, exportToProcess.createdAt)
+  const products = await getProductsByUserIdAndBrandBefore(
+    exportToProcess.userId,
+    exportToProcess.createdAt,
+    exportToProcess.brand,
+  )
   if (!products.length) return
 
   const zip = new JSZip()

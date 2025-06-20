@@ -117,7 +117,7 @@ export const getProductWithScore = async (gtin: string) => {
 export type ProductWithScore = Exclude<Awaited<ReturnType<typeof getProductWithScore>>, null>
 
 const getProducts = async (
-  where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId" | "createdAt">,
+  where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId" | "createdAt" | "brand">,
   skip?: number,
   take?: number,
 ) => {
@@ -149,20 +149,21 @@ const getProducts = async (
 
 export type Products = Awaited<ReturnType<typeof getProducts>>
 
-export const getProductsCountByUserId = async (userId: string) => {
+export const getProductsCountByUserIdAndBrand = async (userId: string, brand?: string) => {
   const result = await prismaClient.product.groupBy({
     by: ["gtin"],
     where: {
       upload: { userId },
       status: Status.Done,
+      brand,
     },
     _count: { gtin: true },
   })
   return result.length
 }
 
-export const getProductsByUserId = async (userId: string, page?: number, size?: number) =>
-  getProducts({ upload: { userId } }, (page || 0) * (size || 10), size || 10)
+export const getProductsByUserIdAndBrand = async (userId: string, page?: number, size?: number, brand?: string) =>
+  getProducts({ upload: { userId }, brand }, (page || 0) * (size || 10), size || 10)
 
 export const getProductsByUploadId = async (uploadId: string) => {
   const products = await prismaClient.product.findMany({
@@ -192,5 +193,19 @@ export const failProducts = async (products: { id: string; error: string }[]) =>
   )
 }
 
-export const getProductsByUserIdBefore = async (userId: string, before: Date) =>
-  getProducts({ upload: { userId }, createdAt: { lt: before } })
+export const getProductsByUserIdAndBrandBefore = async (userId: string, before: Date, brand: string | null) =>
+  getProducts({ upload: { userId }, createdAt: { lt: before }, brand: brand || undefined })
+
+export const getProductsBrandByUserId = async (userId: string) => {
+  const products = await prismaClient.product.findMany({
+    where: {
+      upload: { userId },
+      status: Status.Done,
+    },
+    select: {
+      brand: true,
+    },
+    distinct: ["brand"],
+  })
+  return products.map((product) => product.brand).sort((a, b) => a.localeCompare(b))
+}

@@ -3,10 +3,26 @@ import Block from "../components/Block/Block"
 import Exports from "../components/Product/Exports"
 import NewExport from "../components/Product/NewExport"
 import Products from "../components/Product/Products"
+import BrandSelection from "../components/Product/BrandSelection"
 
-const ProductsPage = ({ page, productsCount }: { page: number; productsCount: number }) => {
+const ProductsPage = ({
+  page,
+  productsCount,
+  brands,
+  brand,
+}: {
+  page: number
+  productsCount: number
+  brands: string[]
+  brand?: string
+}) => {
   return (
     <>
+      {brands.length > 1 && (
+        <Block>
+          <BrandSelection brands={brands} brand={brand} />
+        </Block>
+      )}
       <Block>
         <h1>Mes produits</h1>
         {productsCount === 0 ? (
@@ -26,16 +42,16 @@ const ProductsPage = ({ page, productsCount }: { page: number; productsCount: nu
           </p>
           <p>Note : Vos exports restent disponibles 30 jours.</p>
           <br />
-          <NewExport />
+          <NewExport brand={brand} />
           <Suspense>
-            <Exports />
+            <Exports brand={brand} />
           </Suspense>
         </Block>
       )}
       <Block>
         <h2>Mes produits déclarés</h2>
         <Suspense>
-          <Products page={page} productsCount={productsCount} />
+          <Products page={page} productsCount={productsCount} brand={brand} />
         </Suspense>
       </Block>
     </>

@@ -1,5 +1,5 @@
 "use server"
-import { getProductsByUserId } from "../../db/product"
+import { getProductsByUserIdAndBrand } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
@@ -8,13 +8,13 @@ import Table from "../Table/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import styles from "./Products.module.css"
 
-const Products = async ({ page, productsCount }: { page: number; productsCount: number }) => {
+const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
   if (!session || !session.user) {
     return null
   }
 
-  const products = await getProductsByUserId(session.user.id, page - 1)
+  const products = await getProductsByUserIdAndBrand(session.user.id, page - 1, 10, brand)
 
   return (
     <>
@@ -40,7 +40,7 @@ const Products = async ({ page, productsCount }: { page: number; productsCount: 
           count={Math.ceil(productsCount / 10)}
           defaultPage={page}
           getPageLinkProps={(page) => ({
-            href: `/produits?page=${page}`,
+            href: `/produits?page=${page}${brand ? `&brand=${brand}` : ""}`,
           })}
           showFirstLast
         />
