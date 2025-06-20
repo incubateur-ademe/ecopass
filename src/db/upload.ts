@@ -117,15 +117,17 @@ export const checkUploadsStatus = async (uploadsId: string[]) => {
   )
 }
 
-export const getFirstUpload = async () =>
+export const getFirstFileUpload = async () =>
   prismaClient.upload.findFirst({
     select: {
       id: true,
       name: true,
       createdAt: true,
-      user: { select: { email: true } },
+      user: { select: { email: true, brand: { select: { name: true } } } },
       products: { select: { status: true } },
     },
     where: { status: Status.Pending, type: UploadType.FILE },
     orderBy: { createdAt: "asc" },
   })
+
+export type FileUpload = Awaited<ReturnType<typeof getFirstFileUpload>>

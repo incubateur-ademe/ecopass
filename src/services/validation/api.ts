@@ -39,9 +39,8 @@ export const productAPIValidation = z.object({
     .string()
     .refine((val) => !isNaN(Date.parse(val)), "Date de mise sur le marché invalide")
     .transform((val) => new Date(val)),
-  brand: z.string().optional(),
+  brand: z.string(),
   declaredScore: z.number().optional(),
-
   product: z.enum(productValues, { message: "Catégorie de produit invalide" }),
   airTransportRatio: z
     .number({ message: "La part de transport aérien doit être un pourcentage" })

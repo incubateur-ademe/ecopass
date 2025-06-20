@@ -3,7 +3,7 @@ import { prismaClient } from "./prismaClient"
 export const getUserByApiKey = async (apiKey: string) =>
   prismaClient.aPIKey.findUnique({
     where: { key: apiKey },
-    select: { key: true, user: { select: { id: true, email: true } } },
+    select: { key: true, user: { select: { id: true, email: true, brand: { select: { id: true, name: true } } } } },
   })
 
 export const getUserByEmail = async (email: string) =>

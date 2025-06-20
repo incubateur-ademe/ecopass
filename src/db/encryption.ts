@@ -58,7 +58,7 @@ export function encryptProductFields(product: ProductAPIValidation | ParsedProdu
     product: {
       gtin: product.gtin,
       date: date,
-      brand: product.brand || null,
+      brand: product.brand,
       declaredScore: product.declaredScore || null,
       category: encrypt(product.product),
       airTransportRatio: encrypt(product.airTransportRatio),
