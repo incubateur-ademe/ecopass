@@ -10,8 +10,16 @@ export const signPassword = async (password: string) => {
 }
 
 export const generateResetToken = async (email: string) => {
-  const user = await prismaClient.user.findUnique({ where: { email: email.toLowerCase() } })
+  const user = await prismaClient.user.findUnique({
+    where: { email: email.toLowerCase() },
+    include: { accounts: true },
+  })
   if (!user) {
+    throw new Error("Utilisateur introuvable")
+  }
+
+  const account = user.accounts.find((account) => account.provider === "credentials")
+  if (!account) {
     throw new Error("Utilisateur introuvable")
   }
 
@@ -31,8 +39,8 @@ export const generateResetToken = async (email: string) => {
     process.env.JWT_SECRET,
   )
 
-  await prismaClient.user.update({
-    where: { email: email.toLowerCase() },
+  await prismaClient.account.update({
+    where: { id: account.id },
     data: {
       resetPasswordToken: token,
     },

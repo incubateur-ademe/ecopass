@@ -48,7 +48,7 @@ const Upload = () => {
         </Link>
       </p>
       <p className='fr-mb-4w'>
-        Si vous avez besoin d'aide, veuillez contacter notre support à l'adresse suivante :{" "}
+        Si vous avez besoin d'aide, veuillez contacter notre support à l'adresse suivante :{" "}
         <Link className='fr-link' href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`} prefetch={false}>
           {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
         </Link>

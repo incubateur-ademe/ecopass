@@ -24,18 +24,25 @@ export const changePassword = async (token: string, password: string) => {
   const user = await prismaClient.user.findFirst({
     where: {
       email: decoded.email.toLowerCase(),
-      resetPasswordToken: decoded.uuid,
+    },
+    include: {
+      accounts: {
+        where: {
+          provider: "credentials",
+          resetPasswordToken: decoded.uuid,
+        },
+      },
     },
   })
 
-  if (!user) {
+  if (!user || user.accounts.length === 0) {
     return "Token invalide ou expiré"
   }
 
   const hashedPassword = await signPassword(password)
 
-  await prismaClient.user.update({
-    where: { id: user.id },
+  await prismaClient.account.update({
+    where: { id: user.accounts[0].id },
     data: {
       password: hashedPassword,
       resetPasswordToken: null,

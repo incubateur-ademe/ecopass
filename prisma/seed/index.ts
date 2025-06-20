@@ -26,24 +26,36 @@ const users = async () => {
   const brands = await prisma.brand.createManyAndReturn({
     data: Array.from({ length: 5 }).map(() => ({
       name: faker.company.name(),
+      siret: faker.string.numeric(14),
     })),
   })
 
   const password = await signPassword("password")
-  const allUsers = await prisma.user.createManyAndReturn({
-    data: brands.flatMap((brand, i) =>
-      Array.from({ length: 5 }).map((_, j) => ({
-        email: `user-${i}-${j}@test.fr`,
-        brandId: brand.id,
-        password,
-      })),
+  const aalAccounts = await Promise.all(
+    brands.flatMap((brand, i) =>
+      Array.from({ length: 5 }).map((_, j) =>
+        prisma.account.create({
+          data: {
+            provider: "credentials",
+            providerAccountId: `user-${i}-${j}@test.fr`,
+            password: password,
+            type: "credentials",
+            user: {
+              create: {
+                email: `user-${i}-${j}@test.fr`,
+                brandId: brand.id,
+              },
+            },
+          },
+        }),
+      ),
     ),
-  })
+  )
 
   await prisma.aPIKey.createMany({
-    data: allUsers.flatMap((user) =>
+    data: aalAccounts.flatMap((account) =>
       Array.from({ length: faker.number.int({ min: 0, max: 3 }) }).map(() => ({
-        userId: user.id,
+        userId: account.userId,
         name: faker.lorem.words(faker.number.int({ min: 1, max: 3 })),
       })),
     ),
