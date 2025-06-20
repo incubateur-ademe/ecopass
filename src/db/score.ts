@@ -31,7 +31,7 @@ export const createScore = async (user: Exclude<APIUser, null>["user"], product:
             brand: encrypted.product.brand || user.brand?.name || "",
             status: Status.Done,
             upload: {
-              create: { userId: user.id, versionId: lastVersion.id, type: UploadType.API },
+              create: { userId: user.id, versionId: lastVersion.id, type: UploadType.API, status: Status.Done },
             },
             materials: {
               createMany: {
