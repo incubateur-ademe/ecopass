@@ -32,6 +32,8 @@ jobs:
         run: yarn lint
       - name: Run build
         run: yarn build
+        env:
+          STORAGE_ENCRYPTION_KEY: ${{ secrets.STORAGE_ENCRYPTION_KEY}}
       - name: Run unit tests
         run: yarn test
       - name: Migrate db
