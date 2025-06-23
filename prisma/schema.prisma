@@ -49,7 +49,7 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  email         String?   @unique
+  email         String    @unique
   emailVerified DateTime? @map("email_verified")
 
   nom               String?

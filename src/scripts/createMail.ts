@@ -2,6 +2,7 @@ import { prismaClient } from "../db/prismaClient"
 
 const email = "todo"
 const brandName = ""
+const siret = ""
 
 export const createMail = async () => {
   if (!email || !brandName) {
@@ -26,14 +27,22 @@ export const createMail = async () => {
     brand = await prismaClient.brand.create({
       data: {
         name: brandName,
+        siret: siret,
       },
     })
   }
 
-  await prismaClient.user.create({
+  await prismaClient.account.create({
     data: {
-      email: email.toLowerCase(),
-      brandId: brand.id,
+      user: {
+        create: {
+          email: email.toLowerCase(),
+          brandId: brand.id,
+        },
+      },
+      provider: "credentials",
+      providerAccountId: email.toLowerCase(),
+      type: "credentials",
       password: "",
     },
   })
