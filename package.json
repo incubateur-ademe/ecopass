@@ -10,7 +10,8 @@
     "predev": "react-dsfr update-icons",
     "prebuild": "react-dsfr update-icons",
     "queue:watch": "tsx watch queue.ts",
-    "queue": "tsx queue.ts"
+    "queue": "tsx queue.ts",
+    "test": "jest"
   },
   "prisma": {
     "seed": "tsx prisma/seed/index.ts"
@@ -49,6 +50,7 @@
     "@faker-js/faker": "^9.8.0",
     "@types/bcrypt": "^5.0.2",
     "@types/ejs": "^3.1.5",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22",
     "@types/nodemailer": "^6.4.17",
@@ -60,9 +62,11 @@
     "eslint-config-next": "15.3.3",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.1",
+    "jest": "^30.0.2",
     "prettier": "^3.5.3",
     "prisma": "^6.9.0",
     "sass": "^1.89.1",
+    "ts-jest": "^29.4.0",
     "typescript": "^5"
   }
 }
