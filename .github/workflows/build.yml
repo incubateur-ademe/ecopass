@@ -26,14 +26,15 @@ jobs:
           cache: "yarn"
       - name: Copy .env
         run: cp .env.dist .env
+      - name: Inject secrets into .env
+        run: |
+          echo "STORAGE_ENCRYPTION_KEY=${{ secrets.STORAGE_ENCRYPTION_KEY }}" >> .env
       - name: Install dependencies
         run: yarn install --immutable --immutable-cache --check-cache
       - name: Linter
         run: yarn lint
       - name: Run build
         run: yarn build
-        env:
-          STORAGE_ENCRYPTION_KEY: ${{ secrets.STORAGE_ENCRYPTION_KEY}}
       - name: Run unit tests
         run: yarn test
       - name: Migrate db
