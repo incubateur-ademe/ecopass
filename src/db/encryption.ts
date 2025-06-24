@@ -51,7 +51,7 @@ const decryptBoolean = (data: string) => {
   return decrypted === null || decrypted === "" ? undefined : decrypted
 }
 
-const decryptString = (data: string) => {
+export const decryptString = (data: string) => {
   const decrypted = decrypt(data)
   return decrypted === null || decrypted === "" ? undefined : decrypted
 }

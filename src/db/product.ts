@@ -143,7 +143,7 @@ export const getProductsByUploadId = async (uploadId: string) => {
       score: true,
     },
   })
-  return decryptProduct(products)
+  return products.map((product) => decryptProductFields(product))
 }
 
 export const failProducts = async (products: { id: string; error: string }[]) => {

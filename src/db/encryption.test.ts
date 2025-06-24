@@ -1,5 +1,12 @@
 import { v4 as uuid } from "uuid"
-import { encryptProductFields, encryptAndZipFile, decryptAndDezipFile, decryptProductFields } from "./encryption"
+import {
+  encryptProductFields,
+  encryptAndZipFile,
+  decryptAndDezipFile,
+  decryptProductFields,
+  encrypt,
+  decryptString,
+} from "./encryption"
 import { Status } from "../../prisma/src/prisma"
 
 describe("encryption utils", () => {
@@ -90,28 +97,6 @@ describe("encryption utils", () => {
     })
   })
 
-  it("encrypt empty field as not null", () => {
-    const encrypted = encryptProductFields({
-      gtin: "12345678",
-      date: new Date("2024-12-31"),
-      brand: "TestBrand",
-      declaredScore: 99,
-      product: "Jean",
-      mass: 1.23,
-      materials: [{ id: "Coton", share: 1, country: "France" }],
-    })
-
-    Object.keys(encrypted.product).forEach((key) => {
-      const value = encrypted.product[key]
-      if (value instanceof String) {
-        const values = encrypted.product[key].split(":")
-        if (values.length === 3) {
-          expect(values[2].length).toBeGreaterThan(0)
-        }
-      }
-    })
-  })
-
   it("encryptAndZipFile / decryptAndDezipFile roundtrip", async () => {
     const buffer = Buffer.from("test file content")
     const filename = "test.txt"
@@ -119,5 +104,29 @@ describe("encryption utils", () => {
     expect(encrypted).not.toBe(buffer.toString())
     const decrypted = await decryptAndDezipFile(encrypted)
     expect(decrypted.equals(buffer)).toBe(true)
+  })
+
+  it("encrypt/decrypt string", () => {
+    const value = "hello world"
+    const encrypted = encrypt(value)
+    expect(decryptString(encrypted)).toBe(value)
+  })
+
+  it("encrypt/decrypt empty string", () => {
+    const value = ""
+    const encrypted = encrypt(value)
+    const values = encrypted.split(":")
+    expect(values.length).toBe(3)
+    expect(values[2].length).not.toBe(0)
+    expect(decryptString(encrypted)).toBe(undefined)
+  })
+
+  it("encrypt/decrypt undefined string", () => {
+    const value = undefined
+    const encrypted = encrypt(value)
+    const values = encrypted.split(":")
+    expect(values.length).toBe(3)
+    expect(values[2].length).not.toBe(0)
+    expect(decryptString(encrypted)).toBe(value)
   })
 })
