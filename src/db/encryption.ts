@@ -31,8 +31,12 @@ function decrypt(data: string) {
   decipher.setAuthTag(tag)
   const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()])
   const decryptedText = decrypted.toString("utf8")
-  const payload = JSON.parse(decryptedText)
-  return payload instanceof Object && "v" in payload ? payload.v : payload
+  try {
+    const payload = JSON.parse(decryptedText)
+    return payload instanceof Object && "v" in payload ? payload.v : payload
+  } catch {
+    return decryptedText
+  }
 }
 
 const decryptNumber = (data: string) => {
