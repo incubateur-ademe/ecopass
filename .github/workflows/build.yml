@@ -29,6 +29,7 @@ jobs:
       - name: Inject secrets into .env
         run: |
           echo "STORAGE_ENCRYPTION_KEY=${{ secrets.STORAGE_ENCRYPTION_KEY }}" >> .env
+          echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
       - name: Install dependencies
         run: yarn install --immutable --immutable-cache --check-cache
       - name: Linter
