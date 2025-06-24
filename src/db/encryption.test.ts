@@ -139,7 +139,6 @@ describe("encryption utils", () => {
         accessories:
           oldEncryption.accessories?.map((accessory) => ({ ...accessory, id: uuid(), productId: uuid() })) || [],
       })
-      console.log(decrypted)
       checkDecryption(product, oldEncryption, decrypted)
     })
   })
@@ -157,7 +156,6 @@ describe("encryption utils", () => {
       materials: encrypted.materials.map((material) => ({ ...material, id: uuid(), productId: uuid() })),
       accessories: encrypted.accessories?.map((accessory) => ({ ...accessory, id: uuid(), productId: uuid() })) || [],
     })
-
     checkDecryption(product, encrypted, decrypted)
   })
 

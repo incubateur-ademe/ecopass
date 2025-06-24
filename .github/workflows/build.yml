@@ -36,12 +36,14 @@ jobs:
         run: yarn lint
       - name: Run build
         run: yarn build
-      - name: Run unit tests
-        run: yarn test
       - name: Migrate db
         run: yarn prisma migrate deploy
       - name: Start server
         run: yarn start &
+      - name: Run unit tests
+        run: npx jest
+      - name: Run e2e tests
+        run: npx playwright test
       - name: Create artifacts directory
         run: mkdir -p ${{ github.workspace }}/tmp/artifacts
       - name: Lighthouse Check
