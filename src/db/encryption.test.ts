@@ -1,38 +1,12 @@
-import {
-  encrypt,
-  decryptString,
-  decryptNumber,
-  decryptBoolean,
-  encryptProductFields,
-  encryptAndZipFile,
-  decryptAndDezipFile,
-} from "./encryption"
+import { v4 as uuid } from "uuid"
+import { encryptProductFields, encryptAndZipFile, decryptAndDezipFile, decryptProductFields } from "./encryption"
+import { Status } from "../../prisma/src/prisma"
 
 describe("encryption utils", () => {
-  it("encrypt/decrypt string", () => {
-    const value = "hello world"
-    const encrypted = encrypt(value)
-    expect(decryptString(encrypted)).toBe(value)
-  })
-
-  it("encrypt/decrypt number", () => {
-    const value = 42.5
-    const encrypted = encrypt(value)
-    expect(decryptNumber(encrypted)).toBeCloseTo(value)
-  })
-
-  it("encrypt/decrypt boolean", () => {
-    const value = true
-    const encrypted = encrypt(value)
-    expect(decryptBoolean(encrypted)).toBe(value)
-    const encryptedFalse = encrypt(false)
-    expect(decryptBoolean(encryptedFalse)).toBe(false)
-  })
-
-  it("encryptProductFields returns encrypted fields", () => {
+  it("encryptProductFields returns encrypted fields and decrypts it", () => {
     const product = {
       gtin: "12345678",
-      date: new Date("2024-01-01"),
+      date: new Date("2024-12-31"),
       brand: "TestBrand",
       declaredScore: 99,
       product: "Jean",
@@ -52,16 +26,97 @@ describe("encryption utils", () => {
       materials: [{ id: "Coton", share: 1, country: "France" }],
       trims: [{ id: "Zip long", quantity: 1 }],
     }
+
     const encrypted = encryptProductFields(product)
-    expect(typeof encrypted.product.category).toBe("string")
-    expect(typeof encrypted.materials[0].slug).toBe("string")
-    expect(typeof encrypted.accessories[0].slug).toBe("string")
+    const decrypted = decryptProductFields({
+      status: Status.Pending,
+      id: uuid(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      error: null,
+      uploadId: uuid(),
+      ...encrypted.product,
+      materials: encrypted.materials.map((material) => ({ ...material, id: uuid(), productId: uuid() })),
+      accessories: encrypted.accessories?.map((accessory) => ({ ...accessory, id: uuid(), productId: uuid() })) || [],
+    })
+
+    const objectFields = ["trims", "materials", "printing"]
+    const notEncryptedFields = ["gtin", "date", "brand", "declaredScore"]
+    const encryptedFields = Object.keys(product).filter(
+      (key) => !notEncryptedFields.includes(key) && !objectFields.includes(key),
+    )
+
+    for (const field of notEncryptedFields) {
+      if (field === "date") {
+        expect(encrypted.product[field]).toEqual("31/12/2024")
+        expect(decrypted[field]).toEqual("31/12/2024")
+      } else {
+        expect(encrypted.product[field]).toEqual(product[field])
+        expect(decrypted[field]).toEqual(product[field])
+      }
+    }
+
+    for (const field of encryptedFields) {
+      if (field === "product") {
+        expect(encrypted.product.category).not.toEqual(product[field])
+        expect(typeof encrypted.product.category).toBe("string")
+        expect(decrypted.category).toEqual(product[field])
+      } else {
+        expect(encrypted.product[field]).not.toEqual(product[field])
+        expect(typeof encrypted.product[field]).toBe("string")
+        expect(decrypted[field]).toEqual(product[field])
+      }
+    }
+
+    encrypted.materials.forEach((material, i) => {
+      expect(material.slug).not.toEqual(product.materials[i].id)
+      expect(typeof material.slug).toBe("string")
+      expect(decrypted.materials[i].slug).toEqual(product.materials[i].id)
+      expect(material.country).not.toEqual(product.materials[i].country)
+      expect(typeof material.country === "string").toBe(true)
+      expect(decrypted.materials[i].country).toEqual(product.materials[i].country)
+      expect(material.share).not.toEqual(product.materials[i].share)
+      expect(typeof material.share).toBe("string")
+      expect(decrypted.materials[i].share).toEqual(product.materials[i].share)
+    })
+
+    encrypted.accessories?.forEach((accessory, i) => {
+      expect(accessory.slug).not.toEqual(product.trims[i].id)
+      expect(typeof accessory.slug).toBe("string")
+      expect(decrypted.accessories[i].slug).toEqual(product.trims[i].id)
+      expect(accessory.quantity).not.toEqual(product.trims[i].quantity)
+      expect(typeof accessory.quantity).toBe("string")
+      expect(decrypted.accessories[i].quantity).toEqual(product.trims[i].quantity)
+    })
+  })
+
+  it("encrypt empty field as not null", () => {
+    const encrypted = encryptProductFields({
+      gtin: "12345678",
+      date: new Date("2024-12-31"),
+      brand: "TestBrand",
+      declaredScore: 99,
+      product: "Jean",
+      mass: 1.23,
+      materials: [{ id: "Coton", share: 1, country: "France" }],
+    })
+
+    Object.keys(encrypted.product).forEach((key) => {
+      const value = encrypted.product[key]
+      if (value instanceof String) {
+        const values = encrypted.product[key].split(":")
+        if (values.length === 3) {
+          expect(values[2].length).toBeGreaterThan(0)
+        }
+      }
+    })
   })
 
   it("encryptAndZipFile / decryptAndDezipFile roundtrip", async () => {
     const buffer = Buffer.from("test file content")
     const filename = "test.txt"
     const encrypted = await encryptAndZipFile(buffer, filename)
+    expect(encrypted).not.toBe(buffer.toString())
     const decrypted = await decryptAndDezipFile(encrypted)
     expect(decrypted.equals(buffer)).toBe(true)
   })

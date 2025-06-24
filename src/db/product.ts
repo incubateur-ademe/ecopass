@@ -1,5 +1,5 @@
-import { Accessory, Material, Prisma, Product, Score, Status } from "../../prisma/src/prisma"
-import { decryptBoolean, decryptNumber, decryptString } from "./encryption"
+import { Accessory, Material, Prisma, Product, Status } from "../../prisma/src/prisma"
+import { decryptProductFields, decryptString } from "./encryption"
 import { prismaClient } from "./prismaClient"
 
 export const createProducts = async ({
@@ -40,39 +40,6 @@ export const createProductScore = async (score: Prisma.ScoreCreateManyInput) =>
     })
   })
 
-const decryptProduct = (
-  products: (Product & { materials: Material[]; accessories: Accessory[]; score?: Score | null })[],
-) =>
-  products.map((product) => ({
-    ...product,
-    category: decryptString(product.category),
-    business: decryptString(product.business),
-    countryDyeing: decryptString(product.countryDyeing),
-    countryFabric: decryptString(product.countryFabric),
-    countryMaking: decryptString(product.countryMaking),
-    countrySpinning: decryptString(product.countrySpinning),
-    mass: decryptNumber(product.mass),
-    price: decryptNumber(product.price),
-    airTransportRatio: decryptNumber(product.airTransportRatio),
-    numberOfReferences: decryptNumber(product.numberOfReferences),
-    fading: decryptBoolean(product.fading),
-    traceability: decryptBoolean(product.traceability),
-    upcycled: decryptBoolean(product.upcycled),
-    impression: decryptString(product.impression),
-    impressionPercentage: decryptNumber(product.impressionPercentage),
-    materials: product.materials.map((material) => ({
-      ...material,
-      slug: decryptString(material.slug),
-      country: material.country ? decryptString(material.country) : undefined,
-      share: decryptNumber(material.share),
-    })),
-    accessories: product.accessories.map((accessory) => ({
-      ...accessory,
-      slug: decryptString(accessory.slug),
-      quantity: decryptNumber(accessory.quantity),
-    })),
-  }))
-
 export const getProductsToProcess = async (take: number) => {
   const products = await prismaClient.product.findMany({
     where: {
@@ -88,7 +55,7 @@ export const getProductsToProcess = async (take: number) => {
     take,
   })
 
-  return decryptProduct(products)
+  return products.map((product) => decryptProductFields(product))
 }
 
 const productWithScoreSelect = {

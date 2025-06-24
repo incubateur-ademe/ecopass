@@ -1,5 +1,5 @@
 import { prismaClient } from "../db/prismaClient"
-import { decryptBoolean, decryptNumber, decryptString } from "../db/encryption"
+import { decryptProductFields } from "../db/encryption"
 import fs from "fs"
 import { stringify } from "csv-stringify/sync"
 
@@ -24,43 +24,7 @@ async function main(email: string) {
 
   const products = user.uploads.flatMap((upload) => upload.products)
 
-  const decryptedProducts = products.map((product) => ({
-    error: product.error,
-    id: product.id,
-    gtin: product.gtin,
-    date: product.date,
-    brand: product.brand,
-    declaredScore: product.declaredScore,
-    category: decryptString(product.category),
-    business: decryptString(product.business),
-    countryDyeing: decryptString(product.countryDyeing),
-    countryFabric: decryptString(product.countryFabric),
-    countryMaking: decryptString(product.countryMaking),
-    countrySpinning: decryptString(product.countrySpinning),
-    impression: decryptString(product.impression),
-    mass: decryptNumber(product.mass),
-    price: decryptNumber(product.price),
-    airTransportRatio: decryptNumber(product.airTransportRatio),
-    numberOfReferences: decryptNumber(product.numberOfReferences),
-    impressionPercentage: decryptNumber(product.impressionPercentage),
-    fading: decryptBoolean(product.fading),
-    traceability: decryptBoolean(product.traceability),
-    upcycled: decryptBoolean(product.upcycled),
-    createdAt: product.createdAt,
-    updatedAt: product.updatedAt,
-    score: product.score,
-    materials: product.materials.map((m) => ({
-      ...m,
-      slug: decryptString(m.slug),
-      country: m.country ? decryptString(m.country) : undefined,
-      share: decryptNumber(m.share),
-    })),
-    accessories: product.accessories.map((a) => ({
-      ...a,
-      slug: decryptString(a.slug),
-      quantity: decryptNumber(a.quantity),
-    })),
-  }))
+  const decryptedProducts = products.map((product) => decryptProductFields(product))
 
   const csv = stringify(
     decryptedProducts.map((product) => [
