@@ -13,7 +13,7 @@ test("connection with proconnect, and properly disconnect", async ({ page }) => 
   await page.getByRole("button", { name: "Recevoir un lien d’" }).click()
 
   await page.goto("https://yopmail.com/")
-  await page.getByRole("button", { name: "Consent" }).click()
+
   await page.getByRole("textbox", { name: "Login" }).fill("ecopass-e2e")
   await page.getByRole("button", { name: "" }).click()
 
