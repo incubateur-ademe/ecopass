@@ -39,12 +39,14 @@ jobs:
         run: yarn lint
       - name: Run build
         run: yarn build
-      - name: Migrate db
-        run: yarn prisma migrate deploy
-      - name: Start server
-        run: yarn start &
       - name: Run unit tests
         run: npx jest
+      - name: Migrate db
+        run: yarn prisma migrate deploy
+      - name: Seed db
+        run: yarn prisma db seed
+      - name: Start server
+        run: yarn start &
       - name: Install Playwright browsers
         run: npx playwright install chromium
       - name: Install Playwright deps
