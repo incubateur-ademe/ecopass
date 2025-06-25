@@ -32,9 +32,11 @@ export const productValidation = z.object({
   updatedAt: z.date(),
   error: z.string().nullable(),
   brand: z.string(),
-  gtin: z.string().regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres"),
+  gtin: z
+    .string({ message: "Le code GTIN est obligatoire" })
+    .regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres"),
   date: z
-    .string({ message: "Date de mise sur le marché invalide" })
+    .string({ message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)" })
     .refine((val) => /^\d{2}\/\d{1,2}\/\d{2,4}$/.test(val), {
       message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)",
     })
