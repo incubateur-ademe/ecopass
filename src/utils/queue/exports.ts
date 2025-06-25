@@ -37,7 +37,7 @@ export const processExportsQueue = async () => {
   }
 
   const zipContent = await zip.generateAsync({ type: "nodebuffer" })
-  await uploadFileToS3(`exports/${exportToProcess.name}.zip`, zipContent, "export")
+  await uploadFileToS3(`${exportToProcess.name}.zip`, zipContent, "export")
 
   await completeExport(exportToProcess.id)
   console.log(`${products.length} products processed and export completed`)

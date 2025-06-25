@@ -7,7 +7,7 @@ import path from "path"
 const main = async (uploadId: string) => {
   try {
     console.log(`Téléchargement du fichier pour l'upload ID : ${uploadId}`)
-    const encryptedZip = await downloadFileFromS3(`uploads/${uploadId}`)
+    const encryptedZip = await downloadFileFromS3(uploadId, "upload")
     console.log("File", encryptedZip)
     const csvBuffer = await decryptAndDezipFile(encryptedZip)
     const outputPath = path.resolve(process.cwd(), `${uploadId}.csv`)

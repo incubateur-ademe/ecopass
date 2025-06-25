@@ -21,7 +21,7 @@ const getEncoding = async (buffer: Buffer) => {
 }
 
 const getFile = async (uploadId: string) => {
-  const zip = await downloadFileFromS3(`uploads/${uploadId}`)
+  const zip = await downloadFileFromS3(uploadId, "upload")
   return decryptAndDezipFile(zip)
 }
 
