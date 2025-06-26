@@ -13,7 +13,7 @@ export const getUploadById = async (id: string) =>
     },
   })
 
-export const createUpload = async (userId: string, uploadType: UploadType, name?: string) =>
+export const createUpload = async (userId: string, uploadType: UploadType, name?: string, id?: string) =>
   prismaClient.$transaction(async (transaction) => {
     const lastVersion = await transaction.version.findFirst({
       orderBy: { createdAt: "desc" },
@@ -24,7 +24,7 @@ export const createUpload = async (userId: string, uploadType: UploadType, name?
     }
 
     return transaction.upload.create({
-      data: { userId: userId, name, versionId: lastVersion.id, type: uploadType },
+      data: { id, userId: userId, name, versionId: lastVersion.id, type: uploadType },
       select: {
         id: true,
         user: { select: { email: true } },

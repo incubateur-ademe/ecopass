@@ -32,8 +32,8 @@ export const processUploadsToQueue = async () => {
   }
 
   console.log("Processing upload:", upload.id)
-  const buffer = await getFile(upload.id)
   try {
+    const buffer = await getFile(upload.id)
     await updateUploadToPending(upload.id)
     const encoding = await getEncoding(buffer)
     const csvData = await parseCSV(buffer, encoding, upload)
