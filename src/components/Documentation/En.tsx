@@ -45,7 +45,7 @@ const En = () => {
           </ul>
         </li>
         <li>
-          <b>Masse</b>: mass of the finished product, in kilograms (min: 0.01 kg).
+          <b>Masse (en kg)</b>: mass of the finished product, in kilograms (min: 0.01 kg).
         </li>
         <li>
           <b>Remanufacturé</b>: is the product remanufactured? Yes/No.
@@ -54,7 +54,7 @@ const En = () => {
           <b>Nombre de références</b>: number of references in the brand's catalog (min: 1, max: 999999).
         </li>
         <li>
-          <b>Prix</b>: product price, in Euros (€) (min: 1, max: 1000).
+          <b>Prix (en euros, TTC)</b>: product price, in Euros (€), VAT included(min: 1, max: 1000).
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optional): type of company and service offer:

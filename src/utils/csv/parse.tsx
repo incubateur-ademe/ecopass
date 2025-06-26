@@ -98,10 +98,10 @@ const columns: Partial<Record<ColumnType[number], string>> = {
   referenceinterne: "Référence interne",
   datedemisesurlemarche: "Date de mise sur le marché",
   categorie: "Catégorie",
-  masse: "Masse",
+  masse: "Masse (en kg)",
   remanufacture: "Remanufacturé",
   nombredereferences: "Nombre de références",
-  prix: "Prix",
+  prix: "Prix (en euros, TTC)",
   tailledelentreprise: "Taille de l'entreprise",
   tracabilitegeographique: "Traçabilité géographique",
   matiere1: "Matière 1",
@@ -126,7 +126,8 @@ const simplifyValue = (value: string | null) =>
     ? value
         .trim()
         .toLowerCase()
-        .replace(/[ \/'()-]/g, "")
+        .replace(/\(.*?\)/g, "")
+        .replace(/[ \/'-]/g, "")
         .replace(/[éè]/g, "e")
         .replace(/ç/g, "c")
     : ""

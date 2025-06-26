@@ -45,7 +45,7 @@ const Fr = () => {
           </ul>
         </li>
         <li>
-          <b>Masse</b> : masse du produit fini, en kilogrammes (min : 0,01 kg).
+          <b>Masse (en kg)</b> : masse du produit fini, en kilogrammes (min : 0,01 kg).
         </li>
         <li>
           <b>Remanufacturé</b> : est ce que le produit est remanufacturé ? Oui/Non.
@@ -54,7 +54,7 @@ const Fr = () => {
           <b>Nombre de références</b> : nombre de références au catalogue de la marque (min : 1, max : 999999).
         </li>
         <li>
-          <b>Prix</b> : prix du produit, en Euros (€) (min : 1, max : 1000).
+          <b>Prix (en euros, TTC)</b> : prix du produit, en Euros (€) (min : 1, max : 1000).
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optionnel) : type d'entreprise et d'offre de services :
