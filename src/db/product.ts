@@ -121,30 +121,34 @@ const getProducts = async (
   skip?: number,
   take?: number,
 ) => {
-  const products = await prismaClient.product.findMany({
+  const uniqueGtins = await prismaClient.product.findMany({
     where: {
       score: { isNot: null },
       ...where,
     },
-    select: productWithScoreSelect,
+    select: { gtin: true },
+    distinct: ["gtin"],
     orderBy: [{ gtin: "asc" }, { createdAt: "desc" }],
-    take,
     skip,
+    take,
   })
 
-  const uniqueProducts = new Map<string, (typeof products)[number]>()
-  for (const product of products) {
-    if (!uniqueProducts.has(product.gtin)) {
-      uniqueProducts.set(product.gtin, product)
-    }
-  }
+  const products = await Promise.all(
+    uniqueGtins.map(async ({ gtin }) =>
+      prismaClient.product.findFirst({
+        where: { gtin, ...where, score: { isNot: null } },
+        select: productWithScoreSelect,
+        orderBy: { createdAt: "desc" },
+      }),
+    ),
+  )
 
-  return Array.from(
-    uniqueProducts.values().map((product) => ({
+  return products
+    .filter((product) => product !== null)
+    .map((product) => ({
       ...product,
       category: decryptString(product.category),
-    })),
-  )
+    }))
 }
 
 export type Products = Awaited<ReturnType<typeof getProducts>>
