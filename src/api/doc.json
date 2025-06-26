@@ -74,7 +74,8 @@
       "tShirtFrance": {
         "summary": "T-Shirt France 100% Coton",
         "value": {
-          "gtin": "1234567890123",
+          "gtins": ["1234567890123", "1234567890124"],
+          "internalReference": "REF-123",
           "date": "2023-10-01",
           "marque": "Ma Marque",
           "mass": 0.17,
@@ -98,11 +99,21 @@
       "ProductQuery": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["gtin", "date", "mass", "materials", "product"],
+        "required": ["gtins", "internalReference", "date", "mass", "materials", "product"],
         "properties": {
-          "gtin": {
+          "gtins": {
+            "type": "array",
+            "description": "Les codes GTIN (ou EAN) du produit, format 13 ou 8 chiffres",
+            "items": {
+              "type": "string",
+              "pattern": "^(\\d{8}|\\d{13})$",
+              "example": "1234567890123"
+            }
+          },
+          "internalReference": {
             "type": "string",
-            "description": "Code GTIN du produit, format EAN-13 (13 chiffres) ou EAN-8 (8 chiffres)"
+            "description": "Référence interne du produit",
+            "example": "REF-123"
           },
           "date": {
             "type": "string",

@@ -99,7 +99,8 @@ export function encryptProductFields(product: ProductAPIValidation | ParsedProdu
       : product.date
   return {
     product: {
-      gtin: product.gtin,
+      gtins: product.gtins,
+      internalReference: product.internalReference,
       date: date,
       brand: product.brand,
       declaredScore: product.declaredScore || null,

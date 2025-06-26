@@ -10,7 +10,12 @@ const Fr = () => {
       <h3>Informations produit</h3>
       <ul>
         <li>
-          <b>Identifiant</b> : code GTIN du produit. Ce dernier doit être composé de 8 ou 13 chiffres.
+          <b>GTINs/EANs</b> : tout les codes GTIN (ou EAN) du produit, séparés par des virgules. Ces derniers doivent
+          être composés de 8 ou 13 chiffres.
+        </li>
+        <li>
+          <b>Référence interne</b> : réference utilisé en interne pour votre produit. Si vous n'en avez pas, vous pouvez
+          utiliser le GTIN (ou l'EAN) principal.
         </li>
         <li>
           <b>Date de mise sur le marché</b> : au format JJ/MM/YY.

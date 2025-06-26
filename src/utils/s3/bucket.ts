@@ -15,6 +15,9 @@ const s3 = new S3Client({
 export const uploadFileToS3 = async (name: string, file: PutObjectCommandInput["Body"], tag: "export" | "upload") => {
   if (process.env.LOCAL_STORAGE === "true") {
     const dir = path.resolve(process.cwd(), "s3", `${tag}s`)
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
     const filePath = path.join(dir, name)
     if (Buffer.isBuffer(file)) {
       fs.writeFileSync(filePath, file)

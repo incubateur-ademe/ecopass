@@ -12,7 +12,8 @@ describe("productValidation", () => {
     updatedAt: new Date("2023-01-02"),
     error: null,
     brand: "Test Brand",
-    gtin: "1234567890123",
+    gtins: ["1234567890123"],
+    internalReference: "TestRef",
     date: "01/01/2023",
     declaredScore: null,
     category: ProductCategory.Jean,
@@ -121,23 +122,43 @@ describe("productValidation", () => {
     )
   })
 
-  it("does not allow product with invalid GTIN", () => {
+  it("does not allow product with invalid GTINs", () => {
     expectZodValidationToFail(
       // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
-      { gtin: "123" },
-      [{ path: ["gtin"], message: "Le code GTIN doit contenir 8 ou 13 chiffres" }],
+      { gtins: ["123"] },
+      [{ path: ["gtins", 0], message: "Le code GTIN doit contenir 8 ou 13 chiffres" }],
     )
   })
 
-  it("does not allow product without GTIN", () => {
+  it("does not allow product without GTINs", () => {
     expectZodValidationToFail(
       // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
-      { gtin: undefined },
-      [{ path: ["gtin"], message: "Le code GTIN est obligatoire" }],
+      { gtins: undefined },
+      [{ path: ["gtins"], message: "Il doit y avoir au moins un GTIN" }],
+    )
+  })
+
+  it("does not allow product with empty GTINs", () => {
+    expectZodValidationToFail(
+      // @ts-expect-error: Zod too complex
+      productValidation,
+      validProduct,
+      { gtins: [] },
+      [{ path: ["gtins"], message: "Il doit y avoir au moins un GTIN" }],
+    )
+  })
+
+  it("does not allow product without internal reference", () => {
+    expectZodValidationToFail(
+      // @ts-expect-error: Zod too complex
+      productValidation,
+      validProduct,
+      { internalReference: [] },
+      [{ path: ["internalReference"], message: "La référence interne est obligatoire" }],
     )
   })
 

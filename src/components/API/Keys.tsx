@@ -56,7 +56,7 @@ const Keys = ({ keys }: { keys: APIKey[] }) => {
         <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle'>
           <Input
             className='fr-col-12 fr-col-sm-9 fr-mb-0'
-            label='Code GTIN'
+            label='Nom de la clé API'
             hideLabel
             nativeInputProps={{
               value: newKey,

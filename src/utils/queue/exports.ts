@@ -33,7 +33,7 @@ export const processExportsQueue = async () => {
       continue
     }
 
-    zip.file(`${product.gtin}.svg`, svgContent)
+    zip.file(`${product.internalReference}.svg`, svgContent)
   }
 
   const zipContent = await zip.generateAsync({ type: "nodebuffer" })

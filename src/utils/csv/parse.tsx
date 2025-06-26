@@ -13,7 +13,8 @@ import { encryptProductFields } from "../../db/encryption"
 import { FileUpload } from "../../db/upload"
 
 type ColumnType = [
-  "identifiant",
+  "gtinseans",
+  "referenceinterne",
   "datedemisesurlemarche",
   "marque",
   "score",
@@ -93,7 +94,8 @@ type ColumnType = [
 type CSVRow = Record<ColumnType[number], string>
 
 const columns: Partial<Record<ColumnType[number], string>> = {
-  identifiant: "Identifiant",
+  gtinseans: "GTINs/Eans",
+  referenceinterne: "Référence interne",
   datedemisesurlemarche: "Date de mise sur le marché",
   categorie: "Catégorie",
   masse: "Masse",
@@ -231,7 +233,8 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       const productId = uuid()
 
       const rawProduct = {
-        gtin: row["identifiant"],
+        gtins: (row["gtinseans"] || "").split(","),
+        internalReference: row["referenceinterne"],
         date: row["datedemisesurlemarche"],
         brand: row["marque"] || upload.user.brand?.name || "",
         declaredScore: getNumberValue(row["score"], 1, -1) as number | undefined,
