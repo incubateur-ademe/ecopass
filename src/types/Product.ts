@@ -120,7 +120,8 @@ export type ProductWithMaterialsAndAccessories = Omit<
 }
 
 export type ParsedProduct = {
-  gtin: string
+  gtins: string[]
+  internalReference: string
   date: string
   brand: string
   declaredScore: number | undefined

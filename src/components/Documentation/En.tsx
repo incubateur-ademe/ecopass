@@ -10,7 +10,12 @@ const En = () => {
       <h3>Product information</h3>
       <ul>
         <li>
-          <b>Identifiant</b>: GTIN code of the product. It must be composed of 8 or 13 digits.
+          <b>GTINs/EANs</b> : all GTIN (or EAN) codes of the product, separated by commas. These codes must consist of 8
+          or 13 digits.
+        </li>
+        <li>
+          <b>Référence interne</b> : reference used internally for your product. If you don't have one, you can use the
+          main GTIN (or EAN).
         </li>
         <li>
           <b>Date de mise sur le marché</b>: release date of the product in the french format DD/MM/YY.

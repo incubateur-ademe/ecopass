@@ -24,13 +24,13 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
         fixed
         caption='Mes produits'
         noCaption
-        headers={["Date de dépot", "Catégorie", "GTIN", "Score", ""]}
+        headers={["Date de dépot", "Catégorie", "Référence interne", "Score", ""]}
         data={products.map((product) => [
           formatDate(product.createdAt),
           product.category,
-          product.gtin,
+          product.internalReference,
           formatNumber(product.score?.score),
-          <Button linkProps={{ href: `/produits/${product.gtin}` }} key={product.gtin}>
+          <Button linkProps={{ href: `/produits/${product.gtins[0]}` }} key={product.gtins[0]}>
             Voir le produit
           </Button>,
         ])}

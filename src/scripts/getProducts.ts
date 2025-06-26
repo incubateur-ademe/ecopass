@@ -29,7 +29,8 @@ async function main(email: string) {
   const csv = stringify(
     decryptedProducts.map((product) => [
       product.error,
-      product.gtin,
+      product.gtins,
+      product.internalReference,
       product.date,
       product.brand,
       product.declaredScore,
@@ -61,7 +62,8 @@ async function main(email: string) {
       header: true,
       columns: [
         "Erreur",
-        "Identifiant",
+        "GTINs/EANs",
+        "Référence interne",
         "Date de mise sur le marché",
         "Marque",
         "Score",

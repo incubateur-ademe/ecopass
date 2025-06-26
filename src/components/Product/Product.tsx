@@ -20,7 +20,10 @@ const Product = ({ product }: { product: ProductWithScore }) => {
         </b>
       </p>
       <p>
-        Code GTIN : <b>{product.gtin}</b>
+        Référence interne: <b>{product.internalReference}</b>
+      </p>
+      <p>
+        Code GTINs : <b>{product.gtins.join(", ")}</b>
       </p>
       <p>
         Déposé le : <b>{formatDate(product.createdAt)}</b>
@@ -29,7 +32,11 @@ const Product = ({ product }: { product: ProductWithScore }) => {
         Version Ecobalyse : <b>{product.upload.version.version}</b>
       </p>
       <div className='fr-mt-4w'>
-        {product.score ? <ProductScore score={product.score} gtin={product.gtin} /> : <p>Pas de score</p>}
+        {product.score ? (
+          <ProductScore score={product.score} internalReference={product.internalReference} />
+        ) : (
+          <p>Pas de score</p>
+        )}
       </div>
     </Block>
   )

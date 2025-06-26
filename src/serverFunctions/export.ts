@@ -36,11 +36,11 @@ export const exportUpload = async (uploadId: string) => {
       if (product.status === Status.Error) {
         error = product.error || "Erreur inconnue"
       }
-      return [product.gtin, product.score?.score, error]
+      return [product.internalReference, product.score?.score, error]
     }),
     {
       header: true,
-      columns: ["GTIN", "Score", "Erreur"],
+      columns: ["Référence interne", "Score", "Erreur"],
     },
   )
 }

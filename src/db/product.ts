@@ -59,7 +59,8 @@ export const getProductsToProcess = async (take: number) => {
 }
 
 const productWithScoreSelect = {
-  gtin: true,
+  gtins: true,
+  internalReference: true,
   brand: true,
   createdAt: true,
   category: true,
@@ -72,7 +73,7 @@ const productWithScoreSelect = {
 export const getProductWithScore = async (gtin: string) => {
   const result = await prismaClient.product.findFirst({
     select: productWithScoreSelect,
-    where: { gtin },
+    where: { gtins: { has: gtin } },
     orderBy: { createdAt: "desc" },
   })
   if (result) {
@@ -93,17 +94,17 @@ const getProducts = async (
       score: { isNot: null },
       ...where,
     },
-    select: { gtin: true },
-    distinct: ["gtin"],
-    orderBy: [{ gtin: "asc" }, { createdAt: "desc" }],
+    select: { internalReference: true },
+    distinct: ["internalReference"],
+    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
     skip,
     take,
   })
 
   const products = await Promise.all(
-    uniqueGtins.map(async ({ gtin }) =>
+    uniqueGtins.map(async ({ internalReference }) =>
       prismaClient.product.findFirst({
-        where: { gtin, ...where, score: { isNot: null } },
+        where: { internalReference, ...where, score: { isNot: null } },
         select: productWithScoreSelect,
         orderBy: { createdAt: "desc" },
       }),
@@ -122,13 +123,13 @@ export type Products = Awaited<ReturnType<typeof getProducts>>
 
 export const getProductsCountByUserIdAndBrand = async (userId: string, brand?: string) => {
   const result = await prismaClient.product.groupBy({
-    by: ["gtin"],
+    by: ["internalReference"],
     where: {
       upload: { userId },
       status: Status.Done,
       brand,
     },
-    _count: { gtin: true },
+    _count: { internalReference: true },
   })
   return result.length
 }

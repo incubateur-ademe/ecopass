@@ -3,7 +3,8 @@ import { expectZodValidationToFail } from "./zodValidationTest"
 
 describe("productAPIValidation", () => {
   const validProduct = {
-    gtin: "12345678",
+    gtins: ["12345678"],
+    internalReference: "TestRef",
     date: "2024-01-01",
     brand: "Test Brand",
     product: "jean",
@@ -62,23 +63,43 @@ describe("productAPIValidation", () => {
     expect(result.success).toEqual(true)
   })
 
-  it("does not allow product without GTIN", () => {
+  it("does not allow product without GTINs", () => {
     expectZodValidationToFail(
       // @ts-expect-error: Zod too complex
       productAPIValidation,
       validProduct,
-      { gtin: undefined },
-      [{ path: ["gtin"], message: "Required" }],
+      { gtins: undefined },
+      [{ path: ["gtins"], message: "Required" }],
     )
   })
 
-  it("does not allow product with invalid GTIN", () => {
+  it("does not allow product with invalid GTINs", () => {
     expectZodValidationToFail(
       // @ts-expect-error: Zod too complex
       productAPIValidation,
       validProduct,
-      { gtin: "123" },
-      [{ path: ["gtin"], message: "Le code GTIN doit contenir 8 ou 13 chiffres" }],
+      { gtins: ["123"] },
+      [{ path: ["gtins", 0], message: "Le code GTIN doit contenir 8 ou 13 chiffres" }],
+    )
+  })
+
+  it("does not allow product with empty GTINs", () => {
+    expectZodValidationToFail(
+      // @ts-expect-error: Zod too complex
+      productAPIValidation,
+      validProduct,
+      { gtins: [] },
+      [{ path: ["gtins"], message: "Array must contain at least 1 element(s)" }],
+    )
+  })
+
+  it("does not allow product without internal reference", () => {
+    expectZodValidationToFail(
+      // @ts-expect-error: Zod too complex
+      productAPIValidation,
+      validProduct,
+      { internalReference: undefined },
+      [{ path: ["internalReference"], message: "Required" }],
     )
   })
 

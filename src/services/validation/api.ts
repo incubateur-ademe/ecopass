@@ -29,7 +29,8 @@ const accessoryValidation = z.object({
 })
 
 export const productAPIValidation = z.object({
-  gtin: z.string().regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres"),
+  gtins: z.array(z.string().regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")).min(1),
+  internalReference: z.string(),
   date: z
     .string()
     .refine((val) => !isNaN(Date.parse(val)), "Date de mise sur le marché invalide")

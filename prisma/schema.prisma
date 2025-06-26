@@ -143,10 +143,11 @@ model Product {
   status Status  @default(Pending)
   error  String?
 
-  gtin          String
-  date          String?
-  brand         String
-  declaredScore Float?  @map("declared_score")
+  gtins             String[] @map("gtins")
+  internalReference String   @map("internal_reference")
+  date              String?
+  brand             String
+  declaredScore     Float?   @map("declared_score")
 
   // Encrypted string
   category        String
