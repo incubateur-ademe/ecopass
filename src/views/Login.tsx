@@ -3,6 +3,7 @@
 import Block from "../components/Block/Block"
 import { Input } from "@codegouvfr/react-dsfr/Input"
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup"
+import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton"
 import { FormEvent, useCallback, useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -49,6 +50,11 @@ const Login = () => {
                 {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
               </Link>
             </p>
+            <div className='fr-mb-6v'>
+              <h2>Se connecter avec ProConnect</h2>
+              <ProConnectButton onClick={() => signIn("proconnect", { callbackUrl: "/" })} />
+            </div>
+            <p className='fr-hr-or'>ou</p>
             <div>
               <form id='login-1760' onSubmit={submit}>
                 <fieldset
