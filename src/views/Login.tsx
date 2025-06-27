@@ -3,7 +3,6 @@
 import Block from "../components/Block/Block"
 import { Input } from "@codegouvfr/react-dsfr/Input"
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup"
-import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton"
 import { FormEvent, useCallback, useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
