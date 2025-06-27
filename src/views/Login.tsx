@@ -50,11 +50,6 @@ const Login = () => {
                 {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
               </Link>
             </p>
-            <div className='fr-mb-6v'>
-              <h2>Se connecter avec ProConnect</h2>
-              <ProConnectButton onClick={() => signIn("proconnect", { callbackUrl: "/" })} />
-            </div>
-            <p className='fr-hr-or'>ou</p>
             <div>
               <form id='login-1760' onSubmit={submit}>
                 <fieldset
