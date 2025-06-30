@@ -5,8 +5,6 @@ import Block from "../Block/Block"
 import ProductScore from "./ProductScore"
 
 const Product = ({ product }: { product: ProductWithScore }) => {
-  const brand = product.brand || product.upload?.user?.brand?.name
-
   return (
     <Block>
       <h1>Coût environnemental</h1>
@@ -16,7 +14,7 @@ const Product = ({ product }: { product: ProductWithScore }) => {
       <p className='fr-text--xl fr-mb-1w'>
         <b>
           {product.category}
-          {brand && <span> - {brand}</span>}
+          {product.brand && <span> - {product.brand}</span>}
         </b>
       </p>
       <p>

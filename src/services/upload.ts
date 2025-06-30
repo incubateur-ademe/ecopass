@@ -4,13 +4,13 @@ import { sendUploadErrorEmail, sendUploadSuccessEmail } from "./emails/email"
 
 export const failUpload = async (
   upload: Pick<Upload, "id" | "name" | "createdAt"> & {
-    user: Pick<User, "email">
+    createdBy: Pick<User, "email">
     products: Pick<Product, "status">[]
   },
   message?: string,
 ) => {
   sendUploadErrorEmail(
-    upload.user.email,
+    upload.createdBy.email,
     upload.name,
     upload.createdAt,
     upload.products.length,
@@ -20,8 +20,8 @@ export const failUpload = async (
 }
 
 export const completeUpload = async (
-  upload: Pick<Upload, "id" | "name" | "createdAt"> & { user: Pick<User, "email"> },
+  upload: Pick<Upload, "id" | "name" | "createdAt"> & { createdBy: Pick<User, "email"> },
 ) => {
-  sendUploadSuccessEmail(upload.user.email, upload.name, upload.createdAt)
+  sendUploadSuccessEmail(upload.createdBy.email, upload.name, upload.createdAt)
   return updateUploadToDone(upload.id)
 }

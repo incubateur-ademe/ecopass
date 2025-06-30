@@ -99,8 +99,11 @@ model Upload {
   status Status  @default(Pending)
   error  String?
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @map("user_id")
+  brand   Brand  @relation(fields: [brandId], references: [id])
+  brandId String @map("brand_id")
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String @map("  created_by_id")
 
   version   Version @relation(fields: [versionId], references: [id])
   versionId String
@@ -223,8 +226,9 @@ model Brand {
   authorizedById   String? @map("authorized_by_id")
   authorizedBrands Brand[] @relation("AuthorizedBrands")
 
-  names BrandName[]
-  users User[]
+  names  BrandName[]
+  users  User[]
+  Upload Upload[]
 
   @@map("brands")
 }

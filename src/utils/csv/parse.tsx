@@ -237,7 +237,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         gtins: (row["gtinseans"] || "").split(","),
         internalReference: row["referenceinterne"],
         date: row["datedemisesurlemarche"],
-        brand: row["marque"] || upload.user.brand?.name || "",
+        brand: row["marque"] || upload.createdBy.brand.name || "",
         declaredScore: getNumberValue(row["score"], 1, -1) as number | undefined,
         product: getValue<ProductCategory>(productCategories, row["categorie"]),
         airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),

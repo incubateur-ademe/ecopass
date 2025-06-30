@@ -14,8 +14,8 @@ export const processProductsQueue = async () => {
     console.log(`Processing ${products.length} products...`)
     const validatedProducts = products.map((product) => {
       const userProductValidation = getUserProductValidation([
-        product.upload.user.brand.name,
-        ...product.upload.user.brand.names.map(({ name }) => name),
+        product.upload.createdBy.brand.name,
+        ...product.upload.createdBy.brand.names.map(({ name }) => name),
       ])
       return {
         id: product.id,

@@ -17,7 +17,7 @@ export const exportUpload = async (uploadId: string) => {
     return "Fichier introuvable"
   }
 
-  if (upload.userId !== session.user.id) {
+  if (upload.createdById !== session.user.id) {
     return "Vous n'êtes pas autorisé à accéder à ce fichier"
   }
 
