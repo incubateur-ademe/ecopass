@@ -26,7 +26,7 @@ test("connection with proconnect and existing organization", async ({ page }) =>
 test("connection with proconnect and new organization", async ({ page }) => {
   await login(page, "ecopass-no-organization@yopmail.com")
 
-  await page.getByRole("link", { name: "Mon organisation" }).click()
+  await page.goto("http://localhost:3000/declarations")
   await expect(page.getByRole("heading", { name: "Mon organisation" })).toHaveText(
     "Mon organisation DEPARTEMENT DE SEINE ET MARNE",
   )
