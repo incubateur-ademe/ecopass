@@ -1,6 +1,4 @@
 import { v4 as uuid } from "uuid"
-import CredentialsProvider from "next-auth/providers/credentials"
-import bcrypt from "bcrypt"
 import { AuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prismaClient } from "../../db/prismaClient"
@@ -41,42 +39,6 @@ export const authOptions = {
     },
   },
   providers: [
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        email: {
-          label: "email",
-          type: "text",
-        },
-        password: { label: "password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password are required")
-        }
-
-        const user = await prismaClient.user.findUnique({
-          include: { accounts: true },
-          where: { email: credentials.email.toLowerCase() },
-        })
-
-        if (!user) {
-          throw new Error("Invalid crendentials")
-        }
-        const account = user.accounts.find((account) => account.provider === "credentials")
-
-        if (!account || !account.password) {
-          throw new Error("Invalid crendentials")
-        }
-
-        const isValidPassword = await bcrypt.compare(credentials.password, account.password)
-        if (!isValidPassword) {
-          throw new Error("Invalid crendentials")
-        }
-
-        return { email: user.email || "", id: user.id }
-      },
-    }),
     {
       id: "proconnect",
       name: "ProConnect",
