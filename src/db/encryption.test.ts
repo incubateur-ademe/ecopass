@@ -6,6 +6,8 @@ import {
   decryptProductFields,
   encrypt,
   decryptString,
+  decryptNumber,
+  decryptBoolean,
 } from "./encryption"
 import { Status } from "../../prisma/src/prisma"
 
@@ -85,6 +87,20 @@ const checkDecryption = (product: any, encrypted: any, decrypted: any) => {
 }
 
 describe("encryption utils", () => {
+  it("encrypts and decrypts zero values", () => {
+    const value = 0
+    const encrypted = encrypt(value)
+    const decrypted = decryptNumber(encrypted)
+    expect(decrypted).toBe(value)
+  })
+
+  it("encrypts and decrypts false values", () => {
+    const value = false
+    const encrypted = encrypt(value)
+    const decrypted = decryptBoolean(encrypted)
+    expect(decrypted).toBe(value)
+  })
+
   it("encryptProductFields returns encrypted fields and decrypts it", () => {
     const encrypted = encryptProductFields(product)
     const decrypted = decryptProductFields({

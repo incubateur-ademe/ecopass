@@ -39,13 +39,13 @@ function decrypt(data: string) {
   }
 }
 
-const decryptNumber = (data: string) => {
+export const decryptNumber = (data: string) => {
   const decrypted = decrypt(data)
   const value = parseFloat(decrypted)
   return isNaN(value) ? (decrypted === null || decrypted === "" ? undefined : decrypted) : value
 }
 
-const decryptBoolean = (data: string) => {
+export const decryptBoolean = (data: string) => {
   const decrypted = decrypt(data)
   if (decrypted === true || decrypted === "true") {
     return true

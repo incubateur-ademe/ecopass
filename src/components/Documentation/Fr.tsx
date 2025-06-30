@@ -48,13 +48,14 @@ const Fr = () => {
           <b>Masse (en kg)</b> : masse du produit fini, en kilogrammes (min : 0,01 kg).
         </li>
         <li>
-          <b>Remanufacturé</b> : est ce que le produit est remanufacturé ? Oui/Non.
+          <b>Remanufacturé</b> (optionnel) : est ce que le produit est remanufacturé ? Oui/Non.
         </li>
         <li>
-          <b>Nombre de références</b> : nombre de références au catalogue de la marque (min : 1, max : 999999).
+          <b>Nombre de références</b> (optionnel) : nombre de références au catalogue de la marque (min : 1, max :
+          999999).
         </li>
         <li>
-          <b>Prix (en euros, TTC)</b> : prix du produit, en Euros (€) (min : 1, max : 1000).
+          <b>Prix (en euros, TTC)</b> (optionnel) : prix du produit, en Euros (€) (min : 1, max : 1000).
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optionnel) : type d'entreprise et d'offre de services :
@@ -68,22 +69,22 @@ const Fr = () => {
           </ul>
         </li>
         <li>
-          <b>Traçabilité géographique</b> : Traçabilité renforcée ? Oui/Non.
+          <b>Traçabilité géographique</b> (optionnel) : Traçabilité renforcée ? Oui/Non.
         </li>
         <li>
-          <b>Origine de filature</b> (optionnel) : pays pour l'étape de filature
+          <b>Origine de filature</b> (optionnel) : pays pour l'étape de filature.
           <p className='fr-hint-text'>
             si pas de valeur définie, on utilise celui de production de la matière la plus représentée dans le mix.
           </p>
         </li>
         <li>
-          <b>Origine de tissage/tricotage</b> (optionnel) : pays pour l'étape de tissage/tricotage
+          <b>Origine de tissage/tricotage</b> (optionnel) : pays pour l'étape de tissage/tricotage.
         </li>
         <li>
-          <b>Origine de l'ennoblissement/impression</b> (optionnel) : pays pour l'étape d'ennoblissement/impression
+          <b>Origine de l'ennoblissement/impression</b> (optionnel) : pays pour l'étape d'ennoblissement/impression.
         </li>
         <li>
-          <b>Origine confection</b> (optionnel) : pays pour l'étape de confection
+          <b>Origine confection</b> (optionnel) : pays pour l'étape de confection.
         </li>
         <li>
           <b>Type d'impression</b> (optionnel) : type de procédé d'impression effectuée sur le produit à choisir dans la
@@ -94,15 +95,15 @@ const Fr = () => {
           </ul>
         </li>
         <li>
-          <b>Pourcentage d'impression</b> : pourcentage de surface teinte.
+          <b>Pourcentage d'impression</b> (optionnel) : pourcentage de surface imprimée.
         </li>
         <li>
-          <b>Délavage</b> : Y a t'il application d'un procédé de délavage pour l'étape de confection du produit ?
-          Oui/Non.
+          <b>Délavage</b> (optionnel) : Y a t'il application d'un procédé de délavage pour l'étape de confection du
+          produit ? Oui/Non.
         </li>
         <li>
-          <b>Part du transport aérien</b> : pourcentage du transport aérien entre l'étape de confection et l'étape de
-          distribution.
+          <b>Part du transport aérien</b> (optionnel) : pourcentage du transport aérien entre l'étape de confection et
+          l'étape de distribution.
         </li>
       </ul>
       <br />

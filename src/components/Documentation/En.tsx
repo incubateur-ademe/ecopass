@@ -48,13 +48,13 @@ const En = () => {
           <b>Masse (en kg)</b>: mass of the finished product, in kilograms (min: 0.01 kg).
         </li>
         <li>
-          <b>Remanufacturé</b>: is the product remanufactured? Yes/No.
+          <b>Remanufacturé</b> (optional): is the product remanufactured? Yes/No.
         </li>
         <li>
-          <b>Nombre de références</b>: number of references in the brand's catalog (min: 1, max: 999999).
+          <b>Nombre de références</b> (optional): number of references in the brand's catalog (min: 1, max: 999999).
         </li>
         <li>
-          <b>Prix (en euros, TTC)</b>: product price, in Euros (€), VAT included(min: 1, max: 1000).
+          <b>Prix (en euros, TTC)</b> (optional): product price, in Euros (€), VAT included(min: 1, max: 1000).
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optional): type of company and service offer:
@@ -66,22 +66,22 @@ const En = () => {
           </ul>
         </li>
         <li>
-          <b>Traçabilité géographique</b>: Enhanced traceability? Yes/No.
+          <b>Traçabilité géographique</b> (optional): Enhanced traceability? Yes/No.
         </li>
         <li>
-          <b>Origine origin</b> (optional): country for the spinning stage
+          <b>Origine origin</b> (optional): country for the spinning stage.
           <p className='fr-hint-text'>
             If not defined, the country of the most represented material in the mix will be used.
           </p>
         </li>
         <li>
-          <b>Origine de tissage/tricotage</b> (optional): country for the weaving/knitting stage
+          <b>Origine de tissage/tricotage</b> (optional): country for the weaving/knitting stage.
         </li>
         <li>
-          <b>Origine de l'ennoblissement/impression</b> (optional): country for the finishing/printing stage
+          <b>Origine de l'ennoblissement/impression</b> (optional): country for the finishing/printing stage.
         </li>
         <li>
-          <b>Origine confection</b> (optional): country for the manufacturing stage
+          <b>Origine confection</b> (optional): country for the manufacturing stage.
         </li>
         <li>
           <b>Type d'impression</b> (optional): type of printing process performed on the product, to choose from:
@@ -91,13 +91,14 @@ const En = () => {
           </ul>
         </li>
         <li>
-          <b>Pourcentage d'impression</b>: percentage of dyed surface.
+          <b>Pourcentage d'impression</b> (optional): percentage of printed surface.
         </li>
         <li>
-          <b>Délavage</b>: Is there a fading process applied during the manufacturing stage? Yes/No.
+          <b>Délavage</b> (optional): Is there a fading process applied during the manufacturing stage? Yes/No.
         </li>
         <li>
-          <b>Part du transport aérien</b>: percentage of air transport between manufacturing and distribution.
+          <b>Part du transport aérien</b> (optional): percentage of air transport between manufacturing and
+          distribution.
         </li>
       </ul>
       <br />
