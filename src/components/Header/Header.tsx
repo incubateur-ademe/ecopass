@@ -33,6 +33,11 @@ const Header = ({ session }: { session: Session | null }) => {
               },
               { linkProps: { href: "/produits" }, text: "Mes produits", isActive: pathname.startsWith("/produits") },
               { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") },
+              {
+                linkProps: { href: "/organisation" },
+                text: "Mon organisation",
+                isActive: pathname.startsWith("/organisation"),
+              },
             ]
           : []
       }

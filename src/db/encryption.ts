@@ -61,7 +61,12 @@ export const decryptString = (data: string) => {
 }
 
 export const decryptProductFields = (
-  product: Product & { materials: Material[]; accessories: Accessory[]; score?: Score | null },
+  product: Product & {
+    materials: Material[]
+    accessories: Accessory[]
+    score?: Score | null
+    upload: { user: { brand: { name: string; names: { name: string }[] } } }
+  },
 ) => ({
   ...product,
   category: decryptString(product.category),

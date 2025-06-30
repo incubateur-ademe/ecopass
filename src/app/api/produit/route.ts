@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
 import { getApiUser } from "../../../services/auth/auth"
-import { productAPIValidation } from "../../../services/validation/api"
 import { computeEcobalyseScore } from "../../../utils/ecobalyse/api"
 import { createScore } from "../../../db/score"
 import { updateAPIUse } from "../../../db/user"
+import { getUserProductAPIValidation } from "../../../services/validation/api"
 
 export async function POST(req: Request) {
   try {
@@ -15,7 +15,10 @@ export async function POST(req: Request) {
     await updateAPIUse(api.key)
 
     const body = await req.json()
-    const product = productAPIValidation.safeParse({ ...body, brand: body.brand || api.user.brand?.name || "" })
+    const product = getUserProductAPIValidation([
+      api.user.brand.name,
+      ...api.user.brand.names.map(({ name }) => name),
+    ]).safeParse({ ...body, brand: body.brand || api.user.brand?.name || "" })
     if (!product.success) {
       return NextResponse.json(product.error.issues, { status: 400 })
     }

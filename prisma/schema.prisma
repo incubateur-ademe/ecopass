@@ -59,8 +59,8 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  brandId String?
-  brand   Brand?  @relation(fields: [brandId], references: [id])
+  brandId String
+  brand   Brand  @relation(fields: [brandId], references: [id])
 
   apiKeys APIKey[]
   uploads Upload[]
@@ -219,9 +219,23 @@ model Brand {
   name  String
   siret String @unique
 
+  authorizedBy     Brand?  @relation("AuthorizedBrands", fields: [authorizedById], references: [id])
+  authorizedById   String? @map("authorized_by_id")
+  authorizedBrands Brand[] @relation("AuthorizedBrands")
+
+  names BrandName[]
   users User[]
 
   @@map("brands")
+}
+
+model BrandName {
+  id      String @id @default(uuid())
+  name    String
+  brand   Brand  @relation(fields: [brandId], references: [id])
+  brandId String @map("brand_id")
+
+  @@map("brand_names")
 }
 
 model APIKey {

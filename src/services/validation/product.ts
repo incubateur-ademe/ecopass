@@ -24,14 +24,13 @@ const accessoryValidation = z.object({
     .min(1, "La quantité de l'accessoire doit être supérieure à 1"),
 })
 
-export const productValidation = z.object({
+const productValidation = z.object({
   id: z.string(),
   uploadId: z.string(),
   status: z.nativeEnum(Status, { message: "Statut invalide" }),
   createdAt: z.date(),
   updatedAt: z.date(),
   error: z.string().nullable(),
-  brand: z.string(),
   gtins: z
     .array(z.string().regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres"), {
       message: "Il doit y avoir au moins un GTIN",
@@ -89,3 +88,10 @@ export const productValidation = z.object({
   }, "La somme des parts de matières doit être égale à 100%"),
   accessories: z.array(accessoryValidation),
 })
+
+export const getUserProductValidation = (brands: [string, ...string[]]) =>
+  productValidation.extend({
+    brand: z.enum(brands, {
+      message: `Marque invalide. Voici la liste de vos marques : ${brands.map((brand) => `"${brand}"`).join(", ")}`,
+    }),
+  })

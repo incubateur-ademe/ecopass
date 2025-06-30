@@ -113,6 +113,7 @@ describe("encryption utils", () => {
       ...encrypted.product,
       materials: encrypted.materials.map((material) => ({ ...material, id: uuid(), productId: uuid() })),
       accessories: encrypted.accessories?.map((accessory) => ({ ...accessory, id: uuid(), productId: uuid() })) || [],
+      upload: { user: { brand: { name: "Test Brand", names: [{ name: "Test Brand 2}" }] } } },
     })
     checkDecryption(product, encrypted, decrypted)
   })

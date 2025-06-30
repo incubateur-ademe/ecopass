@@ -10,7 +10,16 @@ async function main(email: string) {
       uploads: {
         include: {
           products: {
-            include: { materials: true, accessories: true, score: true },
+            include: {
+              materials: true,
+              accessories: true,
+              score: true,
+              upload: {
+                include: {
+                  user: { include: { brand: { select: { name: true, names: { select: { name: true } } } } } },
+                },
+              },
+            },
           },
         },
       },

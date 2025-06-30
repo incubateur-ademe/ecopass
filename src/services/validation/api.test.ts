@@ -1,7 +1,8 @@
-import { productAPIValidation } from "./api"
+import { getUserProductAPIValidation } from "./api"
 import { expectZodValidationToFail } from "./zodValidationTest"
 
 describe("productAPIValidation", () => {
+  const productAPIValidation = getUserProductAPIValidation(["Test Brand", "Test Brand 2"])
   const validProduct = {
     gtins: ["12345678"],
     internalReference: "TestRef",
@@ -61,6 +62,40 @@ describe("productAPIValidation", () => {
       materials: [{ ...validProduct.materials[0], country: "FR" }],
     })
     expect(result.success).toEqual(true)
+  })
+
+  it("does not allow valid product with invalid brand", () => {
+    expectZodValidationToFail(
+      // @ts-expect-error: Zod too complex
+      productAPIValidation,
+      validProduct,
+      {
+        brand: "Nop",
+      },
+      [
+        {
+          path: ["brand"],
+          message: "Invalid enum value. Expected 'Test Brand' | 'Test Brand 2', received 'Nop'",
+        },
+      ],
+    )
+  })
+
+  it("does not allow valid product with empty brand", () => {
+    expectZodValidationToFail(
+      // @ts-expect-error: Zod too complex
+      productAPIValidation,
+      validProduct,
+      {
+        brand: "",
+      },
+      [
+        {
+          path: ["brand"],
+          message: "Invalid enum value. Expected 'Test Brand' | 'Test Brand 2', received ''",
+        },
+      ],
+    )
   })
 
   it("does not allow product without GTINs", () => {

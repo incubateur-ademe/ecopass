@@ -1,9 +1,10 @@
 import { Status } from "../../../prisma/src/prisma"
 import { AccessoryType, Business, Country, MaterialType, ProductCategory } from "../../types/Product"
-import { productValidation } from "./product"
+import { getUserProductValidation } from "./product"
 import { expectZodValidationToFail } from "./zodValidationTest"
 
 describe("productValidation", () => {
+  const productValidation = getUserProductValidation(["Test Brand", "Test Brand 2"])
   const validProduct = {
     id: "12345",
     uploadId: "upload-123",
@@ -86,6 +87,57 @@ describe("productValidation", () => {
       upcycled: false,
     })
     expect(result.success).toEqual(true)
+  })
+
+  it("does not allow valid product with invalid brand", () => {
+    expectZodValidationToFail(
+      // @ts-expect-error: Zod too complex
+      productValidation,
+      validProduct,
+      {
+        brand: "Nop",
+      },
+      [
+        {
+          path: ["brand"],
+          message: 'Marque invalide. Voici la liste de vos marques : "Test Brand", "Test Brand 2"',
+        },
+      ],
+    )
+  })
+
+  it("does not allow valid product with empty brand", () => {
+    expectZodValidationToFail(
+      // @ts-expect-error: Zod too complex
+      productValidation,
+      validProduct,
+      {
+        brand: "",
+      },
+      [
+        {
+          path: ["brand"],
+          message: 'Marque invalide. Voici la liste de vos marques : "Test Brand", "Test Brand 2"',
+        },
+      ],
+    )
+  })
+
+  it("does not allow valid product without category", () => {
+    expectZodValidationToFail(
+      // @ts-expect-error: Zod too complex
+      productValidation,
+      validProduct,
+      {
+        category: undefined,
+      },
+      [
+        {
+          path: ["category"],
+          message: "Catégorie de produit invalide",
+        },
+      ],
+    )
   })
 
   it("does not allow valid product without category", () => {

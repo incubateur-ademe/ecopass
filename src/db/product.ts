@@ -48,6 +48,20 @@ export const getProductsToProcess = async (take: number) => {
     include: {
       materials: true,
       accessories: true,
+      upload: {
+        include: {
+          user: {
+            include: {
+              brand: {
+                select: {
+                  name: true,
+                  names: { select: { name: true } },
+                },
+              },
+            },
+          },
+        },
+      },
     },
     orderBy: {
       createdAt: "asc",
@@ -70,10 +84,10 @@ const productWithScoreSelect = {
   },
 } satisfies Prisma.ProductSelect
 
-export const getProductWithScore = async (gtin: string) => {
+export const getProductWithScore = async (gtin: string, userId: string) => {
   const result = await prismaClient.product.findFirst({
     select: productWithScoreSelect,
-    where: { gtins: { has: gtin } },
+    where: { gtins: { has: gtin }, upload: { userId }, status: Status.Done },
     orderBy: { createdAt: "desc" },
   })
   if (result) {
@@ -146,6 +160,20 @@ export const getProductsByUploadId = async (uploadId: string) => {
       materials: true,
       accessories: true,
       score: true,
+      upload: {
+        include: {
+          user: {
+            include: {
+              brand: {
+                select: {
+                  name: true,
+                  names: { select: { name: true } },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   })
   return products.map((product) => decryptProductFields(product))

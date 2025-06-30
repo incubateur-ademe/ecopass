@@ -120,7 +120,7 @@
             "description": "Date de mise sur le marché du produit, au format YYYY-MM-DD",
             "format": "date"
           },
-          "marque": {
+          "brand": {
             "type": "string",
             "description": "Marque du produit"
           },
