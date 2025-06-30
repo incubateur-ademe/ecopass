@@ -14,7 +14,7 @@ export const authOptions = {
         let organization = await prismaClient.organization.findUnique({
           where: { siret },
         })
-        console.log("SIRET", siret, organization)
+
         if (!organization) {
           const result = await axios.get<SiretAPI>(`https://api.insee.fr/api-sirene/3.11/siret/${siret}`, {
             headers: { "X-INSEE-Api-Key-Integration": process.env.INSEE_API_KEY },
