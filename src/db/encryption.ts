@@ -9,7 +9,7 @@ const STORAGE_KEY = Buffer.from(process.env.STORAGE_ENCRYPTION_KEY!, "hex")
 const IV_LENGTH = 12
 
 export function encrypt(value: string | number | boolean | undefined): string {
-  const plainText = (value || "").toString()
+  const plainText = (value === undefined ? "" : value).toString()
   const iv = crypto.randomBytes(IV_LENGTH)
   const cipher = crypto.createCipheriv(ALGO, KEY, iv)
   const encrypted = Buffer.concat([cipher.update(plainText, "utf8"), cipher.final()])
