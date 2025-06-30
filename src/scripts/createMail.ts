@@ -1,12 +1,12 @@
 import { prismaClient } from "../db/prismaClient"
 
 const email = "todo"
-const brandName = ""
+const organizationName = ""
 const siret = ""
 
 export const createMail = async () => {
-  if (!email || !brandName) {
-    console.log("Email or brand name is missing")
+  if (!email || !organizationName) {
+    console.log("Email or organization name is missing")
     return
   }
 
@@ -18,15 +18,15 @@ export const createMail = async () => {
     return
   }
 
-  let brand = await prismaClient.brand.findFirst({
-    where: { name: brandName },
+  let organization = await prismaClient.organization.findFirst({
+    where: { name: organizationName },
   })
 
-  if (!brand) {
-    console.log("Brand not found, creating it...")
-    brand = await prismaClient.brand.create({
+  if (!organization) {
+    console.log("Organization not found, creating it...")
+    organization = await prismaClient.organization.create({
       data: {
-        name: brandName,
+        name: organizationName,
         siret: siret,
       },
     })
@@ -37,7 +37,7 @@ export const createMail = async () => {
       user: {
         create: {
           email: email.toLowerCase(),
-          brandId: brand.id,
+          organizationId: organization.id,
         },
       },
       provider: "credentials",

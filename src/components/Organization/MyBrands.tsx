@@ -1,22 +1,22 @@
-import { UserBrand } from "../../db/user"
+import { UserOrganization } from "../../db/user"
 import Brands from "./Brands"
 import NewBrand from "./NewBrand"
 
-const MyBrands = ({ brand }: { brand: UserBrand }) => {
+const MyBrands = ({ organization }: { organization: UserOrganization }) => {
   return (
     <>
-      {brand.names.length === 0 ? (
+      {organization.brands.length === 0 ? (
         <>
           <p>Vous n'avez pas encore déclarer de marques.</p>
-          <p>Tout vos produits apparaitront sur le nom de votre organisation ({brand.name})</p>
+          <p>Tout vos produits apparaitront sur le nom de votre organisation ({organization.name})</p>
         </>
       ) : (
         <>
           <p>
-            Vous pouvez déclarer vos produits soit sous le nom de votre organsation ({brand.name}), soit sous un des
-            noms ci dessous.
+            Vous pouvez déclarer vos produits soit sous le nom de votre organsation ({organization.name}), soit sous un
+            des noms ci dessous.
           </p>
-          <Brands brands={brand.names} />
+          <Brands brands={organization.brands} />
         </>
       )}
       <NewBrand />

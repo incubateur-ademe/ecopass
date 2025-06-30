@@ -28,12 +28,12 @@ export const createScore = async (user: Exclude<APIUser, null>["user"], product:
         product: {
           create: {
             ...encrypted.product,
-            brand: encrypted.product.brand || user.brand?.name || "",
+            brand: encrypted.product.brand || user.organization.name,
             status: Status.Done,
             upload: {
               create: {
                 createdById: user.id,
-                brandId: user.brand.id,
+                organizationId: user.organization.id,
                 versionId: lastVersion.id,
                 type: UploadType.API,
                 status: Status.Done,

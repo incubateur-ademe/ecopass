@@ -16,7 +16,9 @@ async function main(email: string) {
               score: true,
               upload: {
                 include: {
-                  createdBy: { include: { brand: { select: { name: true, names: { select: { name: true } } } } } },
+                  createdBy: {
+                    include: { organization: { select: { name: true, brands: { select: { name: true } } } } },
+                  },
                 },
               },
             },

@@ -16,9 +16,9 @@ export async function POST(req: Request) {
 
     const body = await req.json()
     const product = getUserProductAPIValidation([
-      api.user.brand.name,
-      ...api.user.brand.names.map(({ name }) => name),
-    ]).safeParse({ ...body, brand: body.brand || api.user.brand?.name || "" })
+      api.user.organization.name,
+      ...api.user.organization.brands.map(({ name }) => name),
+    ]).safeParse({ ...body, brand: body.brand || api.user.organization.name || "" })
     if (!product.success) {
       return NextResponse.json(product.error.issues, { status: 400 })
     }

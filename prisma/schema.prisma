@@ -59,8 +59,8 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  brandId String
-  brand   Brand  @relation(fields: [brandId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
 
   apiKeys APIKey[]
   uploads Upload[]
@@ -99,8 +99,8 @@ model Upload {
   status Status  @default(Pending)
   error  String?
 
-  brand   Brand  @relation(fields: [brandId], references: [id])
-  brandId String @map("brand_id")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
 
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String @map("  created_by_id")
@@ -217,29 +217,31 @@ model Accessory {
   @@map("accessories")
 }
 
-model Brand {
+model Organization {
   id    String @id @default(uuid())
   name  String
   siret String @unique
 
-  authorizedBy     Brand?  @relation("AuthorizedBrands", fields: [authorizedById], references: [id])
-  authorizedById   String? @map("authorized_by_id")
-  authorizedBrands Brand[] @relation("AuthorizedBrands")
+  authorizedBy   Organization? @relation("AuthorizedOrganizations", fields: [authorizedById], references: [id])
+  authorizedById String?       @map("authorized_by_id")
 
-  names  BrandName[]
+  authorizedOrganizations Organization[] @relation("AuthorizedOrganizations")
+
+  brands Brand[]
   users  User[]
-  Upload Upload[]
+  upload Upload[]
 
-  @@map("brands")
+  @@map("organizations")
 }
 
-model BrandName {
-  id      String @id @default(uuid())
-  name    String
-  brand   Brand  @relation(fields: [brandId], references: [id])
-  brandId String @map("brand_id")
+model Brand {
+  id   String @id @default(uuid())
+  name String
 
-  @@map("brand_names")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
+
+  @@map("brand")
 }
 
 model APIKey {

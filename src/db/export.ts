@@ -22,7 +22,7 @@ export const getExportsByUserIdAndBrand = async (userId: string, brand?: string)
 
 export const getFirstExport = async () =>
   prismaClient.export.findFirst({
-    include: { user: { select: { brandId: true } } },
+    include: { user: { select: { organizationId: true } } },
     where: { status: Status.Pending },
     orderBy: { createdAt: "asc" },
   })

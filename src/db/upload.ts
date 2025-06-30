@@ -21,7 +21,7 @@ export const createUpload = async (userId: string, uploadType: UploadType, name?
       }),
       prismaClient.user.findUnique({
         where: { id: userId },
-        select: { id: true, brandId: true },
+        select: { id: true, organizationId: true },
       }),
     ])
 
@@ -34,7 +34,14 @@ export const createUpload = async (userId: string, uploadType: UploadType, name?
     }
 
     return transaction.upload.create({
-      data: { id, createdById: user.id, brandId: user.brandId, name, versionId: lastVersion.id, type: uploadType },
+      data: {
+        id,
+        createdById: user.id,
+        organizationId: user.organizationId,
+        name,
+        versionId: lastVersion.id,
+        type: uploadType,
+      },
       select: {
         id: true,
         createdBy: { select: { email: true } },
@@ -133,7 +140,7 @@ export const getFirstFileUpload = async () =>
       id: true,
       name: true,
       createdAt: true,
-      createdBy: { select: { email: true, brand: { select: { name: true } } } },
+      createdBy: { select: { email: true, organization: { select: { name: true } } } },
       products: { select: { status: true } },
     },
     where: { status: Status.Pending, type: UploadType.FILE },

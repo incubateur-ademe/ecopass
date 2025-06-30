@@ -3,29 +3,29 @@
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
 
-export const addNewBrand = async (brandName: string) => {
+export const addNewBrand = async (brand: string) => {
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
   }
 
-  const brand = await prismaClient.brand.findFirst({
-    select: { id: true, names: { select: { name: true } } },
+  const organization = await prismaClient.organization.findFirst({
+    select: { id: true, brands: { select: { name: true } } },
     where: { users: { some: { id: session.user.id } } },
   })
 
-  if (!brand) {
+  if (!organization) {
     return "Vous n'êtes pas membre d'une organisation"
   }
 
-  if (brand.names.some((name) => name.name === brandName)) {
+  if (organization.brands.some(({ name }) => name === brand)) {
     return "Vous avez déjà une marque avec ce nom"
   }
 
-  return prismaClient.brandName.create({
+  return prismaClient.brand.create({
     data: {
-      name: brandName,
-      brand: { connect: { id: brand.id } },
+      name: brand,
+      organization: { connect: { id: organization.id } },
     },
   })
 }
@@ -36,19 +36,19 @@ export const deleteBrand = async (id: string) => {
     return "Utilisateur non authentifié"
   }
 
-  const brand = await prismaClient.brand.findFirst({
-    select: { id: true, names: { select: { name: true } } },
+  const organization = await prismaClient.organization.findFirst({
+    select: { id: true, brands: { select: { name: true } } },
     where: { users: { some: { id: session.user.id } } },
   })
 
-  if (!brand) {
+  if (!organization) {
     return "Vous n'êtes pas membre d'une organisation"
   }
 
-  return prismaClient.brandName.delete({
+  return prismaClient.brand.delete({
     where: {
       id: id,
-      brandId: brand.id,
+      organizationId: organization.id,
     },
   })
 }

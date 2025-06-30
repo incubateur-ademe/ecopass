@@ -13,17 +13,17 @@ export const authOptions = {
     createUser: async ({ user }) => {
       const siret = user.agentconnect_info?.siret || ""
       if (siret) {
-        let brand = await prismaClient.brand.findUnique({
+        let organization = await prismaClient.organization.findUnique({
           where: { siret },
         })
-        if (!brand) {
+        if (!organization) {
           const result = await axios.get<SiretAPI>(`https://api.insee.fr/api-sirene/3.11/siret/${siret}`, {
             headers: { "X-INSEE-Api-Key-Integration": process.env.INSEE_API_KEY },
           })
           if (result.status !== 200) {
             throw new Error("Failed to fetch SIRET information from API")
           }
-          brand = await prismaClient.brand.create({
+          organization = await prismaClient.organization.create({
             data: {
               siret: siret,
               name: result.data.etablissement.uniteLegale.denominationUniteLegale,
@@ -33,7 +33,7 @@ export const authOptions = {
         await prismaClient.user.update({
           where: { id: user.id },
           data: {
-            brandId: brand.id,
+            organizationId: organization.id,
           },
         })
       }
@@ -73,7 +73,7 @@ export const authOptions = {
           throw new Error("Invalid crendentials")
         }
 
-        return { email: user.email || "", id: user.id, brandId: user.brandId }
+        return { email: user.email || "", id: user.id }
       },
     }),
     {

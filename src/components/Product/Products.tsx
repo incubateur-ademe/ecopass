@@ -1,6 +1,6 @@
 "use server"
 
-import { getBrandProductsByUserIdAndName } from "../../db/product"
+import { getOrganizationProductsByUserIdAndBrand } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
@@ -15,7 +15,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
     return null
   }
 
-  const products = await getBrandProductsByUserIdAndName(session.user.id, page - 1, 10, brand)
+  const products = await getOrganizationProductsByUserIdAndBrand(session.user.id, page - 1, 10, brand)
 
   return (
     <>
