@@ -24,6 +24,13 @@ const users = async () => {
   await prisma.aPIKey.deleteMany({})
   await prisma.user.deleteMany({})
 
+  await prisma.organization.create({
+    data: {
+      siret: "31723624800017",
+      name: "Emmaus",
+    },
+  })
+
   const organizations = await prisma.organization.createManyAndReturn({
     data: Array.from({ length: 5 }).map(() => ({
       name: faker.company.name(),

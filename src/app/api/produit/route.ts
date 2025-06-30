@@ -8,7 +8,7 @@ import { getUserProductAPIValidation } from "../../../services/validation/api"
 export async function POST(req: Request) {
   try {
     const api = await getApiUser(req.headers)
-    if (!api) {
+    if (!api || !api.user || !api.user.organization) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 

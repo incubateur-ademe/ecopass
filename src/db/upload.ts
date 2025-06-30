@@ -29,7 +29,7 @@ export const createUpload = async (userId: string, uploadType: UploadType, name?
       throw new Error("No version found")
     }
 
-    if (!user) {
+    if (!user || !user.organizationId) {
       throw new Error("No user found")
     }
 

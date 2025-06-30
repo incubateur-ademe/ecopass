@@ -13,9 +13,19 @@ export const processProductsQueue = async () => {
   } else {
     console.log(`Processing ${products.length} products...`)
     const validatedProducts = products.map((product) => {
+      const organization = product.upload.createdBy.organization
+      if (!organization) {
+        return {
+          id: product.id,
+          success: false as const,
+          error: {
+            issues: [{ message: "Organization not found for product upload." }],
+          },
+        }
+      }
       const userProductValidation = getUserProductValidation([
-        product.upload.createdBy.organization.name,
-        ...product.upload.createdBy.organization.brands.map(({ name }) => name),
+        organization.name,
+        ...organization.brands.map(({ name }) => name),
       ])
       return {
         id: product.id,

@@ -17,6 +17,11 @@ export const processExportsQueue = async () => {
     return
   }
 
+  if (!exportToProcess.user.organizationId) {
+    completeExport(exportToProcess.id)
+    return
+  }
+
   console.log(`Processing export ${exportToProcess.name}`)
   const products = await getProductsByOrganizationIdAndBrandBefore(
     exportToProcess.user.organizationId,
