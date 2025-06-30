@@ -8,6 +8,7 @@ import { formatDate, formatNumber } from "../../services/format"
 import Table from "../Table/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import styles from "./Products.module.css"
+import Link from "next/link"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
@@ -17,7 +18,15 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
 
   const products = await getOrganizationProductsByUserIdAndBrand(session.user.id, page - 1, 10, brand)
 
-  return (
+  return products.length === 0 ? (
+    <p>
+      Rendez-vous sur la page{" "}
+      <Link className='fr-link' href='/declarations'>
+        Mes déclarations
+      </Link>{" "}
+      pour deposer un produit.
+    </p>
+  ) : (
     <>
       <Search />
       <Table
