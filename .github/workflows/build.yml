@@ -28,6 +28,7 @@ jobs:
         run: cp .env.dist .env
       - name: Inject secrets into .env
         run: |
+          echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
           echo "STORAGE_ENCRYPTION_KEY=${{ secrets.STORAGE_ENCRYPTION_KEY }}" >> .env
           echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
           echo "PROCONNECT_CLIENT_ID=${{ secrets.PROCONNECT_CLIENT_ID }}" >> .env
