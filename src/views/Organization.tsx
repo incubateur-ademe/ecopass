@@ -12,7 +12,7 @@ const Organization = ({ organization }: { organization: UserOrganization }) => {
         <MyBrands organization={organization} />
       </Block>
       <Block>
-        <h2>Mes déléguations</h2>
+        <h2>Mes délégations</h2>
         <MyDelegations organization={organization} />
       </Block>
     </>

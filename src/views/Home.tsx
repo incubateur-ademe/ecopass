@@ -14,7 +14,12 @@ const Home = ({ connected }: { connected?: boolean }) => {
             <>
               Vous êtes une marque ou un bureau d'études dans le domaine du textile ? Vous souhaitez tester le portail
               de déclaration de l'affichage environnemental ? Veuillez nous contacter à l'adresse{" "}
-              <Link className='fr-link' href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`} prefetch={false}>
+              <Link
+                className='fr-link'
+                href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}
+                prefetch={false}
+                target='_blank'
+                rel='noopener noreferrer'>
                 {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
               </Link>
               .

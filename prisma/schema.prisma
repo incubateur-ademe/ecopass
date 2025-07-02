@@ -62,9 +62,10 @@ model User {
   organizationId String?       @map("organization_id")
   organization   Organization? @relation(fields: [organizationId], references: [id])
 
-  apiKeys APIKey[]
-  uploads Upload[]
-  exports Export[]
+  apiKeys                APIKey[]
+  uploads                Upload[]
+  exports                Export[]
+  AuthorizedOrganization AuthorizedOrganization[]
 
   @@map("users")
 }
@@ -222,16 +223,32 @@ model Organization {
   name  String
   siret String @unique
 
-  authorizedBy   Organization? @relation("AuthorizedOrganizations", fields: [authorizedById], references: [id])
-  authorizedById String?       @map("authorized_by_id")
-
-  authorizedOrganizations Organization[] @relation("AuthorizedOrganizations")
+  authorizedBy            AuthorizedOrganization[] @relation("ToOrg")
+  authorizedOrganizations AuthorizedOrganization[] @relation("FromOrg")
 
   brands Brand[]
   users  User[]
   upload Upload[]
 
   @@map("organizations")
+}
+
+model AuthorizedOrganization {
+  id     String @id @default(uuid())
+  fromId String @map("from_id")
+  toId   String @map("to_id")
+
+  from Organization @relation("FromOrg", fields: [fromId], references: [id])
+  to   Organization @relation("ToOrg", fields: [toId], references: [id])
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String   @map("created_by_id")
+
+  active    Boolean   @default(true)
+  removedAt DateTime? @map("removed_at")
+
+  @@map("authorized_organizations")
 }
 
 model Brand {
