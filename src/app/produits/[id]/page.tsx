@@ -17,7 +17,7 @@ type Props = {
 const ProductPage = async (props: Props) => {
   const session = await auth()
   if (!session || !session.user) {
-    redirect("/login")
+    redirect("/")
   }
   const params = await props.params
 

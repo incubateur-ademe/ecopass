@@ -7,7 +7,7 @@ import Organization from "../../views/Organization"
 const OrganizationPage = async () => {
   const session = await auth()
   if (!session || !session.user) {
-    redirect("/login")
+    redirect("/")
   }
 
   const organization = await getUserOrganization(session.user.id)
