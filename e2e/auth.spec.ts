@@ -7,9 +7,8 @@ test("connection with proconnect, and properly disconnect", async ({ page }) => 
   await page.getByRole("link", { name: "Se déconnecter" }).click()
 
   await expect(page.locator("#contenu").getByRole("heading", { name: "Déclarez le coût" })).toBeVisible()
-  await expect(page.locator("#contenu").getByRole("link", { name: "Se connecter" })).not.toBeVisible()
+  await expect(page.locator("#contenu").getByRole("button", { name: "S’identifier avec ProConnect" })).toBeVisible()
 
-  await page.locator("#contenu").getByRole("link", { name: "Se connecter" }).click()
   await page.getByRole("button", { name: "S’identifier avec ProConnect" }).click()
   await expect(page.getByRole("textbox", { name: "Email professionnel Format" })).toBeVisible()
 })

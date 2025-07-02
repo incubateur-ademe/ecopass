@@ -41,23 +41,19 @@ const Header = ({ session }: { session: Session | null }) => {
             ]
           : []
       }
-      quickAccessItems={[
+      quickAccessItems={
         session
-          ? {
-              linkProps: {
-                href: "/logout",
+          ? [
+              {
+                linkProps: {
+                  href: "/logout",
+                },
+                iconId: "ri-account-circle-fill",
+                text: "Se déconnecter",
               },
-              iconId: "ri-account-circle-fill",
-              text: "Se déconnecter",
-            }
-          : {
-              linkProps: {
-                href: "/login",
-              },
-              iconId: "ri-account-circle-line",
-              text: "Se connecter",
-            },
-      ]}
+            ]
+          : []
+      }
     />
   )
 }

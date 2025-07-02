@@ -20,10 +20,7 @@ const Login = () => {
                 {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
               </Link>
             </p>
-            <div className='fr-mb-6v'>
-              <h2>Se connecter avec ProConnect</h2>
-              <ProConnectButton onClick={() => signIn("proconnect", { callbackUrl: "/" })} />
-            </div>
+            <div className='fr-mb-6v'></div>
           </div>
         </div>
       </div>
