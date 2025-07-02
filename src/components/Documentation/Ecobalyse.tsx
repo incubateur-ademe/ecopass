@@ -10,8 +10,8 @@ const Ecobalyse = () => {
       <h3>Informations produit</h3>
       <ul>
         <li>
-          <b>GTINs/EANs</b> : tout les codes GTIN (ou EAN) du produit, séparés par des virgules. Ces derniers doivent
-          être composés de 8 ou 13 chiffres.
+          <b>GTINs/EANs</b> : tout les codes GTIN (ou EAN) du produit, séparés par des points virgules. Ces derniers
+          doivent être composés de 8 ou 13 chiffres.
         </li>
         <li>
           <b>Référence interne</b> : réference utilisé en interne pour votre produit. Si vous n'en avez pas, vous pouvez

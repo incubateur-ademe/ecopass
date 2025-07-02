@@ -10,8 +10,8 @@ const En = () => {
       <h3>Product information</h3>
       <ul>
         <li>
-          <b>GTINs/EANs</b> : all GTIN (or EAN) codes of the product, separated by commas. These codes must consist of 8
-          or 13 digits.
+          <b>GTINs/EANs</b> : all GTIN (or EAN) codes of the product, separated by semi colon. These codes must consist
+          of 8 or 13 digits.
         </li>
         <li>
           <b>Référence interne</b> : reference used internally for your product. If you don't have one, you can use the

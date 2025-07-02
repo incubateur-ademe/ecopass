@@ -234,7 +234,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       const productId = uuid()
 
       const rawProduct = {
-        gtins: (row["gtinseans"] || "").split(","),
+        gtins: (row["gtinseans"] || "").split(";").map((gtin) => gtin.trim()),
         internalReference: row["referenceinterne"],
         date: row["datedemisesurlemarche"],
         brand: row["marque"] || upload.createdBy.organization?.name || "",
