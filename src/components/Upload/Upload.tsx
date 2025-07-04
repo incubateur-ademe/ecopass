@@ -49,7 +49,12 @@ const Upload = () => {
       </p>
       <p className='fr-mb-4w'>
         Si vous avez besoin d'aide, veuillez contacter notre support à l'adresse suivante :{" "}
-        <Link className='fr-link' href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`} prefetch={false}>
+        <Link
+          className='fr-link'
+          href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}
+          prefetch={false}
+          target='_blank'
+          rel='noopener noreferrer'>
           {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
         </Link>
       </p>
@@ -70,7 +75,12 @@ const Upload = () => {
                 Une erreur inconnue est survenue lors de l'analyse du fichier. Si l'erreur persiste n'hesitez pas à nous
                 envoyer votre fichier par mail, à l'adresse suivante, pour analyse plus approfondie.
                 <br />
-                <Link className='fr-link' href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`} prefetch={false}>
+                <Link
+                  className='fr-link'
+                  href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}
+                  prefetch={false}
+                  target='_blank'
+                  rel='noopener noreferrer'>
                   {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
                 </Link>
               </>

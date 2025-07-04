@@ -1,4 +1,5 @@
 import { UserOrganization } from "../../db/user"
+import Delegations from "./Delegations"
 import NewDelegation from "./NewDelegation"
 
 const MyDelegations = ({ organization }: { organization: UserOrganization }) => {
@@ -7,7 +8,7 @@ const MyDelegations = ({ organization }: { organization: UserOrganization }) => 
       {organization.authorizedOrganizations.length === 0 ? (
         <p>Vous n'avez pas déléguer de droits de déclaration.</p>
       ) : (
-        <>{organization.brands.map(({ name }) => name)}</>
+        <Delegations organizations={organization.authorizedOrganizations} />
       )}
       <NewDelegation />
     </>

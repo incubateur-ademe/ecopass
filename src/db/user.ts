@@ -47,7 +47,13 @@ export const getUserOrganization = async (userId: string) => {
           name: true,
           brands: { select: { id: true, name: true } },
           authorizedOrganizations: {
-            select: { id: true, name: true, brands: { select: { id: true, name: true } } },
+            select: {
+              id: true,
+              createdAt: true,
+              to: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
+            },
+            where: { active: true },
+            orderBy: { createdAt: "desc" },
           },
         },
       },
