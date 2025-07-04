@@ -14,16 +14,18 @@ const mailTransport = nodemailer.createTransport({
 const getHtml = (file: string, data?: Data) => ejs.renderFile(`./src/services/emails/views/${file}.ejs`, data)
 
 const send = (toEmail: string[], subject: string, html: string) => {
-  const mail = {
-    to: toEmail.map((email) => email.toLowerCase()).join(","),
-    from: process.env.NEXT_PUBLIC_SUPPORT_MAIL,
-    subject,
-    html,
-    text: html.replace(/<(?:.|\n)*?>/gm, ""),
-    headers: { "X-Mailjet-TrackOpen": "0", "X-Mailjet-TrackClick": "0" },
-  }
+  if (process.env.MAIL_HOST) {
+    const mail = {
+      to: toEmail.map((email) => email.toLowerCase()).join(","),
+      from: process.env.NEXT_PUBLIC_SUPPORT_MAIL,
+      subject,
+      html,
+      text: html.replace(/<(?:.|\n)*?>/gm, ""),
+      headers: { "X-Mailjet-TrackOpen": "0", "X-Mailjet-TrackClick": "0" },
+    }
 
-  return mailTransport.sendMail(mail)
+    return mailTransport.sendMail(mail)
+  }
 }
 
 export const sendUploadSuccessEmail = async (toEmail: string, name: string | null, date: Date) => {
