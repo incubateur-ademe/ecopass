@@ -29,7 +29,7 @@ const En = () => {
           <p className='fr-hint-text'>If not defined, the calculated score will be used.</p>
         </li>
         <li>
-          <b>Type</b>: product type to choose from the following list:
+          <b>Catégorie</b>: product type to choose from the following list:
           <ul>
             <li>Shirt</li>
             <li>Jeans</li>

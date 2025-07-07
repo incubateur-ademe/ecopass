@@ -29,7 +29,7 @@ const Fr = () => {
           <p className='fr-hint-text'>si pas de valeur définie, on utilise le score calculé.</p>
         </li>
         <li>
-          <b>Type</b> : type de produit à choisir dans la liste suivante :
+          <b>Catégorie</b> : type de produit à choisir dans la liste suivante :
           <ul>
             <li>Chemise</li>
             <li>Jean</li>
