@@ -1,34 +1,20 @@
 import { Card } from "@codegouvfr/react-dsfr/Card"
-import Link from "next/link"
 import Block from "../components/Block/Block"
-import { Notice } from "@codegouvfr/react-dsfr/Notice"
 import HomeBanner from "../components/Home/HomeBanner"
+import Logout from "./Logout"
+import { Notice } from "@codegouvfr/react-dsfr/Notice"
 
 const Home = ({ connected }: { connected?: boolean }) => {
   return (
     <>
-      {!connected && (
-        <Notice
-          title='Outil en beta privé'
-          description={
-            <>
-              Vous êtes une marque ou un bureau d'études dans le domaine du textile ? Vous souhaitez tester le portail
-              de déclaration de l'affichage environnemental ? Veuillez nous contacter à l'adresse{" "}
-              <Link
-                className='fr-link'
-                href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}
-                prefetch={false}
-                target='_blank'
-                rel='noopener noreferrer'>
-                {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
-              </Link>
-              .
-            </>
-          }
-        />
-      )}
+      <Logout />
+      <Notice
+        severity='warning'
+        title='Maintenance'
+        description='Le site est actuellement en maintenance, sa version officielle sera disponible dans les prochains jours.'
+      />
       <Block secondary>
-        <HomeBanner withConnection={!connected} />
+        <HomeBanner />
       </Block>
       {connected && (
         <Block>
