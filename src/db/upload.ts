@@ -7,27 +7,44 @@ export const getUploadById = async (id: string) =>
     where: { id },
     select: {
       id: true,
-      userId: true,
+      createdById: true,
       status: true,
       error: true,
     },
   })
 
-export const createUpload = async (userId: string, uploadType: UploadType, name?: string) =>
+export const createUpload = async (userId: string, uploadType: UploadType, name?: string, id?: string) =>
   prismaClient.$transaction(async (transaction) => {
-    const lastVersion = await transaction.version.findFirst({
-      orderBy: { createdAt: "desc" },
-    })
+    const [lastVersion, user] = await Promise.all([
+      transaction.version.findFirst({
+        orderBy: { createdAt: "desc" },
+      }),
+      prismaClient.user.findUnique({
+        where: { id: userId },
+        select: { id: true, organizationId: true },
+      }),
+    ])
 
     if (!lastVersion) {
       throw new Error("No version found")
     }
 
+    if (!user || !user.organizationId) {
+      throw new Error("No user found")
+    }
+
     return transaction.upload.create({
-      data: { userId: userId, name, versionId: lastVersion.id, type: uploadType },
+      data: {
+        id,
+        createdById: user.id,
+        organizationId: user.organizationId,
+        name,
+        versionId: lastVersion.id,
+        type: uploadType,
+      },
       select: {
         id: true,
-        user: { select: { email: true } },
+        createdBy: { select: { email: true } },
         name: true,
         createdAt: true,
         products: { select: { status: true } },
@@ -55,12 +72,12 @@ export const updateUploadToPending = async (id: string) =>
 
 export const getuploadsCountByUserId = async (userId: string) =>
   prismaClient.upload.count({
-    where: { userId, type: UploadType.FILE },
+    where: { createdById: userId, type: UploadType.FILE },
   })
 
 export const getUploadsByUserId = async (userId: string, skip?: number, take?: number) => {
   const uploads = await prismaClient.upload.findMany({
-    where: { userId, type: UploadType.FILE },
+    where: { createdById: userId, type: UploadType.FILE },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -94,7 +111,7 @@ export const checkUploadsStatus = async (uploadsId: string[]) => {
       id: true,
       name: true,
       createdAt: true,
-      user: { select: { email: true } },
+      createdBy: { select: { email: true } },
       products: {
         select: { status: true },
       },
@@ -123,7 +140,7 @@ export const getFirstFileUpload = async () =>
       id: true,
       name: true,
       createdAt: true,
-      user: { select: { email: true, brand: { select: { name: true } } } },
+      createdBy: { select: { email: true, organization: { select: { name: true } } } },
       products: { select: { status: true } },
     },
     where: { status: Status.Pending, type: UploadType.FILE },

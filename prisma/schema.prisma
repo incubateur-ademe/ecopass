@@ -14,6 +14,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  password           String?
+  resetPasswordToken String? @map("reset_password_token")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime? @map("email_verified")
+
+  nom               String?
+  prenom            String?
+  agentconnect_info Json?
+
+  accounts Account[]
+  sessions Session[]
+
+  organizationId String?       @map("organization_id")
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  apiKeys                APIKey[]
+  uploads                Upload[]
+  exports                Export[]
+  AuthorizedOrganization AuthorizedOrganization[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
 enum UploadType {
   API
   FILE
@@ -35,8 +100,11 @@ model Upload {
   status Status  @default(Pending)
   error  String?
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @map("user_id")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String @map("  created_by_id")
 
   version   Version @relation(fields: [versionId], references: [id])
   versionId String
@@ -79,10 +147,11 @@ model Product {
   status Status  @default(Pending)
   error  String?
 
-  gtin          String
-  date          String?
-  brand         String
-  declaredScore Float?  @map("declared_score")
+  gtins             String[] @map("gtins")
+  internalReference String   @map("internal_reference")
+  date              String?
+  brand             String
+  declaredScore     Float?   @map("declared_score")
 
   // Encrypted string
   category        String
@@ -149,29 +218,47 @@ model Accessory {
   @@map("accessories")
 }
 
+model Organization {
+  id    String @id @default(uuid())
+  name  String
+  siret String @unique
+
+  authorizedBy            AuthorizedOrganization[] @relation("ToOrg")
+  authorizedOrganizations AuthorizedOrganization[] @relation("FromOrg")
+
+  brands Brand[]
+  users  User[]
+  upload Upload[]
+
+  @@map("organizations")
+}
+
+model AuthorizedOrganization {
+  id     String @id @default(uuid())
+  fromId String @map("from_id")
+  toId   String @map("to_id")
+
+  from Organization @relation("FromOrg", fields: [fromId], references: [id])
+  to   Organization @relation("ToOrg", fields: [toId], references: [id])
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String   @map("created_by_id")
+
+  active    Boolean   @default(true)
+  removedAt DateTime? @map("removed_at")
+
+  @@map("authorized_organizations")
+}
+
 model Brand {
   id   String @id @default(uuid())
   name String
 
-  users User[]
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
 
-  @@map("brands")
-}
-
-model User {
-  id                 String  @id @default(cuid())
-  email              String  @unique
-  password           String
-  resetPasswordToken String?
-
-  brandId String?
-  brand   Brand?  @relation(fields: [brandId], references: [id])
-
-  apiKeys APIKey[]
-  uploads Upload[]
-  exports Export[]
-
-  @@map("users")
+  @@map("brand")
 }
 
 model APIKey {

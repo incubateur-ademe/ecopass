@@ -3,7 +3,7 @@ import Products from "../../views/Products"
 import { PageProps } from "../../../.next/types/app/page"
 import { Metadata } from "next"
 import { auth } from "../../services/auth/auth"
-import { getProductsBrandByUserId, getProductsCountByUserIdAndBrand } from "../../db/product"
+import { getOrganizationProductsByUserId, getOrganizationProductsCountByUserIdAndBrand } from "../../db/product"
 
 export const metadata: Metadata = {
   title: "Mes produits - Affichage environnemental",
@@ -19,8 +19,8 @@ const ProductsPage = async ({ searchParams }: PageProps) => {
   const page = params.page ? parseInt(params.page as string, 10) : 1
   const brand = params.brand ? (params.brand as string) : undefined
 
-  const brands = await getProductsBrandByUserId(session.user.id)
-  const productsCount = await getProductsCountByUserIdAndBrand(session.user.id, brand)
+  const brands = await getOrganizationProductsByUserId(session.user.id)
+  const productsCount = await getOrganizationProductsCountByUserIdAndBrand(session.user.id, brand)
 
   return (
     <>

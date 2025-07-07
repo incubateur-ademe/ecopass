@@ -10,7 +10,12 @@ const En = () => {
       <h3>Product information</h3>
       <ul>
         <li>
-          <b>Identifiant</b>: GTIN code of the product. It must be composed of 8 or 13 digits.
+          <b>GTINs/EANs</b> : all GTIN (or EAN) codes of the product, separated by semi colon. These codes must consist
+          of 8 or 13 digits.
+        </li>
+        <li>
+          <b>Référence interne</b> : reference used internally for your product. If you don't have one, you can use the
+          main GTIN (or EAN).
         </li>
         <li>
           <b>Date de mise sur le marché</b>: release date of the product in the french format DD/MM/YY.
@@ -40,7 +45,7 @@ const En = () => {
           </ul>
         </li>
         <li>
-          <b>Masse</b>: mass of the finished product, in kilograms (min: 0.01 kg).
+          <b>Masse (en kg)</b>: mass of the finished product, in kilograms (min: 0.01 kg).
         </li>
         <li>
           <b>Remanufacturé</b> (optional): is the product remanufactured? Yes/No.
@@ -49,7 +54,7 @@ const En = () => {
           <b>Nombre de références</b> (optional): number of references in the brand's catalog (min: 1, max: 999999).
         </li>
         <li>
-          <b>Prix</b> (optional): product price, in Euros (€) (min: 1, max: 1000).
+          <b>Prix (en euros, TTC)</b> (optional): product price, in Euros (€), VAT included(min: 1, max: 1000).
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optional): type of company and service offer:

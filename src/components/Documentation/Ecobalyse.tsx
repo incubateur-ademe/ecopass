@@ -10,8 +10,13 @@ const Ecobalyse = () => {
       <h3>Informations produit</h3>
       <ul>
         <li>
-          <b>Identifiant</b> : code GTIN du produit. Ce dernier doit être composé de 8 ou 13 chiffres.
+          <b>GTINs/EANs</b> : tout les codes GTIN (ou EAN) du produit, séparés par des points virgules. Ces derniers
+          doivent être composés de 8 ou 13 chiffres.
         </li>
+        <li>
+          <b>Référence interne</b> : réference utilisé en interne pour votre produit. Si vous n'en avez pas, vous pouvez
+          utiliser le GTIN (ou l'EAN) principal.
+        </li>{" "}
         <li>
           <b>Date de mise sur le marché</b> : au format JJ/MM/YY.
         </li>
@@ -40,7 +45,7 @@ const Ecobalyse = () => {
           </ul>
         </li>
         <li>
-          <b>Masse</b> : masse du produit fini, en kilogrammes (min : 0,01 kg).
+          <b>Masse (en kg)</b> : masse du produit fini, en kilogrammes (min : 0,01 kg).
         </li>
         <li>
           <b>Remanufacturé</b> (optionnel) : est ce que le produit est remanufacturé ? true/false.
@@ -50,7 +55,7 @@ const Ecobalyse = () => {
           999999).
         </li>
         <li>
-          <b>Prix</b> (optionnel) : prix du produit, en Euros (€) (min : 1, max : 1000).
+          <b>Prix (en euros, TTC)</b> (optionnel) : prix du produit, en Euros (€), TTC (min : 1, max : 1000).
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optionnel) : type d'entreprise et d'offre de services :

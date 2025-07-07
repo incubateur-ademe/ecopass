@@ -11,6 +11,10 @@ export const createScores = async (scores: Prisma.ScoreCreateManyInput[]) =>
 
 export const createScore = async (user: Exclude<APIUser, null>["user"], product: ProductAPIValidation, score: number) =>
   prismaClient.$transaction(async (transaction) => {
+    if (!user.organization) {
+      throw new Error("User organization not found")
+    }
+
     const lastVersion = await transaction.version.findFirst({
       orderBy: { createdAt: "desc" },
     })
@@ -28,10 +32,16 @@ export const createScore = async (user: Exclude<APIUser, null>["user"], product:
         product: {
           create: {
             ...encrypted.product,
-            brand: encrypted.product.brand || user.brand?.name || "",
+            brand: encrypted.product.brand || user.organization.name,
             status: Status.Done,
             upload: {
-              create: { userId: user.id, versionId: lastVersion.id, type: UploadType.API, status: Status.Done },
+              create: {
+                createdById: user.id,
+                organizationId: user.organization.id,
+                versionId: lastVersion.id,
+                type: UploadType.API,
+                status: Status.Done,
+              },
             },
             materials: {
               createMany: {

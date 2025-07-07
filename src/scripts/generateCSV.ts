@@ -36,7 +36,8 @@ const generate = (name: string, length?: string) => {
     const materialsShare = generateShares()
     const date = faker.date.past()
     return {
-      gtin: faker.string.numeric(13),
+      gtins: Array.from({ length: faker.number.int({ min: 1, max: 3 }) }).map(() => faker.string.numeric(13)),
+      internalReference: faker.string.alphanumeric(10),
       date: `${date.getDate().toString().padStart(2, "0")}/${date.getMonth() + 1}/${date.getFullYear()}`,
       category: faker.helpers.arrayElement(Object.keys(productCategories)),
       business: faker.helpers.arrayElement(["", ...Object.keys(businesses)]),
@@ -71,7 +72,8 @@ const generate = (name: string, length?: string) => {
 
   const csv = stringify(
     products.map((product) => [
-      product.gtin,
+      product.gtins,
+      product.internalReference,
       product.date,
       "",
       "",
@@ -102,7 +104,8 @@ const generate = (name: string, length?: string) => {
     {
       header: true,
       columns: [
-        "Identifiant",
+        "GTINs/EANs",
+        "Référence interne",
         "Date de mise sur le marché",
         "Marque",
         "Score",

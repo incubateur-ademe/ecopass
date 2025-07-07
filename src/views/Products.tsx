@@ -18,19 +18,22 @@ const ProductsPage = ({
 }) => {
   return (
     <>
-      {brands.length > 1 && (
-        <Block>
-          <BrandSelection brands={brands} brand={brand} />
-        </Block>
-      )}
       <Block>
         <h1>Mes produits</h1>
+        {brands.length > 1 && <BrandSelection brands={brands} brand={brand} />}
         {productsCount === 0 ? (
           <p>Vous n'avez pas encore déclaré de produits</p>
         ) : (
           <p>
             Vous avez <b>{productsCount}</b>{" "}
             {productsCount > 1 ? <span>produits déclarés</span> : <span>produit déclaré</span>}
+            {brand && (
+              <span>
+                {" "}
+                pour la marque <b>{brand}</b>
+              </span>
+            )}
+            .
           </p>
         )}
       </Block>

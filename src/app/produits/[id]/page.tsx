@@ -16,12 +16,12 @@ type Props = {
 
 const ProductPage = async (props: Props) => {
   const session = await auth()
-  if (!session) {
-    redirect("/login")
+  if (!session || !session.user) {
+    redirect("/")
   }
   const params = await props.params
 
-  const product = await getProductWithScore(params.id)
+  const product = await getProductWithScore(params.id, session.user.id)
   return (
     <>
       <StartDsfrOnHydration />

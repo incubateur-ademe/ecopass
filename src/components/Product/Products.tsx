@@ -1,5 +1,6 @@
 "use server"
-import { getProductsByUserIdAndBrand } from "../../db/product"
+
+import { getOrganizationProductsByUserIdAndBrand } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
@@ -7,6 +8,7 @@ import { formatDate, formatNumber } from "../../services/format"
 import Table from "../Table/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import styles from "./Products.module.css"
+import Link from "next/link"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
@@ -14,9 +16,17 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
     return null
   }
 
-  const products = await getProductsByUserIdAndBrand(session.user.id, page - 1, 10, brand)
+  const products = await getOrganizationProductsByUserIdAndBrand(session.user.id, page - 1, 10, brand)
 
-  return (
+  return products.length === 0 ? (
+    <p>
+      Rendez-vous sur la page{" "}
+      <Link className='fr-link' href='/declarations'>
+        Mes déclarations
+      </Link>{" "}
+      pour deposer un produit.
+    </p>
+  ) : (
     <>
       <Search />
       <Table
@@ -24,13 +34,13 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
         fixed
         caption='Mes produits'
         noCaption
-        headers={["Date de dépot", "Catégorie", "GTIN", "Score", ""]}
+        headers={["Date de dépot", "Catégorie", "Référence interne", "Score", ""]}
         data={products.map((product) => [
           formatDate(product.createdAt),
           product.category,
-          product.gtin,
+          product.internalReference,
           formatNumber(product.score?.score),
-          <Button linkProps={{ href: `/produits/${product.gtin}` }} key={product.gtin}>
+          <Button linkProps={{ href: `/produits/${product.gtins[0]}` }} key={product.gtins[0]}>
             Voir le produit
           </Button>,
         ])}

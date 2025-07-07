@@ -2,6 +2,7 @@ import crypto from "crypto"
 import { ProductAPIValidation } from "../services/validation/api"
 import { ParsedProduct } from "../types/Product"
 import JSZip from "jszip"
+import { Accessory, Material, Product, Score } from "../../prisma/src/prisma"
 
 const ALGO = "aes-256-gcm"
 const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, "hex")
@@ -9,7 +10,11 @@ const STORAGE_KEY = Buffer.from(process.env.STORAGE_ENCRYPTION_KEY!, "hex")
 const IV_LENGTH = 12
 
 export function encrypt(value: string | number | boolean | undefined): string {
-  const plainText = (value === undefined ? "" : value).toString()
+  const payload = {
+    v: value === undefined ? "" : value,
+    n: crypto.randomBytes(8).toString("hex"),
+  }
+  const plainText = JSON.stringify(payload)
   const iv = crypto.randomBytes(IV_LENGTH)
   const cipher = crypto.createCipheriv(ALGO, KEY, iv)
   const encrypted = Buffer.concat([cipher.update(plainText, "utf8"), cipher.final()])
@@ -25,29 +30,72 @@ function decrypt(data: string) {
   const decipher = crypto.createDecipheriv(ALGO, KEY, iv)
   decipher.setAuthTag(tag)
   const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()])
-  return decrypted.toString("utf8")
+  const decryptedText = decrypted.toString("utf8")
+  try {
+    const payload = JSON.parse(decryptedText)
+    return payload instanceof Object && "v" in payload ? payload.v : payload
+  } catch {
+    return decryptedText
+  }
 }
 
 export const decryptNumber = (data: string) => {
   const decrypted = decrypt(data)
   const value = parseFloat(decrypted)
-  return isNaN(value) ? (decrypted === "" ? undefined : decrypted) : value
+  return isNaN(value) ? (decrypted === null || decrypted === "" ? undefined : decrypted) : value
 }
 
 export const decryptBoolean = (data: string) => {
   const decrypted = decrypt(data)
-  if (decrypted === "true") {
+  if (decrypted === true || decrypted === "true") {
     return true
-  } else if (decrypted === "false") {
+  } else if (decrypted === false || decrypted === "false") {
     return false
   }
-  return decrypted === "" ? undefined : decrypted
+  return decrypted === null || decrypted === "" ? undefined : decrypted
 }
 
 export const decryptString = (data: string) => {
   const decrypted = decrypt(data)
-  return decrypted || undefined
+  return decrypted === null || decrypted === "" ? undefined : decrypted
 }
+
+export const decryptProductFields = (
+  product: Product & {
+    materials: Material[]
+    accessories: Accessory[]
+    score?: Score | null
+    upload: { createdBy: { organization: { name: string; brands: { name: string }[] } | null } }
+  },
+) => ({
+  ...product,
+  category: decryptString(product.category),
+  business: decryptString(product.business),
+  countryDyeing: decryptString(product.countryDyeing),
+  countryFabric: decryptString(product.countryFabric),
+  countryMaking: decryptString(product.countryMaking),
+  countrySpinning: decryptString(product.countrySpinning),
+  mass: decryptNumber(product.mass),
+  price: decryptNumber(product.price),
+  airTransportRatio: decryptNumber(product.airTransportRatio),
+  numberOfReferences: decryptNumber(product.numberOfReferences),
+  fading: decryptBoolean(product.fading),
+  traceability: decryptBoolean(product.traceability),
+  upcycled: decryptBoolean(product.upcycled),
+  impression: decryptString(product.impression),
+  impressionPercentage: decryptNumber(product.impressionPercentage),
+  materials: product.materials.map((material) => ({
+    ...material,
+    slug: decryptString(material.slug),
+    country: material.country ? decryptString(material.country) : undefined,
+    share: decryptNumber(material.share),
+  })),
+  accessories: product.accessories.map((accessory) => ({
+    ...accessory,
+    slug: decryptString(accessory.slug),
+    quantity: decryptNumber(accessory.quantity),
+  })),
+})
 
 export function encryptProductFields(product: ProductAPIValidation | ParsedProduct) {
   const date =
@@ -56,7 +104,8 @@ export function encryptProductFields(product: ProductAPIValidation | ParsedProdu
       : product.date
   return {
     product: {
-      gtin: product.gtin,
+      gtins: product.gtins,
+      internalReference: product.internalReference,
       date: date,
       brand: product.brand,
       declaredScore: product.declaredScore || null,

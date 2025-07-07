@@ -5,7 +5,13 @@ import { getSVG } from "../../utils/label/svg"
 import Label from "../Label/Label"
 import Button from "@codegouvfr/react-dsfr/Button"
 
-const ProductScore = ({ score, gtin }: { score: Exclude<ProductWithScore["score"], null>; gtin: string }) => {
+const ProductScore = ({
+  score,
+  internalReference,
+}: {
+  score: Exclude<ProductWithScore["score"], null>
+  internalReference: string
+}) => {
   const download = () => {
     const blob = new Blob([getSVG(score?.score, score?.standardized)], {
       type: "image/svg+xml;charset=utf-8",
@@ -13,7 +19,7 @@ const ProductScore = ({ score, gtin }: { score: Exclude<ProductWithScore["score"
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `${gtin}.svg`
+    a.download = `${internalReference}.svg`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)

@@ -13,7 +13,8 @@ import { encryptProductFields } from "../../db/encryption"
 import { FileUpload } from "../../db/upload"
 
 type ColumnType = [
-  "identifiant",
+  "gtinseans",
+  "referenceinterne",
   "datedemisesurlemarche",
   "marque",
   "score",
@@ -93,13 +94,14 @@ type ColumnType = [
 type CSVRow = Record<ColumnType[number], string>
 
 const columns: Partial<Record<ColumnType[number], string>> = {
-  identifiant: "Identifiant",
+  gtinseans: "GTINs/Eans",
+  referenceinterne: "Référence interne",
   datedemisesurlemarche: "Date de mise sur le marché",
   categorie: "Catégorie",
-  masse: "Masse",
+  masse: "Masse (en kg)",
   remanufacture: "Remanufacturé",
   nombredereferences: "Nombre de références",
-  prix: "Prix",
+  prix: "Prix (en euros, TTC)",
   tailledelentreprise: "Taille de l'entreprise",
   tracabilitegeographique: "Traçabilité géographique",
   matiere1: "Matière 1",
@@ -124,7 +126,8 @@ const simplifyValue = (value: string | null) =>
     ? value
         .trim()
         .toLowerCase()
-        .replace(/[ \/'()-]/g, "")
+        .replace(/\(.*?\)/g, "")
+        .replace(/[ \/'-]/g, "")
         .replace(/[éè]/g, "e")
         .replace(/ç/g, "c")
     : ""
@@ -231,9 +234,10 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       const productId = uuid()
 
       const rawProduct = {
-        gtin: row["identifiant"],
+        gtins: (row["gtinseans"] || "").split(";").map((gtin) => gtin.trim()),
+        internalReference: row["referenceinterne"],
         date: row["datedemisesurlemarche"],
-        brand: row["marque"] || upload.user.brand?.name || "",
+        brand: row["marque"] || upload.createdBy.organization?.name || "",
         declaredScore: getNumberValue(row["score"], 1, -1) as number | undefined,
         product: getValue<ProductCategory>(productCategories, row["categorie"]),
         airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),

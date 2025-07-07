@@ -26,16 +26,34 @@ jobs:
           cache: "yarn"
       - name: Copy .env
         run: cp .env.dist .env
+      - name: Inject secrets into .env
+        run: |
+          echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
+          echo "STORAGE_ENCRYPTION_KEY=${{ secrets.STORAGE_ENCRYPTION_KEY }}" >> .env
+          echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
+          echo "PROCONNECT_CLIENT_ID=${{ secrets.PROCONNECT_CLIENT_ID }}" >> .env
+          echo "PROCONNECT_CLIENT_SECRET=${{ secrets.PROCONNECT_CLIENT_SECRET }}" >> .env
+          echo "PROCONNECT_DOMAIN=${{ secrets.PROCONNECT_DOMAIN }}" >> .env
       - name: Install dependencies
         run: yarn install --immutable --immutable-cache --check-cache
       - name: Linter
         run: yarn lint
       - name: Run build
         run: yarn build
+      - name: Run unit tests
+        run: npx jest
       - name: Migrate db
         run: yarn prisma migrate deploy
+      - name: Seed db
+        run: yarn prisma db seed
       - name: Start server
         run: yarn start &
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
+      - name: Install Playwright deps
+        run: npx playwright install-deps
+      - name: Run e2e tests
+        run: npx playwright test
       - name: Create artifacts directory
         run: mkdir -p ${{ github.workspace }}/tmp/artifacts
       - name: Lighthouse Check
@@ -57,3 +75,10 @@ jobs:
         with:
           name: Lighthouse reports
           path: ${{ github.workspace }}/tmp/artifacts
+      - name: Upload playwright artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: test-results/
+          retention-days: 30

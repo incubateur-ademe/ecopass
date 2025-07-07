@@ -4,7 +4,7 @@ import { NextRequest } from "next/server"
 export async function GET(request: NextRequest, { params }: { params: Promise<{ file: string }> }) {
   try {
     const file = (await params).file
-    const buffer = await downloadFileFromS3(`exports/${file}.zip`)
+    const buffer = await downloadFileFromS3(`${file}.zip`, "export")
     return new Response(buffer, {
       status: 200,
       headers: {

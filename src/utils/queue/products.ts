@@ -1,6 +1,6 @@
 import { failProducts, getProductsToProcess } from "../../db/product"
 import { checkUploadsStatus } from "../../db/upload"
-import { productValidation } from "../../services/validation/product"
+import { getUserProductValidation } from "../../services/validation/product"
 import { saveEcobalyseResults } from "../ecobalyse/api"
 import { sleep } from "./sleep"
 
@@ -12,10 +12,26 @@ export const processProductsQueue = async () => {
     await sleep()
   } else {
     console.log(`Processing ${products.length} products...`)
-    const validatedProducts = products.map((product) => ({
-      id: product.id,
-      ...productValidation.safeParse(product),
-    }))
+    const validatedProducts = products.map((product) => {
+      const organization = product.upload.createdBy.organization
+      if (!organization) {
+        return {
+          id: product.id,
+          success: false as const,
+          error: {
+            issues: [{ message: "Organization not found for product upload." }],
+          },
+        }
+      }
+      const userProductValidation = getUserProductValidation([
+        organization.name,
+        ...organization.brands.map(({ name }) => name),
+      ])
+      return {
+        id: product.id,
+        ...userProductValidation.safeParse(product),
+      }
+    })
 
     await Promise.all([
       saveEcobalyseResults(validatedProducts.filter((result) => result.success).map((result) => result.data)),

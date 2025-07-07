@@ -1,21 +1,24 @@
 import { NextResponse } from "next/server"
 import { getApiUser } from "../../../services/auth/auth"
-import { productAPIValidation } from "../../../services/validation/api"
 import { computeEcobalyseScore } from "../../../utils/ecobalyse/api"
 import { createScore } from "../../../db/score"
 import { updateAPIUse } from "../../../db/user"
+import { getUserProductAPIValidation } from "../../../services/validation/api"
 
 export async function POST(req: Request) {
   try {
     const api = await getApiUser(req.headers)
-    if (!api) {
+    if (!api || !api.user || !api.user.organization) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     await updateAPIUse(api.key)
 
     const body = await req.json()
-    const product = productAPIValidation.safeParse({ ...body, brand: body.brand || api.user.brand?.name || "" })
+    const product = getUserProductAPIValidation([
+      api.user.organization.name,
+      ...api.user.organization.brands.map(({ name }) => name),
+    ]).safeParse({ ...body, brand: body.brand || api.user.organization.name || "" })
     if (!product.success) {
       return NextResponse.json(product.error.issues, { status: 400 })
     }

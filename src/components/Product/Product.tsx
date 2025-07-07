@@ -5,8 +5,6 @@ import Block from "../Block/Block"
 import ProductScore from "./ProductScore"
 
 const Product = ({ product }: { product: ProductWithScore }) => {
-  const brand = product.brand || product.upload?.user?.brand?.name
-
   return (
     <Block>
       <h1>Coût environnemental</h1>
@@ -16,11 +14,14 @@ const Product = ({ product }: { product: ProductWithScore }) => {
       <p className='fr-text--xl fr-mb-1w'>
         <b>
           {product.category}
-          {brand && <span> - {brand}</span>}
+          {product.brand && <span> - {product.brand}</span>}
         </b>
       </p>
       <p>
-        Code GTIN : <b>{product.gtin}</b>
+        Référence interne: <b>{product.internalReference}</b>
+      </p>
+      <p>
+        Code GTINs : <b>{product.gtins.join(", ")}</b>
       </p>
       <p>
         Déposé le : <b>{formatDate(product.createdAt)}</b>
@@ -29,7 +30,11 @@ const Product = ({ product }: { product: ProductWithScore }) => {
         Version Ecobalyse : <b>{product.upload.version.version}</b>
       </p>
       <div className='fr-mt-4w'>
-        {product.score ? <ProductScore score={product.score} gtin={product.gtin} /> : <p>Pas de score</p>}
+        {product.score ? (
+          <ProductScore score={product.score} internalReference={product.internalReference} />
+        ) : (
+          <p>Pas de score</p>
+        )}
       </div>
     </Block>
   )

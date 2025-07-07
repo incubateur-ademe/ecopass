@@ -21,7 +21,7 @@ const getEncoding = async (buffer: Buffer) => {
 }
 
 const getFile = async (uploadId: string) => {
-  const zip = await downloadFileFromS3(`uploads/${uploadId}`)
+  const zip = await downloadFileFromS3(uploadId, "upload")
   return decryptAndDezipFile(zip)
 }
 
@@ -32,8 +32,8 @@ export const processUploadsToQueue = async () => {
   }
 
   console.log("Processing upload:", upload.id)
-  const buffer = await getFile(upload.id)
   try {
+    const buffer = await getFile(upload.id)
     await updateUploadToPending(upload.id)
     const encoding = await getEncoding(buffer)
     const csvData = await parseCSV(buffer, encoding, upload)
