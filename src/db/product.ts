@@ -124,7 +124,7 @@ const getProducts = async (
     },
     select: { internalReference: true },
     distinct: ["internalReference"],
-    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
+    orderBy: [{ internalReference: "asc" }],
     skip,
     take,
   })
@@ -172,8 +172,8 @@ export const getOrganizationProductsCountByUserIdAndBrand = async (userId: strin
 
 export const getOrganizationProductsByUserIdAndBrand = async (
   userId: string,
-  page?: number,
-  size?: number,
+  page: number,
+  size: number | undefined,
   brand?: string,
 ) => {
   const organization = await prismaClient.organization.findFirst({
@@ -183,7 +183,9 @@ export const getOrganizationProductsByUserIdAndBrand = async (
   if (!organization) {
     return []
   }
-  return getProducts({ upload: { organizationId: organization.id }, brand }, (page || 0) * (size || 10), size || 10)
+  return size
+    ? getProducts({ upload: { organizationId: organization.id }, brand }, (page || 0) * size, size)
+    : getProducts({ upload: { organizationId: organization.id }, brand })
 }
 export const getProductsByUploadId = async (uploadId: string) => {
   const products = await prismaClient.product.findMany({

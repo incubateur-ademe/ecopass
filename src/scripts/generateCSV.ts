@@ -72,7 +72,7 @@ const generate = (name: string, length?: string) => {
 
   const csv = stringify(
     products.map((product) => [
-      product.gtins,
+      product.gtins.join(";"),
       product.internalReference,
       product.date,
       "",

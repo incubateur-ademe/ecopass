@@ -9,6 +9,7 @@ import Table from "../Table/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import styles from "./Products.module.css"
 import Link from "next/link"
+import DownloadScores from "./DownloadScores"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
@@ -28,6 +29,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
     </p>
   ) : (
     <>
+      <DownloadScores brand={brand} />
       <Search />
       <Table
         className={styles.table}
