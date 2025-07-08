@@ -1,10 +1,27 @@
 "use server"
 import { Status } from "../../prisma/src/prisma"
-import { getProductsByUploadId } from "../db/product"
+import { getOrganizationProductsByUserIdAndBrand, getProductsByUploadId } from "../db/product"
 import { stringify } from "csv-stringify/sync"
 import { getUploadById } from "../db/upload"
 import { auth } from "../services/auth/auth"
 import { createExport } from "../db/export"
+
+export const exportScores = async (brand?: string) => {
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+  const products = await getOrganizationProductsByUserIdAndBrand(session.user.id, 0, undefined, brand)
+  return stringify(
+    products.map((product) => {
+      return [product.internalReference, product.score?.score]
+    }),
+    {
+      header: true,
+      columns: ["Référence interne", "Score"],
+    },
+  )
+}
 
 export const exportUpload = async (uploadId: string) => {
   const session = await auth()
