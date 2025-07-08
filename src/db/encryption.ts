@@ -65,7 +65,15 @@ export const decryptProductFields = (
     materials: Material[]
     accessories: Accessory[]
     score?: Score | null
-    upload: { createdBy: { organization: { name: string; brands: { name: string }[] } | null } }
+    upload: {
+      createdBy: {
+        organization: {
+          name: string
+          authorizedBy: { from: { name: string; brands: { name: string }[] } }[]
+          brands: { name: string }[]
+        } | null
+      }
+    }
   },
 ) => ({
   ...product,

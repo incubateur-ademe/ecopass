@@ -26,6 +26,8 @@ export const processProductsQueue = async () => {
       const userProductValidation = getUserProductValidation([
         organization.name,
         ...organization.brands.map(({ name }) => name),
+        ...organization.authorizedBy.map((authorization) => authorization.from.name),
+        ...organization.authorizedBy.flatMap((authorization) => authorization.from.brands.map(({ name }) => name)),
       ])
       return {
         id: product.id,

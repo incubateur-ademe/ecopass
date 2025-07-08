@@ -9,7 +9,18 @@ export const getUserByApiKey = async (apiKey: string) =>
         select: {
           id: true,
           email: true,
-          organization: { select: { id: true, name: true, brands: { select: { name: true } } } },
+          organization: {
+            select: {
+              id: true,
+              name: true,
+              authorizedBy: {
+                select: {
+                  from: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
+                },
+              },
+              brands: { select: { name: true } },
+            },
+          },
         },
       },
     },

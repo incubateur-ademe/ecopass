@@ -18,6 +18,10 @@ export async function POST(req: Request) {
     const product = getUserProductAPIValidation([
       api.user.organization.name,
       ...api.user.organization.brands.map(({ name }) => name),
+      ...api.user.organization.authorizedBy.map((authorization) => authorization.from.name),
+      ...api.user.organization.authorizedBy.flatMap((authorization) =>
+        authorization.from.brands.map(({ name }) => name),
+      ),
     ]).safeParse({ ...body, brand: body.brand || api.user.organization.name || "" })
     if (!product.success) {
       return NextResponse.json(product.error.issues, { status: 400 })
