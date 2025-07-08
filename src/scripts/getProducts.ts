@@ -17,7 +17,17 @@ async function main(email: string) {
               upload: {
                 include: {
                   createdBy: {
-                    include: { organization: { select: { name: true, brands: { select: { name: true } } } } },
+                    include: {
+                      organization: {
+                        select: {
+                          name: true,
+                          authorizedBy: {
+                            select: { from: { select: { name: true, brands: { select: { name: true } } } } },
+                          },
+                          brands: { select: { name: true } },
+                        },
+                      },
+                    },
                   },
                 },
               },
