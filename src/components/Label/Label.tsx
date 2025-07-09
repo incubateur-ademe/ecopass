@@ -1,7 +1,7 @@
 import { ProductWithScore } from "../../db/product"
 import { getSize } from "../../utils/label/size"
 
-const Label = ({ product: { score, standardized } }: { product: Exclude<ProductWithScore["score"], null> }) => {
+const Label = ({ product: { score, standardized } }: { product: NonNullable<ProductWithScore["score"]> }) => {
   const size = getSize(standardized)
   return (
     <svg xmlns='http://www.w3.org/2000/svg' width='154' height='77' viewBox='0 0 154 77' fill='none'>

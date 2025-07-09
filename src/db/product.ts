@@ -110,7 +110,7 @@ export const getProductWithScore = async (gtin: string, userId: string) => {
   return null
 }
 
-export type ProductWithScore = Exclude<Awaited<ReturnType<typeof getProductWithScore>>, null>
+export type ProductWithScore = NonNullable<Awaited<ReturnType<typeof getProductWithScore>>>
 
 const getProducts = async (
   where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId" | "createdAt" | "brand">,
