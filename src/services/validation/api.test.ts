@@ -50,7 +50,6 @@ describe("productAPIValidation", () => {
       fading: true,
       numberOfReferences: 10,
       price: 100,
-      traceability: true,
       countryDyeing: "CN",
       countryFabric: "CN",
       countryMaking: "CN",
@@ -352,21 +351,6 @@ describe("productAPIValidation", () => {
       validProduct,
       { price: 1001 },
       [{ path: ["price"], message: "Number must be less than or equal to 1000" }],
-    )
-  })
-
-  it("does not allow product with invalid traceability", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productAPIValidation,
-      validProduct,
-      { traceability: "Non" },
-      [
-        {
-          path: ["traceability"],
-          message: "Expected boolean, received string",
-        },
-      ],
     )
   })
 

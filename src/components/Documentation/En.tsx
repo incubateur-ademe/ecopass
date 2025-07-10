@@ -66,9 +66,6 @@ const En = () => {
           </ul>
         </li>
         <li>
-          <b>Traçabilité géographique</b> (optional): Enhanced traceability? Yes/No.
-        </li>
-        <li>
           <b>Origine origin</b> (optional): country for the spinning stage.
           <p className='fr-hint-text'>
             If not defined, the country of the most represented material in the mix will be used.

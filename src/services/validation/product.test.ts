@@ -75,7 +75,6 @@ describe("productValidation", () => {
       ],
       numberOfReferences: 625106,
       price: 50,
-      traceability: true,
       accessories: [
         {
           id: "accessory-1",

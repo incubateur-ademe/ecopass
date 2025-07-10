@@ -222,10 +222,6 @@
               }
             }
           },
-          "traceability": {
-            "description": "Traçabilité renforcée\n",
-            "type": "boolean"
-          },
           "trims": {
             "description": "Liste des accessoires du vêtement (boutons, zip, etc).\nLa liste des accessoires disponibles est accessible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/api/textile/trims`.\n",
             "type": "array",

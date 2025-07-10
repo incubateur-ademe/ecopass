@@ -16,7 +16,6 @@ export type EcobalyseProduct = {
   numberOfReferences?: number
   price?: number
   product: string
-  traceability?: boolean
   trims?: { id: string; quantity: number }[]
   upcycled?: boolean
 }

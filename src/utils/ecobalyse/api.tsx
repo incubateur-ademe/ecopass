@@ -35,7 +35,6 @@ const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories):
   })),
   numberOfReferences: product.numberOfReferences,
   price: product.price,
-  traceability: product.traceability,
   trims: product.accessories.map((accessory) => ({
     id: accessoryMapping[accessory.slug],
     quantity: accessory.quantity,
