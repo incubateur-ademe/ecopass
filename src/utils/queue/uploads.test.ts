@@ -68,7 +68,6 @@ describe("processUploadsToQueue", () => {
         numberOfReferences: "100000",
         price: "10",
         category: "tshirt",
-        traceability: "false",
         upcycled: "false",
         impression: "",
         impressionPercentage: "undefined",
