@@ -165,9 +165,8 @@ model Product {
   impressionPercentage String @map("impression_percentage")
 
   // Encrypted boolean
-  fading       String
-  traceability String
-  upcycled     String
+  fading   String
+  upcycled String
 
   materials   Material[]
   accessories Accessory[]

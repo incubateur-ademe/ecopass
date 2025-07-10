@@ -67,7 +67,6 @@ const productValidation = z.object({
     .min(1, "Le prix doit être supérieur à 1 €")
     .max(1000, "Le prix doit être inférieur à 1000 €")
     .optional(),
-  traceability: z.boolean({ message: "Traçabilité doit valoir 'Oui' ou 'Non'" }).optional(),
   countryDyeing: z
     .nativeEnum(Country, {
       errorMap: () => ({ message: "Origine de l'ennoblissement/impression invalide" }),

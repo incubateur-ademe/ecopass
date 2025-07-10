@@ -24,7 +24,6 @@ const product = {
   mass: 1.23,
   numberOfReferences: 2,
   price: 10.5,
-  traceability: false,
   countryDyeing: "France",
   countryFabric: "France",
   countryMaking: "France",

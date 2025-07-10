@@ -52,7 +52,6 @@ const generate = (name: string, length?: string) => {
       airTransportRatio: faker.number.float({ min: 0, max: 1 }),
       numberOfReferences: faker.number.int({ min: 1, max: 999_999 }),
       fading: faker.datatype.boolean(),
-      traceability: faker.datatype.boolean(),
       upcycled: faker.datatype.boolean(),
       materials: materialsShare.map((share) => {
         return {
@@ -83,7 +82,6 @@ const generate = (name: string, length?: string) => {
       product.numberOfReferences,
       product.price,
       product.business,
-      product.traceability ? "Oui" : "Non",
       ...Array.from({ length: 16 }).flatMap((_, i) =>
         product.materials[i]
           ? [product.materials[i].slug, `${product.materials[i].share}%`, product.materials[i].country]

@@ -61,7 +61,6 @@ async function main(email: string) {
       product.numberOfReferences,
       product.price,
       product.business,
-      product.traceability,
       ...Array.from({ length: 16 }).flatMap((_, i) =>
         product.materials[i]
           ? [product.materials[i].slug, product.materials[i].share, product.materials[i].country]
@@ -94,7 +93,6 @@ async function main(email: string) {
         "Nombre de références",
         "Prix",
         "Taille de l'entreprise",
-        "Traçabilité géographique",
         "Matière 1",
         "Matière 1 pourcentage",
         "Matière 1 origine",
