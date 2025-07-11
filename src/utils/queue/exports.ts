@@ -28,7 +28,11 @@ export const processExportsQueue = async () => {
     exportToProcess.createdAt,
     exportToProcess.brand,
   )
-  if (!products.length) return
+
+  if (!products.length) {
+    completeExport(exportToProcess.id)
+    return
+  }
 
   const zip = new JSZip()
 

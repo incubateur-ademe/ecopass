@@ -1,7 +1,8 @@
 import { processExportsQueue } from "./src/utils/queue/exports"
 import { processProductsQueue } from "./src/utils/queue/products"
-import { sleep } from "./src/utils/queue/sleep"
 import { processUploadsToQueue } from "./src/utils/queue/uploads"
+
+const sleep = () => new Promise((resolve) => setTimeout(resolve, 2000))
 
 const runQueue = async () => {
   while (true) {

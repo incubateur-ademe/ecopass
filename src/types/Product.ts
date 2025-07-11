@@ -128,7 +128,7 @@ export type ParsedProduct = {
   business: Business
   fading: string | boolean | undefined
   mass: string | number | undefined
-  numberOfReferences: number
+  numberOfReferences: string | number | undefined
   price: string | number | undefined
   countryDyeing: Country
   countryFabric: Country
@@ -143,7 +143,7 @@ export type ParsedProduct = {
   upcycled: string | boolean | undefined
   materials: {
     id: string
-    share: number | undefined
+    share: number | string | undefined
     country?: string
   }[]
   trims: {

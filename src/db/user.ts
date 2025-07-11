@@ -73,4 +73,4 @@ export const getUserOrganization = async (userId: string) => {
   return user?.organization || null
 }
 
-export type UserOrganization = Exclude<Awaited<ReturnType<typeof getUserOrganization>>, null>
+export type UserOrganization = NonNullable<Awaited<ReturnType<typeof getUserOrganization>>>

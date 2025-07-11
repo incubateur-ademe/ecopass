@@ -113,7 +113,6 @@ const generate = (name: string, length?: string) => {
         "Nombre de références",
         "Prix",
         "Taille de l'entreprise",
-        "Traçabilité géographique",
         "Matière 1",
         "Matière 1 pourcentage",
         "Matière 1 origine",

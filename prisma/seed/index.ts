@@ -4,6 +4,8 @@ const prisma = new PrismaClient()
 
 const products = async () => {
   await prisma.score.deleteMany()
+  await prisma.material.deleteMany()
+  await prisma.accessory.deleteMany()
   await prisma.product.deleteMany()
   await prisma.upload.deleteMany()
   await prisma.version.deleteMany()
@@ -20,6 +22,7 @@ const users = async () => {
   await prisma.brand.deleteMany({})
   await prisma.organization.deleteMany({})
   await prisma.aPIKey.deleteMany({})
+  await prisma.export.deleteMany({})
   await prisma.user.deleteMany({})
 
   await prisma.organization.create({

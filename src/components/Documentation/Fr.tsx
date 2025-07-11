@@ -69,9 +69,6 @@ const Fr = () => {
           </ul>
         </li>
         <li>
-          <b>Traçabilité géographique</b> (optionnel) : Traçabilité renforcée ? Oui/Non.
-        </li>
-        <li>
           <b>Origine de filature</b> (optionnel) : pays pour l'étape de filature.
           <p className='fr-hint-text'>
             si pas de valeur définie, on utilise celui de production de la matière la plus représentée dans le mix.

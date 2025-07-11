@@ -40,7 +40,7 @@ export const processUploadsToQueue = async () => {
     await createProducts(csvData)
     console.log(`Upload processed, ${csvData.products.length} products created`)
   } catch (error) {
-    let message = "Ereur lors de l'analyse du fichier CSV"
+    let message = "Erreur lors de l'analyse du fichier CSV"
     if (error && typeof error === "object" && "message" in error) {
       if ("code" in error && error.code === "CSV_RECORD_INCONSISTENT_COLUMNS") {
         message = "Le fichier CSV contient des lignes avec un nombre de colonnes différent"
