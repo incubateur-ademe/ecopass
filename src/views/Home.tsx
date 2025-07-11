@@ -1,8 +1,8 @@
 import { Card } from "@codegouvfr/react-dsfr/Card"
-import Link from "next/link"
 import Block from "../components/Block/Block"
 import { Notice } from "@codegouvfr/react-dsfr/Notice"
 import HomeBanner from "../components/Home/HomeBanner"
+import Link from "next/link"
 
 const Home = ({ connected }: { connected?: boolean }) => {
   return (
@@ -12,15 +12,16 @@ const Home = ({ connected }: { connected?: boolean }) => {
           title='Outil en beta privé'
           description={
             <>
-              Vous êtes une marque ou un bureau d'études dans le domaine du textile ? Vous souhaitez tester le portail
-              de déclaration de l'affichage environnemental ? Veuillez nous contacter à l'adresse{" "}
+              Vous pouvez tester le service autant que vous le voulez. Les résultats de vos déclarations ne sont pas
+              garantis et seront effacés après la phase de test.
+              <br />
+              Si vous avez des questions, n’hésitez pas à{" "}
               <Link
-                className='fr-link'
                 href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}
                 prefetch={false}
                 target='_blank'
                 rel='noopener noreferrer'>
-                {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
+                nous contacter
               </Link>
               .
             </>
