@@ -81,7 +81,6 @@ export type ProductWithMaterialsAndAccessories = Omit<
   | "airTransportRatio"
   | "numberOfReferences"
   | "fading"
-  | "traceability"
   | "upcycled"
   | "category"
   | "business"
@@ -98,7 +97,6 @@ export type ProductWithMaterialsAndAccessories = Omit<
   airTransportRatio?: number
   numberOfReferences?: number
   fading?: boolean
-  traceability?: boolean
   upcycled?: boolean
   category: ProductCategory
   business?: Business
@@ -130,9 +128,8 @@ export type ParsedProduct = {
   business: Business
   fading: string | boolean | undefined
   mass: string | number | undefined
-  numberOfReferences: number
+  numberOfReferences: string | number | undefined
   price: string | number | undefined
-  traceability: string | boolean | undefined
   countryDyeing: Country
   countryFabric: Country
   countryMaking: Country
@@ -146,7 +143,7 @@ export type ParsedProduct = {
   upcycled: string | boolean | undefined
   materials: {
     id: string
-    share: number | undefined
+    share: number | string | undefined
     country?: string
   }[]
   trims: {

@@ -1,5 +1,5 @@
 import axios from "axios"
-import { EcobalyseCode, EcobalyseId, EcobalyseProduct, EcobalyseResponse } from "../../types/Ecobalyse"
+import { EcobalyseCode, EcobalyseId, EcobalyseResponse } from "../../types/Ecobalyse"
 import {
   accessoryMapping,
   businessesMapping,
@@ -12,8 +12,23 @@ import { createProductScore, failProducts } from "../../db/product"
 import { ProductWithMaterialsAndAccessories } from "../../types/Product"
 import { prismaClient } from "../../db/prismaClient"
 import { Status } from "../../../prisma/src/prisma"
+import { ProductAPIValidation } from "../../services/validation/api"
 
-const baseUrl = "https://ecobalyse.beta.gouv.fr/versions/v5.0.1/api"
+type EcobalyseProduct = Omit<ProductAPIValidation, "brand" | "gtins" | "internalReference" | "date" | "declaredScore">
+
+let baseUrl = ""
+const getBaseUrl = async () => {
+  if (!baseUrl) {
+    const version = await prismaClient.version.findFirst({
+      orderBy: { createdAt: "desc" },
+    })
+    if (!version) {
+      throw new Error("Version not found")
+    }
+    baseUrl = version.link
+  }
+  return baseUrl
+}
 
 const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories): EcobalyseProduct => ({
   airTransportRatio: product.airTransportRatio,
@@ -35,7 +50,6 @@ const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories):
   })),
   numberOfReferences: product.numberOfReferences,
   price: product.price,
-  traceability: product.traceability,
   trims: product.accessories.map((accessory) => ({
     id: accessoryMapping[accessory.slug],
     quantity: accessory.quantity,
@@ -45,38 +59,28 @@ const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories):
 })
 
 export const getEcobalyseCodes = async (type: "countries") => {
-  const result = await axios.get<EcobalyseCode[]>(`${baseUrl}/textile/${type}`)
+  const result = await axios.get<EcobalyseCode[]>(`${await getBaseUrl()}/textile/${type}`)
 
   return result.data
 }
 
 export const getEcobalyseIds = async (type: "materials" | "products" | "trims") => {
-  const result = await axios.get<EcobalyseId[]>(`${baseUrl}/textile/${type}`)
+  const result = await axios.get<EcobalyseId[]>(`${await getBaseUrl()}/textile/${type}`)
 
   return result.data
 }
 
 export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
-  const response = await axios.post<EcobalyseResponse>(`${baseUrl}/textile/simulator/detailed`, product)
+  const response = await axios.post<EcobalyseResponse>(`${await getBaseUrl()}/textile/simulator/detailed`, {
+    ...product,
+    brand: undefined,
+    gtins: undefined,
+    internalReference: undefined,
+    date: undefined,
+    declaredScore: undefined,
+  })
   return {
     score: response.data.impacts.ecs,
-    detail: [
-      ...response.data.lifeCycle.map((cycle) => ({
-        label: cycle.label,
-        score: cycle.impacts.ecs,
-      })),
-      {
-        label: "Transport",
-        score: response.data.transport.impacts.ecs,
-      },
-    ],
-  }
-}
-
-const computeProductResult = async (product: ProductWithMaterialsAndAccessories) => {
-  return {
-    id: product.id,
-    ...(await computeEcobalyseScore(convertProductToEcobalyse(product))),
   }
 }
 
@@ -84,7 +88,8 @@ export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAcce
   Promise.all(
     products.map(async (product) => {
       try {
-        const result = await computeProductResult(product)
+        const result = await computeEcobalyseScore(convertProductToEcobalyse(product))
+
         if (product.declaredScore && Math.round(product.declaredScore) !== Math.round(result.score)) {
           return failProducts([
             {
@@ -94,17 +99,20 @@ export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAcce
           ])
         }
         await createProductScore({
-          productId: result.id,
+          productId: product.id,
           score: result.score,
           standardized: (result.score / product.mass) * 0.1,
         })
 
-        return result
+        return {
+          id: product.id,
+          ...result,
+        }
       } catch (error) {
         console.error("Error fetching Ecobalyse result:", error)
         await prismaClient.product.update({
           where: { id: product.id },
-          data: { status: Status.Error },
+          data: { status: Status.Error, error: error instanceof Error ? error.message : "Unknown Ecobalyse error" },
         })
       }
     }),

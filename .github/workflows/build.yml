@@ -34,16 +34,19 @@ jobs:
           echo "PROCONNECT_CLIENT_ID=${{ secrets.PROCONNECT_CLIENT_ID }}" >> .env
           echo "PROCONNECT_CLIENT_SECRET=${{ secrets.PROCONNECT_CLIENT_SECRET }}" >> .env
           echo "PROCONNECT_DOMAIN=${{ secrets.PROCONNECT_DOMAIN }}" >> .env
+          echo "CI=true" >> .env
       - name: Install dependencies
         run: yarn install --immutable --immutable-cache --check-cache
       - name: Linter
         run: yarn lint
       - name: Run build
         run: yarn build
-      - name: Run unit tests
-        run: npx jest
       - name: Migrate db
         run: yarn prisma migrate deploy
+      - name: Seed db
+        run: yarn prisma db seed
+      - name: Run unit tests
+        run: npx jest
       - name: Seed db
         run: yarn prisma db seed
       - name: Start server

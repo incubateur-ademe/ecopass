@@ -24,7 +24,6 @@ const product = {
   mass: 1.23,
   numberOfReferences: 2,
   price: 10.5,
-  traceability: false,
   countryDyeing: "France",
   countryFabric: "France",
   countryMaking: "France",
@@ -64,7 +63,7 @@ const checkDecryption = (product: any, encrypted: any, decrypted: any) => {
     }
   }
 
-  encrypted.materials.forEach((material, i) => {
+  encrypted.materials.forEach((material: any, i: number) => {
     expect(material.slug).not.toEqual(product.materials[i].id)
     expect(typeof material.slug).toBe("string")
     expect(decrypted.materials[i].slug).toEqual(product.materials[i].id)
@@ -76,7 +75,7 @@ const checkDecryption = (product: any, encrypted: any, decrypted: any) => {
     expect(decrypted.materials[i].share).toEqual(product.materials[i].share)
   })
 
-  encrypted.accessories?.forEach((accessory, i) => {
+  encrypted.accessories?.forEach((accessory: any, i: number) => {
     expect(accessory.slug).not.toEqual(product.trims[i].id)
     expect(typeof accessory.slug).toBe("string")
     expect(decrypted.accessories[i].slug).toEqual(product.trims[i].id)
@@ -113,7 +112,9 @@ describe("encryption utils", () => {
       ...encrypted.product,
       materials: encrypted.materials.map((material) => ({ ...material, id: uuid(), productId: uuid() })),
       accessories: encrypted.accessories?.map((accessory) => ({ ...accessory, id: uuid(), productId: uuid() })) || [],
-      upload: { user: { brand: { name: "Test Brand", names: [{ name: "Test Brand 2}" }] } } },
+      upload: {
+        createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
+      },
     })
     checkDecryption(product, encrypted, decrypted)
   })

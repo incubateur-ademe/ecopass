@@ -29,7 +29,7 @@ const Ecobalyse = () => {
           <p className='fr-hint-text'>si pas de valeur définie, on utilise le score calculé.</p>
         </li>
         <li>
-          <b>Type</b> : type de produit à choisir dans la liste suivante :
+          <b>Catégorie</b> : type de produit à choisir dans la liste suivante :
           <ul>
             <li>chemise</li>
             <li>jean</li>
@@ -67,9 +67,6 @@ const Ecobalyse = () => {
             <li>large-business-with-services</li>
             <li>large-business-without-services</li>
           </ul>
-        </li>
-        <li>
-          <b>Traçabilité géographique</b> (optionnel) : Traçabilité renforcée ? true/false.
         </li>
         <li>
           <b>Origine de filature</b> (optionnel) : pays pour l'étape de filature.

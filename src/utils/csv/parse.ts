@@ -24,7 +24,6 @@ type ColumnType = [
   "nombredereferences",
   "prix",
   "tailledelentreprise",
-  "tracabilitegeographique",
   "matiere1",
   "matiere1pourcentage",
   "matiere1origine",
@@ -103,7 +102,6 @@ const columns: Partial<Record<ColumnType[number], string>> = {
   nombredereferences: "Nombre de références",
   prix: "Prix (en euros, TTC)",
   tailledelentreprise: "Taille de l'entreprise",
-  tracabilitegeographique: "Traçabilité géographique",
   matiere1: "Matière 1",
   matiere1pourcentage: "Matière 1 pourcentage",
   matiere1origine: "Matière 1 origine",
@@ -145,7 +143,7 @@ const checkHeaders = (headers: string[]) => {
   return formattedHeaders
 }
 
-const getValue = <T,>(mapping: Record<string, T>, key: string): T => {
+const getValue = <T>(mapping: Record<string, T>, key: string): T => {
   const simplifiedKey = simplifyValue(key)
   const value = mapping[simplifiedKey]
   if (value !== undefined) {
@@ -178,7 +176,7 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
 }
 
 const delimiters = [",", ";", "\t"]
-export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: Exclude<FileUpload, null>) => {
+export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: NonNullable<FileUpload>) => {
   const encodingToUse = (encoding as BufferEncoding) || "utf-8"
 
   let bestDelimiter = ","
@@ -244,9 +242,8 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         business: getValue<Business>(businesses, row["tailledelentreprise"]),
         fading: getBooleanValue(row["delavage"]),
         mass: getNumberValue(row["masse"]),
-        numberOfReferences: parseInt(row["nombredereferences"]),
+        numberOfReferences: getNumberValue(row["nombredereferences"]),
         price: getNumberValue(row["prix"]),
-        traceability: getBooleanValue(row["tracabilitegeographique"]),
         countryDyeing: getValue<Country>(countries, row["originedelennoblissementimpression"]),
         countryFabric: getValue<Country>(countries, row["originedetissagetricotage"]),
         countryMaking: getValue<Country>(countries, row["origineconfection"]),
@@ -268,10 +265,10 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
             const share = shareRaw ? getNumberValue(shareRaw.trim().replace("%", "")) : undefined
             //@ts-expect-error : managed from 1 to 16
             const country = getValue<Country>(countries, row[`matiere${index + 1}origine`])
-            return id ? { id, share: typeof share === "number" ? share / 100 : undefined, country } : null
+            return id ? { id, share: typeof share === "number" ? share / 100 : share, country } : null
           })
           .filter((material) => material !== null)
-          .filter((material) => material.id && typeof material.share === "number"),
+          .filter((material) => material.id),
         trims: Array.from({ length: 4 })
           .map((_, index) => {
             //@ts-expect-error : managed from 1 to 4
@@ -281,8 +278,9 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
             return id ? { id, quantity } : null
           })
           .filter((accessory) => accessory !== null)
-          .filter((accessory) => accessory.id && typeof accessory.quantity === "number"),
+          .filter((accessory) => accessory.id),
       }
+
       const encrypted = encryptProductFields(rawProduct)
       encrypted.materials.forEach((material) => {
         materials.push({

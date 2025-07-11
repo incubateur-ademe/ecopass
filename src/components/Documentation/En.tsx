@@ -29,7 +29,7 @@ const En = () => {
           <p className='fr-hint-text'>If not defined, the calculated score will be used.</p>
         </li>
         <li>
-          <b>Type</b>: product type to choose from the following list:
+          <b>Catégorie</b>: product type to choose from the following list:
           <ul>
             <li>Shirt</li>
             <li>Jeans</li>
@@ -64,9 +64,6 @@ const En = () => {
             <li>Large company with repair service</li>
             <li>Large company without repair service</li>
           </ul>
-        </li>
-        <li>
-          <b>Traçabilité géographique</b> (optional): Enhanced traceability? Yes/No.
         </li>
         <li>
           <b>Origine origin</b> (optional): country for the spinning stage.

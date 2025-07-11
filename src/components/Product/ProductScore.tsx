@@ -9,7 +9,7 @@ const ProductScore = ({
   score,
   internalReference,
 }: {
-  score: Exclude<ProductWithScore["score"], null>
+  score: NonNullable<ProductWithScore["score"]>
   internalReference: string
 }) => {
   const download = () => {

@@ -55,6 +55,7 @@ export const getProductsToProcess = async (take: number) => {
               organization: {
                 select: {
                   name: true,
+                  authorizedBy: { select: { from: { select: { name: true, brands: { select: { name: true } } } } } },
                   brands: { select: { name: true } },
                 },
               },
@@ -109,7 +110,7 @@ export const getProductWithScore = async (gtin: string, userId: string) => {
   return null
 }
 
-export type ProductWithScore = Exclude<Awaited<ReturnType<typeof getProductWithScore>>, null>
+export type ProductWithScore = NonNullable<Awaited<ReturnType<typeof getProductWithScore>>>
 
 const getProducts = async (
   where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId" | "createdAt" | "brand">,
@@ -123,7 +124,7 @@ const getProducts = async (
     },
     select: { internalReference: true },
     distinct: ["internalReference"],
-    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
+    orderBy: [{ internalReference: "asc" }],
     skip,
     take,
   })
@@ -171,8 +172,8 @@ export const getOrganizationProductsCountByUserIdAndBrand = async (userId: strin
 
 export const getOrganizationProductsByUserIdAndBrand = async (
   userId: string,
-  page?: number,
-  size?: number,
+  page: number,
+  size: number | undefined,
   brand?: string,
 ) => {
   const organization = await prismaClient.organization.findFirst({
@@ -182,7 +183,9 @@ export const getOrganizationProductsByUserIdAndBrand = async (
   if (!organization) {
     return []
   }
-  return getProducts({ upload: { organizationId: organization.id }, brand }, (page || 0) * (size || 10), size || 10)
+  return size
+    ? getProducts({ upload: { organizationId: organization.id }, brand }, (page || 0) * size, size)
+    : getProducts({ upload: { organizationId: organization.id }, brand })
 }
 export const getProductsByUploadId = async (uploadId: string) => {
   const products = await prismaClient.product.findMany({
@@ -200,6 +203,7 @@ export const getProductsByUploadId = async (uploadId: string) => {
               organization: {
                 select: {
                   name: true,
+                  authorizedBy: { select: { from: { select: { name: true, brands: { select: { name: true } } } } } },
                   brands: { select: { name: true } },
                 },
               },

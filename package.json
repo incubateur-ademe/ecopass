@@ -11,7 +11,8 @@
     "prebuild": "react-dsfr update-icons",
     "queue:watch": "tsx watch queue.ts",
     "queue": "tsx queue.ts",
-    "test": "jest && playwright test"
+    "test": "jest && playwright test",
+    "reset:test": "DATABASE_URL=postgresql://ecopass_test:ecopass_test@localhost:5433/ecopass_test npx prisma migrate reset --force --skip-seed"
   },
   "prisma": {
     "seed": "tsx prisma/seed/index.ts"

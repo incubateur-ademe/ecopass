@@ -65,7 +65,15 @@ export const decryptProductFields = (
     materials: Material[]
     accessories: Accessory[]
     score?: Score | null
-    upload: { createdBy: { organization: { name: string; brands: { name: string }[] } | null } }
+    upload: {
+      createdBy: {
+        organization: {
+          name: string
+          authorizedBy: { from: { name: string; brands: { name: string }[] } }[]
+          brands: { name: string }[]
+        } | null
+      }
+    }
   },
 ) => ({
   ...product,
@@ -80,7 +88,6 @@ export const decryptProductFields = (
   airTransportRatio: decryptNumber(product.airTransportRatio),
   numberOfReferences: decryptNumber(product.numberOfReferences),
   fading: decryptBoolean(product.fading),
-  traceability: decryptBoolean(product.traceability),
   upcycled: decryptBoolean(product.upcycled),
   impression: decryptString(product.impression),
   impressionPercentage: decryptNumber(product.impressionPercentage),
@@ -116,7 +123,6 @@ export function encryptProductFields(product: ProductAPIValidation | ParsedProdu
       mass: encrypt(product.mass),
       numberOfReferences: encrypt(product.numberOfReferences),
       price: encrypt(product.price),
-      traceability: encrypt(product.traceability),
       countryDyeing: encrypt(product.countryDyeing),
       countryFabric: encrypt(product.countryFabric),
       countryMaking: encrypt(product.countryMaking),

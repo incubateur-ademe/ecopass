@@ -9,7 +9,18 @@ export const getUserByApiKey = async (apiKey: string) =>
         select: {
           id: true,
           email: true,
-          organization: { select: { id: true, name: true, brands: { select: { name: true } } } },
+          organization: {
+            select: {
+              id: true,
+              name: true,
+              authorizedBy: {
+                select: {
+                  from: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
+                },
+              },
+              brands: { select: { name: true } },
+            },
+          },
         },
       },
     },
@@ -62,4 +73,4 @@ export const getUserOrganization = async (userId: string) => {
   return user?.organization || null
 }
 
-export type UserOrganization = Exclude<Awaited<ReturnType<typeof getUserOrganization>>, null>
+export type UserOrganization = NonNullable<Awaited<ReturnType<typeof getUserOrganization>>>
