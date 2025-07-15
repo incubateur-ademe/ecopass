@@ -22,8 +22,8 @@ const HomeBanner = ({ withConnection = true }: HomeBannerProps) => {
           className={classNames("fr-col-12 fr-col-md-6", styles.image, { [styles.small]: !withConnection })}
           src='/images/tshirt.jpg'
           alt=''
-          width={400}
-          height={400}
+          width={384}
+          height={386}
         />
       </div>
     </>
