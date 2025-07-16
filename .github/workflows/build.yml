@@ -34,6 +34,7 @@ jobs:
           echo "PROCONNECT_CLIENT_ID=${{ secrets.PROCONNECT_CLIENT_ID }}" >> .env
           echo "PROCONNECT_CLIENT_SECRET=${{ secrets.PROCONNECT_CLIENT_SECRET }}" >> .env
           echo "PROCONNECT_DOMAIN=${{ secrets.PROCONNECT_DOMAIN }}" >> .env
+          echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
           echo "CI=true" >> .env
       - name: Install dependencies
         run: yarn install --immutable --immutable-cache --check-cache
@@ -46,11 +47,13 @@ jobs:
       - name: Seed db
         run: yarn prisma db seed
       - name: Run unit tests
-        run: npx jest
+        run: npx jest --runInBand
       - name: Seed db
         run: yarn prisma db seed
       - name: Start server
         run: yarn start &
+      - name: Start queue
+        run: yarn queue &
       - name: Install Playwright browsers
         run: npx playwright install chromium
       - name: Install Playwright deps

@@ -20,6 +20,6 @@ export const uploadFile = async (file: File) => {
     await createUpload(session.user.id, UploadType.FILE, file.name, id)
   } catch (error) {
     console.error("Error during upload:", error)
-    return "Erreur inconnue lors du traitement du fichier"
+    return error instanceof Error ? error.message : "Erreur inconnue lors du traitement du fichier"
   }
 }

@@ -35,7 +35,7 @@ const Keys = ({ keys }: { keys: APIKey[] }) => {
             <>
               <p>Veuillez enregistrer cette clé. Elle n'apparaitra qu'une seule fois.</p>
               <div className={styles.key}>
-                <span>{generatedKey}</span>
+                <span data-testid='new-api-key'>{generatedKey}</span>
                 <Button
                   className='fr-ml-2w'
                   size='small'
@@ -79,23 +79,25 @@ const Keys = ({ keys }: { keys: APIKey[] }) => {
       )}
       <h3 className='fr-mt-4w'>Mes clés</h3>
       {keys.length > 0 ? (
-        <Table
-          fixed
-          caption='Mes clés'
-          noCaption
-          headers={["Nom", "Dernière utilisation", "Clé", ""]}
-          data={keys.map((key) => [
-            key.name,
-            key.lastUsed ? formatDateTime(key.lastUsed) : "",
-            `${key.key}*********`,
-            <Button
-              iconId='fr-icon-delete-bin-fill'
-              key={key.id}
-              onClick={() => deleteAPIKey(key.id).then(() => router.refresh())}>
-              Supprimer
-            </Button>,
-          ])}
-        />
+        <div data-testid='api-keys-table'>
+          <Table
+            fixed
+            caption='Mes clés'
+            noCaption
+            headers={["Nom", "Dernière utilisation", "Clé", ""]}
+            data={keys.map((key) => [
+              key.name,
+              key.lastUsed ? formatDateTime(key.lastUsed) : "",
+              `${key.key}*********`,
+              <Button
+                iconId='fr-icon-delete-bin-fill'
+                key={key.id}
+                onClick={() => deleteAPIKey(key.id).then(() => router.refresh())}>
+                Supprimer
+              </Button>,
+            ])}
+          />
+        </div>
       ) : (
         <p>Vous n'avez généré aucune clé pour le moment.</p>
       )}

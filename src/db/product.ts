@@ -55,7 +55,10 @@ export const getProductsToProcess = async (take: number) => {
               organization: {
                 select: {
                   name: true,
-                  authorizedBy: { select: { from: { select: { name: true, brands: { select: { name: true } } } } } },
+                  authorizedBy: {
+                    select: { from: { select: { name: true, brands: { select: { name: true } } } } },
+                    where: { active: true },
+                  },
                   brands: { select: { name: true } },
                 },
               },
@@ -203,7 +206,10 @@ export const getProductsByUploadId = async (uploadId: string) => {
               organization: {
                 select: {
                   name: true,
-                  authorizedBy: { select: { from: { select: { name: true, brands: { select: { name: true } } } } } },
+                  authorizedBy: {
+                    select: { from: { select: { name: true, brands: { select: { name: true } } } } },
+                    where: { active: true },
+                  },
                   brands: { select: { name: true } },
                 },
               },

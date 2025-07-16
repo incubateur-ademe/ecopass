@@ -16,7 +16,7 @@ export const getApiUser = async (headers: Headers) => {
   }
 
   const [type, token] = authorizationHeader.split(" ")
-  if (type !== "Bearer") {
+  if (type !== "Bearer" || !token) {
     return null
   }
 
