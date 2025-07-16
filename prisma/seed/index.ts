@@ -20,6 +20,7 @@ const products = async () => {
 
 const users = async () => {
   await prisma.brand.deleteMany({})
+  await prisma.authorizedOrganization.deleteMany({})
   await prisma.organization.deleteMany({})
   await prisma.aPIKey.deleteMany({})
   await prisma.export.deleteMany({})
@@ -29,6 +30,11 @@ const users = async () => {
     data: {
       siret: "31723624800017",
       name: "Emmaus",
+      brands: {
+        createMany: {
+          data: [{ name: "Emmaus Solidarité" }, { name: "Emmaus Connect" }],
+        },
+      },
     },
   })
 }

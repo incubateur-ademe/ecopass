@@ -17,6 +17,7 @@ export const getUserByApiKey = async (apiKey: string) =>
                 select: {
                   from: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
                 },
+                where: { active: true },
               },
               brands: { select: { name: true } },
             },

@@ -50,6 +50,18 @@ describe("Product DB integration", () => {
     })
     testUploadId = upload.id
 
+    const otherOrganisation = await prismaTest.organization.create({
+      data: { name: "Other org", siret: "12345678901235" },
+    })
+    await prismaTest.authorizedOrganization.createMany({
+      data: [
+        { fromId: otherOrganisation.id, toId: organization.id, active: true, createdById: testUserId },
+        { fromId: otherOrganisation.id, toId: organization.id, active: false, createdById: testUserId },
+        { fromId: organization.id, toId: otherOrganisation.id, active: true, createdById: testUserId },
+        { fromId: organization.id, toId: otherOrganisation.id, active: false, createdById: testUserId },
+      ],
+    })
+
     baseProduct = {
       id: uuid(),
       gtins: ["1234567891001"],
@@ -135,6 +147,7 @@ describe("Product DB integration", () => {
     expect(found[0].id).toBe(productId)
     expect(found[0].materials).toHaveLength(1)
     expect(found[0].accessories).toHaveLength(1)
+    expect(found[0].upload.createdBy.organization?.authorizedBy).toHaveLength(1)
   })
 
   it("failProducts sets status to Error", async () => {
