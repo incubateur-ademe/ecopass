@@ -50,3 +50,5 @@ node_modules/
 /playwright/.cache/
 
 s3/
+
+/ecobalyse

@@ -69,6 +69,7 @@ const NewDelegation = () => {
       {searching && <p>Chargement des informations...</p>}
       {organization && (
         <Card
+          data-testid='organization-card'
           title={organization.uniteLegale.denominationUniteLegale}
           desc={`${organization.adresseEtablissement.numeroVoieEtablissement}${organization.adresseEtablissement.indiceRepetitionEtablissement || ""} ${organization.adresseEtablissement.typeVoieEtablissement} ${organization.adresseEtablissement.libelleVoieEtablissement}, ${organization.adresseEtablissement.codePostalEtablissement} ${organization.adresseEtablissement.libelleCommuneEtablissement}`}
           footer={

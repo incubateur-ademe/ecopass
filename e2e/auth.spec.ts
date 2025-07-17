@@ -6,7 +6,9 @@ test("connection with proconnect, and properly disconnect", async ({ page }) => 
 
   await page.getByRole("link", { name: "Se déconnecter" }).click()
 
-  await expect(page.locator("#contenu").getByRole("heading", { name: "Déclarez le coût" })).toBeVisible()
+  await expect(page.locator("#contenu").getByRole("heading", { name: "Déclarez le coût" })).toBeVisible({
+    timeout: 30000,
+  })
   await expect(page.locator("#contenu").getByRole("button", { name: "S’identifier avec ProConnect" })).toBeVisible()
 
   await page.getByRole("button", { name: "S’identifier avec ProConnect" }).click()

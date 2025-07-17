@@ -79,6 +79,7 @@ export const authorizeOrganization = async (siret: string) => {
           to: {
             connect: { id },
           },
+          active: true,
           createdBy: {
             connect: { id: session.user.id },
           },

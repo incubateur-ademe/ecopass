@@ -10,31 +10,33 @@ const Product = ({ product }: { product: ProductWithScore }) => {
       <h1>Coût environnemental</h1>
       <Badge severity='success' className='fr-mb-4w'>
         Déclaration validée
-      </Badge>{" "}
-      <p className='fr-text--xl fr-mb-1w'>
-        <b>
-          {product.category}
-          {product.brand && <span> - {product.brand}</span>}
-        </b>
-      </p>
-      <p>
-        Référence interne: <b>{product.internalReference}</b>
-      </p>
-      <p>
-        Code GTINs : <b>{product.gtins.join(", ")}</b>
-      </p>
-      <p>
-        Déposé le : <b>{formatDate(product.createdAt)}</b>
-      </p>
-      <p>
-        Version Ecobalyse : <b>{product.upload.version.version}</b>
-      </p>
-      <div className='fr-mt-4w'>
-        {product.score ? (
-          <ProductScore score={product.score} internalReference={product.internalReference} />
-        ) : (
-          <p>Pas de score</p>
-        )}
+      </Badge>
+      <div data-testid='product-details'>
+        <p className='fr-text--xl fr-mb-1w'>
+          <b>
+            {product.category}
+            {product.brand && <span> - {product.brand}</span>}
+          </b>
+        </p>
+        <p>
+          Référence interne: <b>{product.internalReference}</b>
+        </p>
+        <p>
+          Code GTINs : <b>{product.gtins.join(", ")}</b>
+        </p>
+        <p>
+          Déposé le : <b>{formatDate(product.createdAt)}</b>
+        </p>
+        <p>
+          Version Ecobalyse : <b>{product.upload.version.version}</b>
+        </p>
+        <div className='fr-mt-4w'>
+          {product.score ? (
+            <ProductScore score={product.score} internalReference={product.internalReference} />
+          ) : (
+            <p>Pas de score</p>
+          )}
+        </div>
       </div>
     </Block>
   )

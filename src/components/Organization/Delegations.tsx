@@ -11,26 +11,28 @@ const Delegations = ({ organizations }: { organizations: UserOrganization["autho
   const router = useRouter()
 
   return (
-    <Table
-      fixed
-      caption='Mes délégations'
-      noCaption
-      headers={["Nom", "Siret", "Autorisé le", ""]}
-      data={organizations.map((organization) => [
-        organization.to.name,
-        organization.to.siret,
-        formatDateTime(organization.createdAt),
-        <div key={organization.id}>
-          <Button
-            iconId='fr-icon-delete-bin-fill'
-            onClick={() => {
-              removeOrganizationAuthorization(organization.id).then(() => router.refresh())
-            }}>
-            Supprimer
-          </Button>
-        </div>,
-      ])}
-    />
+    <div data-testid='delegations-table'>
+      <Table
+        fixed
+        caption='Mes délégations'
+        noCaption
+        headers={["Nom", "Siret", "Autorisé le", ""]}
+        data={organizations.map((organization) => [
+          organization.to.name,
+          organization.to.siret,
+          formatDateTime(organization.createdAt),
+          <div key={organization.id}>
+            <Button
+              iconId='fr-icon-delete-bin-fill'
+              onClick={() => {
+                removeOrganizationAuthorization(organization.id).then(() => router.refresh())
+              }}>
+              Supprimer
+            </Button>
+          </div>,
+        ])}
+      />
+    </div>
   )
 }
 
