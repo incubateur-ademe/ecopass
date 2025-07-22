@@ -23,5 +23,8 @@ export const logout = async (page: Page) => {
     timeout: 60000,
   })
   await expect(page.locator("#contenu").getByRole("button", { name: "S’identifier avec ProConnect" })).toBeVisible()
+
+  // TODO: remove this wait, for the moment it is needed to ensure you don't reconnect with the previous user
+  // No idea why...
   await page.waitForTimeout(5000)
 }
