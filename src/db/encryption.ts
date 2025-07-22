@@ -155,8 +155,7 @@ export const encryptAndZipFile = async (buffer: Buffer, filename: string) => {
 
   const encrypted = Buffer.concat([cipher.update(zippedBuffer), cipher.final()])
   const tag = cipher.getAuthTag()
-  const encryptedZip = Buffer.concat([iv, encrypted, tag])
-  return encryptedZip
+  return Buffer.concat([iv, encrypted, tag])
 }
 
 export const decryptAndDezipFile = async (encryptedBuffer: Buffer) => {

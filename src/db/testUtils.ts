@@ -7,6 +7,9 @@ export const cleanDB = async () => {
   await prismaTest.product.deleteMany()
   await prismaTest.upload.deleteMany()
   await prismaTest.export.deleteMany()
+  await prismaTest.authorizedOrganization.deleteMany()
+  await prismaTest.aPIKey.deleteMany()
   await prismaTest.user.deleteMany()
+  await prismaTest.brand.deleteMany()
   await prismaTest.organization.deleteMany()
 }

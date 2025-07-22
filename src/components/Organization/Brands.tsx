@@ -16,7 +16,9 @@ const Brands = ({ brands }: { brands: { id: string; name: string }[] }) => {
       noCaption
       headers={["Nom", ""]}
       data={brands.map((brand) => [
-        brand.name,
+        <span key={brand.id} data-testid='brand-row-name'>
+          {brand.name}
+        </span>,
         <div key={brand.id} className={styles.button}>
           <Button
             iconId='fr-icon-delete-bin-fill'

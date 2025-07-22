@@ -15,3 +15,13 @@ export const login = async (page: Page, email = "ecopass-e2e@yopmail.com", passw
   await expect(page.locator("#contenu").getByRole("heading", { name: "Déclarez le coût" })).toBeVisible()
   await expect(page.locator("#contenu").getByRole("button", { name: "S’identifier avec ProConnect" })).not.toBeVisible()
 }
+
+export const logout = async (page: Page) => {
+  await page.getByRole("link", { name: "Se déconnecter" }).click()
+
+  await expect(page.locator("#contenu").getByRole("heading", { name: "Déclarez le coût" })).toBeVisible({
+    timeout: 60000,
+  })
+  await expect(page.locator("#contenu").getByRole("button", { name: "S’identifier avec ProConnect" })).toBeVisible()
+  await page.waitForTimeout(5000)
+}

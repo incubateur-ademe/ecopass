@@ -34,7 +34,6 @@ const Upload = () => {
   }, [file])
 
   const sizeError = file ? file.size > 1 * 1024 * 1024 : false
-
   return (
     <>
       <p>
@@ -60,6 +59,7 @@ const Upload = () => {
       </p>
       {success || error ? (
         <Alert
+          data-testid={`upload-${success ? "success" : "error"}`}
           className='fr-mt-4w'
           title={success ? "Fichier correctement téléchargé" : "Erreur lors de l'analyse du fichier"}
           severity={success ? "success" : "error"}
