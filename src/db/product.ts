@@ -82,7 +82,7 @@ const productWithScoreSelect = {
   brand: true,
   createdAt: true,
   category: true,
-  score: { select: { score: true, standardized: true } },
+  score: true,
   upload: {
     select: {
       version: true,

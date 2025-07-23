@@ -23,10 +23,17 @@ export type EcobalyseImpacts = {
 }
 
 export type EcobalyseResponse = {
+  durability: number
   impacts: EcobalyseImpacts
-  impactsWithoutDurability: EcobalyseImpacts
-  lifeCycle: { impacts: EcobalyseImpacts; label: string }[]
-  transport: { impacts: EcobalyseImpacts }
+  complementsImpacts: {
+    cropDiversity: number
+    hedges: number
+    livestockDensity: number
+    microfibers: number
+    outOfEuropeEOL: number
+    permanentPasture: number
+    plotSize: number
+  }
 }
 
 export type EcobalyseCode = { code: string; name: string }

@@ -114,6 +114,28 @@ model Score {
   score        Float
   standardized Float
 
+  durability Float
+
+  acd Float
+  cch Float
+  etf Float
+  fru Float
+  fwe Float
+  htc Float
+  htn Float
+  ior Float
+  ldu Float
+  mru Float
+  ozd Float
+  pco Float
+  pma Float
+  swe Float
+  tre Float
+  wtu Float
+
+  microfibers    Float
+  outOfEuropeEOL Float
+
   product   Product @relation(fields: [productId], references: [id])
   productId String  @unique @map("product_id")
 

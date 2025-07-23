@@ -101,11 +101,32 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
 
   const result = await runElmFunction<EcobalyseResponse>({
     method: "POST",
-    url: "/textile/simulator",
+    url: "/textile/simulator/detailed",
     body: productData,
   })
 
-  return { score: result.impacts.ecs }
+  return {
+    score: result.impacts.ecs,
+    durability: result.durability,
+    acd: result.impacts.acd,
+    cch: result.impacts.cch,
+    etf: result.impacts["etf-c"],
+    fru: result.impacts.fru,
+    fwe: result.impacts.fwe,
+    htc: result.impacts["htc-c"],
+    htn: result.impacts["htn-c"],
+    ior: result.impacts.ior,
+    ldu: result.impacts.ldu,
+    mru: result.impacts.mru,
+    ozd: result.impacts.ozd,
+    pco: result.impacts.pco,
+    pma: result.impacts.pma,
+    swe: result.impacts.swe,
+    tre: result.impacts.tre,
+    wtu: result.impacts.wtu,
+    microfibers: result.complementsImpacts.microfibers,
+    outOfEuropeEOL: result.complementsImpacts.outOfEuropeEOL,
+  }
 }
 
 export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAccessories[]) =>
@@ -124,8 +145,8 @@ export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAcce
         }
         await createProductScore({
           productId: product.id,
-          score: result.score,
           standardized: (result.score / product.mass) * 0.1,
+          ...result,
         })
 
         return {
