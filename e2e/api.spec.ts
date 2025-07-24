@@ -3,6 +3,7 @@ import { login } from "./utils/login"
 import { exec } from "child_process"
 import { promisify } from "util"
 import { formatDate } from "../src/services/format"
+import { ecobalyseVersion } from "../src/utils/ecobalyse/config"
 
 const execAsync = promisify(exec)
 
@@ -39,7 +40,7 @@ test("declare my products by API", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Générer une nouvelle clé d'API" })).not.toBeDisabled()
   await page.getByRole("button", { name: "Générer une nouvelle clé d'API" }).click()
   const apiKey = await page.getByTestId("new-api-key").textContent()
-  
+
   let response = await page.request.post("http://localhost:3000/api/produit", {
     data: product,
     headers: {
@@ -84,11 +85,11 @@ test("declare my products by API", async ({ page }) => {
     "REF-100",
   )
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
-    "1 774",
+    "1 791",
   )
   await page.getByTestId("products-table").locator("table tbody tr").nth(0).getByRole("link").click()
   await expect(page.getByTestId("product-details")).toHaveText(
-    `tshirt - EmmausRéférence interne: REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Version Ecobalyse : 5.0.1Coût environnemental : 1774 pointsCoût environnemental pour 100g : 1044 points1 044 pts/100g1 774Télécharger le .svg`,
+    `tshirt - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Version Ecobalyse : ${ecobalyseVersion}Coût environnemental : 1791 pointsCoût environnemental pour 100g : 1054 points1 054 pts/100g1 791Télécharger le .svg`,
   )
 
   await page.getByRole("link", { name: "API" }).click()

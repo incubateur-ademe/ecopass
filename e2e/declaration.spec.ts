@@ -67,9 +67,9 @@ test("declare my products", async ({ page }) => {
   const csvContent = fs.readFileSync(downloadPath!, "utf-8")
 
   expect(csvContent).toContain("Référence interne,Score,Erreur")
-  expect(csvContent).toContain("REF-124,7493.11,")
-  expect(csvContent).toContain("REF-125,1497.28,")
-  expect(csvContent).toContain("REF-123,2222.63,")
+  expect(csvContent).toContain("REF-124,7565,")
+  expect(csvContent).toContain("REF-125,1512,")
+  expect(csvContent).toContain("REF-123,2456,")
 
   await page.getByRole("link", { name: "Mes produits" }).click()
   await expect(page).toHaveURL(/.*\/produits/)

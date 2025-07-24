@@ -1,4 +1,3 @@
-import axios from "axios"
 import { EcobalyseCode, EcobalyseId, EcobalyseResponse } from "../../types/Ecobalyse"
 import {
   accessoryMapping,
@@ -13,75 +12,100 @@ import { ProductWithMaterialsAndAccessories } from "../../types/Product"
 import { prismaClient } from "../../db/prismaClient"
 import { Status } from "../../../prisma/src/prisma"
 import { ProductAPIValidation } from "../../services/validation/api"
+import { runElmFunction } from "./elm"
 
 type EcobalyseProduct = Omit<ProductAPIValidation, "brand" | "gtins" | "internalReference" | "date" | "declaredScore">
 
-let baseUrl = ""
-const getBaseUrl = async () => {
-  if (!baseUrl) {
-    const version = await prismaClient.version.findFirst({
-      orderBy: { createdAt: "desc" },
-    })
-    if (!version) {
-      throw new Error("Version not found")
-    }
-    baseUrl = version.link
+const removeUndefined = <T>(obj: T): T => {
+  if (obj === null || obj === undefined) {
+    return obj
   }
-  return baseUrl
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => removeUndefined(item)) as T
+  }
+
+  if (typeof obj === "object") {
+    const cleaned: Record<string, unknown> = {}
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (value !== undefined) {
+        cleaned[key] = removeUndefined(value)
+      }
+    }
+
+    return cleaned as T
+  }
+
+  return obj
 }
 
-const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories): EcobalyseProduct => ({
-  airTransportRatio: product.airTransportRatio,
-  business: product.business ? businessesMapping[product.business] : undefined,
-  countryDyeing: product.countryDyeing ? countryMapping[product.countryDyeing] : undefined,
-  countryFabric: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
-  countryMaking: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
-  countrySpinning: product.countrySpinning ? countryMapping[product.countrySpinning] : undefined,
-  printing:
-    product.impression && product.impressionPercentage
-      ? { kind: impressionMapping[product.impression], ratio: product.impressionPercentage }
-      : undefined,
-  fading: product.fading,
-  mass: product.mass,
-  materials: product.materials.map((material) => ({
-    ...material,
-    country: material.country ? countryMapping[material.country] : undefined,
-    id: materialMapping[material.slug],
-  })),
-  numberOfReferences: product.numberOfReferences,
-  price: product.price,
-  trims: product.accessories.map((accessory) => ({
-    id: accessoryMapping[accessory.slug],
-    quantity: accessory.quantity,
-  })),
-  upcycled: product.upcycled,
-  product: productMapping[product.category],
-})
+const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories): EcobalyseProduct => {
+  const result = {
+    airTransportRatio: product.airTransportRatio,
+    business: product.business ? businessesMapping[product.business] : undefined,
+    countryDyeing: product.countryDyeing ? countryMapping[product.countryDyeing] : undefined,
+    countryFabric: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
+    countryMaking: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
+    countrySpinning: product.countrySpinning ? countryMapping[product.countrySpinning] : undefined,
+    printing:
+      product.impression && product.impressionPercentage
+        ? { kind: impressionMapping[product.impression], ratio: product.impressionPercentage }
+        : undefined,
+    fading: product.fading,
+    mass: product.mass,
+    materials: product.materials.map((material) => ({
+      ...material,
+      country: material.country ? countryMapping[material.country] : undefined,
+      id: materialMapping[material.slug],
+    })),
+    numberOfReferences: product.numberOfReferences,
+    price: product.price,
+    trims: product.accessories.map((accessory) => ({
+      id: accessoryMapping[accessory.slug],
+      quantity: accessory.quantity,
+    })),
+    upcycled: product.upcycled,
+    product: productMapping[product.category],
+  }
+
+  return removeUndefined(result)
+}
 
 export const getEcobalyseCodes = async (type: "countries") => {
-  const result = await axios.get<EcobalyseCode[]>(`${await getBaseUrl()}/textile/${type}`)
-
-  return result.data
+  const result = await runElmFunction<EcobalyseCode[]>({
+    method: "GET",
+    url: `/textile/${type}`,
+  })
+  return result
 }
 
 export const getEcobalyseIds = async (type: "materials" | "products" | "trims") => {
-  const result = await axios.get<EcobalyseId[]>(`${await getBaseUrl()}/textile/${type}`)
+  const result = await runElmFunction<EcobalyseId[]>({
+    method: "GET",
+    url: `/textile/${type}`,
+  })
 
-  return result.data
+  return result
 }
 
 export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
-  const response = await axios.post<EcobalyseResponse>(`${await getBaseUrl()}/textile/simulator/detailed`, {
+  const productData = {
     ...product,
     brand: undefined,
     gtins: undefined,
     internalReference: undefined,
     date: undefined,
     declaredScore: undefined,
-  })
-  return {
-    score: response.data.impacts.ecs,
   }
+
+  const result = await runElmFunction<EcobalyseResponse>({
+    method: "POST",
+    url: "/textile/simulator",
+    body: productData,
+  })
+
+  return { score: result.impacts.ecs }
 }
 
 export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAccessories[]) =>

@@ -8,14 +8,6 @@ const products = async () => {
   await prisma.accessory.deleteMany()
   await prisma.product.deleteMany()
   await prisma.upload.deleteMany()
-  await prisma.version.deleteMany()
-
-  await prisma.version.create({
-    data: {
-      version: "5.0.1",
-      link: "https://ecobalyse.beta.gouv.fr/versions/v5.0.1/api",
-    },
-  })
 }
 
 const users = async () => {
