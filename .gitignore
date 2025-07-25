@@ -51,4 +51,4 @@ node_modules/
 
 s3/
 
-/ecobalyse
+src/utils/ecobalyse/processes_impacts.json

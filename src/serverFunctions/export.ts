@@ -53,7 +53,11 @@ export const exportUpload = async (uploadId: string) => {
       if (product.status === Status.Error) {
         error = product.error || "Erreur inconnue"
       }
-      return [product.internalReference, product.score?.score, error]
+      return [
+        product.internalReference,
+        product.score !== null && product.score !== undefined ? Math.round(product.score.score) : "",
+        error,
+      ]
     }),
     {
       header: true,

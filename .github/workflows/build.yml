@@ -35,6 +35,7 @@ jobs:
           echo "PROCONNECT_CLIENT_SECRET=${{ secrets.PROCONNECT_CLIENT_SECRET }}" >> .env
           echo "PROCONNECT_DOMAIN=${{ secrets.PROCONNECT_DOMAIN }}" >> .env
           echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
+          echo "ECOBALYSE_ENCRYPTION_KEY=${{ secrets.ECOBALYSE_ENCRYPTION_KEY }}" >> .env
           echo "CI=true" >> .env
       - name: Install dependencies
         run: yarn install --immutable --immutable-cache --check-cache
@@ -50,6 +51,8 @@ jobs:
         run: npx jest --runInBand
       - name: Seed db
         run: yarn prisma db seed
+      - name: Decrypt Ecobalyse data
+        run: yarn ecobalyse:data
       - name: Start server
         run: yarn start &
       - name: Start queue

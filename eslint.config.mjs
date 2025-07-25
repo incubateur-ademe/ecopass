@@ -23,7 +23,7 @@ const eslintConfig = [
       "prettier/prettier": "error",
       "react/no-unescaped-entities": "off",
     },
-    ignorePatterns: ["*.test.ts", "*.spec.ts"],
+    ignorePatterns: ["*.test.ts", "*.spec.ts", "server-app.js"],
   }),
 ]
 

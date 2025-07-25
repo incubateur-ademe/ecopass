@@ -1,6 +1,7 @@
 import { Prisma, Status, UploadType } from "../../prisma/src/prisma"
 import { APIUser } from "../services/auth/auth"
 import { ProductAPIValidation } from "../services/validation/api"
+import { ecobalyseVersion } from "../utils/ecobalyse/config"
 import { encryptProductFields } from "./encryption"
 import { prismaClient } from "./prismaClient"
 
@@ -13,14 +14,6 @@ export const createScore = async (user: NonNullable<APIUser>["user"], product: P
   prismaClient.$transaction(async (transaction) => {
     if (!user.organization) {
       throw new Error("User organization not found")
-    }
-
-    const lastVersion = await transaction.version.findFirst({
-      orderBy: { createdAt: "desc" },
-    })
-
-    if (!lastVersion) {
-      throw new Error("No version found")
     }
 
     const encrypted = encryptProductFields(product)
@@ -38,7 +31,7 @@ export const createScore = async (user: NonNullable<APIUser>["user"], product: P
               create: {
                 createdById: user.id,
                 organizationId: user.organization.id,
-                versionId: lastVersion.id,
+                version: ecobalyseVersion,
                 type: UploadType.API,
                 status: Status.Done,
               },

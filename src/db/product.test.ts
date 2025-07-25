@@ -26,10 +26,6 @@ describe("Product DB integration", () => {
   beforeAll(async () => {
     await cleanDB()
 
-    const version = await prismaTest.version.findFirst()
-    if (!version) {
-      throw new Error("No version found in the database")
-    }
     const organization = await prismaTest.organization.create({
       data: { name: "TestOrg", siret: "12345678901234" },
     })
@@ -40,7 +36,7 @@ describe("Product DB integration", () => {
     testUserId = user.id
     const upload = await prismaTest.upload.create({
       data: {
-        versionId: version.id,
+        version: "test-version",
         type: "API",
         name: "test.csv",
         createdById: testUserId,

@@ -1,5 +1,6 @@
 import { Status, UploadType } from "../../prisma/src/prisma"
 import { completeUpload, failUpload } from "../services/upload"
+import { ecobalyseVersion } from "../utils/ecobalyse/config"
 import { prismaClient } from "./prismaClient"
 
 export const getUploadById = async (id: string) =>
@@ -15,19 +16,10 @@ export const getUploadById = async (id: string) =>
 
 export const createUpload = async (userId: string, uploadType: UploadType, name?: string, id?: string) =>
   prismaClient.$transaction(async (transaction) => {
-    const [lastVersion, user] = await Promise.all([
-      transaction.version.findFirst({
-        orderBy: { createdAt: "desc" },
-      }),
-      prismaClient.user.findUnique({
-        where: { id: userId },
-        select: { id: true, organizationId: true },
-      }),
-    ])
-
-    if (!lastVersion) {
-      throw new Error("No version found")
-    }
+    const user = await prismaClient.user.findUnique({
+      where: { id: userId },
+      select: { id: true, organizationId: true },
+    })
 
     if (!user || !user.organizationId) {
       throw new Error("No user found")
@@ -39,7 +31,7 @@ export const createUpload = async (userId: string, uploadType: UploadType, name?
         createdById: user.id,
         organizationId: user.organizationId,
         name,
-        versionId: lastVersion.id,
+        version: ecobalyseVersion,
         type: uploadType,
       },
       select: {

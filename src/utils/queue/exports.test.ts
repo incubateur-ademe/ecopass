@@ -48,9 +48,7 @@ describe("processExportsQueue", () => {
       standardized: 8.5,
     },
     upload: {
-      version: {
-        version: "1.0",
-      },
+      version: "1.0",
       createdBy: {
         organization: {
           name: "Test Organization",

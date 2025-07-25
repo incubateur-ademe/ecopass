@@ -24,11 +24,11 @@ import {
 } from "./upload"
 import { completeUpload, failUpload } from "../services/upload"
 import { cleanDB } from "./testUtils"
+import { ecobalyseVersion } from "../utils/ecobalyse/config"
 
 describe("Upload DB integration", () => {
   let testUser: { id: string; organizationId: string | null }
   let testOrganizationId: string
-  let testVersionId: string
 
   const baseProduct = {
     internalReference: "REF-124",
@@ -53,12 +53,6 @@ describe("Upload DB integration", () => {
 
   beforeAll(async () => {
     await cleanDB()
-
-    const version = await prismaTest.version.findFirst({ orderBy: { createdAt: "desc" } })
-    if (!version) {
-      throw new Error("No version found in the database")
-    }
-    testVersionId = version.id
 
     const organization = await prismaTest.organization.create({
       data: { name: "TestOrg", siret: "12345678901234" },
@@ -94,7 +88,7 @@ describe("Upload DB integration", () => {
           type: UploadType.FILE,
           createdById: testUser.id,
           organizationId: testOrganizationId,
-          versionId: testVersionId,
+          version: ecobalyseVersion,
           status: Status.Pending,
         },
       })
@@ -130,7 +124,7 @@ describe("Upload DB integration", () => {
       })
       expect(uploadInDb).toBeDefined()
       expect(uploadInDb?.type).toBe(UploadType.FILE)
-      expect(uploadInDb?.versionId).toBe(testVersionId)
+      expect(uploadInDb?.version).toBe(ecobalyseVersion)
       expect(uploadInDb?.createdById).toBe(testUser.id)
       expect(uploadInDb?.name).toBe(uploadName)
     })
@@ -150,7 +144,7 @@ describe("Upload DB integration", () => {
           type: UploadType.FILE,
           createdById: testUser.id,
           organizationId: testOrganizationId,
-          versionId: testVersionId,
+          version: ecobalyseVersion,
           status: Status.Pending,
         },
       })
@@ -174,7 +168,7 @@ describe("Upload DB integration", () => {
           type: UploadType.FILE,
           createdById: testUser.id,
           organizationId: testOrganizationId,
-          versionId: testVersionId,
+          version: ecobalyseVersion,
           status: Status.Pending,
         },
       })
@@ -196,7 +190,7 @@ describe("Upload DB integration", () => {
           type: UploadType.FILE,
           createdById: testUser.id,
           organizationId: testOrganizationId,
-          versionId: testVersionId,
+          version: ecobalyseVersion,
           status: Status.Pending,
         },
       })
@@ -218,7 +212,7 @@ describe("Upload DB integration", () => {
           type: UploadType.FILE,
           createdById: testUser.id,
           organizationId: testOrganizationId,
-          versionId: testVersionId,
+          version: ecobalyseVersion,
           status: Status.Pending,
         },
       })
@@ -240,7 +234,7 @@ describe("Upload DB integration", () => {
             type: UploadType.FILE,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
           },
           {
             id: uuid(),
@@ -248,7 +242,7 @@ describe("Upload DB integration", () => {
             type: UploadType.FILE,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
           },
           {
             id: uuid(),
@@ -256,7 +250,7 @@ describe("Upload DB integration", () => {
             type: UploadType.API,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
           },
         ],
       })
@@ -284,7 +278,7 @@ describe("Upload DB integration", () => {
             type: UploadType.FILE,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
             createdAt: new Date("2025-01-01"),
           },
           {
@@ -293,7 +287,7 @@ describe("Upload DB integration", () => {
             type: UploadType.FILE,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
             createdAt: new Date("2025-01-02"),
           },
         ],
@@ -349,7 +343,7 @@ describe("Upload DB integration", () => {
             type: UploadType.FILE,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
             createdAt: new Date("2025-01-01"),
           },
           {
@@ -358,7 +352,7 @@ describe("Upload DB integration", () => {
             type: UploadType.FILE,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
             createdAt: new Date("2025-01-02"),
           },
           {
@@ -367,7 +361,7 @@ describe("Upload DB integration", () => {
             type: UploadType.FILE,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
             createdAt: new Date("2025-01-03"),
           },
         ],
@@ -395,7 +389,7 @@ describe("Upload DB integration", () => {
           type: UploadType.FILE,
           createdById: testUser.id,
           organizationId: testOrganizationId,
-          versionId: testVersionId,
+          version: ecobalyseVersion,
         },
       })
 
@@ -429,7 +423,7 @@ describe("Upload DB integration", () => {
           type: UploadType.FILE,
           createdById: testUser.id,
           organizationId: testOrganizationId,
-          versionId: testVersionId,
+          version: ecobalyseVersion,
         },
       })
 
@@ -472,7 +466,7 @@ describe("Upload DB integration", () => {
           type: UploadType.FILE,
           createdById: testUser.id,
           organizationId: testOrganizationId,
-          versionId: testVersionId,
+          version: ecobalyseVersion,
         },
       })
 
@@ -522,7 +516,7 @@ describe("Upload DB integration", () => {
             type: UploadType.FILE,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
             status: Status.Pending,
             createdAt: new Date("2025-01-02"),
           },
@@ -532,7 +526,7 @@ describe("Upload DB integration", () => {
             type: UploadType.FILE,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
             status: Status.Pending,
             createdAt: new Date("2025-01-01"),
           },
@@ -542,7 +536,7 @@ describe("Upload DB integration", () => {
             type: UploadType.FILE,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
             status: Status.Done,
             createdAt: new Date("2024-12-31"),
           },
@@ -552,7 +546,7 @@ describe("Upload DB integration", () => {
             type: UploadType.API,
             createdById: testUser.id,
             organizationId: testOrganizationId,
-            versionId: testVersionId,
+            version: ecobalyseVersion,
             status: Status.Pending,
             createdAt: new Date("2024-12-30"),
           },
@@ -574,7 +568,7 @@ describe("Upload DB integration", () => {
           type: UploadType.FILE,
           createdById: testUser.id,
           organizationId: testOrganizationId,
-          versionId: testVersionId,
+          version: ecobalyseVersion,
           status: Status.Done,
         },
       })

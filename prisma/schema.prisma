@@ -85,6 +85,7 @@ model Upload {
   id        String     @id @default(uuid())
   name      String?
   createdAt DateTime   @default(now()) @map("created_at")
+  version   String
   type      UploadType
 
   products Product[]
@@ -97,9 +98,6 @@ model Upload {
 
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String @map("  created_by_id")
-
-  version   Version @relation(fields: [versionId], references: [id])
-  versionId String
 
   @@map("uploads")
 }
@@ -120,18 +118,6 @@ model Score {
   productId String  @unique @map("product_id")
 
   @@map("scores")
-}
-
-model Version {
-  id      String @id @default(uuid())
-  version String @unique
-  link    String
-
-  uploads Upload[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("versions")
 }
 
 model Product {
