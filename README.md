@@ -52,7 +52,14 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    npx prisma db seed
    ```
 
-6. **Lancer la queue**
+6. **Lancer le site**
+
+   Pour lancer le site web vous pouvez utilisez :
+   ```sh
+   yarn dev
+   ```
+
+7. **Lancer la queue**
 
    Pour processer les téléchargements de zip et les produits déposés sur la plateforme vous devez lancer la queue :
 
@@ -60,7 +67,7 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    yarn queue:watch
    ```
 
-7. **Tests unitaires**
+8. **Tests unitaires**
 
    Les tests unitaires sont lancés avec Jest. La plupart des tests utilises des fonctions de mocks pour limiter leur scope. Les fonctions de db sont testés directement avec une vraie base.
 
@@ -68,7 +75,7 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    npx jest
    ```
 
-8. **Tests e2e**
+9. **Tests e2e**
 
    Les tests e2e sont lancés avec playwright, attention de bien lancé au préalable le serveur web et la queue.
 
