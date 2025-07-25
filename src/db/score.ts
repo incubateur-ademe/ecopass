@@ -10,7 +10,11 @@ export const createScores = async (scores: Prisma.ScoreCreateManyInput[]) =>
     data: scores,
   })
 
-export const createScore = async (user: NonNullable<APIUser>["user"], product: ProductAPIValidation, score: number) =>
+export const createScore = async (
+  user: NonNullable<APIUser>["user"],
+  product: ProductAPIValidation,
+  score: Omit<Prisma.ScoreCreateInput, "product">,
+) =>
   prismaClient.$transaction(async (transaction) => {
     if (!user.organization) {
       throw new Error("User organization not found")
@@ -20,8 +24,7 @@ export const createScore = async (user: NonNullable<APIUser>["user"], product: P
 
     return transaction.score.create({
       data: {
-        score: score,
-        standardized: (score / product.mass) * 0.1,
+        ...score,
         product: {
           create: {
             ...encrypted.product,

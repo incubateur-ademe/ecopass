@@ -12,6 +12,7 @@ import {
   Impression,
   ProductCategory,
 } from "../../types/Product"
+import { EcobalyseResponse } from "../../types/Ecobalyse"
 
 jest.mock("../../db/product")
 jest.mock("./elm")
@@ -30,8 +31,40 @@ const mockedPrismaUpdate = prismaClient.product.update as jest.MockedFunction<ty
 
 describe("API Ecobalyse", () => {
   const mockEcobalyseResponse = {
-    impacts: { ecs: 85.5 },
-  }
+    impacts: {
+      ecs: 85.5,
+      acd: 2.73,
+      cch: 1589.45,
+      etf: 20654.8,
+      "etf-c": 21287.2,
+      fru: 4289.7,
+      fwe: 0.106,
+      htc: 0.00000114,
+      "htc-c": 0.0000000904,
+      htn: 0.0000849,
+      "htn-c": 0.000127,
+      ior: 167.8,
+      ldu: 51743.2,
+      mru: 0.00423,
+      ozd: 0.00268,
+      pco: 1.548,
+      pma: 0.0000423,
+      swe: 0.459,
+      tre: 5.207,
+      wtu: 763.4,
+      pef: 0.855,
+    },
+    durability: 0.75,
+    complementsImpacts: {
+      cropDiversity: 0,
+      hedges: 0,
+      livestockDensity: 0,
+      microfibers: 12.3,
+      outOfEuropeEOL: 1.2,
+      permanentPasture: 0,
+      plotSize: 0,
+    },
+  } satisfies EcobalyseResponse
 
   describe("saveEcobalyseResults", () => {
     const mockProduct: ProductWithMaterialsAndAccessories = {
@@ -89,7 +122,7 @@ describe("API Ecobalyse", () => {
 
       expect(mockedRunElmFunction).toHaveBeenCalledWith({
         method: "POST",
-        url: "/textile/simulator",
+        url: "/textile/simulator/detailed",
         body: {
           brand: undefined,
           date: undefined,
@@ -118,12 +151,50 @@ describe("API Ecobalyse", () => {
         productId: "product-1",
         score: 85.5,
         standardized: (85.5 / 0.5) * 0.1,
+        acd: 2.73,
+        cch: 1589.45,
+        durability: 0.75,
+        etf: 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 9.04e-8,
+        htn: 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        microfibers: 12.3,
+        mru: 0.00423,
+        outOfEuropeEOL: 1.2,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
       })
 
       expect(results).toEqual([
         {
           id: "product-1",
           score: 85.5,
+          acd: 2.73,
+          cch: 1589.45,
+          durability: 0.75,
+          etf: 21287.2,
+          fru: 4289.7,
+          fwe: 0.106,
+          htc: 9.04e-8,
+          htn: 0.000127,
+          ior: 167.8,
+          ldu: 51743.2,
+          microfibers: 12.3,
+          mru: 0.00423,
+          outOfEuropeEOL: 1.2,
+          ozd: 0.00268,
+          pco: 1.548,
+          pma: 0.0000423,
+          swe: 0.459,
+          tre: 5.207,
+          wtu: 763.4,
         },
       ])
     })
@@ -142,7 +213,7 @@ describe("API Ecobalyse", () => {
 
       expect(mockedRunElmFunction).toHaveBeenCalledWith({
         method: "POST",
-        url: "/textile/simulator",
+        url: "/textile/simulator/detailed",
         body: {
           brand: undefined,
           date: undefined,
@@ -169,12 +240,50 @@ describe("API Ecobalyse", () => {
         productId: "product-1",
         score: 85.5,
         standardized: (85.5 / 0.5) * 0.1,
+        acd: 2.73,
+        cch: 1589.45,
+        durability: 0.75,
+        etf: 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 9.04e-8,
+        htn: 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        microfibers: 12.3,
+        mru: 0.00423,
+        outOfEuropeEOL: 1.2,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
       })
 
       expect(results).toEqual([
         {
           id: "product-1",
           score: 85.5,
+          acd: 2.73,
+          cch: 1589.45,
+          durability: 0.75,
+          etf: 21287.2,
+          fru: 4289.7,
+          fwe: 0.106,
+          htc: 9.04e-8,
+          htn: 0.000127,
+          ior: 167.8,
+          ldu: 51743.2,
+          microfibers: 12.3,
+          mru: 0.00423,
+          outOfEuropeEOL: 1.2,
+          ozd: 0.00268,
+          pco: 1.548,
+          pma: 0.0000423,
+          swe: 0.459,
+          tre: 5.207,
+          wtu: 763.4,
         },
       ])
     })
@@ -212,6 +321,25 @@ describe("API Ecobalyse", () => {
         productId: "product-1",
         score: 85.5,
         standardized: (85.5 / 0.5) * 0.1,
+        acd: 2.73,
+        cch: 1589.45,
+        durability: 0.75,
+        etf: 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 9.04e-8,
+        htn: 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        microfibers: 12.3,
+        mru: 0.00423,
+        outOfEuropeEOL: 1.2,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
       })
     })
 
@@ -235,7 +363,39 @@ describe("API Ecobalyse", () => {
       const products = [mockProduct, product2]
 
       mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse).mockResolvedValueOnce({
-        impacts: { ecs: 92.3 },
+        impacts: {
+          ecs: 92.3,
+          acd: 3.14,
+          cch: 1823.67,
+          etf: 23789.5,
+          "etf-c": 24456.1,
+          fru: 4932.8,
+          fwe: 0.142,
+          htc: 0.00000135,
+          "htc-c": 0.000000108,
+          htn: 0.0000978,
+          "htn-c": 0.000146,
+          ior: 193.2,
+          ldu: 59432.7,
+          mru: 0.00487,
+          ozd: 0.00308,
+          pco: 1.789,
+          pma: 0.0000487,
+          swe: 0.528,
+          tre: 5.984,
+          wtu: 878.9,
+          pef: 0.923,
+        },
+        durability: 0.68,
+        complementsImpacts: {
+          cropDiversity: 0,
+          hedges: 0,
+          livestockDensity: 0,
+          microfibers: 14.7,
+          outOfEuropeEOL: 1.8,
+          permanentPasture: 0,
+          plotSize: 0,
+        },
       })
 
       const results = await saveEcobalyseResults(products)
@@ -246,11 +406,49 @@ describe("API Ecobalyse", () => {
         productId: "product-1",
         score: 85.5,
         standardized: (85.5 / 0.5) * 0.1,
+        acd: 2.73,
+        cch: 1589.45,
+        durability: 0.75,
+        etf: 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 9.04e-8,
+        htn: 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        microfibers: 12.3,
+        mru: 0.00423,
+        outOfEuropeEOL: 1.2,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
       })
       expect(mockedCreateProductScore).toHaveBeenNthCalledWith(2, {
         productId: "product-2",
         score: 92.3,
         standardized: (92.3 / 0.7) * 0.1,
+        acd: 3.14,
+        cch: 1823.67,
+        durability: 0.68,
+        etf: 24456.1,
+        fru: 4932.8,
+        fwe: 0.142,
+        htc: 1.08e-7,
+        htn: 0.000146,
+        ior: 193.2,
+        ldu: 59432.7,
+        microfibers: 14.7,
+        mru: 0.00487,
+        outOfEuropeEOL: 1.8,
+        ozd: 0.00308,
+        pco: 1.789,
+        pma: 0.0000487,
+        swe: 0.528,
+        tre: 5.984,
+        wtu: 878.9,
       })
       expect(results).toHaveLength(2)
       expect(results[0]?.id).toBe("product-1")
@@ -295,8 +493,13 @@ describe("API Ecobalyse", () => {
 
       expect(mockedRunElmFunction).toHaveBeenCalledWith({
         method: "POST",
-        url: "/textile/simulator",
+        url: "/textile/simulator/detailed",
         body: {
+          brand: undefined,
+          date: undefined,
+          declaredScore: undefined,
+          gtins: undefined,
+          internalReference: undefined,
           business: "large-business-without-services",
           countrySpinning: "CN",
           mass: 0.15,
@@ -311,6 +514,25 @@ describe("API Ecobalyse", () => {
 
       expect(result).toEqual({
         score: 85.5,
+        acd: 2.73,
+        cch: 1589.45,
+        durability: 0.75,
+        etf: 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 9.04e-8,
+        htn: 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        microfibers: 12.3,
+        mru: 0.00423,
+        outOfEuropeEOL: 1.2,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
       })
     })
   })
