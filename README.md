@@ -59,15 +59,23 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    yarn dev
    ```
 
-7. **Lancer la queue**
+7. **Générer les données ecobalyse**
+
+   Pour calculer le coût environnemental des produits, on utilise une version en local d'Ecobalyse avec le `server-app.js` ce dernier à besoin des `processes_impacts.json` pour fonctionner. Ils sont décryptés à partir de `processes_impacts.json.enc` et de la variable d'environnement `ECOBALYSE_ENCRYPTION_KEY` :
+
+   ```sh
+   yarn ecobalyse:data
+   ```
+
+8. **Lancer la queue**
+
 
    Pour processer les téléchargements de zip et les produits déposés sur la plateforme vous devez lancer la queue :
-
    ```sh
    yarn queue:watch
    ```
 
-8. **Tests unitaires**
+9. **Tests unitaires**
 
    Les tests unitaires sont lancés avec Jest. La plupart des tests utilises des fonctions de mocks pour limiter leur scope. Les fonctions de db sont testés directement avec une vraie base.
 
@@ -75,7 +83,7 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    npx jest
    ```
 
-9. **Tests e2e**
+10. **Tests e2e**
 
    Les tests e2e sont lancés avec playwright, attention de bien lancé au préalable le serveur web et la queue.
 
