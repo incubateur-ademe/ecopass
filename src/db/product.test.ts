@@ -118,6 +118,7 @@ describe("Product DB integration", () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           uploadId: testUploadId,
+          uploadOrder: 5,
           status: Status.Pending,
         },
       ],
@@ -144,6 +145,46 @@ describe("Product DB integration", () => {
     expect(found[0].materials).toHaveLength(1)
     expect(found[0].accessories).toHaveLength(1)
     expect(found[0].upload.createdBy.organization?.authorizedBy).toHaveLength(1)
+  })
+
+  it("getProductsByUploadId and order them", async () => {
+    const encrypted = encryptProductFields({
+      gtins: ["1234567891000"],
+      internalReference: "REF-123",
+      brand: "TestBrand",
+      date: new Date("2025-04-18"),
+      product: ProductCategory.Pull,
+      declaredScore: 2222.63,
+      business: Business.Small,
+      numberOfReferences: 9000,
+      mass: 1,
+      price: 100,
+      materials: [],
+      trims: [],
+    } satisfies ProductAPIValidation)
+
+    let newId = uuid()
+    await createProducts({
+      products: [
+        {
+          ...encrypted.product,
+          error: null,
+          id: newId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          uploadId: testUploadId,
+          uploadOrder: 2,
+          status: Status.Pending,
+        },
+      ],
+      materials: [],
+      accessories: [],
+    })
+    const found = await getProductsByUploadId(testUploadId)
+
+    expect(found).toHaveLength(2)
+    expect(found[1].id).toBe(productId)
+    expect(found[0].id).toBe(newId)
   })
 
   it("failProducts sets status to Error", async () => {

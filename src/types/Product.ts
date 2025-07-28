@@ -90,6 +90,7 @@ export type ProductWithMaterialsAndAccessories = Omit<
   | "countrySpinning"
   | "impression"
   | "impressionPercentage"
+  | "uploadOrder"
 > & {
   date: Date
   mass: number

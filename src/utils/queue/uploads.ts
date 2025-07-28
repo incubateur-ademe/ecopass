@@ -27,6 +27,7 @@ const getFile = async (uploadId: string) => {
 
 export const processUploadsToQueue = async () => {
   const upload = await getFirstFileUpload()
+  console.log("Processing upload?:", upload)
   if (!upload) {
     return
   }
@@ -48,6 +49,7 @@ export const processUploadsToQueue = async () => {
         message = error.message as string
       }
     }
+    console.log(message, error)
     await failUpload(upload, message)
   }
 }

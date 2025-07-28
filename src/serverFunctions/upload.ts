@@ -14,10 +14,15 @@ export const uploadFile = async (file: File) => {
   }
 
   try {
+    console.log("Starting file upload:", file.name)
     const id = uuid()
+    console.log("Generated unique ID for upload:", id)
     const zip = await encryptAndZipFile(Buffer.from(await file.arrayBuffer()), id)
+    console.log("File encrypted and zipped successfully")
     await uploadFileToS3(id, zip, "upload")
+    console.log("File uploaded to S3 successfully")
     await createUpload(session.user.id, UploadType.FILE, file.name, id)
+    console.log("Upload record created in database")
   } catch (error) {
     console.error("Error during upload:", error)
     return "Erreur inconnue lors du traitement du fichier"

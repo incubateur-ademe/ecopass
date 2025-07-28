@@ -179,8 +179,9 @@ model Product {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
-  upload   Upload @relation(fields: [uploadId], references: [id])
-  uploadId String @map("upload_id")
+  upload      Upload @relation(fields: [uploadId], references: [id])
+  uploadId    String @map("upload_id")
+  uploadOrder Int?   @map("upload_order")
 
   score Score?
 
