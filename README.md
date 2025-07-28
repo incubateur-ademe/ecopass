@@ -25,6 +25,9 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    cp .env.dist .env
    ```
 
+   Pour correctement faire fonctionner le projet en local vous aurez besoin de specifier les secrets ProConnect (`PROCONNECT_CLIENT_ID`, `PROCONNECT_CLIENT_SECRET` et `PROCONNECT_DOMAIN`), la clé d'encryption Ecobalyse (`ECOBALYSE_ENCRYPTION_KEY`) et une clé INSEE (`INSEE_API_KEY`). Vous pourrez enfin generer `ENCRYPTION_KEY`et
+   `STORAGE_ENCRYPTION_KEY`avec la commande `openssl rand -hex 32`
+
 3. **Lancer les services Docker**
 
    ```sh
