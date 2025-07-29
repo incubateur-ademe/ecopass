@@ -1,1 +1,1 @@
-export const ecobalyseVersion = "6.1.1"
+export const ecobalyseVersion = "7.0.0"
