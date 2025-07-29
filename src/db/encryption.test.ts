@@ -109,6 +109,7 @@ describe("encryption utils", () => {
       updatedAt: new Date(),
       error: null,
       uploadId: uuid(),
+      uploadOrder: 0,
       ...encrypted.product,
       materials: encrypted.materials.map((material) => ({ ...material, id: uuid(), productId: uuid() })),
       accessories: encrypted.accessories?.map((accessory) => ({ ...accessory, id: uuid(), productId: uuid() })) || [],

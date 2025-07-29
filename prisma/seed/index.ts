@@ -8,18 +8,11 @@ const products = async () => {
   await prisma.accessory.deleteMany()
   await prisma.product.deleteMany()
   await prisma.upload.deleteMany()
-  await prisma.version.deleteMany()
-
-  await prisma.version.create({
-    data: {
-      version: "5.0.1",
-      link: "https://ecobalyse.beta.gouv.fr/versions/v5.0.1/api",
-    },
-  })
 }
 
 const users = async () => {
   await prisma.brand.deleteMany({})
+  await prisma.authorizedOrganization.deleteMany({})
   await prisma.organization.deleteMany({})
   await prisma.aPIKey.deleteMany({})
   await prisma.export.deleteMany({})
@@ -29,6 +22,11 @@ const users = async () => {
     data: {
       siret: "31723624800017",
       name: "Emmaus",
+      brands: {
+        createMany: {
+          data: [{ name: "Emmaus Solidarité" }, { name: "Emmaus Connect" }],
+        },
+      },
     },
   })
 }

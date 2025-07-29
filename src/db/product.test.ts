@@ -26,10 +26,6 @@ describe("Product DB integration", () => {
   beforeAll(async () => {
     await cleanDB()
 
-    const version = await prismaTest.version.findFirst()
-    if (!version) {
-      throw new Error("No version found in the database")
-    }
     const organization = await prismaTest.organization.create({
       data: { name: "TestOrg", siret: "12345678901234" },
     })
@@ -40,7 +36,7 @@ describe("Product DB integration", () => {
     testUserId = user.id
     const upload = await prismaTest.upload.create({
       data: {
-        versionId: version.id,
+        version: "test-version",
         type: "API",
         name: "test.csv",
         createdById: testUserId,
@@ -49,6 +45,18 @@ describe("Product DB integration", () => {
       },
     })
     testUploadId = upload.id
+
+    const otherOrganisation = await prismaTest.organization.create({
+      data: { name: "Other org", siret: "12345678901235" },
+    })
+    await prismaTest.authorizedOrganization.createMany({
+      data: [
+        { fromId: otherOrganisation.id, toId: organization.id, active: true, createdById: testUserId },
+        { fromId: otherOrganisation.id, toId: organization.id, active: false, createdById: testUserId },
+        { fromId: organization.id, toId: otherOrganisation.id, active: true, createdById: testUserId },
+        { fromId: organization.id, toId: otherOrganisation.id, active: false, createdById: testUserId },
+      ],
+    })
 
     baseProduct = {
       id: uuid(),
@@ -110,6 +118,7 @@ describe("Product DB integration", () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           uploadId: testUploadId,
+          uploadOrder: 5,
           status: Status.Pending,
         },
       ],
@@ -135,6 +144,47 @@ describe("Product DB integration", () => {
     expect(found[0].id).toBe(productId)
     expect(found[0].materials).toHaveLength(1)
     expect(found[0].accessories).toHaveLength(1)
+    expect(found[0].upload.createdBy.organization?.authorizedBy).toHaveLength(1)
+  })
+
+  it("getProductsByUploadId and order them", async () => {
+    const encrypted = encryptProductFields({
+      gtins: ["1234567891000"],
+      internalReference: "REF-123",
+      brand: "TestBrand",
+      date: new Date("2025-04-18"),
+      product: ProductCategory.Pull,
+      declaredScore: 2222.63,
+      business: Business.Small,
+      numberOfReferences: 9000,
+      mass: 1,
+      price: 100,
+      materials: [],
+      trims: [],
+    } satisfies ProductAPIValidation)
+
+    let newId = uuid()
+    await createProducts({
+      products: [
+        {
+          ...encrypted.product,
+          error: null,
+          id: newId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          uploadId: testUploadId,
+          uploadOrder: 2,
+          status: Status.Pending,
+        },
+      ],
+      materials: [],
+      accessories: [],
+    })
+    const found = await getProductsByUploadId(testUploadId)
+
+    expect(found).toHaveLength(2)
+    expect(found[1].id).toBe(productId)
+    expect(found[0].id).toBe(newId)
   })
 
   it("failProducts sets status to Error", async () => {

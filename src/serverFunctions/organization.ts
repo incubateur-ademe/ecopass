@@ -14,25 +14,16 @@ export const authorizeOrganization = async (siret: string) => {
   }
 
   const [userOrganization, siretOrganization] = await Promise.all([
-    prismaClient.organization.findFirst({
+    prismaClient.user.findUnique({
+      where: { id: session.user.id },
       select: {
-        id: true,
-        authorizedOrganizations: {
-          where: { active: true },
+        organization: {
           select: {
-            to: {
-              select: {
-                id: true,
-                siret: true,
-              },
+            id: true,
+            siret: true,
+            authorizedOrganizations: {
+              where: { active: true, to: { siret } },
             },
-          },
-        },
-      },
-      where: {
-        users: {
-          some: {
-            id: session.user.id,
           },
         },
       },
@@ -48,11 +39,15 @@ export const authorizeOrganization = async (siret: string) => {
     }),
   ])
 
-  if (!userOrganization) {
+  if (!userOrganization || !userOrganization.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
   }
 
-  if (userOrganization.authorizedOrganizations.some((org) => org.to.siret === siret)) {
+  if (userOrganization.organization.siret === siret) {
+    return "Vous ne pouvez pas autoriser votre propre organisation"
+  }
+
+  if (userOrganization.organization.authorizedOrganizations.length > 0) {
     return "L'organisation est déjà autorisée"
   }
 
@@ -71,18 +66,17 @@ export const authorizeOrganization = async (siret: string) => {
     id = newOrganization.id
   }
 
-  await prismaClient.organization.update({
-    where: { id: userOrganization.id },
+  await prismaClient.authorizedOrganization.create({
     data: {
-      authorizedOrganizations: {
-        create: {
-          to: {
-            connect: { id },
-          },
-          createdBy: {
-            connect: { id: session.user.id },
-          },
-        },
+      from: {
+        connect: { id: userOrganization.organization.id },
+      },
+      to: {
+        connect: { id },
+      },
+      active: true,
+      createdBy: {
+        connect: { id: session.user.id },
       },
     },
   })
@@ -93,16 +87,19 @@ export const removeOrganizationAuthorization = async (id: string) => {
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
   }
-  const userOrganization = await prismaClient.organization.findFirst({
-    where: { users: { some: { id: session.user.id } } },
-    select: { id: true },
+  const user = await prismaClient.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      organization: true,
+    },
   })
-  if (!userOrganization) {
+
+  if (!user || !user.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
   }
 
   await prismaClient.authorizedOrganization.update({
-    where: { id, fromId: userOrganization.id, active: true },
+    where: { id, fromId: user.organization.id, active: true },
     data: { active: false, removedAt: new Date() },
   })
 }

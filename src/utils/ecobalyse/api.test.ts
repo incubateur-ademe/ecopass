@@ -1,7 +1,7 @@
-import axios from "axios"
 import { saveEcobalyseResults, computeEcobalyseScore } from "./api"
 import { createProductScore, failProducts } from "../../db/product"
 import { prismaClient } from "../../db/prismaClient"
+import { runElmFunction } from "./elm"
 import { Status } from "../../../prisma/src/prisma"
 import {
   ProductWithMaterialsAndAccessories,
@@ -12,34 +12,59 @@ import {
   Impression,
   ProductCategory,
 } from "../../types/Product"
+import { EcobalyseResponse } from "../../types/Ecobalyse"
 
-jest.mock("axios")
 jest.mock("../../db/product")
+jest.mock("./elm")
 jest.mock("../../db/prismaClient", () => ({
   prismaClient: {
     product: {
       update: jest.fn(),
     },
-    version: {
-      findFirst: jest.fn(),
-    },
   },
 }))
 
-const mockedAxios = axios as jest.Mocked<typeof axios>
+const mockedRunElmFunction = runElmFunction as jest.MockedFunction<typeof runElmFunction>
 const mockedCreateProductScore = createProductScore as jest.MockedFunction<typeof createProductScore>
 const mockedFailProducts = failProducts as jest.MockedFunction<typeof failProducts>
 const mockedPrismaUpdate = prismaClient.product.update as jest.MockedFunction<typeof prismaClient.product.update>
-const mockedPrismaVersionFirst = prismaClient.version.findFirst as jest.MockedFunction<
-  typeof prismaClient.version.findFirst
->
 
 describe("API Ecobalyse", () => {
   const mockEcobalyseResponse = {
-    data: {
-      impacts: { ecs: 85.5 },
+    impacts: {
+      ecs: 85.5,
+      acd: 2.73,
+      cch: 1589.45,
+      etf: 20654.8,
+      "etf-c": 21287.2,
+      fru: 4289.7,
+      fwe: 0.106,
+      htc: 0.00000114,
+      "htc-c": 0.0000000904,
+      htn: 0.0000849,
+      "htn-c": 0.000127,
+      ior: 167.8,
+      ldu: 51743.2,
+      mru: 0.00423,
+      ozd: 0.00268,
+      pco: 1.548,
+      pma: 0.0000423,
+      swe: 0.459,
+      tre: 5.207,
+      wtu: 763.4,
+      pef: 0.855,
     },
-  }
+    durability: 0.75,
+    complementsImpacts: {
+      cropDiversity: 0,
+      hedges: 0,
+      livestockDensity: 0,
+      microfibers: 12.3,
+      outOfEuropeEOL: 1.2,
+      permanentPasture: 0,
+      plotSize: 0,
+    },
+  } satisfies EcobalyseResponse
 
   describe("saveEcobalyseResults", () => {
     const mockProduct: ProductWithMaterialsAndAccessories = {
@@ -88,22 +113,22 @@ describe("API Ecobalyse", () => {
     }
     beforeEach(() => {
       jest.clearAllMocks()
-      mockedPrismaVersionFirst.mockResolvedValue({
-        id: "version-1",
-        createdAt: new Date("2023-01-01"),
-        version: "v5.0.1",
-        link: "https://ecobalyse.beta.gouv.fr/versions/v5.0.1",
-      })
     })
 
     it("should compute and save score", async () => {
-      mockedAxios.post.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
 
       const results = await saveEcobalyseResults([mockProduct])
 
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        "https://ecobalyse.beta.gouv.fr/versions/v5.0.1/textile/simulator/detailed",
-        {
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: {
+          brand: undefined,
+          date: undefined,
+          declaredScore: undefined,
+          gtins: undefined,
+          internalReference: undefined,
           airTransportRatio: 0.1,
           business: "small-business",
           countryDyeing: "FR",
@@ -112,7 +137,7 @@ describe("API Ecobalyse", () => {
           countrySpinning: "FR",
           fading: false,
           mass: 0.5,
-          materials: [{ country: "FR", id: "ei-coton", productId: "product-1", share: 1, slug: "Coton" }],
+          materials: [{ id: "ei-coton", share: 1, country: "FR", productId: "product-1", slug: "Coton" }],
           numberOfReferences: 100,
           price: 25.99,
           printing: { kind: "pigment", ratio: 0.2 },
@@ -120,24 +145,151 @@ describe("API Ecobalyse", () => {
           trims: [{ id: "d56bb0d5-7999-4b8b-b076-94d79099b56a", quantity: 5 }],
           upcycled: false,
         },
-      )
+      })
 
       expect(mockedCreateProductScore).toHaveBeenCalledWith({
         productId: "product-1",
         score: 85.5,
         standardized: (85.5 / 0.5) * 0.1,
+        acd: 2.73,
+        cch: 1589.45,
+        durability: 0.75,
+        etf: 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 9.04e-8,
+        htn: 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        microfibers: 12.3,
+        mru: 0.00423,
+        outOfEuropeEOL: 1.2,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
       })
 
       expect(results).toEqual([
         {
           id: "product-1",
           score: 85.5,
+          acd: 2.73,
+          cch: 1589.45,
+          durability: 0.75,
+          etf: 21287.2,
+          fru: 4289.7,
+          fwe: 0.106,
+          htc: 9.04e-8,
+          htn: 0.000127,
+          ior: 167.8,
+          ldu: 51743.2,
+          microfibers: 12.3,
+          mru: 0.00423,
+          outOfEuropeEOL: 1.2,
+          ozd: 0.00268,
+          pco: 1.548,
+          pma: 0.0000423,
+          swe: 0.459,
+          tre: 5.207,
+          wtu: 763.4,
+        },
+      ])
+    })
+
+    it("should remove undefined value before computing", async () => {
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+
+      const results = await saveEcobalyseResults([
+        {
+          ...mockProduct,
+          business: undefined,
+          countryDyeing: undefined,
+          materials: [{ ...mockProduct.materials[0], country: undefined }],
+        },
+      ])
+
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: {
+          brand: undefined,
+          date: undefined,
+          declaredScore: undefined,
+          gtins: undefined,
+          internalReference: undefined,
+          airTransportRatio: 0.1,
+          countryFabric: "FR",
+          countryMaking: "FR",
+          countrySpinning: "FR",
+          fading: false,
+          mass: 0.5,
+          materials: [{ id: "ei-coton", share: 1, productId: "product-1", slug: "Coton" }],
+          numberOfReferences: 100,
+          price: 25.99,
+          printing: { kind: "pigment", ratio: 0.2 },
+          product: "tshirt",
+          trims: [{ id: "d56bb0d5-7999-4b8b-b076-94d79099b56a", quantity: 5 }],
+          upcycled: false,
+        },
+      })
+
+      expect(mockedCreateProductScore).toHaveBeenCalledWith({
+        productId: "product-1",
+        score: 85.5,
+        standardized: (85.5 / 0.5) * 0.1,
+        acd: 2.73,
+        cch: 1589.45,
+        durability: 0.75,
+        etf: 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 9.04e-8,
+        htn: 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        microfibers: 12.3,
+        mru: 0.00423,
+        outOfEuropeEOL: 1.2,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
+      })
+
+      expect(results).toEqual([
+        {
+          id: "product-1",
+          score: 85.5,
+          acd: 2.73,
+          cch: 1589.45,
+          durability: 0.75,
+          etf: 21287.2,
+          fru: 4289.7,
+          fwe: 0.106,
+          htc: 9.04e-8,
+          htn: 0.000127,
+          ior: 167.8,
+          ldu: 51743.2,
+          microfibers: 12.3,
+          mru: 0.00423,
+          outOfEuropeEOL: 1.2,
+          ozd: 0.00268,
+          pco: 1.548,
+          pma: 0.0000423,
+          swe: 0.459,
+          tre: 5.207,
+          wtu: 763.4,
         },
       ])
     })
 
     it("should fail if declared score is different", async () => {
-      mockedAxios.post.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
       const productWithDeclaredScore = {
         ...mockProduct,
         declaredScore: 100,
@@ -156,7 +308,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should create score if declared score is correctly rounded", async () => {
-      mockedAxios.post.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
       const productWithDeclaredScore = {
         ...mockProduct,
         declaredScore: 86,
@@ -169,12 +321,31 @@ describe("API Ecobalyse", () => {
         productId: "product-1",
         score: 85.5,
         standardized: (85.5 / 0.5) * 0.1,
+        acd: 2.73,
+        cch: 1589.45,
+        durability: 0.75,
+        etf: 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 9.04e-8,
+        htn: 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        microfibers: 12.3,
+        mru: 0.00423,
+        outOfEuropeEOL: 1.2,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
       })
     })
 
     it("should fail product if api fail", async () => {
       const apiError = new Error("API Error")
-      mockedAxios.post.mockRejectedValueOnce(apiError)
+      mockedRunElmFunction.mockRejectedValueOnce(apiError)
       mockedPrismaUpdate.mockResolvedValueOnce({} as any)
 
       const results = await saveEcobalyseResults([mockProduct])
@@ -191,26 +362,93 @@ describe("API Ecobalyse", () => {
       const product2 = { ...mockProduct, id: "product-2", mass: 0.7 }
       const products = [mockProduct, product2]
 
-      mockedAxios.post.mockResolvedValueOnce(mockEcobalyseResponse).mockResolvedValueOnce({
-        data: {
-          ...mockEcobalyseResponse.data,
-          impacts: { ecs: 92.3 },
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse).mockResolvedValueOnce({
+        impacts: {
+          ecs: 92.3,
+          acd: 3.14,
+          cch: 1823.67,
+          etf: 23789.5,
+          "etf-c": 24456.1,
+          fru: 4932.8,
+          fwe: 0.142,
+          htc: 0.00000135,
+          "htc-c": 0.000000108,
+          htn: 0.0000978,
+          "htn-c": 0.000146,
+          ior: 193.2,
+          ldu: 59432.7,
+          mru: 0.00487,
+          ozd: 0.00308,
+          pco: 1.789,
+          pma: 0.0000487,
+          swe: 0.528,
+          tre: 5.984,
+          wtu: 878.9,
+          pef: 0.923,
+        },
+        durability: 0.68,
+        complementsImpacts: {
+          cropDiversity: 0,
+          hedges: 0,
+          livestockDensity: 0,
+          microfibers: 14.7,
+          outOfEuropeEOL: 1.8,
+          permanentPasture: 0,
+          plotSize: 0,
         },
       })
 
       const results = await saveEcobalyseResults(products)
 
-      expect(mockedAxios.post).toHaveBeenCalledTimes(2)
+      expect(mockedRunElmFunction).toHaveBeenCalledTimes(2)
       expect(mockedCreateProductScore).toHaveBeenCalledTimes(2)
       expect(mockedCreateProductScore).toHaveBeenNthCalledWith(1, {
         productId: "product-1",
         score: 85.5,
         standardized: (85.5 / 0.5) * 0.1,
+        acd: 2.73,
+        cch: 1589.45,
+        durability: 0.75,
+        etf: 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 9.04e-8,
+        htn: 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        microfibers: 12.3,
+        mru: 0.00423,
+        outOfEuropeEOL: 1.2,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
       })
       expect(mockedCreateProductScore).toHaveBeenNthCalledWith(2, {
         productId: "product-2",
         score: 92.3,
         standardized: (92.3 / 0.7) * 0.1,
+        acd: 3.14,
+        cch: 1823.67,
+        durability: 0.68,
+        etf: 24456.1,
+        fru: 4932.8,
+        fwe: 0.142,
+        htc: 1.08e-7,
+        htn: 0.000146,
+        ior: 193.2,
+        ldu: 59432.7,
+        microfibers: 14.7,
+        mru: 0.00487,
+        outOfEuropeEOL: 1.8,
+        ozd: 0.00308,
+        pco: 1.789,
+        pma: 0.0000487,
+        swe: 0.528,
+        tre: 5.984,
+        wtu: 878.9,
       })
       expect(results).toHaveLength(2)
       expect(results[0]?.id).toBe("product-1")
@@ -249,13 +487,19 @@ describe("API Ecobalyse", () => {
     })
 
     it("should compute proper score", async () => {
-      mockedAxios.post.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
 
       const result = await computeEcobalyseScore(mockAPIProduct)
 
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        "https://ecobalyse.beta.gouv.fr/versions/v5.0.1/textile/simulator/detailed",
-        {
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: {
+          brand: undefined,
+          date: undefined,
+          declaredScore: undefined,
+          gtins: undefined,
+          internalReference: undefined,
           business: "large-business-without-services",
           countrySpinning: "CN",
           mass: 0.15,
@@ -266,10 +510,29 @@ describe("API Ecobalyse", () => {
           trims: [],
           upcycled: false,
         },
-      )
+      })
 
       expect(result).toEqual({
         score: 85.5,
+        acd: 2.73,
+        cch: 1589.45,
+        durability: 0.75,
+        etf: 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 9.04e-8,
+        htn: 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        microfibers: 12.3,
+        mru: 0.00423,
+        outOfEuropeEOL: 1.2,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
       })
     })
   })

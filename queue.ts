@@ -11,9 +11,9 @@ const runQueue = async () => {
       await processProductsQueue()
       await processExportsQueue()
     } catch (error) {
-      console.error("Error processing queue:", error)
-      await sleep()
+      console.log("Error processing queue:", error)
     }
+    await sleep()
   }
 }
 

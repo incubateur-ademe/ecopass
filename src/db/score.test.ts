@@ -18,10 +18,6 @@ describe("Score DB integration", () => {
   beforeAll(async () => {
     await cleanDB()
 
-    const version = await prismaTest.version.findFirst()
-    if (!version) {
-      throw new Error("No version found in the database")
-    }
     const organization = await prismaTest.organization.create({
       data: { name: "TestOrg", siret: "12345678901234" },
     })
@@ -48,7 +44,7 @@ describe("Score DB integration", () => {
 
     const upload = await prismaTest.upload.create({
       data: {
-        versionId: version.id,
+        version: "test-version",
         type: "API",
         name: "test.csv",
         createdById: user.id,
@@ -98,8 +94,54 @@ describe("Score DB integration", () => {
     const id1 = uuid()
     const id2 = uuid()
     const scores = [
-      { productId: id1, score: 100, standardized: 10 },
-      { productId: id2, score: 200, standardized: 20 },
+      {
+        productId: id1,
+        score: 100,
+        standardized: 10,
+        acd: 1.25,
+        cch: 742.3,
+        etf: 9876.4,
+        fru: 2134.8,
+        fwe: 0.052,
+        htc: 0.00000067,
+        htn: 0.0000423,
+        ior: 89.2,
+        ldu: 28954.7,
+        mru: 0.00198,
+        ozd: 0.00142,
+        pco: 0.784,
+        pma: 0.0000234,
+        swe: 0.247,
+        tre: 2.892,
+        wtu: 398.6,
+        durability: 0.82,
+        microfibers: 8.7,
+        outOfEuropeEOL: 0.6,
+      },
+      {
+        productId: id2,
+        score: 200,
+        standardized: 20,
+        acd: 3.47,
+        cch: 1834.6,
+        etf: 24567.1,
+        fru: 5892.3,
+        fwe: 0.187,
+        htc: 0.00000189,
+        htn: 0.0000967,
+        ior: 203.4,
+        ldu: 67432.9,
+        mru: 0.00567,
+        ozd: 0.00389,
+        pco: 2.156,
+        pma: 0.0000678,
+        swe: 0.634,
+        tre: 7.823,
+        wtu: 982.4,
+        durability: 0.45,
+        microfibers: 18.2,
+        outOfEuropeEOL: 2.1,
+      },
     ]
 
     await prismaTest.product.createMany({
@@ -114,14 +156,46 @@ describe("Score DB integration", () => {
     expect(result.count).toBe(2)
     const found = await prismaTest.score.findMany()
     expect(found).toHaveLength(2)
-    expect(found.find((score) => score.productId === id1)?.score).toBe(100)
-    expect(found.find((score) => score.productId === id1)?.standardized).toBe(10)
-    expect(found.find((score) => score.productId === id2)?.score).toBe(200)
-    expect(found.find((score) => score.productId === id2)?.standardized).toBe(20)
+
+    const score1 = found.find((score) => score.productId === id1)
+    expect(score1?.score).toBe(100)
+    expect(score1?.standardized).toBe(10)
+    expect(score1?.acd).toBe(1.25)
+    expect(score1?.cch).toBe(742.3)
+    expect(score1?.durability).toBe(0.82)
+
+    const score2 = found.find((score) => score.productId === id2)
+    expect(score2?.score).toBe(200)
+    expect(score2?.standardized).toBe(20)
+    expect(score2?.acd).toBe(3.47)
+    expect(score2?.cch).toBe(1834.6)
+    expect(score2?.durability).toBe(0.45)
   })
 
   it("createScore should create a score and product with upload", async () => {
-    const score = 500
+    const score = {
+      score: 85.5,
+      standardized: 8.5,
+      acd: 2.73,
+      cch: 1589.45,
+      etf: 20654.8,
+      fru: 4289.7,
+      fwe: 0.106,
+      htc: 0.00000114,
+      htn: 0.0000849,
+      ior: 167.8,
+      ldu: 51743.2,
+      mru: 0.00423,
+      ozd: 0.00268,
+      pco: 1.548,
+      pma: 0.0000423,
+      swe: 0.459,
+      tre: 5.207,
+      wtu: 763.4,
+      durability: 0.67,
+      microfibers: 12.3,
+      outOfEuropeEOL: 1.2,
+    }
     const product = {
       gtins: ["1234567891000"],
       internalReference: "REF-123",
@@ -140,7 +214,7 @@ describe("Score DB integration", () => {
     expect(result).toBeDefined()
 
     const createdScore = await prismaTest.score.findFirst({
-      where: { score: 500 },
+      where: { score: 85.5 },
       include: { product: { include: { upload: true } } },
     })
     expect(createdScore).toBeDefined()

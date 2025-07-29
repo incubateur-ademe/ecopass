@@ -16,7 +16,6 @@ export const processExportsQueue = async () => {
   if (!exportToProcess) {
     return
   }
-
   if (!exportToProcess.user.organizationId) {
     completeExport(exportToProcess.id)
     return
@@ -49,5 +48,4 @@ export const processExportsQueue = async () => {
   await uploadFileToS3(`${exportToProcess.name}.zip`, zipContent, "export")
 
   await completeExport(exportToProcess.id)
-  console.log(`${products.length} products processed and export completed`)
 }

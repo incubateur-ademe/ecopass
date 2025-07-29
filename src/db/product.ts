@@ -55,7 +55,10 @@ export const getProductsToProcess = async (take: number) => {
               organization: {
                 select: {
                   name: true,
-                  authorizedBy: { select: { from: { select: { name: true, brands: { select: { name: true } } } } } },
+                  authorizedBy: {
+                    select: { from: { select: { name: true, brands: { select: { name: true } } } } },
+                    where: { active: true },
+                  },
                   brands: { select: { name: true } },
                 },
               },
@@ -79,10 +82,10 @@ const productWithScoreSelect = {
   brand: true,
   createdAt: true,
   category: true,
-  score: { select: { score: true, standardized: true } },
+  score: true,
   upload: {
     select: {
-      version: { select: { version: true } },
+      version: true,
       createdBy: { select: { organization: { select: { name: true } } } },
     },
   },
@@ -150,18 +153,21 @@ const getProducts = async (
 export type Products = Awaited<ReturnType<typeof getProducts>>
 
 export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brand?: string) => {
-  const organization = await prismaClient.organization.findFirst({
-    where: { users: { some: { id: userId } } },
+  const user = await prismaClient.user.findUnique({
+    where: { id: userId },
+    select: {
+      organization: true,
+    },
   })
 
-  if (!organization) {
+  if (!user || !user.organization) {
     return 0
   }
 
   const result = await prismaClient.product.groupBy({
     by: ["internalReference"],
     where: {
-      upload: { organizationId: organization.id },
+      upload: { organizationId: user.organization.id },
       status: Status.Done,
       brand: brand,
     },
@@ -176,16 +182,19 @@ export const getOrganizationProductsByUserIdAndBrand = async (
   size: number | undefined,
   brand?: string,
 ) => {
-  const organization = await prismaClient.organization.findFirst({
-    where: { users: { some: { id: userId } } },
+  const user = await prismaClient.user.findUnique({
+    where: { id: userId },
+    select: {
+      organization: true,
+    },
   })
 
-  if (!organization) {
+  if (!user || !user.organization) {
     return []
   }
   return size
-    ? getProducts({ upload: { organizationId: organization.id }, brand }, (page || 0) * size, size)
-    : getProducts({ upload: { organizationId: organization.id }, brand })
+    ? getProducts({ upload: { organizationId: user.organization.id }, brand }, (page || 0) * size, size)
+    : getProducts({ upload: { organizationId: user.organization.id }, brand })
 }
 export const getProductsByUploadId = async (uploadId: string) => {
   const products = await prismaClient.product.findMany({
@@ -203,7 +212,10 @@ export const getProductsByUploadId = async (uploadId: string) => {
               organization: {
                 select: {
                   name: true,
-                  authorizedBy: { select: { from: { select: { name: true, brands: { select: { name: true } } } } } },
+                  authorizedBy: {
+                    select: { from: { select: { name: true, brands: { select: { name: true } } } } },
+                    where: { active: true },
+                  },
                   brands: { select: { name: true } },
                 },
               },
@@ -211,6 +223,9 @@ export const getProductsByUploadId = async (uploadId: string) => {
           },
         },
       },
+    },
+    orderBy: {
+      uploadOrder: "asc",
     },
   })
   return products.map((product) => decryptProductFields(product))
@@ -237,17 +252,20 @@ export const getProductsByOrganizationIdAndBrandBefore = async (
 ) => getProducts({ upload: { organizationId }, createdAt: { lt: before }, brand: brand || undefined })
 
 export const getOrganizationProductsByUserId = async (userId: string) => {
-  const organization = await prismaClient.organization.findFirst({
-    where: { users: { some: { id: userId } } },
+  const user = await prismaClient.user.findUnique({
+    where: { id: userId },
+    select: {
+      organization: true,
+    },
   })
 
-  if (!organization) {
+  if (!user || !user.organization) {
     return []
   }
 
   const products = await prismaClient.product.findMany({
     where: {
-      upload: { organizationId: organization.id },
+      upload: { organizationId: user.organization.id },
       status: Status.Done,
     },
     select: {

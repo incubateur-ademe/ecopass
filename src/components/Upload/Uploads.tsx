@@ -25,9 +25,9 @@ const Uploads = async ({ page }: { page: number }) => {
   const uploads = await getUploadsByUserId(session.user.id, page - 1)
 
   return uploads.length === 0 ? (
-    <p>Aucun fichier pour le moment</p>
+    <p>Aucun fichier pour le moment.</p>
   ) : (
-    <>
+    <div data-testid='uploads-table'>
       <Table
         className={styles.table}
         fixed
@@ -60,7 +60,7 @@ const Uploads = async ({ page }: { page: number }) => {
           showFirstLast
         />
       )}
-    </>
+    </div>
   )
 }
 

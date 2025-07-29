@@ -8,10 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "predev": "react-dsfr update-icons",
-    "prebuild": "react-dsfr update-icons",
+    "prebuild": "react-dsfr update-icons & yarn ecobalyse:data",
     "queue:watch": "tsx watch queue.ts",
     "queue": "tsx queue.ts",
     "test": "jest && playwright test",
+    "ecobalyse:data": "tsx src/scripts/decryptEcobalyseData.ts",
     "reset:test": "DATABASE_URL=postgresql://ecopass_test:ecopass_test@localhost:5433/ecopass_test npx prisma migrate reset --force --skip-seed"
   },
   "prisma": {
@@ -26,6 +27,7 @@
     "@aws-sdk/client-s3": "^3.828.0",
     "@codegouvfr/react-dsfr": "^1.25.1",
     "@prisma/client": "6.9.0",
+    "@types/jsdom": "^21.1.7",
     "axios": "^1.9.0",
     "bcrypt": "^6.0.0",
     "chardet": "^2.1.0",
@@ -34,6 +36,7 @@
     "csv-stringify": "^6.5.2",
     "ejs": "^3.1.10",
     "helmet": "^8.1.0",
+    "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.2",
     "jszip": "^3.10.1",
     "next": "15.3.3",

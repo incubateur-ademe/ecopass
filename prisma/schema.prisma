@@ -28,9 +28,6 @@ model Account {
   id_token          String? @db.Text
   session_state     String?
 
-  password           String?
-  resetPasswordToken String? @map("reset_password_token")
-
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -88,6 +85,7 @@ model Upload {
   id        String     @id @default(uuid())
   name      String?
   createdAt DateTime   @default(now()) @map("created_at")
+  version   String
   type      UploadType
 
   products Product[]
@@ -100,9 +98,6 @@ model Upload {
 
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String @map("  created_by_id")
-
-  version   Version @relation(fields: [versionId], references: [id])
-  versionId String
 
   @@map("uploads")
 }
@@ -119,22 +114,32 @@ model Score {
   score        Float
   standardized Float
 
+  durability Float
+
+  acd Float
+  cch Float
+  etf Float
+  fru Float
+  fwe Float
+  htc Float
+  htn Float
+  ior Float
+  ldu Float
+  mru Float
+  ozd Float
+  pco Float
+  pma Float
+  swe Float
+  tre Float
+  wtu Float
+
+  microfibers    Float
+  outOfEuropeEOL Float
+
   product   Product @relation(fields: [productId], references: [id])
   productId String  @unique @map("product_id")
 
   @@map("scores")
-}
-
-model Version {
-  id      String @id @default(uuid())
-  version String @unique
-  link    String
-
-  uploads Upload[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("versions")
 }
 
 model Product {
@@ -174,8 +179,9 @@ model Product {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
-  upload   Upload @relation(fields: [uploadId], references: [id])
-  uploadId String @map("upload_id")
+  upload      Upload @relation(fields: [uploadId], references: [id])
+  uploadId    String @map("upload_id")
+  uploadOrder Int?   @map("upload_order")
 
   score Score?
 

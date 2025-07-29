@@ -90,7 +90,10 @@ type ColumnType = [
   "accessoire4quantite",
 ]
 
-type CSVRow = Record<ColumnType[number], string>
+type CSVRow = {
+  info: { records: number }
+  record: Record<ColumnType[number], string>
+}
 
 const columns: Partial<Record<ColumnType[number], string>> = {
   gtinseans: "GTINs/Eans",
@@ -224,6 +227,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       trim: true,
       bom: true,
       encoding: encodingToUse,
+      info: true,
     })
 
     stream.pipe(parser)
@@ -232,39 +236,39 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       const productId = uuid()
 
       const rawProduct = {
-        gtins: (row["gtinseans"] || "").split(";").map((gtin) => gtin.trim()),
-        internalReference: row["referenceinterne"],
-        date: row["datedemisesurlemarche"],
-        brand: row["marque"] || upload.createdBy.organization?.name || "",
-        declaredScore: getNumberValue(row["score"], 1, -1) as number | undefined,
-        product: getValue<ProductCategory>(productCategories, row["categorie"]),
-        airTransportRatio: getNumberValue(row["partdutransportaerien"], 0.01),
-        business: getValue<Business>(businesses, row["tailledelentreprise"]),
-        fading: getBooleanValue(row["delavage"]),
-        mass: getNumberValue(row["masse"]),
-        numberOfReferences: getNumberValue(row["nombredereferences"]),
-        price: getNumberValue(row["prix"]),
-        countryDyeing: getValue<Country>(countries, row["originedelennoblissementimpression"]),
-        countryFabric: getValue<Country>(countries, row["originedetissagetricotage"]),
-        countryMaking: getValue<Country>(countries, row["origineconfection"]),
-        countrySpinning: getValue<Country>(countries, row["originedefilature"]),
+        gtins: (row.record["gtinseans"] || "").split(";").map((gtin) => gtin.trim()),
+        internalReference: row.record["referenceinterne"] || "",
+        date: row.record["datedemisesurlemarche"],
+        brand: row.record["marque"] || upload.createdBy.organization?.name || "",
+        declaredScore: getNumberValue(row.record["score"], 1, -1) as number | undefined,
+        product: getValue<ProductCategory>(productCategories, row.record["categorie"]),
+        airTransportRatio: getNumberValue(row.record["partdutransportaerien"], 0.01),
+        business: getValue<Business>(businesses, row.record["tailledelentreprise"]),
+        fading: getBooleanValue(row.record["delavage"]),
+        mass: getNumberValue(row.record["masse"]),
+        numberOfReferences: getNumberValue(row.record["nombredereferences"]),
+        price: getNumberValue(row.record["prix"]),
+        countryDyeing: getValue<Country>(countries, row.record["originedelennoblissementimpression"]),
+        countryFabric: getValue<Country>(countries, row.record["originedetissagetricotage"]),
+        countryMaking: getValue<Country>(countries, row.record["origineconfection"]),
+        countrySpinning: getValue<Country>(countries, row.record["originedefilature"]),
         printing:
-          row["typedimpression"] || row["pourcentagedimpression"]
+          row.record["typedimpression"] || row.record["pourcentagedimpression"]
             ? {
-                kind: getValue<Impression>(impressions, row["typedimpression"]),
-                ratio: getNumberValue((row["pourcentagedimpression"] || "").trim().replace("%", ""), 0.01),
+                kind: getValue<Impression>(impressions, row.record["typedimpression"]),
+                ratio: getNumberValue((row.record["pourcentagedimpression"] || "").trim().replace("%", ""), 0.01),
               }
             : undefined,
-        upcycled: getBooleanValue(row["remanufacture"]),
+        upcycled: getBooleanValue(row.record["remanufacture"]),
         materials: Array.from({ length: 16 })
           .map((_, index) => {
             //@ts-expect-error : managed from 1 to 16
-            const id = getValue<MaterialType>(allMaterials, row[`matiere${index + 1}`])
+            const id = getValue<MaterialType>(allMaterials, row.record[`matiere${index + 1}`])
             //@ts-expect-error : managed from 1 to 16
-            const shareRaw = row[`matiere${index + 1}pourcentage`]
+            const shareRaw = row.record[`matiere${index + 1}pourcentage`]
             const share = shareRaw ? getNumberValue(shareRaw.trim().replace("%", "")) : undefined
             //@ts-expect-error : managed from 1 to 16
-            const country = getValue<Country>(countries, row[`matiere${index + 1}origine`])
+            const country = getValue<Country>(countries, row.record[`matiere${index + 1}origine`])
             return id ? { id, share: typeof share === "number" ? share / 100 : share, country } : null
           })
           .filter((material) => material !== null)
@@ -272,9 +276,9 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         trims: Array.from({ length: 4 })
           .map((_, index) => {
             //@ts-expect-error : managed from 1 to 4
-            const id = getValue<AccessoryType>(allAccessories, row[`accessoire${index + 1}`])
+            const id = getValue<AccessoryType>(allAccessories, row.record[`accessoire${index + 1}`])
             //@ts-expect-error : managed from 1 to 4
-            const quantity = getNumberValue(row[`accessoire${index + 1}quantite`])
+            const quantity = getNumberValue(row.record[`accessoire${index + 1}quantite`])
             return id ? { id, quantity } : null
           })
           .filter((accessory) => accessory !== null)
@@ -304,6 +308,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         createdAt: now,
         updatedAt: now,
         uploadId: upload.id,
+        uploadOrder: row.info.records,
         status: Status.Pending,
         ...encrypted.product,
       })

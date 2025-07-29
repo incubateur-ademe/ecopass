@@ -8,7 +8,7 @@ const BrandSelection = ({ brands, brand }: { brands: string[]; brand?: string })
   return (
     <>
       <p className='fr-mb-2w'>
-        Vous avez déclaré des produits sur <b>{brands.length} marques différentes</b>
+        Vous avez déclaré des produits sur <b>{brands.length} marques différentes.</b>
       </p>
       <Select
         label='Choisir une marque'
