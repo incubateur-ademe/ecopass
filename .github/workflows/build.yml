@@ -37,6 +37,7 @@ jobs:
           echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
           echo "ECOBALYSE_ENCRYPTION_KEY=${{ secrets.ECOBALYSE_ENCRYPTION_KEY }}" >> .env
           echo "CI=true" >> .env
+          echo "BATCH_SIZE=2" >> .env
       - name: Install dependencies
         run: yarn install --immutable --immutable-cache --check-cache
       - name: Linter
