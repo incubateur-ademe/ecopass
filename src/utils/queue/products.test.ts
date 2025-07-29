@@ -25,6 +25,7 @@ describe("processProductsQueue", () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     uploadId: "test-upload-id",
+    uploadOrder: 1,
     upload: {
       id: "test-upload-id",
       createdBy: {
@@ -73,7 +74,9 @@ describe("processProductsQueue", () => {
 
     await processProductsQueue()
 
-    expect(mockedGetProductsToProcess).toHaveBeenCalledWith(10)
+    expect(mockedGetProductsToProcess).toHaveBeenCalledWith(
+      process.env.BATCH_SIZE ? parseInt(process.env.BATCH_SIZE) : 10,
+    )
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([
       {
         accessories: [],

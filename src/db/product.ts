@@ -224,6 +224,9 @@ export const getProductsByUploadId = async (uploadId: string) => {
         },
       },
     },
+    orderBy: {
+      uploadOrder: "asc",
+    },
   })
   return products.map((product) => decryptProductFields(product))
 }
