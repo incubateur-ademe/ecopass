@@ -89,7 +89,10 @@ test("declare my products by API", async ({ page }) => {
   )
   await page.getByTestId("products-table").locator("table tbody tr").nth(0).getByRole("link").click()
   await expect(page.getByTestId("product-details")).toHaveText(
-    `tshirt - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Version Ecobalyse : ${ecobalyseVersion}Coût environnemental : 1777 pointsCoût environnemental pour 100g : 1045 pointsIndice de durabilité : 0.671 045 pts/100g1 777Télécharger le .svgDetails des impacts environnementaux NomValeurPourcentageÉcotoxicité de l'eau douce, corrigée896 pts50.43%Changement climatique272 pts15.31%Utilisation de ressources fossiles130 pts7.29%Radiations ionisantes101 pts5.68%Complément microfibres63 pts3.57%Complément export hors-Europe62 pts3.50%Particules49 pts2.76%Acidification46 pts2.56%Eutrophisation marine34 pts1.90%Formation d'ozone photochimique33 pts1.84%Eutrophisation eaux douces25 pts1.38%Utilisation de ressources minérales et métalliques23 pts1.32%Eutrophisation terrestre20 pts1.12%Utilisation de ressources en eau14 pts0.81%Utilisation des sols9 pts0.52%Appauvrissement de la couche d'ozone0 pts0.01%Toxicité humaine - cancer, corrigée0 pts0.00%Toxicité humaine - non-cancer, corrigée0 pts0.00%`,
+    `tshirt - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Par : Xavier Ecopass (Emmaus)Version Ecobalyse : ${ecobalyseVersion}`,
+  )
+  await expect(page.getByTestId("product-score")).toHaveText(
+    `Coût environnemental : 1777 pointsCoût environnemental pour 100g : 1045 pointsIndice de durabilité : 0.671 045 pts/100g1 777Télécharger le .svg`,
   )
 
   await page.getByRole("link", { name: "API" }).click()

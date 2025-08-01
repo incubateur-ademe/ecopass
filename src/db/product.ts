@@ -77,6 +77,7 @@ export const getProductsToProcess = async (take: number) => {
 }
 
 const productWithScoreSelect = {
+  id: true,
   gtins: true,
   internalReference: true,
   brand: true,
@@ -86,34 +87,76 @@ const productWithScoreSelect = {
   upload: {
     select: {
       version: true,
-      createdBy: { select: { organization: { select: { name: true } } } },
+      createdBy: { select: { organization: { select: { name: true } }, nom: true, prenom: true } },
     },
   },
 } satisfies Prisma.ProductSelect
 
-export const getProductWithScore = async (gtin: string, userId: string) => {
+const computeProductWithScore = (
+  product: Prisma.ProductGetPayload<{ select: typeof productWithScoreSelect }> | null,
+) => {
+  if (!product) {
+    return null
+  }
+
+  return {
+    ...product,
+    category: decryptString(product.category),
+  }
+}
+
+export type ProductWithScore = NonNullable<ReturnType<typeof computeProductWithScore>>
+
+export const getProductWithScoreHistory = async (gtin: string, page: number, pageSize: number) => {
+  const results = await prismaClient.product.findMany({
+    select: productWithScoreSelect,
+    where: {
+      gtins: { has: gtin },
+      status: Status.Done,
+    },
+    orderBy: { createdAt: "desc" },
+    skip: page * pageSize,
+    take: pageSize,
+  })
+
+  return results.map((result) => computeProductWithScore(result)).filter((product) => product !== null)
+}
+
+export const getProductWithScoreHistoryCount = async (gtin: string) => {
+  return prismaClient.product.count({
+    where: {
+      gtins: { has: gtin },
+      status: Status.Done,
+    },
+  })
+}
+
+export const getProductWithScore = async (gtin: string) => {
   const result = await prismaClient.product.findFirst({
     select: productWithScoreSelect,
     where: {
       gtins: { has: gtin },
-      upload: {
-        organization: {
-          users: {
-            some: { id: userId },
-          },
-        },
-      },
       status: Status.Done,
     },
     orderBy: { createdAt: "desc" },
   })
-  if (result) {
-    return { ...result, category: decryptString(result.category) }
-  }
-  return null
+
+  return computeProductWithScore(result)
 }
 
-export type ProductWithScore = NonNullable<Awaited<ReturnType<typeof getProductWithScore>>>
+export const getOldProductWithScore = async (gtin: string, version: string) => {
+  const result = await prismaClient.product.findFirst({
+    select: productWithScoreSelect,
+    where: {
+      gtins: { has: gtin },
+      id: version,
+      status: Status.Done,
+    },
+    orderBy: { createdAt: "desc" },
+  })
+
+  return computeProductWithScore(result)
+}
 
 const getProducts = async (
   where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId" | "createdAt" | "brand">,
@@ -142,12 +185,7 @@ const getProducts = async (
     ),
   )
 
-  return products
-    .filter((product) => product !== null)
-    .map((product) => ({
-      ...product,
-      category: decryptString(product.category),
-    }))
+  return products.map((product) => computeProductWithScore(product)).filter((product) => product !== null)
 }
 
 export type Products = Awaited<ReturnType<typeof getProducts>>

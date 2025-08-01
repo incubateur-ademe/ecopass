@@ -97,7 +97,7 @@ model Upload {
   organizationId String       @map("organization_id")
 
   createdBy   User   @relation(fields: [createdById], references: [id])
-  createdById String @map("  created_by_id")
+  createdById String @map("created_by_id")
 
   @@map("uploads")
 }
