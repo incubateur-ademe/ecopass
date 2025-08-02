@@ -2,8 +2,6 @@ import { getProductWithScore } from "../../../db/product"
 import Product from "../../../views/Product"
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import EmptyProduct from "../../../views/EmptyProduct"
-import { auth } from "../../../services/auth/auth"
-import { redirect } from "next/navigation"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -11,21 +9,17 @@ export const metadata: Metadata = {
 }
 
 type Props = {
-  params: Promise<{ id: string }>
+  params: Promise<{ gtin: string }>
 }
 
 const ProductPage = async (props: Props) => {
-  const session = await auth()
-  if (!session || !session.user) {
-    redirect("/")
-  }
   const params = await props.params
+  const product = await getProductWithScore(params.gtin)
 
-  const product = await getProductWithScore(params.id, session.user.id)
   return (
     <>
       <StartDsfrOnHydration />
-      {product ? <Product product={product} /> : <EmptyProduct />}
+      {product ? <Product product={product} gtin={params.gtin} /> : <EmptyProduct />}
     </>
   )
 }
