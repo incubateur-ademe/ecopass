@@ -1,9 +1,9 @@
 export const getSize = (value: number) => {
   if (value < 10) {
-    return 12
+    return 10
   }
   if (value < 100) {
-    return 7
+    return 5
   }
   if (value < 1000) {
     return -1

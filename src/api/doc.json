@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "API du portail de déclaration de l'Affichage Environnemental",
-    "description": "Cette API est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api). Il faut en plus rajouter les informations réglementaires de son produit, à savoir : GTIN, date de mise sur le marché et la marque.",
-    "version": "0.1.0"
+    "description": "Cette API permet de déclarer des produits ou générer le coût environnemental de ces derniers. La déclaration est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api). Il faut en plus rajouter les informations réglementaires de son produit, à savoir : les codes GTINs, la référence interne et la date de mise sur le marché.",
+    "version": "1.0.0"
   },
   "servers": [
     {
@@ -56,6 +56,74 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/image": {
+      "get": {
+        "tags": ["Affichage Environnemental"],
+        "summary": "Génère l'image SVG de l'Affichage Environnemental",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["score", "gtin"]
+            },
+            "description": "Type des paramètres pour l'image à générer, soit `score` pour l'image avec le score, soit `gtin` pour l'image avec le GTIN du produit"
+          },
+          {
+            "name": "gtin",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{8}|\\d{13}$"
+            },
+            "description": "Le GTIN du produit, format 8 ou 13 chiffres. Doit être fourni si `type` est `gtin`"
+          },
+          {
+            "name": "score",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Le score du produit, doit être fourni si `type` est `score`"
+          },
+          {
+            "name": "masse",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            },
+            "description": "La masse du produit (en kg), doit être fournie si `type` est `score`"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image SVG du produit",
+            "content": {
+              "image/svg+xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidParametersError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Produit non trouvé ou sans score pour ce GTIN"
           }
         }
       }
@@ -272,27 +340,20 @@
       "InvalidParametersError": {
         "type": "object",
         "properties": {
-          "error": {
-            "type": "object",
-            "description": "Un dictionnaire dont la clé est le nom d'un champ en erreur et la valeur le message d'erreur.\n",
-            "properties": {
-              "decoding": {
-                "type": "string",
-                "description": "Une erreur de décodage JSON"
-              },
-              "general": {
-                "type": "string",
-                "description": "Une erreur d'ordre général"
-              }
-            },
-            "additionalProperties": {
-              "type": "string",
-              "description": "Une erreur particulière pour un champ spécifique"
-            }
-          },
-          "documentation": {
+          "code": {
             "type": "string",
-            "description": "Lien hypertexte vers la documentation de l'API\n"
+            "description": "Code d'erreur, par exemple `invalid_parameters`"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message d'erreur décrivant le problème"
+          },
+          "path": {
+            "type": "array",
+            "description": "Chemin des paramètres invalides dans la requête",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
