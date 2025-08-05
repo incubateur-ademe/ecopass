@@ -2,8 +2,10 @@ import { getSize } from "./size"
 
 export const getSVG = (score: number, standardizedScore: number) => {
   const size = getSize(standardizedScore)
+  const tile = `Coût environnemental : ${Math.round(score)} points d'impact, ${Math.round(standardizedScore)} pour 100g`
   return `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns='http://www.w3.org/2000/svg' width='154' height='77' viewBox='0 0 154 77' fill='none'>
+<svg xmlns='http://www.w3.org/2000/svg' width='154' height='77' viewBox='0 0 154 77' fill='none' role='img' aria-label="${tile}">
+<title>${tile}</title>
  <style>
   @font-face {
    font-family: 'Marianne';
