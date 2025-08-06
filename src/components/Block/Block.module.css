@@ -1,5 +1,6 @@
 .container {
-  padding-block: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 3rem;
 }
 
 .noMargin {
@@ -8,4 +9,9 @@
 
 .secondary {
   background-color: var(--background-default-grey-hover);
+}
+
+.large {
+  padding-top: 4rem;
+  padding-bottom: 5rem;
 }

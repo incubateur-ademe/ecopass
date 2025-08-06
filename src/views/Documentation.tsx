@@ -6,8 +6,7 @@ const Documentation = () => (
     <Block>
       <h1>Documentation du format CSV</h1>
       <p>
-        Pour importer vos produits sur le portail de déclaration de l'Affichage environnemental, vous devez fournir un
-        fichier CSV.
+        Pour importer vos produits sur le portail de l'Affichage environnemental, vous devez fournir un fichier CSV.
       </p>
       <p>
         Ce dernier peut comporter des valeurs en français, anglais, ou si vous utilisez déjà l'API Ecobalyse, les

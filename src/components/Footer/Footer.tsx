@@ -12,9 +12,9 @@ const Footer = () => {
       accessibility='non compliant'
       contentDescription={
         <>
-          Le portail de déclaration de l’affichage environnemental est un service développé par l’Agence de la
-          transition écologique, le Commissariat général au développement durable et le Ministère de la Transition
-          Écologique. Ce service est actuellement en beta privé. Vous pouvez contacter l’équipe par mail à l’adresse{" "}
+          Le portail de l’Affichage environnemental est un service développé par l’Agence de la transition écologique,
+          le Commissariat général au développement durable et le Ministère de la Transition Écologique. Ce service est
+          actuellement en beta privé. Vous pouvez contacter l’équipe par mail à l’adresse{" "}
           <Link
             href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'
             target='_blank'
