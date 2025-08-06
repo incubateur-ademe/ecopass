@@ -2287,6 +2287,11 @@
     "@smithy/types" "^4.3.1"
     tslib "^2.6.2"
 
+"@socialgouv/matomo-next@^1.9.2":
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/@socialgouv/matomo-next/-/matomo-next-1.9.2.tgz#8175b20f98b01e1a5fcee3c5207b091bcc44dd78"
+  integrity sha512-UtiOBAzKiCwal6/2Lfh3fnv9L8XC4Ovdqqh1K3fimJZJhodf18fD3oy3ansGpgj+A7YE8HPV7/u/q6cYbRP3nw==
+
 "@swagger-api/apidom-ast@^1.0.0-beta.42":
   version "1.0.0-beta.42"
   resolved "https://registry.npmjs.org/@swagger-api/apidom-ast/-/apidom-ast-1.0.0-beta.42.tgz"
