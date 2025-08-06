@@ -6,6 +6,7 @@ import { Metadata } from "next"
 import Footer from "../components/Footer/Footer"
 import { auth } from "../services/auth/auth"
 import "../css/reset.css"
+import Matomo from "../components/Matomo/Matomo"
 
 export const metadata: Metadata = {
   title: "Affichage environnemental",
@@ -24,6 +25,7 @@ export default async function RootLayout({ children }: { children: React.JSX.Ele
         <DsfrHead preloadFonts={["Marianne-Regular", "Marianne-Medium", "Marianne-Bold"]} />
       </head>
       <body>
+        <Matomo />
         <DsfrProvider lang={lang}>
           <AuthProvider session={session}>
             <Header session={session} />
