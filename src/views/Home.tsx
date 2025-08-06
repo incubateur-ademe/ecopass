@@ -3,6 +3,8 @@ import Block from "../components/Block/Block"
 import { Notice } from "@codegouvfr/react-dsfr/Notice"
 import HomeBanner from "../components/Home/HomeBanner"
 import Link from "next/link"
+import InformationBanner from "../components/Home/InformationBanner"
+import SearchBanner from "../components/Home/SearchBanner"
 
 const Home = ({ connected }: { connected?: boolean }) => {
   return (
@@ -28,12 +30,10 @@ const Home = ({ connected }: { connected?: boolean }) => {
           }
         />
       )}
-      <Block secondary>
+      <Block large secondary>
         <HomeBanner withConnection={!connected} />
-      </Block>
-      {connected && (
-        <Block>
-          <div className='fr-grid-row fr-grid-row--gutters'>
+        {connected && (
+          <div className='fr-grid-row fr-grid-row--gutters fr-mt-3w'>
             <div className='fr-col-12 fr-col-md-6'>
               <Card
                 background
@@ -57,8 +57,14 @@ const Home = ({ connected }: { connected?: boolean }) => {
               />
             </div>
           </div>
-        </Block>
-      )}
+        )}
+      </Block>
+      <Block large>
+        <SearchBanner />
+      </Block>
+      <Block large secondary>
+        <InformationBanner />
+      </Block>
     </>
   )
 }

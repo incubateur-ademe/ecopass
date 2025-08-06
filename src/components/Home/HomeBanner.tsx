@@ -12,21 +12,28 @@ type HomeBannerProps = {
 
 const HomeBanner = ({ withConnection = true }: HomeBannerProps) => {
   return (
-    <>
-      <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle'>
-        <div className='fr-col-12 fr-col-md-6'>
-          <h1 className={styles.title}>Déclarez le coût environnemental de vos produits textiles</h1>
-          {withConnection && <ProConnectButton onClick={() => signIn("proconnect", { callbackUrl: "/" })} />}
-        </div>
-        <Image
-          className={classNames("fr-col-12 fr-col-md-6", styles.image, { [styles.small]: !withConnection })}
-          src='/images/tshirt.jpg'
-          alt=''
-          width={384}
-          height={386}
-        />
+    <div className={styles.banner}>
+      <div>
+        <h1 className={styles.title}>Déclarez le coût environnemental de vos produits textiles</h1>
+        {withConnection && (
+          <>
+            <p className={styles.description}>
+              Vous êtes une marque ou un bureau d'étude ?
+              <br />
+              Connectez vous avec ProConnect pour déclarer le coût environnemental de vos produits.
+            </p>
+            <ProConnectButton onClick={() => signIn("proconnect", { callbackUrl: "/" })} />
+          </>
+        )}
       </div>
-    </>
+      <Image
+        className={classNames(styles.image, { [styles.small]: !withConnection })}
+        src='/images/tshirt.jpg'
+        alt=''
+        width={384}
+        height={386}
+      />
+    </div>
   )
 }
 

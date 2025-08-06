@@ -1,12 +1,12 @@
 import helmet from "helmet"
 import type { NextConfig } from "next"
 
-const csp: Record<string, string[]> = {
+const csp = {
   ...helmet.contentSecurityPolicy.getDefaultDirectives(),
   "default-src": ["'none'"],
   "img-src": ["'self'", "data:"],
-  "connect-src": ["'self'"],
-  "script-src": ["'self'", "'unsafe-inline'"],
+  "connect-src": ["'self'", process.env.NEXT_PUBLIC_MATOMO_SITE_URL],
+  "script-src": ["'self'", "'unsafe-inline'", `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.js`],
 }
 
 const nextConfig: NextConfig = {
@@ -32,8 +32,8 @@ const nextConfig: NextConfig = {
         },
         {
           key: "Content-Security-Policy",
-          value: Object.keys(csp)
-            .map((key) => `${key} ${csp[key].join(" ")}`)
+          value: Object.entries(csp)
+            .map(([key, value]) => `${key} ${value.join(" ")}`)
             .join(";"),
         },
       ],

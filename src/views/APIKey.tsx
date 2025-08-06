@@ -8,7 +8,7 @@ const APIKey = ({ keys }: { keys: APIKeyType[] }) => {
     <Block>
       <h1>Utiliser l'API pour déclarer un produit</h1>
       <div className='fr-mb-4w'>
-        <p>L'API du portail de déclaration de l’affichage environnemental est utilisée pour déclarer vos produits.</p>
+        <p>L'API du portail de l’Affichage environnemental est utilisée pour déclarer vos produits.</p>
         <p>
           Cette dernière est basée sur l'API Écobalyse en y ajoutant les informations reglementaire. N'hésitez pas à
           consulter{" "}
