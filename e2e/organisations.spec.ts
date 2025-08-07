@@ -65,7 +65,7 @@ test("manage delegation", async ({ page }) => {
   })
   expect(response.status()).toBe(400)
   expect(await response.text()).toEqual(
-    '[{"received":"Emmaus Connect","code":"invalid_enum_value","options":["DEPARTEMENT DE SEINE ET MARNE"],"path":["brand"],"message":"Invalid enum value. Expected \'DEPARTEMENT DE SEINE ET MARNE\', received \'Emmaus Connect\'"}]',
+    '[{"code":"invalid_value","values":["DEPARTEMENT DE SEINE ET MARNE"],"path":["brand"],"message":"Invalid input: expected \\"DEPARTEMENT DE SEINE ET MARNE\\""}]',
   )
 
   await logout(page)
@@ -120,7 +120,7 @@ test("manage delegation", async ({ page }) => {
   })
   expect(response.status()).toBe(400)
   expect(await response.text()).toEqual(
-    '[{"received":"Emmaus Connect","code":"invalid_enum_value","options":["DEPARTEMENT DE SEINE ET MARNE"],"path":["brand"],"message":"Invalid enum value. Expected \'DEPARTEMENT DE SEINE ET MARNE\', received \'Emmaus Connect\'"}]',
+    '[{"code":"invalid_value","values":["DEPARTEMENT DE SEINE ET MARNE"],"path":["brand"],"message":"Invalid input: expected \\"DEPARTEMENT DE SEINE ET MARNE\\""}]',
   )
 
   await logout(page)

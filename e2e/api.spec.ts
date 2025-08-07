@@ -74,7 +74,7 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(400)
   expect(await response.text()).toEqual(
-    '[{"code":"invalid_type","expected":"number","received":"undefined","path":["mass"],"message":"Required"}]',
+    '[{"expected":"number","code":"invalid_type","path":["mass"],"message":"Invalid input: expected number, received undefined"}]',
   )
 
   await page.getByRole("link", { name: "Mes produits" }).click()

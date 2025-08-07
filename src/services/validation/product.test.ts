@@ -90,7 +90,6 @@ describe("productValidation", () => {
 
   it("does not allow valid product with invalid brand", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -107,7 +106,6 @@ describe("productValidation", () => {
 
   it("does not allow valid product with empty brand", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -124,7 +122,6 @@ describe("productValidation", () => {
 
   it("does not allow valid product without category", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -141,7 +138,6 @@ describe("productValidation", () => {
 
   it("does not allow valid product without category", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -158,7 +154,6 @@ describe("productValidation", () => {
 
   it("does not allow valid product with invalid category", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -174,157 +169,96 @@ describe("productValidation", () => {
   })
 
   it("does not allow product with invalid GTINs", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { gtins: ["123"] },
-      [{ path: ["gtins", 0], message: "Le code GTIN doit contenir 8 ou 13 chiffres" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { gtins: ["123"] }, [
+      { path: ["gtins", "0"], message: "Le code GTIN doit contenir 8 ou 13 chiffres" },
+    ])
   })
 
   it("does not allow product without GTINs", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { gtins: undefined },
-      [{ path: ["gtins"], message: "Il doit y avoir au moins un GTIN" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { gtins: undefined }, [
+      { path: ["gtins"], message: "Il doit y avoir au moins un GTIN" },
+    ])
   })
 
   it("does not allow product with empty GTINs", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { gtins: [] },
-      [{ path: ["gtins"], message: "Il doit y avoir au moins un GTIN" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { gtins: [] }, [
+      { path: ["gtins"], message: "Il doit y avoir au moins un GTIN" },
+    ])
   })
 
   it("does not allow product without internal reference", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { internalReference: [] },
-      [{ path: ["internalReference"], message: "La référence interne est obligatoire" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { internalReference: [] }, [
+      { path: ["internalReference"], message: "La référence interne est obligatoire" },
+    ])
   })
 
   it("does not allow product with invalid date format", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { date: "2023-01-01" },
-      [{ path: ["date"], message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { date: "2023-01-01" }, [
+      { path: ["date"], message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)" },
+    ])
   })
 
   it("does not allow product without date", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { date: undefined },
-      [{ path: ["date"], message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { date: undefined }, [
+      { path: ["date"], message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)" },
+    ])
   })
 
   it("does not allow product with mass < 0.01", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { mass: 0.009 },
-      [{ path: ["mass"], message: "La masse doit être supérieure à 0,01 kg" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { mass: 0.009 }, [
+      { path: ["mass"], message: "La masse doit être supérieure à 0,01 kg" },
+    ])
   })
 
   it("does not allow product without mass", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { mass: undefined },
-      [{ path: ["mass"], message: "Le poids est obligatoire" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { mass: undefined }, [
+      { path: ["mass"], message: "Le poids est obligatoire" },
+    ])
   })
 
   it("does not allow product with zero declaredScore", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { declaredScore: 0 },
-      [{ path: ["declaredScore"], message: "Le score doit être un nombre positif" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { declaredScore: 0 }, [
+      { path: ["declaredScore"], message: "Le score doit être un nombre positif" },
+    ])
   })
 
   it("does not allow product with price too low", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { price: 0 },
-      [{ path: ["price"], message: "Le prix doit être supérieur à 1 €" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { price: 0 }, [
+      { path: ["price"], message: "Le prix doit être supérieur à 1 €" },
+    ])
   })
 
   it("does not allow product with price too high", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { price: 10001 },
-      [{ path: ["price"], message: "Le prix doit être inférieur à 1000 €" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { price: 10001 }, [
+      { path: ["price"], message: "Le prix doit être inférieur à 1000 €" },
+    ])
   })
   it("does not allow product with invalid price", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { price: "Une bonne affaire" },
-      [{ path: ["price"], message: "Le prix doit être un nombre" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { price: "Une bonne affaire" }, [
+      { path: ["price"], message: "Le prix doit être un nombre" },
+    ])
   })
 
   it("does not allow product with too low airTransportRatio", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { airTransportRatio: -1 },
-      [{ path: ["airTransportRatio"], message: "La part de transport aérien doit être supérieure à 0%" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { airTransportRatio: -1 }, [
+      { path: ["airTransportRatio"], message: "La part de transport aérien doit être supérieure à 0%" },
+    ])
   })
 
   it("does not allow product with too high airTransportRatio", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { airTransportRatio: 1.1 },
-      [{ path: ["airTransportRatio"], message: "La part de transport aérien doit être inférieure à 100%" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { airTransportRatio: 1.1 }, [
+      { path: ["airTransportRatio"], message: "La part de transport aérien doit être inférieure à 100%" },
+    ])
   })
 
   it("does not allow product with invalid airTransportRatio", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { airTransportRatio: "par train" },
-      [{ path: ["airTransportRatio"], message: "La part de transport aérien doit être un pourcentage" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { airTransportRatio: "par train" }, [
+      { path: ["airTransportRatio"], message: "La part de transport aérien doit être un pourcentage" },
+    ])
   })
 
   it("does not allow product with invalid material share sum", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       { materials: [{ ...validProduct.materials[0], share: 0.5 }] },
@@ -334,7 +268,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid accessory quantity", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -342,13 +275,12 @@ describe("productValidation", () => {
           { ...validProduct.materials[0], id: "accessory-1", slug: AccessoryType.BoutonEnMétal, quantity: 0 },
         ],
       },
-      [{ path: ["accessories", 0, "quantity"], message: "La quantité de l'accessoire doit être supérieure à 1" }],
+      [{ path: ["accessories", "0", "quantity"], message: "La quantité de l'accessoire doit être supérieure à 1" }],
     )
   })
 
   it("does not allow product with invalid upcycled", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -360,7 +292,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid fading", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -372,7 +303,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid business", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -384,7 +314,6 @@ describe("productValidation", () => {
 
   it("does not allow product with too low number of references", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -396,7 +325,6 @@ describe("productValidation", () => {
 
   it("does not allow product with too high number of references", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -408,7 +336,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid number of references", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -420,7 +347,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid countryFabric", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -432,7 +358,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid countryDyeing", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -444,7 +369,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid countryMaking", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -456,7 +380,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid countrySpinning", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -468,7 +391,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid impression", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -480,7 +402,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid impression percentage", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -492,7 +413,6 @@ describe("productValidation", () => {
 
   it("does not allow product with too low impression percentage", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -504,7 +424,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid impression percentage", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       {
@@ -515,18 +434,13 @@ describe("productValidation", () => {
   })
 
   it("does not allow product with empty materials array", () => {
-    expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
-      productValidation,
-      validProduct,
-      { materials: [] },
-      [{ path: ["materials"], message: "La somme des parts de matières doit être égale à 100%" }],
-    )
+    expectZodValidationToFail(productValidation, validProduct, { materials: [] }, [
+      { path: ["materials"], message: "La somme des parts de matières doit être égale à 100%" },
+    ])
   })
 
   it("does not allow product with material share > 1", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       { materials: [{ ...validProduct.materials[0], share: 1.1 }] },
@@ -539,7 +453,6 @@ describe("productValidation", () => {
 
   it("does not allow product with material share < 0", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       { materials: [{ ...validProduct.materials[0], share: -0.1 }] },
@@ -552,7 +465,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid material type", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       { materials: [{ ...validProduct.materials[0], share: "Tout" }] },
@@ -562,7 +474,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid material type", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       { materials: [{ ...validProduct.materials[0], slug: "Papier" }] },
@@ -572,7 +483,6 @@ describe("productValidation", () => {
 
   it("does not allow product without material type", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       { materials: [{ ...validProduct.materials[0], slug: undefined }] },
@@ -582,7 +492,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid material country", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       { materials: [{ ...validProduct.materials[0], country: "La bas" }] },
@@ -592,7 +501,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid accessory type", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       { accessories: [{ ...validProduct.accessories[0], slug: "Col" }] },
@@ -602,7 +510,6 @@ describe("productValidation", () => {
 
   it("does not allow product with invalid accessory quantity", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       { accessories: [{ ...validProduct.accessories[0], quantity: 0 }] },
@@ -612,7 +519,6 @@ describe("productValidation", () => {
 
   it("does not allow product without accessory quantity", () => {
     expectZodValidationToFail(
-      // @ts-expect-error: Zod too complex
       productValidation,
       validProduct,
       { accessories: [{ ...validProduct.accessories[0], quantity: undefined }] },
