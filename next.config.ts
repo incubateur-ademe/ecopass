@@ -9,6 +9,10 @@ const csp = {
   "script-src": ["'self'", "'unsafe-inline'", `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.js`],
 }
 
+if (process.env.NODE_ENV === "development") {
+  csp["script-src"].push("'unsafe-eval'")
+}
+
 const nextConfig: NextConfig = {
   webpack: (config) => {
     config.module.rules.push({
