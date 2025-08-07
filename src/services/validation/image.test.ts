@@ -42,7 +42,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.errors[0].message).toBe("Number must be greater than 0")
+      expect(result.error?.issues[0].message).toBe("Too small: expected number to be >0")
     })
 
     it("should reject zero or negative masse", () => {
@@ -53,7 +53,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.errors[0].message).toBe("Number must be greater than 0")
+      expect(result.error?.issues[0].message).toBe("Too small: expected number to be >0")
     })
 
     it("should reject invalid string numbers", () => {
@@ -64,7 +64,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.errors[0].message).toBe("Expected number, received nan")
+      expect(result.error?.issues[0].message).toBe("Invalid input: expected number, received NaN")
     })
 
     it("should reject missing required fields", () => {
@@ -74,7 +74,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.errors[0].message).toBe("Expected number, received nan")
+      expect(result.error?.issues[0].message).toBe("Invalid input: expected number, received NaN")
     })
   })
 
@@ -112,7 +112,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.errors[0].message).toBe("Le GTIN doit contenir 8 ou 13 chiffres")
+      expect(result.error?.issues[0].message).toBe("Le GTIN doit contenir 8 ou 13 chiffres")
     })
 
     it("should reject GTIN with non-numeric characters", () => {
@@ -122,7 +122,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.errors[0].message).toBe("Le GTIN doit contenir 8 ou 13 chiffres")
+      expect(result.error?.issues[0].message).toBe("Le GTIN doit contenir 8 ou 13 chiffres")
     })
   })
 
@@ -134,7 +134,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.errors[0].message).toBe("Invalid discriminator value. Expected 'score' | 'gtin'")
+      expect(result.error?.issues[0].message).toBe("Invalid input")
     })
 
     it("should reject missing type", () => {
@@ -144,7 +144,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.errors[0].message).toBe("Invalid discriminator value. Expected 'score' | 'gtin'")
+      expect(result.error?.issues[0].message).toBe("Invalid input")
     })
   })
 })

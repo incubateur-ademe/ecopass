@@ -38,6 +38,7 @@ jobs:
           echo "ECOBALYSE_ENCRYPTION_KEY=${{ secrets.ECOBALYSE_ENCRYPTION_KEY }}" >> .env
           echo "CI=true" >> .env
           echo "BATCH_SIZE=20" >> .env
+          echo "NODE_ENV=production" >> .env
       - name: Install dependencies
         run: yarn install --immutable --immutable-cache --check-cache
       - name: Linter
