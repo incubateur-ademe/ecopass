@@ -155,9 +155,9 @@ model Product {
   date              String?
   brand             String
   declaredScore     Float?   @map("declared_score")
+  category          String
 
   // Encrypted string
-  category        String
   business        String
   countryDyeing   String @map("country_dyeing")
   countryFabric   String @map("country_fabric")

@@ -77,7 +77,7 @@ export const decryptProductFields = (
   },
 ) => ({
   ...product,
-  category: decryptString(product.category),
+  category: product.category,
   business: decryptString(product.business),
   countryDyeing: decryptString(product.countryDyeing),
   countryFabric: decryptString(product.countryFabric),
@@ -116,7 +116,7 @@ export function encryptProductFields(product: ProductAPIValidation | ParsedProdu
       date: date,
       brand: product.brand,
       declaredScore: product.declaredScore || null,
-      category: encrypt(product.product),
+      category: product.product,
       airTransportRatio: encrypt(product.airTransportRatio),
       business: encrypt(product.business),
       fading: encrypt(product.fading),
