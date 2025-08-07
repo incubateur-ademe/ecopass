@@ -99,6 +99,9 @@ model Upload {
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String @map("created_by_id")
 
+  @@index([createdById, type], map: "idx_upload_created_by_type")
+  @@index([status, type, createdAt], map: "idx_upload_status_type_created_at")
+  @@index([organizationId], map: "idx_upload_organization_id")
   @@map("uploads")
 }
 
@@ -185,6 +188,9 @@ model Product {
 
   score Score?
 
+  @@index([gtins], map: "idx_product_gtins", type: Gin)
+  @@index([internalReference, status], map: "idx_product_internal_ref_status")
+  @@index([brand], map: "idx_product_brand")
   @@map("products")
 }
 
@@ -200,6 +206,7 @@ model Material {
   product   Product @relation(fields: [productId], references: [id])
   productId String
 
+  @@index([productId], map: "idx_material_product_id")
   @@map("materials")
 }
 
@@ -215,6 +222,7 @@ model Accessory {
   product   Product @relation(fields: [productId], references: [id])
   productId String
 
+  @@index([productId], map: "idx_accessory_product_id")
   @@map("accessories")
 }
 
@@ -285,5 +293,6 @@ model Export {
   user   User   @relation(fields: [userId], references: [id])
   userId String @map("user_id")
 
+  @@index([userId, brand, createdAt], map: "idx_export_user_brand_created_at")
   @@map("exports")
 }
