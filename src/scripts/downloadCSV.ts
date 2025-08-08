@@ -1,8 +1,8 @@
 import "dotenv/config"
 import { downloadFileFromS3 } from "../utils/s3/bucket"
-import { decryptAndDezipFile } from "../db/encryption"
 import fs from "fs"
 import path from "path"
+import { decryptAndDezipFile } from "../utils/encryption/encryption"
 
 const main = async (uploadId: string) => {
   try {

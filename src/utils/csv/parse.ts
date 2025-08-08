@@ -9,8 +9,9 @@ import { accessories as allAccessories } from "../types/accessory"
 import { Accessory, Material, Product, Status } from "../../../prisma/src/prisma"
 import { impressions } from "../types/impression"
 import { Readable } from "stream"
-import { encryptProductFields } from "../../db/encryption"
 import { FileUpload } from "../../db/upload"
+import { encryptProductFields } from "../encryption/encryption"
+import { hashProduct } from "../encryption/hash"
 
 type ColumnType = [
   "gtinseans",
@@ -305,6 +306,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       products.push({
         error: null,
         id: productId,
+        hash: hashProduct(rawProduct),
         createdAt: now,
         updatedAt: now,
         uploadId: upload.id,

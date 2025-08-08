@@ -2,10 +2,10 @@
 
 import { v4 as uuid } from "uuid"
 import { UploadType } from "../../prisma/src/prisma"
-import { encryptAndZipFile } from "../db/encryption"
 import { createUpload } from "../db/upload"
 import { auth } from "../services/auth/auth"
 import { uploadFileToS3 } from "../utils/s3/bucket"
+import { encryptAndZipFile } from "../utils/encryption/encryption"
 
 export const uploadFile = async (file: File) => {
   const session = await auth()

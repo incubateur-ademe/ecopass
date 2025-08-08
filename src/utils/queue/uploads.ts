@@ -4,7 +4,7 @@ import { createProducts } from "../../db/product"
 import { failUpload } from "../../services/upload"
 import { getFirstFileUpload, updateUploadToPending } from "../../db/upload"
 import { downloadFileFromS3 } from "../s3/bucket"
-import { decryptAndDezipFile } from "../../db/encryption"
+import { decryptAndDezipFile } from "../encryption/encryption"
 
 const encodingMap: Record<string, BufferEncoding> = {
   "iso-8859-1": "latin1",

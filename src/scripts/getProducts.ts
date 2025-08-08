@@ -1,7 +1,7 @@
 import { prismaClient } from "../db/prismaClient"
-import { decryptProductFields } from "../db/encryption"
 import fs from "fs"
 import { stringify } from "csv-stringify/sync"
+import { decryptProductFields } from "../utils/encryption/encryption"
 
 async function main(email: string) {
   const user = await prismaClient.user.findUnique({
