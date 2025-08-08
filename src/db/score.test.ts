@@ -55,6 +55,7 @@ describe("Score DB integration", () => {
 
     baseProduct = {
       id: uuid(),
+      hash: "test-hash",
       gtins: ["1234567891001"],
       internalReference: "REF-124",
       brand: "TestBrand2",
@@ -210,7 +211,7 @@ describe("Score DB integration", () => {
       materials: [{ id: MaterialType.Viscose, share: 0.9 }],
       trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
     }
-    const result = await createScore(user, product, score)
+    const result = await createScore(user, product, score, "test-hash")
     expect(result).toBeDefined()
 
     const createdScore = await prismaTest.score.findFirst({

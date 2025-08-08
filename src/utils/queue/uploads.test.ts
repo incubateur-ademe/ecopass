@@ -5,9 +5,9 @@ import { createProducts } from "../../db/product"
 import { failUpload } from "../../services/upload"
 import { getFirstFileUpload, updateUploadToPending } from "../../db/upload"
 import { downloadFileFromS3 } from "../s3/bucket"
-import { decryptAndDezipFile } from "../../db/encryption"
 import { FileUpload } from "../../db/upload"
 import { Status } from "../../../prisma/src/prisma"
+import { decryptAndDezipFile } from "../encryption/encryption"
 
 jest.mock("chardet")
 jest.mock("../csv/parse")
@@ -15,7 +15,7 @@ jest.mock("../../db/product")
 jest.mock("../../services/upload")
 jest.mock("../../db/upload")
 jest.mock("../s3/bucket")
-jest.mock("../../db/encryption")
+jest.mock("../encryption/encryption")
 
 const mockedChardet = chardet as jest.Mocked<typeof chardet>
 const mockedParseCSV = parseCSV as jest.MockedFunction<typeof parseCSV>
@@ -49,10 +49,12 @@ describe("processUploadsToQueue", () => {
     products: [
       {
         error: null,
+        hash: "test-hash",
         status: Status.Pending,
         createdAt: new Date(),
         updatedAt: new Date(),
         uploadId: "test-upload-id",
+        uploadOrder: 0,
         id: "product-1",
         date: "2025-01-01",
         gtins: ["1234567891113", "1234567891012"],

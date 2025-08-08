@@ -81,6 +81,15 @@ export const getUploadsByUserId = async (userId: string, skip?: number, take?: n
           status: true,
         },
       },
+      reUploadProducts: {
+        select: {
+          product: {
+            select: {
+              status: true,
+            },
+          },
+        },
+      },
     },
     take: take || 10,
     skip: (skip || 0) * (take || 10),
@@ -88,9 +97,14 @@ export const getUploadsByUserId = async (userId: string, skip?: number, take?: n
   return uploads.map((upload) => ({
     ...upload,
     products: undefined,
-    total: upload.products.length,
-    success: upload.products.filter((product) => product.status === Status.Done).length,
-    done: upload.products.filter((product) => product.status === Status.Done || product.status === Status.Error).length,
+    total: upload.products.length + upload.reUploadProducts.length,
+    success:
+      upload.products.filter((product) => product.status === Status.Done).length +
+      upload.reUploadProducts.filter((p) => p.product.status === Status.Done).length,
+    done:
+      upload.products.filter((product) => product.status === Status.Done || product.status === Status.Error).length +
+      upload.reUploadProducts.filter((p) => p.product.status === Status.Done || p.product.status === Status.Error)
+        .length,
   }))
 }
 

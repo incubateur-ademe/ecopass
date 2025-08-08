@@ -75,6 +75,7 @@ export enum Country {
 
 export type ProductWithMaterialsAndAccessories = Omit<
   Product,
+  | "hash"
   | "date"
   | "mass"
   | "price"

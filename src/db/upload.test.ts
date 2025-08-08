@@ -297,6 +297,7 @@ describe("Upload DB integration", () => {
         data: [
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["123"],
             uploadId: upload1Id,
             status: Status.Done,
@@ -304,6 +305,7 @@ describe("Upload DB integration", () => {
           },
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["456"],
             uploadId: upload1Id,
             status: Status.Error,
@@ -311,6 +313,7 @@ describe("Upload DB integration", () => {
           },
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["789"],
             uploadId: upload2Id,
             status: Status.Done,
@@ -396,6 +399,7 @@ describe("Upload DB integration", () => {
       await prismaTest.product.create({
         data: {
           id: uuid(),
+          hash: "test-hash",
           gtins: ["123"],
           uploadId: uploadId,
           status: Status.Done,
@@ -431,6 +435,7 @@ describe("Upload DB integration", () => {
         data: [
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["123"],
             uploadId: uploadId,
             status: Status.Done,
@@ -438,6 +443,7 @@ describe("Upload DB integration", () => {
           },
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["456"],
             uploadId: uploadId,
             status: Status.Error,
@@ -474,6 +480,7 @@ describe("Upload DB integration", () => {
         data: [
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["123"],
             uploadId: uploadId,
             status: Status.Pending,
@@ -481,6 +488,7 @@ describe("Upload DB integration", () => {
           },
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["123"],
             uploadId: uploadId,
             status: Status.Done,
@@ -488,6 +496,7 @@ describe("Upload DB integration", () => {
           },
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["456"],
             uploadId: uploadId,
             status: Status.Error,

@@ -5,7 +5,6 @@ jest.mock("./prismaClient", () => ({
   prismaClient: prismaTest,
 }))
 
-import { encryptProductFields } from "./encryption"
 import {
   createProducts,
   failProducts,
@@ -18,6 +17,7 @@ import {
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { ProductAPIValidation } from "../services/validation/api"
 import { cleanDB } from "./testUtils"
+import { encryptProductFields } from "../utils/encryption/encryption"
 
 describe("Product DB integration", () => {
   let testUserId: string
@@ -63,6 +63,7 @@ describe("Product DB integration", () => {
 
     baseProduct = {
       id: uuid(),
+      hash: "test-hash",
       gtins: ["1234567891001"],
       internalReference: "REF-124",
       brand: "TestBrand2",
@@ -95,6 +96,7 @@ describe("Product DB integration", () => {
     await prismaTest.accessory.deleteMany()
     await prismaTest.material.deleteMany()
     await prismaTest.score.deleteMany()
+    await prismaTest.uploadProduct.deleteMany()
     await prismaTest.product.deleteMany()
 
     productId = uuid()
@@ -118,6 +120,7 @@ describe("Product DB integration", () => {
         {
           ...encrypted.product,
           error: null,
+          hash: "test-hash",
           id: productId,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -173,6 +176,7 @@ describe("Product DB integration", () => {
         {
           ...encrypted.product,
           error: null,
+          hash: "new-hash",
           id: newId,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -289,6 +293,7 @@ describe("Product DB integration", () => {
           internalReference: `REF-${300 + i}`,
           status: Status.Done,
           createdAt: new Date(Date.now() + i * 1000),
+          hash: "test-hash",
         },
       })
     }
@@ -341,6 +346,7 @@ describe("Product DB integration", () => {
         internalReference: "REF-500",
         status: Status.Done,
         createdAt: new Date(Date.now() - 1000),
+        hash: "test-hash",
       },
     })
 
@@ -353,6 +359,7 @@ describe("Product DB integration", () => {
         internalReference: "REF-501",
         status: Status.Done,
         createdAt: new Date(),
+        hash: "test-hash",
       },
     })
 
