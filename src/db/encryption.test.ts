@@ -36,7 +36,7 @@ const product = {
 
 const checkDecryption = (product: any, encrypted: any, decrypted: any) => {
   const objectFields = ["trims", "materials", "printing"]
-  const notEncryptedFields = ["gtins", "internalReference", "date", "brand", "declaredScore"]
+  const notEncryptedFields = ["gtins", "internalReference", "date", "brand", "declaredScore", "product"]
   const encryptedFields = Object.keys(product).filter(
     (key) => !notEncryptedFields.includes(key) && !objectFields.includes(key),
   )
@@ -45,6 +45,9 @@ const checkDecryption = (product: any, encrypted: any, decrypted: any) => {
     if (field === "date") {
       expect(encrypted.product[field]).toEqual("31/12/2024")
       expect(decrypted[field]).toEqual("31/12/2024")
+    } else if (field === "product") {
+      expect(encrypted.product.category).toEqual(product.product)
+      expect(decrypted.category).toEqual(product.product)
     } else {
       expect(encrypted.product[field]).toEqual(product[field])
       expect(decrypted[field]).toEqual(product[field])
@@ -52,15 +55,9 @@ const checkDecryption = (product: any, encrypted: any, decrypted: any) => {
   }
 
   for (const field of encryptedFields) {
-    if (field === "product") {
-      expect(encrypted.product.category).not.toEqual(product[field])
-      expect(typeof encrypted.product.category).toBe("string")
-      expect(decrypted.category).toEqual(product[field])
-    } else {
-      expect(encrypted.product[field]).not.toEqual(product[field])
-      expect(typeof encrypted.product[field]).toBe("string")
-      expect(decrypted[field]).toEqual(product[field])
-    }
+    expect(encrypted.product[field]).not.toEqual(product[field])
+    expect(typeof encrypted.product[field]).toBe("string")
+    expect(decrypted[field]).toEqual(product[field])
   }
 
   encrypted.materials.forEach((material: any, i: number) => {
