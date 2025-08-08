@@ -5,7 +5,6 @@ jest.mock("./prismaClient", () => ({
   prismaClient: prismaTest,
 }))
 
-import { encryptProductFields } from "./encryption"
 import {
   createProducts,
   failProducts,
@@ -18,6 +17,7 @@ import {
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { ProductAPIValidation } from "../services/validation/api"
 import { cleanDB } from "./testUtils"
+import { encryptProductFields } from "../utils/encryption/encryption"
 
 describe("Product DB integration", () => {
   let testUserId: string
@@ -63,6 +63,7 @@ describe("Product DB integration", () => {
 
     baseProduct = {
       id: uuid(),
+      hash: "test-hash",
       gtins: ["1234567891001"],
       internalReference: "REF-124",
       brand: "TestBrand2",
@@ -95,6 +96,7 @@ describe("Product DB integration", () => {
     await prismaTest.accessory.deleteMany()
     await prismaTest.material.deleteMany()
     await prismaTest.score.deleteMany()
+    await prismaTest.uploadProduct.deleteMany()
     await prismaTest.product.deleteMany()
 
     productId = uuid()
@@ -118,6 +120,7 @@ describe("Product DB integration", () => {
         {
           ...encrypted.product,
           error: null,
+          hash: "test-hash",
           id: productId,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -173,6 +176,7 @@ describe("Product DB integration", () => {
         {
           ...encrypted.product,
           error: null,
+          hash: "new-hash",
           id: newId,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -289,6 +293,7 @@ describe("Product DB integration", () => {
           internalReference: `REF-${300 + i}`,
           status: Status.Done,
           createdAt: new Date(Date.now() + i * 1000),
+          hash: "test-hash",
         },
       })
     }
@@ -341,6 +346,7 @@ describe("Product DB integration", () => {
         internalReference: "REF-500",
         status: Status.Done,
         createdAt: new Date(Date.now() - 1000),
+        hash: "test-hash",
       },
     })
 
@@ -353,6 +359,7 @@ describe("Product DB integration", () => {
         internalReference: "REF-501",
         status: Status.Done,
         createdAt: new Date(),
+        hash: "test-hash",
       },
     })
 
@@ -442,5 +449,291 @@ describe("Product DB integration", () => {
 
     const product = await getOldProductWithScore(gtin, productId)
     expect(product).toBeNull()
+  })
+
+  describe("createProducts", () => {
+    it("creates products when no existing products with same hash", async () => {
+      const newProductId = uuid()
+      const encrypted = encryptProductFields({
+        gtins: ["9999999999999"],
+        internalReference: "NEW-REF-001",
+        brand: "NewBrand",
+        date: new Date("2025-04-20"),
+        product: ProductCategory.TShirtPolo,
+        declaredScore: 1500.0,
+        business: Business.Small,
+        numberOfReferences: 5000,
+        mass: 0.3,
+        price: 75,
+        materials: [{ id: MaterialType.Coton, share: 1.0 }],
+        trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
+      } satisfies ProductAPIValidation)
+
+      await createProducts({
+        products: [
+          {
+            ...encrypted.product,
+            error: null,
+            hash: "unique-hash-001",
+            id: newProductId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 1,
+            status: Status.Pending,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: newProductId,
+        })),
+        accessories:
+          encrypted.accessories?.map((accessory) => ({
+            ...accessory,
+            id: uuid(),
+            productId: newProductId,
+          })) || [],
+      })
+
+      const createdProduct = await prismaTest.product.findUnique({
+        where: { id: newProductId },
+        include: { materials: true, accessories: true },
+      })
+
+      expect(createdProduct).not.toBeNull()
+      expect(createdProduct?.hash).toBe("unique-hash-001")
+      expect(createdProduct?.materials).toHaveLength(1)
+      expect(createdProduct?.accessories).toHaveLength(1)
+    })
+
+    it("creates uploadProduct relation when product with same hash exists", async () => {
+      const existingGtin = "1111111111111"
+      const existingHash = "duplicate-hash"
+
+      const existingProductId = uuid()
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: existingProductId,
+          gtins: [existingGtin],
+          hash: existingHash,
+          internalReference: "EXISTING-REF",
+        },
+      })
+
+      const newProductId = uuid()
+      const encrypted = encryptProductFields({
+        gtins: [existingGtin],
+        internalReference: "NEW-REF-002",
+        brand: "TestBrand",
+        date: new Date("2025-04-21"),
+        product: ProductCategory.Pull,
+        declaredScore: 2000.0,
+        business: Business.Small,
+        numberOfReferences: 3000,
+        mass: 0.4,
+        price: 60,
+        materials: [{ id: MaterialType.Viscose, share: 0.8 }],
+        trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
+      } satisfies ProductAPIValidation)
+
+      await createProducts({
+        products: [
+          {
+            ...encrypted.product,
+            error: null,
+            hash: existingHash,
+            id: newProductId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 1,
+            status: Status.Pending,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: newProductId,
+        })),
+        accessories:
+          encrypted.accessories?.map((accessory) => ({
+            ...accessory,
+            id: uuid(),
+            productId: newProductId,
+          })) || [],
+      })
+
+      const newProduct = await prismaTest.product.findUnique({
+        where: { id: newProductId },
+      })
+      expect(newProduct).toBeNull()
+
+      const uploadProduct = await prismaTest.uploadProduct.findFirst({
+        where: {
+          uploadId: testUploadId,
+          productId: existingProductId,
+        },
+      })
+      expect(uploadProduct).not.toBeNull()
+      expect(uploadProduct?.uploadOrder).toBe(1)
+    })
+
+    it("creates products with same GTIN but different hash", async () => {
+      const sameGtin = "2222222222222"
+      const existingHash = "original-hash"
+      const newHash = "updated-hash"
+
+      const existingProductId = uuid()
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: existingProductId,
+          gtins: [sameGtin],
+          hash: existingHash,
+          internalReference: "ORIGINAL-REF",
+        },
+      })
+
+      const newProductId = uuid()
+      const encrypted = encryptProductFields({
+        gtins: [sameGtin],
+        internalReference: "UPDATED-REF",
+        brand: "TestBrand",
+        date: new Date("2025-04-22"),
+        product: ProductCategory.Pull,
+        declaredScore: 2500.0,
+        business: Business.Small,
+        numberOfReferences: 4000,
+        mass: 0.6,
+        price: 80,
+        materials: [{ id: MaterialType.Lin, share: 0.7 }],
+        trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
+      } satisfies ProductAPIValidation)
+
+      await createProducts({
+        products: [
+          {
+            ...encrypted.product,
+            error: null,
+            hash: newHash,
+            id: newProductId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 1,
+            status: Status.Pending,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: newProductId,
+        })),
+        accessories:
+          encrypted.accessories?.map((accessory) => ({
+            ...accessory,
+            id: uuid(),
+            productId: newProductId,
+          })) || [],
+      })
+
+      const newProduct = await prismaTest.product.findUnique({
+        where: { id: newProductId },
+        include: { materials: true, accessories: true },
+      })
+      expect(newProduct).not.toBeNull()
+      expect(newProduct?.hash).toBe(newHash)
+      expect(newProduct?.materials).toHaveLength(1)
+      expect(newProduct?.accessories).toHaveLength(1)
+
+      const uploadProducts = await prismaTest.uploadProduct.findMany({
+        where: {
+          uploadId: testUploadId,
+        },
+      })
+      expect(uploadProducts).not.toBeNull()
+      expect(uploadProducts).toHaveLength(0)
+    })
+
+    it("compares hash with the latest product version, not older ones", async () => {
+      const gtin = "3333333333333"
+      const oldHash = "old-version-hash"
+      const latestHash = "latest-version-hash"
+
+      const oldProductId = uuid()
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: oldProductId,
+          gtins: [gtin],
+          hash: oldHash,
+          internalReference: "OLD-VERSION",
+          createdAt: new Date("2025-01-01"),
+        },
+      })
+
+      const latestProductId = uuid()
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: latestProductId,
+          gtins: [gtin],
+          hash: latestHash,
+          internalReference: "LATEST-VERSION",
+          createdAt: new Date("2025-03-01"),
+        },
+      })
+
+      const newProductId = uuid()
+      const encrypted = encryptProductFields({
+        gtins: [gtin],
+        internalReference: "NEW-WITH-OLD-HASH",
+        brand: "TestBrand",
+        date: new Date("2025-04-25"),
+        product: ProductCategory.Pull,
+        declaredScore: 2800.0,
+        business: Business.Small,
+        numberOfReferences: 1200,
+        mass: 0.7,
+        price: 90,
+        materials: [{ id: MaterialType.Coton, share: 0.5 }],
+        trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
+      } satisfies ProductAPIValidation)
+
+      await createProducts({
+        products: [
+          {
+            ...encrypted.product,
+            error: null,
+            hash: oldHash,
+            id: newProductId,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 1,
+            status: Status.Pending,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: newProductId,
+        })),
+        accessories:
+          encrypted.accessories?.map((accessory) => ({
+            ...accessory,
+            id: uuid(),
+            productId: newProductId,
+          })) || [],
+      })
+
+      const newProduct = await prismaTest.product.findUnique({
+        where: { id: newProductId },
+      })
+      expect(newProduct).not.toBeNull()
+      expect(newProduct?.hash).toBe(oldHash)
+    })
   })
 })

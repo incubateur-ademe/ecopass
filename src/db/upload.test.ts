@@ -74,6 +74,7 @@ describe("Upload DB integration", () => {
 
   beforeEach(async () => {
     jest.clearAllMocks()
+    await prismaTest.uploadProduct.deleteMany()
     await prismaTest.product.deleteMany()
     await prismaTest.upload.deleteMany()
   })
@@ -269,6 +270,7 @@ describe("Upload DB integration", () => {
     it("should return uploads for a user with pagination", async () => {
       const upload1Id = uuid()
       const upload2Id = uuid()
+      const upload3Id = uuid()
 
       await prismaTest.upload.createMany({
         data: [
@@ -290,48 +292,102 @@ describe("Upload DB integration", () => {
             version: ecobalyseVersion,
             createdAt: new Date("2025-01-02"),
           },
+          {
+            id: upload3Id,
+            name: "file3.csv",
+            type: UploadType.FILE,
+            createdById: testUser.id,
+            organizationId: testOrganizationId,
+            version: ecobalyseVersion,
+            createdAt: new Date("2025-01-03"),
+          },
         ],
       })
 
+      const product1Id = uuid()
+      const product2Id = uuid()
+      const product3Id = uuid()
+      const product4Id = uuid()
       await prismaTest.product.createMany({
         data: [
           {
-            id: uuid(),
+            id: product1Id,
+            hash: "test-hash",
             gtins: ["123"],
             uploadId: upload1Id,
             status: Status.Done,
             ...baseProduct,
           },
           {
-            id: uuid(),
+            id: product2Id,
+            hash: "test-hash",
             gtins: ["456"],
             uploadId: upload1Id,
             status: Status.Error,
             ...baseProduct,
           },
           {
-            id: uuid(),
+            id: product3Id,
+            hash: "test-hash",
             gtins: ["789"],
             uploadId: upload2Id,
             status: Status.Done,
             ...baseProduct,
           },
+          {
+            id: product4Id,
+            hash: "test-hash",
+            gtins: ["104"],
+            uploadId: upload1Id,
+            status: Status.Pending,
+            ...baseProduct,
+          },
+          {
+            id: uuid(),
+            hash: "test-hash",
+            gtins: ["101"],
+            uploadId: upload3Id,
+            status: Status.Done,
+            ...baseProduct,
+          },
+          {
+            id: uuid(),
+            hash: "test-hash",
+            gtins: ["102"],
+            uploadId: upload3Id,
+            status: Status.Error,
+            ...baseProduct,
+          },
+        ],
+      })
+
+      await prismaTest.uploadProduct.createMany({
+        data: [
+          { uploadId: upload3Id, productId: product1Id, uploadOrder: 1 },
+          { uploadId: upload3Id, productId: product2Id, uploadOrder: 2 },
+          { uploadId: upload3Id, productId: product3Id, uploadOrder: 3 },
+          { uploadId: upload3Id, productId: product4Id, uploadOrder: 4 },
         ],
       })
 
       const results = await getUploadsByUserId(testUser.id, 0, 5)
 
-      expect(results).toHaveLength(2)
-      expect(results[0].name).toBe("file2.csv")
-      expect(results[1].name).toBe("file1.csv")
+      expect(results).toHaveLength(3)
+      expect(results[0].name).toBe("file3.csv")
+      expect(results[1].name).toBe("file2.csv")
+      expect(results[2].name).toBe("file1.csv")
 
-      expect(results[1].total).toBe(2)
+      expect(results[2].total).toBe(3)
+      expect(results[2].success).toBe(1)
+      expect(results[2].done).toBe(2)
+
+      expect(results[1].total).toBe(1)
       expect(results[1].success).toBe(1)
-      expect(results[1].done).toBe(2)
+      expect(results[1].done).toBe(1)
 
-      expect(results[0].total).toBe(1)
-      expect(results[0].success).toBe(1)
-      expect(results[0].done).toBe(1)
+      expect(results[0].total).toBe(6)
+      expect(results[0].success).toBe(3)
+      expect(results[0].done).toBe(5)
     })
 
     it("should handle pagination correctly", async () => {
@@ -396,6 +452,7 @@ describe("Upload DB integration", () => {
       await prismaTest.product.create({
         data: {
           id: uuid(),
+          hash: "test-hash",
           gtins: ["123"],
           uploadId: uploadId,
           status: Status.Done,
@@ -431,6 +488,7 @@ describe("Upload DB integration", () => {
         data: [
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["123"],
             uploadId: uploadId,
             status: Status.Done,
@@ -438,6 +496,7 @@ describe("Upload DB integration", () => {
           },
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["456"],
             uploadId: uploadId,
             status: Status.Error,
@@ -474,6 +533,7 @@ describe("Upload DB integration", () => {
         data: [
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["123"],
             uploadId: uploadId,
             status: Status.Pending,
@@ -481,6 +541,7 @@ describe("Upload DB integration", () => {
           },
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["123"],
             uploadId: uploadId,
             status: Status.Done,
@@ -488,6 +549,7 @@ describe("Upload DB integration", () => {
           },
           {
             id: uuid(),
+            hash: "test-hash",
             gtins: ["456"],
             uploadId: uploadId,
             status: Status.Error,

@@ -75,7 +75,7 @@ const productValidation = z.object({
   impressionPercentage: z
     .number({ message: "Le pourcentage d'impression doit être un pourcentage" })
     .min(0, "Le pourcentage d'impression doit être supérieur à 0%")
-    .max(1, "Le pourcentage d'impression doit être inférieur à 100%")
+    .max(0.8, "Le pourcentage d'impression doit être inférieur à 80%")
     .optional(),
   materials: z.array(materialValidation).refine((materials) => {
     const totalShare = materials.reduce((acc, material) => acc + material.share, 0)

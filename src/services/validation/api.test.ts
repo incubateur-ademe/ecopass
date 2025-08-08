@@ -308,6 +308,15 @@ describe("productAPIValidation", () => {
     ])
   })
 
+  it("does not allow product with printing ratio too big", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "pigment", ratio: 0.85 } }, [
+      {
+        path: ["printing", "ratio"],
+        message: "Too big: expected number to be <=0.8",
+      },
+    ])
+  })
+
   it("does not allow product with invalid printing ratio", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "pigment", ratio: "Tout" } }, [
       {
