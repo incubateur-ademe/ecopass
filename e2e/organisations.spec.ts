@@ -57,7 +57,7 @@ test("manage delegation", async ({ page }) => {
   await page.getByRole("button", { name: "Générer une nouvelle clé d'API" }).click()
   const apiKey = await page.getByTestId("new-api-key").textContent()
 
-  let response = await page.request.post("http://localhost:3000/api/produit", {
+  let response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -93,7 +93,7 @@ test("manage delegation", async ({ page }) => {
   )
 
   await retry(async () => {
-    response = await page.request.post("http://localhost:3000/api/produit", {
+    response = await page.request.post("http://localhost:3000/api/produits", {
       data: { ...product, internalReference: "REF-098" },
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -112,7 +112,7 @@ test("manage delegation", async ({ page }) => {
     .click()
   await expect(page.getByTestId("delegations-table").locator("table tbody tr")).toHaveCount(0)
 
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, internalReference: "REF-097" },
     headers: {
       Authorization: `Bearer ${apiKey}`,

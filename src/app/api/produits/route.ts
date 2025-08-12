@@ -3,9 +3,37 @@ import { getApiUser } from "../../../services/auth/auth"
 import { computeEcobalyseScore } from "../../../utils/ecobalyse/api"
 import { createScore } from "../../../db/score"
 import { updateAPIUse } from "../../../db/user"
-import { getUserProductAPIValidation } from "../../../services/validation/api"
-import { getLastProductByGtin } from "../../../db/product"
+import { getUserProductAPIValidation, productsListValidation } from "../../../services/validation/api"
+import { getLastProductByGtin, getOrganizationProductsByUserIdAndBrand } from "../../../db/product"
 import { hashProduct } from "../../../utils/encryption/hash"
+
+export async function GET(req: Request) {
+  const api = await getApiUser(req.headers)
+  if (!api || !api.user || !api.user.organization) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const { searchParams } = new URL(req.url)
+
+  const validationResult = productsListValidation.safeParse({
+    page: parseInt(searchParams.get("page") || "0", 10),
+    size: parseInt(searchParams.get("size") || "10", 10),
+    brand: searchParams.get("brand") || undefined,
+  })
+
+  if (!validationResult.success) {
+    return NextResponse.json(validationResult.error.issues, { status: 400 })
+  }
+
+  const products = await getOrganizationProductsByUserIdAndBrand(
+    api.user.id,
+    validationResult.data.page,
+    validationResult.data.size,
+    validationResult.data.brand,
+  )
+
+  return NextResponse.json(products)
+}
 
 export async function POST(req: Request) {
   try {

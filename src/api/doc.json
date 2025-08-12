@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "API du portail de l'Affichage Environnemental",
-    "description": "Cette API permet de déclarer des produits ou générer le coût environnemental de ces derniers. La déclaration est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api). Il faut en plus rajouter les informations réglementaires de son produit, à savoir : les codes GTINs, la référence interne et la date de mise sur le marché.",
+    "description": "Cette API permet de déclarer des produits ou générer le coût environnemental de ces derniers. La déclaration est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api). Il faut en plus rajouter les informations réglementaires de son produit, à savoir : les codes GTINs, la référence interne et la date de mise sur le marché.",
     "version": "1.0.0"
   },
   "servers": [
@@ -11,7 +11,89 @@
     }
   ],
   "paths": {
-    "/produit": {
+    "/produits": {
+      "get": {
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Consultation"],
+        "summary": "Récupère tous les produits de l'organisation",
+        "description": "Permet de consulter la liste paginée de tous les produits déclarés par l'organisation",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "description": "Numéro de la page à récupérer (commence à 0)",
+            "example": 1
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "description": "Nombre d'éléments par page (maximum 100)",
+            "example": 10
+          },
+          {
+            "name": "brand",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filtre par marque (optionnel)",
+            "example": "Ecopass"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste paginée des produits de l'organisation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres de pagination invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidParametersError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "security": [
           {
@@ -42,13 +124,132 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GenericSuccessResponse"
+                  "type": "object",
+                  "description": "Déclaration réussie.",
+                  "properties": {
+                    "result": {
+                      "type": "string",
+                      "enum": ["success"]
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
             "description": "Paramètres invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidParametersError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/produits/{gtin}": {
+      "get": {
+        "tags": ["Consultation"],
+        "summary": "Récupère les informations d'un produit par son GTIN",
+        "description": "Permet de consulter les informations et le score environnemental d'un produit déclaré en utilisant son code GTIN",
+        "parameters": [
+          {
+            "name": "gtin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{8}|\\d{13}$"
+            },
+            "description": "Le code GTIN du produit (8 ou 13 chiffres)",
+            "example": "1234567890123"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Informations du produit trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Produit non trouvé pour ce GTIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/produits/{gtin}/historique": {
+      "get": {
+        "tags": ["Consultation"],
+        "summary": "Récupère l'historique des versions d'un produit par son GTIN",
+        "description": "Permet de consulter l'historique complet des différentes versions d'un produit déclaré en utilisant son code GTIN, avec pagination",
+        "parameters": [
+          {
+            "name": "gtin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{8}|\\d{13}$"
+            },
+            "description": "Le code GTIN du produit (8 ou 13 chiffres)",
+            "example": "1234567890123"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "description": "Numéro de la page à récupérer (commence à 0)",
+            "example": 1
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "description": "Nombre d'éléments par page (maximum 100)",
+            "example": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historique paginé du produit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres de pagination invalides",
             "content": {
               "application/json": {
                 "schema": {
@@ -231,7 +432,7 @@
           },
           "business": {
             "type": "string",
-            "description": "Type d'entreprise et d'offre de services :\n\n- `small-business` : PME/TPE\n- `large-business-with-services` : Grande entreprise avec service de réparation\n- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation\n",
+            "description": "Type d'entreprise et d'offre de services :\n\n- `small-business` : PME/TPE\n- `large-business-with-services` : Grande entreprise avec service de réparation\n- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation\n",
             "enum": ["small-business", "large-business-with-services", "large-business-without-services"]
           },
           "countryDyeing": {
@@ -281,7 +482,7 @@
             "properties": {
               "kind": {
                 "type": "string",
-                "description": "Type de procédé d'impression pouvant prendre les valeurs suivantes :\n- `pigment` pour une impression pigmentaire ;\n- `substantive` pour une impression fixé/lavé ;\n",
+                "description": "Type de procédé d'impression pouvant prendre les valeurs suivantes :\n- `pigment` pour une impression pigmentaire ;\n- `substantive` pour une impression fixé/lavé ;\n",
                 "enum": ["pigment", "substantive"]
               },
               "ratio": {
@@ -337,6 +538,244 @@
           }
         }
       },
+      "ProductResponse": {
+        "type": "object",
+        "description": "Informations complètes d'un produit avec son score environnemental",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identifiant unique du produit"
+          },
+          "gtins": {
+            "type": "array",
+            "description": "Liste des codes GTIN associés au produit",
+            "items": {
+              "type": "string",
+              "pattern": "^(\\d{8}|\\d{13})$"
+            }
+          },
+          "internalReference": {
+            "type": "string",
+            "description": "Référence interne du produit"
+          },
+          "brand": {
+            "type": "string",
+            "description": "Marque du produit"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date de création de la déclaration"
+          },
+          "category": {
+            "type": "string",
+            "description": "Catégorie du produit"
+          },
+          "score": {
+            "$ref": "#/components/schemas/ProductScore"
+          },
+          "upload": {
+            "$ref": "#/components/schemas/UploadInfo"
+          }
+        },
+        "example": {
+          "id": "7a183a57-e5bc-4170-a770-66654281aab9",
+          "gtins": ["8546241205910"],
+          "internalReference": "015Q8sUpK3",
+          "brand": "Emmaus",
+          "createdAt": "2025-08-08T10:17:58.231Z",
+          "category": "Chaussettes",
+          "score": {
+            "id": "30f9a0f5-929f-4566-950b-9d671b3df8c3",
+            "score": 2311.078426292239,
+            "standardized": 955.008359333349,
+            "durability": 1.06,
+            "acd": 0.1049088905964158,
+            "cch": 2.794430456618692,
+            "etf": 172.2658976359552,
+            "fru": 44.07360301333709,
+            "fwe": 0.0007120915634146073,
+            "htc": 1.253754933395389e-9,
+            "htn": 1.254026821447234e-7,
+            "ior": 8.660045224543365,
+            "ldu": 48.76698455485243,
+            "mru": 0.001361737365871345,
+            "ozd": 2.333908506457944e-7,
+            "pco": 0.02443578069892489,
+            "pma": 2.904338778583435e-7,
+            "swe": 0.007269255547161345,
+            "tre": 0.0852166469255385,
+            "wtu": 0.4375728953090684,
+            "microfibers": 129.9470834508611,
+            "outOfEuropeEOL": 138.1201431619307,
+            "productId": "7a183a57-e5bc-4170-a770-66654281aab9"
+          },
+          "upload": {
+            "version": "7.0.0",
+            "createdBy": {
+              "organization": {
+                "name": "Ecopass"
+              },
+              "nom": "Dane",
+              "prenom": "Jane"
+            }
+          }
+        }
+      },
+      "ProductScore": {
+        "type": "object",
+        "description": "Score environnemental du produit",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identifiant unique du score"
+          },
+          "score": {
+            "type": "number",
+            "description": "Score environnemental total (en points)"
+          },
+          "standardized": {
+            "type": "number",
+            "description": "Score environnemental standardisé pour 100g"
+          },
+          "durability": {
+            "type": "number",
+            "description": "Indice de durabilité du produit"
+          },
+          "acd": {
+            "type": "number",
+            "description": "Acidification (en points)"
+          },
+          "cch": {
+            "type": "number",
+            "description": "Changement climatique (en points)"
+          },
+          "etf": {
+            "type": "number",
+            "description": "Écotoxicité pour écosystèmes d'eau douce, corrigée (en points)"
+          },
+          "fru": {
+            "type": "number",
+            "description": "Épuisement des ressources fossiles (en points)"
+          },
+          "fwe": {
+            "type": "number",
+            "description": "Eutrophisation eaux douces (en points)"
+          },
+          "htc": {
+            "type": "number",
+            "description": "Toxicité humaine - cancer, corrigée (en points)"
+          },
+          "htn": {
+            "type": "number",
+            "description": "Toxicité humaine - non cancer, corrigée (en points)"
+          },
+          "ior": {
+            "type": "number",
+            "description": "Rayonnements ionisants (en points)"
+          },
+          "ldu": {
+            "type": "number",
+            "description": "Occupation des sols (en points)"
+          },
+          "mru": {
+            "type": "number",
+            "description": "Épuisement des ressources minéraux et métaux (en points)"
+          },
+          "ozd": {
+            "type": "number",
+            "description": "Appauvrissement de la couche d'ozone (en points)"
+          },
+          "pco": {
+            "type": "number",
+            "description": "Formation photochimique d'ozone (en points)"
+          },
+          "pma": {
+            "type": "number",
+            "description": "Particules (en points)"
+          },
+          "swe": {
+            "type": "number",
+            "description": "Eutrophisation marine (en points)"
+          },
+          "tre": {
+            "type": "number",
+            "description": "Eutrophisation terrestre (en points)"
+          },
+          "wtu": {
+            "type": "number",
+            "description": "Consommation d'eau (en points)"
+          },
+          "microfibers": {
+            "type": "number",
+            "description": "Émission de microfibres (en points)"
+          },
+          "outOfEuropeEOL": {
+            "type": "number",
+            "description": "Fin de vie hors Europe (en points)"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identifiant du produit associé"
+          }
+        }
+      },
+      "UploadInfo": {
+        "type": "object",
+        "description": "Informations sur la déclaration",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "Version de la déclaration"
+          },
+          "createdBy": {
+            "type": "object",
+            "description": "Informations sur l'utilisateur ayant effectué la déclaration",
+            "properties": {
+              "organization": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nom de l'organisation"
+                  }
+                }
+              },
+              "nom": {
+                "type": "string",
+                "description": "Nom de l'utilisateur"
+              },
+              "prenom": {
+                "type": "string",
+                "description": "Prénom de l'utilisateur"
+              }
+            }
+          }
+        }
+      },
+      "NotFoundError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Message d'erreur",
+            "example": "Produit non trouvé"
+          }
+        }
+      },
+      "UnauthorizedError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Message d'erreur d'authentification",
+            "example": "Token d'authentification invalide"
+          }
+        }
+      },
       "InvalidParametersError": {
         "type": "object",
         "properties": {
@@ -354,16 +793,6 @@
             "items": {
               "type": "string"
             }
-          }
-        }
-      },
-      "GenericSuccessResponse": {
-        "type": "object",
-        "description": "Déclaration réussie.",
-        "properties": {
-          "result": {
-            "type": "string",
-            "enum": ["success"]
           }
         }
       }

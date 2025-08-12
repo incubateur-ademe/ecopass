@@ -179,7 +179,7 @@ const getProducts = async (
     },
     select: { internalReference: true },
     distinct: ["internalReference"],
-    orderBy: [{ internalReference: "asc" }],
+    orderBy: [{ createdAt: "desc" }, { internalReference: "asc" }],
     skip,
     take,
   })

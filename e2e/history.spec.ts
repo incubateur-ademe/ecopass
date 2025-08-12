@@ -37,14 +37,14 @@ test("shows product history", async ({ page }) => {
   await page.getByRole("button", { name: "Générer une nouvelle clé d'API" }).click()
   const apiKey = await page.getByTestId("new-api-key").textContent()
 
-  let response = await page.request.post("http://localhost:3000/api/produit", {
+  let response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
   })
   expect(response.status()).toBe(201)
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, mass: 0.5 },
     headers: {
       Authorization: `Bearer ${apiKey}`,
