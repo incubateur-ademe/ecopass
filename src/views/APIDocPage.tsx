@@ -4,7 +4,7 @@ import Block from "../components/Block/Block"
 const APIDocPage = ({ spec }: React.ComponentProps<typeof SwaggerUI>) => {
   return (
     <Block noMargin>
-      <SwaggerUI spec={spec} supportedSubmitMethods={[]} />
+      <SwaggerUI spec={spec} supportedSubmitMethods={["get"]} />
     </Block>
   )
 }

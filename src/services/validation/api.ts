@@ -68,3 +68,15 @@ export const getUserProductAPIValidation = (brands: [string, ...string[]]) =>
   })
 
 export type ProductAPIValidation = z.infer<Return<typeof getUserProductAPIValidation>>
+
+export const paginationValidation = z.object({
+  page: z.number().min(0),
+  size: z.number().min(1).max(100),
+})
+
+export const productsListValidation = z.intersection(
+  paginationValidation,
+  z.object({
+    brand: z.string().optional(),
+  }),
+)

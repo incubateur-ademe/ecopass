@@ -41,7 +41,7 @@ test("declare my products by API", async ({ page }) => {
   await page.getByRole("button", { name: "Générer une nouvelle clé d'API" }).click()
   const apiKey = await page.getByTestId("new-api-key").textContent()
 
-  let response = await page.request.post("http://localhost:3000/api/produit", {
+  let response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: "Bearer nimps",
@@ -50,7 +50,7 @@ test("declare my products by API", async ({ page }) => {
   expect(response.status()).toBe(401)
 
   // A first upload should succeed
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -59,7 +59,7 @@ test("declare my products by API", async ({ page }) => {
   expect(response.status()).toBe(201)
 
   // The  same product should return 208 (Already Reported) and not create a duplicate
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -68,7 +68,7 @@ test("declare my products by API", async ({ page }) => {
   expect(response.status()).toBe(208)
 
   // An update should succeed
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, mass: 0.18 },
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -77,7 +77,7 @@ test("declare my products by API", async ({ page }) => {
   expect(response.status()).toBe(201)
 
   // Back to the first version should also succeed (3 versions created in total)
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -85,7 +85,7 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(201)
 
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, internalReference: "REF-101", declaredScore: 100 },
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -94,7 +94,7 @@ test("declare my products by API", async ({ page }) => {
   expect(response.status()).toBe(400)
   expect(await response.text()).toEqual('{"error":"Le score déclaré ne correspond pas au score calculé."}')
 
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, internalReference: "REF-102", mass: undefined },
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -144,7 +144,7 @@ test("declare my products by API", async ({ page }) => {
 
   await page.reload()
 
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: `Bearer ${apiKey}`,
