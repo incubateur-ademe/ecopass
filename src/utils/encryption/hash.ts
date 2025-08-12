@@ -4,4 +4,4 @@ import { ecobalyseVersion } from "../ecobalyse/config"
 import { ParsedProduct } from "../../types/Product"
 
 export const hashProduct = (product: ProductAPIValidation | ParsedProduct) =>
-  hash({ ...product, ecobalyseVersion, declaredScore: undefined })
+  hash({ ...product, ecobalyseVersion, declaredScore: undefined }, { unorderedArrays: true })
