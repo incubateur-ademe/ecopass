@@ -9,7 +9,7 @@ import {
   decryptNumber,
   decryptBoolean,
 } from "./encryption"
-import { Status } from "../../prisma/src/prisma"
+import { Status } from "../../../prisma/src/prisma"
 
 const product = {
   gtins: ["12345678", "87654321"],
@@ -102,6 +102,7 @@ describe("encryption utils", () => {
     const decrypted = decryptProductFields({
       status: Status.Pending,
       id: uuid(),
+      hash: "test-hash",
       createdAt: new Date(),
       updatedAt: new Date(),
       error: null,

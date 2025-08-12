@@ -427,9 +427,9 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        impressionPercentage: 1.1,
+        impressionPercentage: 0.9,
       },
-      [{ path: ["impressionPercentage"], message: "Le pourcentage d'impression doit être inférieur à 100%" }],
+      [{ path: ["impressionPercentage"], message: "Le pourcentage d'impression doit être inférieur à 80%" }],
     )
   })
 

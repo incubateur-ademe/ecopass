@@ -49,6 +49,34 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(401)
 
+  // A first upload should succeed
+  response = await page.request.post("http://localhost:3000/api/produit", {
+    data: product,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(201)
+
+  // The  same product should return 208 (Already Reported) and not create a duplicate
+  response = await page.request.post("http://localhost:3000/api/produit", {
+    data: product,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(208)
+
+  // An update should succeed
+  response = await page.request.post("http://localhost:3000/api/produit", {
+    data: { ...product, mass: 0.18 },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(201)
+
+  // Back to the first version should also succeed (3 versions created in total)
   response = await page.request.post("http://localhost:3000/api/produit", {
     data: product,
     headers: {
@@ -93,6 +121,19 @@ test("declare my products by API", async ({ page }) => {
   )
   await expect(page.getByTestId("product-score")).toHaveText(
     `Coût environnemental : 1777 pointsCoût environnemental pour 100g : 1045 pointsIndice de durabilité : 0.671 045 pts/100g1 777Télécharger le .svg`,
+  )
+
+  await page.getByRole("button", { name: "Voir l'historique du produit" }).click()
+
+  await expect(page.getByTestId("history-table").locator("table tbody tr")).toHaveCount(3)
+  await expect(page.getByTestId("history-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
+    "1777",
+  )
+  await expect(page.getByTestId("history-table").locator("table tbody tr").nth(1).locator("td").nth(3)).toHaveText(
+    "1878",
+  )
+  await expect(page.getByTestId("history-table").locator("table tbody tr").nth(2).locator("td").nth(3)).toHaveText(
+    "1777",
   )
 
   await page.getByRole("link", { name: "API" }).click()
