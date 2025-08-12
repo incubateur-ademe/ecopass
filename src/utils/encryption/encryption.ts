@@ -1,8 +1,8 @@
 import crypto from "crypto"
-import { ProductAPIValidation } from "../services/validation/api"
-import { ParsedProduct } from "../types/Product"
+import { ProductAPIValidation } from "../../services/validation/api"
+import { ParsedProduct } from "../../types/Product"
 import JSZip from "jszip"
-import { Accessory, Material, Product, Score } from "../../prisma/src/prisma"
+import { Accessory, Material, Product, Score } from "../../../prisma/src/prisma"
 
 const ALGO = "aes-256-gcm"
 const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, "hex")

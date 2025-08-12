@@ -88,7 +88,8 @@ model Upload {
   version   String
   type      UploadType
 
-  products Product[]
+  products         Product[]
+  reUploadProducts UploadProduct[]
 
   status Status  @default(Pending)
   error  String?
@@ -149,6 +150,7 @@ model Product {
   id     String  @id @default(uuid())
   status Status  @default(Pending)
   error  String?
+  hash   String
 
   gtins             String[] @map("gtins")
   internalReference String   @map("internal_reference")
@@ -185,6 +187,8 @@ model Product {
   upload      Upload @relation(fields: [uploadId], references: [id])
   uploadId    String @map("upload_id")
   uploadOrder Int?   @map("upload_order")
+
+  reUploads UploadProduct[]
 
   score Score?
 
@@ -295,4 +299,18 @@ model Export {
 
   @@index([userId, brand, createdAt], map: "idx_export_user_brand_created_at")
   @@map("exports")
+}
+
+model UploadProduct {
+  id          String @id @default(uuid())
+  uploadOrder Int    @map("upload_order")
+
+  upload   Upload @relation(fields: [uploadId], references: [id])
+  uploadId String @map("upload_id")
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @map("product_id")
+
+  @@unique([uploadId, productId])
+  @@map("upload_products")
 }

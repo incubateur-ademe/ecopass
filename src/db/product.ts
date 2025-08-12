@@ -1,5 +1,5 @@
 import { Accessory, Material, Prisma, Product, Status } from "../../prisma/src/prisma"
-import { decryptProductFields } from "./encryption"
+import { decryptProductFields } from "../utils/encryption/encryption"
 import { prismaClient } from "./prismaClient"
 
 export const createProducts = async ({
@@ -13,17 +13,48 @@ export const createProducts = async ({
 }) => {
   return prismaClient.$transaction(
     async (transaction) => {
-      await transaction.product.createMany({
-        data: products,
-      })
-      await Promise.all([
-        transaction.material.createMany({
-          data: materials,
-        }),
-        transaction.accessory.createMany({
-          data: accessories,
-        }),
-      ])
+      const productsToCreate = []
+      const ids = new Set<string>()
+
+      for (const product of products) {
+        const lastVersion = await getLastProductByGtin(product.gtins[0])
+
+        if (lastVersion && lastVersion.hash === product.hash) {
+          await prismaClient.uploadProduct.create({
+            data: {
+              productId: lastVersion.id,
+              uploadId: product.uploadId,
+              uploadOrder: product.uploadOrder || 0,
+            },
+          })
+          continue
+        } else {
+          productsToCreate.push(product)
+          ids.add(product.id)
+        }
+      }
+
+      if (productsToCreate.length > 0) {
+        await transaction.product.createMany({
+          data: productsToCreate,
+        })
+
+        const materialsToCreate = materials.filter((m) => ids.has(m.productId))
+        const accessoriesToCreate = accessories.filter((a) => ids.has(a.productId))
+
+        await Promise.all([
+          materialsToCreate.length > 0
+            ? transaction.material.createMany({
+                data: materialsToCreate,
+              })
+            : Promise.resolve(),
+          accessoriesToCreate.length > 0
+            ? transaction.accessory.createMany({
+                data: accessoriesToCreate,
+              })
+            : Promise.resolve(),
+        ])
+      }
     },
     { timeout: 180000 },
   )
@@ -148,7 +179,7 @@ const getProducts = async (
     },
     select: { internalReference: true },
     distinct: ["internalReference"],
-    orderBy: [{ internalReference: "asc" }],
+    orderBy: [{ createdAt: "desc" }, { internalReference: "asc" }],
     skip,
     take,
   })
@@ -212,38 +243,54 @@ export const getOrganizationProductsByUserIdAndBrand = async (
     : getProducts({ upload: { organizationId: user.organization.id }, brand })
 }
 export const getProductsByUploadId = async (uploadId: string) => {
-  const products = await prismaClient.product.findMany({
+  const upload = await prismaClient.upload.findFirst({
     where: {
-      uploadId,
+      id: uploadId,
     },
-    include: {
-      materials: true,
-      accessories: true,
-      score: true,
-      upload: {
+    select: {
+      createdBy: {
         include: {
-          createdBy: {
-            include: {
-              organization: {
-                select: {
-                  name: true,
-                  authorizedBy: {
-                    select: { from: { select: { name: true, brands: { select: { name: true } } } } },
-                    where: { active: true },
-                  },
-                  brands: { select: { name: true } },
-                },
+          organization: {
+            select: {
+              name: true,
+              authorizedBy: {
+                select: { from: { select: { name: true, brands: { select: { name: true } } } } },
+                where: { active: true },
               },
+              brands: { select: { name: true } },
+            },
+          },
+        },
+      },
+      products: {
+        include: {
+          materials: true,
+          accessories: true,
+          score: true,
+        },
+      },
+      reUploadProducts: {
+        include: {
+          product: {
+            include: {
+              materials: true,
+              accessories: true,
+              score: true,
             },
           },
         },
       },
     },
-    orderBy: {
-      uploadOrder: "asc",
-    },
   })
-  return products.map((product) => decryptProductFields(product))
+  if (!upload) {
+    return []
+  }
+  return [
+    ...upload.products,
+    ...upload.reUploadProducts.map(({ product, uploadOrder }) => ({ ...product, uploadOrder })),
+  ]
+    .sort((a, b) => (a.uploadOrder || 0) - (b.uploadOrder || 0))
+    .map((product) => decryptProductFields({ ...product, upload: upload }))
 }
 
 export const failProducts = async (products: { id: string; error: string }[]) => {
@@ -290,3 +337,12 @@ export const getOrganizationProductsByUserId = async (userId: string) => {
   })
   return products.map((product) => product.brand).sort((a, b) => a.localeCompare(b))
 }
+
+export const getLastProductByGtin = async (gtin: string) =>
+  prismaClient.product.findFirst({
+    where: {
+      gtins: { has: gtin },
+    },
+    orderBy: { createdAt: "desc" },
+    select: { hash: true, id: true },
+  })

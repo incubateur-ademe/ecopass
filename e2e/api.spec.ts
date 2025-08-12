@@ -41,7 +41,7 @@ test("declare my products by API", async ({ page }) => {
   await page.getByRole("button", { name: "Générer une nouvelle clé d'API" }).click()
   const apiKey = await page.getByTestId("new-api-key").textContent()
 
-  let response = await page.request.post("http://localhost:3000/api/produit", {
+  let response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: "Bearer nimps",
@@ -49,7 +49,8 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(401)
 
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  // A first upload should succeed
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -57,7 +58,34 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(201)
 
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  // The  same product should return 208 (Already Reported) and not create a duplicate
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: product,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(208)
+
+  // An update should succeed
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, mass: 0.18 },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(201)
+
+  // Back to the first version should also succeed (3 versions created in total)
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: product,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(201)
+
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, internalReference: "REF-101", declaredScore: 100 },
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -66,7 +94,7 @@ test("declare my products by API", async ({ page }) => {
   expect(response.status()).toBe(400)
   expect(await response.text()).toEqual('{"error":"Le score déclaré ne correspond pas au score calculé."}')
 
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, internalReference: "REF-102", mass: undefined },
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -95,6 +123,19 @@ test("declare my products by API", async ({ page }) => {
     `Coût environnemental : 1777 pointsCoût environnemental pour 100g : 1045 pointsIndice de durabilité : 0.671 045 pts/100g1 777Télécharger le .svg`,
   )
 
+  await page.getByRole("button", { name: "Voir l'historique du produit" }).click()
+
+  await expect(page.getByTestId("history-table").locator("table tbody tr")).toHaveCount(3)
+  await expect(page.getByTestId("history-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
+    "1777",
+  )
+  await expect(page.getByTestId("history-table").locator("table tbody tr").nth(1).locator("td").nth(3)).toHaveText(
+    "1878",
+  )
+  await expect(page.getByTestId("history-table").locator("table tbody tr").nth(2).locator("td").nth(3)).toHaveText(
+    "1777",
+  )
+
   await page.getByRole("link", { name: "API" }).click()
   await expect(page).toHaveURL(/.*\/api/)
 
@@ -103,7 +144,7 @@ test("declare my products by API", async ({ page }) => {
 
   await page.reload()
 
-  response = await page.request.post("http://localhost:3000/api/produit", {
+  response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: `Bearer ${apiKey}`,

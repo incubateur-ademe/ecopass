@@ -88,7 +88,7 @@ const En = () => {
           </ul>
         </li>
         <li>
-          <b>Pourcentage d'impression</b> (optional): percentage of printed surface.
+          <b>Pourcentage d'impression</b> (optional): percentage of printed surface (between 0% and 80%).
         </li>
         <li>
           <b>Délavage</b> (optional): Is there a fading process applied during the manufacturing stage? Yes/No.

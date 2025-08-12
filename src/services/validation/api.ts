@@ -52,7 +52,7 @@ const productAPIValidation = z.object({
   printing: z
     .object({
       kind: z.enum(printingValues),
-      ratio: z.number().min(0).max(1).optional(),
+      ratio: z.number().min(0).max(0.8).optional(),
     })
     .optional(),
   materials: z.array(materialValidation).refine((materials) => {
@@ -68,3 +68,15 @@ export const getUserProductAPIValidation = (brands: [string, ...string[]]) =>
   })
 
 export type ProductAPIValidation = z.infer<Return<typeof getUserProductAPIValidation>>
+
+export const paginationValidation = z.object({
+  page: z.number().min(0),
+  size: z.number().min(1).max(100),
+})
+
+export const productsListValidation = z.intersection(
+  paginationValidation,
+  z.object({
+    brand: z.string().optional(),
+  }),
+)
