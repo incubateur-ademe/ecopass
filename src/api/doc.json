@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "API du portail de l'Affichage Environnemental",
-    "description": "Cette API permet de déclarer des produits ou générer le coût environnemental de ces derniers. La déclaration est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api). Il faut en plus rajouter les informations réglementaires de son produit, à savoir : les codes GTINs, la référence interne et la date de mise sur le marché.",
+    "description": "La version numérique de ce document est accessible [ici](https://affichage-environnemental.ecobalyse.beta.gouv.fr/api/documentation).<br /><br />La route `POST /produits` qui permet de déclarer des produits est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api).<br />Il faut en plus rajouter les informations réglementaires de son produit, à savoir : les codes GTINs, la référence interne et la date de mise sur le marché.<br /><br />Certaines routes nécessite d'être authentifié avec un `Bearer token`.<br />Vous pouvez le générer sur votre [page API](https://affichage-environnemental.ecobalyse.beta.gouv.fr/api).",
     "version": "1.0.0"
   },
   "servers": [
@@ -101,7 +101,7 @@
           }
         ],
         "tags": ["Déclaration"],
-        "summary": "Déclare un produit sur le portail de l'Affichage Environnemental",
+        "summary": "Déclare un produit sur le portail de l'Affichage Environnemental.",
         "requestBody": {
           "description": "Requête modélisant les paramètres du produit à déclarer",
           "required": true,
