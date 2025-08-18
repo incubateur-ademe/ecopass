@@ -32,11 +32,6 @@ const Footer = () => {
         href: "/plan-du-site",
         prefetch: false,
       }}
-      bottomItems={[
-        <Link key='stats' className='fr-footer__bottom-link' href='/stats'>
-          Statistiques
-        </Link>,
-      ]}
       domains={["ecologie.gouv.fr", "ecobalyse.beta.gouv.fr", "beta.gouv.fr", "ademe.fr"]}
     />
   )
