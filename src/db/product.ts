@@ -1,4 +1,5 @@
 import { Accessory, Material, Prisma, Product, Status } from "../../prisma/src/prisma"
+import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { prismaClient } from "./prismaClient"
 
@@ -346,3 +347,27 @@ export const getLastProductByGtin = async (gtin: string) =>
     orderBy: { createdAt: "desc" },
     select: { hash: true, id: true },
   })
+
+export const getProductCountByCategory = async () => {
+  const result = await prismaClient.product.groupBy({
+    by: ["category", "internalReference"],
+    where: {
+      status: Status.Done,
+    },
+    _count: { internalReference: true },
+  })
+
+  const categoryCount = result.reduce(
+    (acc, item) => {
+      const category = item.category as ProductCategory
+      if (!acc[category]) {
+        acc[category] = 0
+      }
+      acc[category] += 1
+      return acc
+    },
+    {} as Record<ProductCategory, number>,
+  )
+
+  return categoryCount
+}
