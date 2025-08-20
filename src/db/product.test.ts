@@ -469,7 +469,7 @@ describe("Product DB integration", () => {
         trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
       } satisfies ProductAPIValidation)
 
-      await createProducts({
+      const numberOfCreatedProducts = await createProducts({
         products: [
           {
             ...encrypted.product,
@@ -495,6 +495,8 @@ describe("Product DB integration", () => {
             productId: newProductId,
           })) || [],
       })
+
+      expect(numberOfCreatedProducts).toBe(1)
 
       const createdProduct = await prismaTest.product.findUnique({
         where: { id: newProductId },
@@ -538,7 +540,7 @@ describe("Product DB integration", () => {
         trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
       } satisfies ProductAPIValidation)
 
-      await createProducts({
+      const numberOfCreatedProducts = await createProducts({
         products: [
           {
             ...encrypted.product,
@@ -564,6 +566,8 @@ describe("Product DB integration", () => {
             productId: newProductId,
           })) || [],
       })
+
+      expect(numberOfCreatedProducts).toBe(0)
 
       const newProduct = await prismaTest.product.findUnique({
         where: { id: newProductId },
@@ -612,7 +616,7 @@ describe("Product DB integration", () => {
         trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
       } satisfies ProductAPIValidation)
 
-      await createProducts({
+      const numberOfCreatedProducts = await createProducts({
         products: [
           {
             ...encrypted.product,
@@ -638,6 +642,8 @@ describe("Product DB integration", () => {
             productId: newProductId,
           })) || [],
       })
+
+      expect(numberOfCreatedProducts).toBe(1)
 
       const newProduct = await prismaTest.product.findUnique({
         where: { id: newProductId },
@@ -702,7 +708,7 @@ describe("Product DB integration", () => {
         trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
       } satisfies ProductAPIValidation)
 
-      await createProducts({
+      const numberOfCreatedProducts = await createProducts({
         products: [
           {
             ...encrypted.product,
@@ -728,6 +734,8 @@ describe("Product DB integration", () => {
             productId: newProductId,
           })) || [],
       })
+
+      expect(numberOfCreatedProducts).toBe(1)
 
       const newProduct = await prismaTest.product.findUnique({
         where: { id: newProductId },
