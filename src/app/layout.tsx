@@ -6,6 +6,7 @@ import { Metadata } from "next"
 import Footer from "../components/Footer/Footer"
 import { auth } from "../services/auth/auth"
 import "../css/reset.css"
+import "../css/dsfr.css"
 import Matomo from "../components/Matomo/Matomo"
 
 export const metadata: Metadata = {

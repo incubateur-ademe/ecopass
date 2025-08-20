@@ -1,7 +1,7 @@
 import chardet from "chardet"
 import { parseCSV } from "../csv/parse"
 import { createProducts } from "../../db/product"
-import { failUpload } from "../../services/upload"
+import { completeUpload, failUpload } from "../../services/upload"
 import { getFirstFileUpload, updateUploadToPending } from "../../db/upload"
 import { downloadFileFromS3 } from "../s3/bucket"
 import { decryptAndDezipFile } from "../encryption/encryption"
@@ -37,8 +37,11 @@ export const processUploadsToQueue = async () => {
     await updateUploadToPending(upload.id)
     const encoding = await getEncoding(buffer)
     const csvData = await parseCSV(buffer, encoding, upload)
-    await createProducts(csvData)
-    console.log(`Upload processed, ${csvData.products.length} products created`)
+    const numberOfCreatedProduct = await createProducts(csvData)
+    if (numberOfCreatedProduct === 0) {
+      await completeUpload(upload)
+    }
+    console.log(`Upload processed, ${csvData.products.length} products, ${numberOfCreatedProduct}created`)
   } catch (error) {
     let message = "Erreur lors de l'analyse du fichier CSV"
     if (error && typeof error === "object" && "message" in error) {

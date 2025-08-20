@@ -2,7 +2,7 @@ import { processUploadsToQueue } from "./uploads"
 import chardet from "chardet"
 import { parseCSV } from "../csv/parse"
 import { createProducts } from "../../db/product"
-import { failUpload } from "../../services/upload"
+import { failUpload, completeUpload } from "../../services/upload"
 import { getFirstFileUpload, updateUploadToPending } from "../../db/upload"
 import { downloadFileFromS3 } from "../s3/bucket"
 import { FileUpload } from "../../db/upload"
@@ -21,6 +21,7 @@ const mockedChardet = chardet as jest.Mocked<typeof chardet>
 const mockedParseCSV = parseCSV as jest.MockedFunction<typeof parseCSV>
 const mockedCreateProducts = createProducts as jest.MockedFunction<typeof createProducts>
 const mockedFailUpload = failUpload as jest.MockedFunction<typeof failUpload>
+const mockedCompleteUpload = completeUpload as jest.MockedFunction<typeof completeUpload>
 const mockedGetFirstFileUpload = getFirstFileUpload as jest.MockedFunction<typeof getFirstFileUpload>
 const mockedUpdateUploadToPending = updateUploadToPending as jest.MockedFunction<typeof updateUploadToPending>
 const mockedDownloadFileFromS3 = downloadFileFromS3 as jest.MockedFunction<typeof downloadFileFromS3>
@@ -89,7 +90,7 @@ describe("processUploadsToQueue", () => {
     mockedDecryptAndDezipFile.mockResolvedValue(mockBuffer)
     mockedChardet.detect.mockReturnValue("utf-8")
     mockedParseCSV.mockResolvedValue(mockParsedData)
-    mockedCreateProducts.mockResolvedValue(undefined)
+    mockedCreateProducts.mockResolvedValue(1)
 
     await processUploadsToQueue()
 
@@ -100,6 +101,7 @@ describe("processUploadsToQueue", () => {
     expect(mockedChardet.detect).toHaveBeenCalledWith(mockBuffer)
     expect(mockedParseCSV).toHaveBeenCalledWith(mockBuffer, "utf-8", mockUpload)
     expect(mockedCreateProducts).toHaveBeenCalledWith(mockParsedData)
+    expect(mockedCompleteUpload).not.toHaveBeenCalled()
   })
 
   it("should return early when no upload exists", async () => {
@@ -122,11 +124,38 @@ describe("processUploadsToQueue", () => {
     mockedDecryptAndDezipFile.mockResolvedValue(mockBuffer)
     mockedChardet.detect.mockReturnValue("iso-8859-1")
     mockedParseCSV.mockResolvedValue(mockParsedData)
-    mockedCreateProducts.mockResolvedValue(undefined)
+    mockedCreateProducts.mockResolvedValue(1)
 
     await processUploadsToQueue()
 
     expect(mockedParseCSV).toHaveBeenCalledWith(mockBuffer, "latin1", mockUpload)
+  })
+
+  it("should complete upload when 0 products are created", async () => {
+    const mockEmptyParsedData = {
+      products: [],
+      materials: [],
+      accessories: [],
+    }
+
+    mockedGetFirstFileUpload.mockResolvedValue(mockUpload)
+    mockedDownloadFileFromS3.mockResolvedValue(Buffer.from("encrypted-zip-data"))
+    mockedDecryptAndDezipFile.mockResolvedValue(mockBuffer)
+    mockedChardet.detect.mockReturnValue("utf-8")
+    mockedParseCSV.mockResolvedValue(mockEmptyParsedData)
+    mockedCreateProducts.mockResolvedValue(0)
+
+    await processUploadsToQueue()
+
+    expect(mockedGetFirstFileUpload).toHaveBeenCalledTimes(1)
+    expect(mockedDownloadFileFromS3).toHaveBeenCalledWith("test-upload-id", "upload")
+    expect(mockedDecryptAndDezipFile).toHaveBeenCalledWith(Buffer.from("encrypted-zip-data"))
+    expect(mockedUpdateUploadToPending).toHaveBeenCalledWith("test-upload-id")
+    expect(mockedChardet.detect).toHaveBeenCalledWith(mockBuffer)
+    expect(mockedParseCSV).toHaveBeenCalledWith(mockBuffer, "utf-8", mockUpload)
+    expect(mockedCreateProducts).toHaveBeenCalledWith(mockEmptyParsedData)
+    expect(mockedCompleteUpload).toHaveBeenCalledWith(mockUpload)
+    expect(mockedFailUpload).not.toHaveBeenCalled()
   })
 
   it("should fail upload with generic error message when generic error occurs", async () => {
