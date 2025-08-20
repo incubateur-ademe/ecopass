@@ -270,7 +270,7 @@ model Brand {
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String       @map("organization_id")
 
-  @@map("brand")
+  @@map("brands")
 }
 
 model APIKey {
