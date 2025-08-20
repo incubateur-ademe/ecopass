@@ -1,0 +1,5 @@
+.fr-footer__content-link,
+.fr-footer__bottom-link {
+  line-height: 1.5rem;
+  display: inline-block;
+}

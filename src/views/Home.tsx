@@ -40,7 +40,7 @@ const Home = ({ connected }: { connected?: boolean }) => {
                 border
                 enlargeLink
                 title='Mes déclarations'
-                titleAs='h3'
+                titleAs='h2'
                 desc='Déclarer mes produits et suivre leur status.'
                 linkProps={{ href: "/declarations" }}
               />
@@ -51,7 +51,7 @@ const Home = ({ connected }: { connected?: boolean }) => {
                 border
                 enlargeLink
                 title='Mes produits'
-                titleAs='h3'
+                titleAs='h2'
                 desc='Consulter mes produits déclarés.'
                 linkProps={{ href: "/produits" }}
               />
