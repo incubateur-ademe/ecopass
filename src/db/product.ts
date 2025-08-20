@@ -56,6 +56,7 @@ export const createProducts = async ({
             : Promise.resolve(),
         ])
       }
+      return productsToCreate.length
     },
     { timeout: 180000 },
   )
