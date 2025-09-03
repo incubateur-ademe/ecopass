@@ -9,7 +9,6 @@ describe("hashProduct", () => {
   const baseProduct: ProductAPIValidation = {
     gtins: ["1234567890123"],
     internalReference: "REF-TEST",
-    date: new Date("2023-10-01"),
     brand: "TestBrand",
     mass: 0.17,
     materials: [

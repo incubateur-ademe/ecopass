@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "API du portail de l'Affichage Environnemental",
-    "description": "La version numérique de ce document est accessible [ici](https://affichage-environnemental.ecobalyse.beta.gouv.fr/api/documentation).<br /><br />La route `POST /produits` qui permet de déclarer des produits est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api).<br />Il faut en plus rajouter les informations réglementaires de son produit, à savoir : les codes GTINs, la référence interne et la date de mise sur le marché.<br /><br />Certaines routes nécessite d'être authentifié avec un `Bearer token`.<br />Vous pouvez le générer sur votre [page API](https://affichage-environnemental.ecobalyse.beta.gouv.fr/api).",
+    "description": "La version numérique de ce document est accessible [ici](https://affichage-environnemental.ecobalyse.beta.gouv.fr/api/documentation).<br /><br />La route `POST /produits` qui permet de déclarer des produits est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/#/api).<br />Il faut en plus rajouter les informations réglementaires de son produit, à savoir : les codes GTINs et la référence interne.<br /><br />Certaines routes nécessite d'être authentifié avec un `Bearer token`.<br />Vous pouvez le générer sur votre [page API](https://affichage-environnemental.ecobalyse.beta.gouv.fr/api).",
     "version": "1.0.0"
   },
   "servers": [
@@ -345,7 +345,6 @@
         "value": {
           "gtins": ["1234567890123", "1234567890124"],
           "internalReference": "REF-123",
-          "date": "2023-10-01",
           "marque": "Ma Marque",
           "mass": 0.17,
           "materials": [
@@ -368,7 +367,7 @@
       "ProductQuery": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["gtins", "internalReference", "date", "mass", "materials", "product"],
+        "required": ["gtins", "internalReference", "mass", "materials", "product"],
         "properties": {
           "gtins": {
             "type": "array",
@@ -383,11 +382,6 @@
             "type": "string",
             "description": "Référence interne du produit",
             "example": "REF-123"
-          },
-          "date": {
-            "type": "string",
-            "description": "Date de mise sur le marché du produit, au format YYYY-MM-DD",
-            "format": "date"
           },
           "brand": {
             "type": "string",

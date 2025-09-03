@@ -7,7 +7,6 @@ import { retry } from "./utils/retry"
 const product = {
   gtins: ["1234567890123"],
   internalReference: "REF-099",
-  date: "2023-10-01",
   brand: "Emmaus Connect",
   mass: 0.17,
   materials: [

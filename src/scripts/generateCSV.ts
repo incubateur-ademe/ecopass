@@ -34,11 +34,9 @@ const generate = (name: string, length?: string) => {
   const numberOfRows = length ? parseInt(length) : 10000
   const products = Array.from({ length: numberOfRows }, () => {
     const materialsShare = generateShares()
-    const date = faker.date.past()
     return {
       gtins: Array.from({ length: faker.number.int({ min: 1, max: 3 }) }).map(() => faker.string.numeric(13)),
       internalReference: faker.string.alphanumeric(10),
-      date: `${date.getDate().toString().padStart(2, "0")}/${date.getMonth() + 1}/${date.getFullYear()}`,
       category: faker.helpers.arrayElement(Object.keys(productCategories)),
       business: faker.helpers.arrayElement(["", ...Object.keys(businesses)]),
       countryDyeing: faker.helpers.arrayElement(Object.keys(countries)),
@@ -73,7 +71,6 @@ const generate = (name: string, length?: string) => {
     products.map((product) => [
       product.gtins.join(";"),
       product.internalReference,
-      product.date,
       "",
       "",
       product.category,
@@ -104,7 +101,6 @@ const generate = (name: string, length?: string) => {
       columns: [
         "GTINs/EANs",
         "Référence interne",
-        "Date de mise sur le marché",
         "Marque",
         "Score",
         "Catégorie",

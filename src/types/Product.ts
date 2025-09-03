@@ -76,7 +76,6 @@ export enum Country {
 export type ProductWithMaterialsAndAccessories = Omit<
   Product,
   | "hash"
-  | "date"
   | "mass"
   | "price"
   | "airTransportRatio"
@@ -93,7 +92,6 @@ export type ProductWithMaterialsAndAccessories = Omit<
   | "impressionPercentage"
   | "uploadOrder"
 > & {
-  date: Date
   mass: number
   price?: number
   airTransportRatio?: number
@@ -122,7 +120,6 @@ export type ProductWithMaterialsAndAccessories = Omit<
 export type ParsedProduct = {
   gtins: string[]
   internalReference: string
-  date: string
   brand: string
   declaredScore: number | undefined
   product: ProductCategory

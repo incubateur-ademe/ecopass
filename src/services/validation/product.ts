@@ -37,15 +37,6 @@ const productValidation = z.object({
     })
     .min(1, "Il doit y avoir au moins un GTIN"),
   internalReference: z.string({ message: "La référence interne est obligatoire" }),
-  date: z
-    .string({ message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)" })
-    .refine((val) => /^\d{2}\/\d{1,2}\/\d{2,4}$/.test(val), {
-      message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)",
-    })
-    .transform((val) => {
-      const [day, month, year] = val.split("/")
-      return new Date(`${year}-${month}-${day}`)
-    }),
   declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
   category: z.enum(ProductCategory, { message: "Catégorie de produit invalide" }),
   airTransportRatio: z

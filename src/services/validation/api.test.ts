@@ -6,7 +6,6 @@ describe("productAPIValidation", () => {
   const validProduct = {
     gtins: ["12345678"],
     internalReference: "TestRef",
-    date: "2024-01-01",
     brand: "Test Brand",
     product: "jean",
     mass: 1.23,
@@ -116,18 +115,6 @@ describe("productAPIValidation", () => {
   it("does not allow product without internal reference", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { internalReference: undefined }, [
       { path: ["internalReference"], message: "Invalid input: expected string, received undefined" },
-    ])
-  })
-
-  it("does not allow product with invalid date", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { date: "not-a-date" }, [
-      { path: ["date"], message: "Date de mise sur le marché invalide" },
-    ])
-  })
-
-  it("does not allow product without date", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { date: undefined }, [
-      { path: ["date"], message: "Invalid input: expected string, received undefined" },
     ])
   })
 
