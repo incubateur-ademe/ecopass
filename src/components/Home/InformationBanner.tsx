@@ -62,7 +62,7 @@ const InformationBanner = () => {
           footer={
             <ul className='fr-links-group'>
               <li>
-                <Link href='/chartre.pdf' target='_blank' rel='noopener noreferrer' className='fr-link'>
+                <Link href='/charte.pdf' target='_blank' rel='noopener noreferrer' className='fr-link'>
                   La charte graphique
                 </Link>
               </li>
