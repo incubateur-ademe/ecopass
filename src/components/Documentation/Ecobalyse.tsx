@@ -18,9 +18,6 @@ const Ecobalyse = () => {
           utiliser le GTIN (ou l'EAN) principal.
         </li>{" "}
         <li>
-          <b>Date de mise sur le marché</b> : au format JJ/MM/YY.
-        </li>
-        <li>
           <b>Marque</b> (optionnel) : marque du produit.
         </li>
         <li>

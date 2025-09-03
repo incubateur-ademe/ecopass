@@ -14,7 +14,7 @@ import { Status } from "../../../prisma/src/prisma"
 import { ProductAPIValidation } from "../../services/validation/api"
 import { runElmFunction } from "./elm"
 
-type EcobalyseProduct = Omit<ProductAPIValidation, "brand" | "gtins" | "internalReference" | "date" | "declaredScore">
+type EcobalyseProduct = Omit<ProductAPIValidation, "brand" | "gtins" | "internalReference" | "declaredScore">
 
 const removeUndefined = <T>(obj: T): T => {
   if (obj === null || obj === undefined) {
@@ -95,7 +95,6 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     brand: undefined,
     gtins: undefined,
     internalReference: undefined,
-    date: undefined,
     declaredScore: undefined,
   }
 
