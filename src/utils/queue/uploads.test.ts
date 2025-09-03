@@ -57,7 +57,6 @@ describe("processUploadsToQueue", () => {
         uploadId: "test-upload-id",
         uploadOrder: 0,
         id: "product-1",
-        date: "2025-01-01",
         gtins: ["1234567891113", "1234567891012"],
         internalReference: "My-ref",
         brand: "TOTALENERGIES SE",

@@ -15,7 +15,6 @@ describe("productValidation", () => {
     brand: "Test Brand",
     gtins: ["1234567890123"],
     internalReference: "TestRef",
-    date: "01/01/2023",
     declaredScore: null,
     category: ProductCategory.Jean,
     mass: 0.5,
@@ -189,18 +188,6 @@ describe("productValidation", () => {
   it("does not allow product without internal reference", () => {
     expectZodValidationToFail(productValidation, validProduct, { internalReference: [] }, [
       { path: ["internalReference"], message: "La référence interne est obligatoire" },
-    ])
-  })
-
-  it("does not allow product with invalid date format", () => {
-    expectZodValidationToFail(productValidation, validProduct, { date: "2023-01-01" }, [
-      { path: ["date"], message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)" },
-    ])
-  })
-
-  it("does not allow product without date", () => {
-    expectZodValidationToFail(productValidation, validProduct, { date: undefined }, [
-      { path: ["date"], message: "Date de mise sur le marché invalide (format attendu : JJ/MM/AA)" },
     ])
   })
 

@@ -32,10 +32,6 @@ const accessoryValidation = z.object({
 const productAPIValidation = z.object({
   gtins: z.array(z.string().regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")).min(1),
   internalReference: z.string(),
-  date: z
-    .string()
-    .refine((val) => !isNaN(Date.parse(val)), "Date de mise sur le marché invalide")
-    .transform((val) => new Date(val)),
   declaredScore: z.number().optional(),
   product: z.enum(productValues),
   airTransportRatio: z.number().min(0).max(1).optional(),

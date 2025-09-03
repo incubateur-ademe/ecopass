@@ -105,15 +105,10 @@ export const decryptProductFields = (
 })
 
 export function encryptProductFields(product: ProductAPIValidation | ParsedProduct) {
-  const date =
-    product.date instanceof Date
-      ? `${product.date.getDate().toString().padStart(2, "0")}/${(product.date.getMonth() + 1).toString().padStart(2, "0")}/${product.date.getFullYear()}`
-      : product.date
   return {
     product: {
       gtins: product.gtins,
       internalReference: product.internalReference,
-      date: date,
       brand: product.brand,
       declaredScore: product.declaredScore || null,
       category: product.product,

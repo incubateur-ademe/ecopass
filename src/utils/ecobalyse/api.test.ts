@@ -71,7 +71,6 @@ describe("API Ecobalyse", () => {
       id: "product-1",
       gtins: ["1234567890123"],
       internalReference: "REF-001",
-      date: new Date("2023-01-01"),
       brand: "Test Brand",
       status: Status.Pending,
       error: null,
@@ -125,7 +124,6 @@ describe("API Ecobalyse", () => {
         url: "/textile/simulator/detailed",
         body: {
           brand: undefined,
-          date: undefined,
           declaredScore: undefined,
           gtins: undefined,
           internalReference: undefined,
@@ -216,7 +214,6 @@ describe("API Ecobalyse", () => {
         url: "/textile/simulator/detailed",
         body: {
           brand: undefined,
-          date: undefined,
           declaredScore: undefined,
           gtins: undefined,
           internalReference: undefined,
@@ -460,7 +457,6 @@ describe("API Ecobalyse", () => {
 
   describe("computeEcobalyseScore", () => {
     const mockAPIProduct = {
-      date: new Date("2025-01-01"),
       gtins: ["1234567891113", "1234567891012"],
       internalReference: "My-ref",
       brand: "TOTALENERGIES SE",
@@ -496,7 +492,6 @@ describe("API Ecobalyse", () => {
         url: "/textile/simulator/detailed",
         body: {
           brand: undefined,
-          date: undefined,
           declaredScore: undefined,
           gtins: undefined,
           internalReference: undefined,

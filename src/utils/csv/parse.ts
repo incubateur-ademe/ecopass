@@ -16,7 +16,6 @@ import { hashProduct } from "../encryption/hash"
 type ColumnType = [
   "gtinseans",
   "referenceinterne",
-  "datedemisesurlemarche",
   "marque",
   "score",
   "categorie",
@@ -99,7 +98,6 @@ type CSVRow = {
 const columns: Partial<Record<ColumnType[number], string>> = {
   gtinseans: "GTINs/Eans",
   referenceinterne: "Référence interne",
-  datedemisesurlemarche: "Date de mise sur le marché",
   categorie: "Catégorie",
   masse: "Masse (en kg)",
   remanufacture: "Remanufacturé",
@@ -239,7 +237,6 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       const rawProduct = {
         gtins: (row.record["gtinseans"] || "").split(";").map((gtin) => gtin.trim()),
         internalReference: row.record["referenceinterne"] || "",
-        date: row.record["datedemisesurlemarche"],
         brand: row.record["marque"] || upload.createdBy.organization?.name || "",
         declaredScore: getNumberValue(row.record["score"], 1, -1) as number | undefined,
         product: getValue<ProductCategory>(productCategories, row.record["categorie"]),

@@ -33,7 +33,6 @@ describe("Upload DB integration", () => {
   const baseProduct = {
     internalReference: "REF-124",
     brand: "TestBrand2",
-    date: "2025-04-19",
     category: "pull",
     declaredScore: 3000.5,
     business: "business",

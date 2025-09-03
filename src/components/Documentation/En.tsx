@@ -18,9 +18,6 @@ const En = () => {
           main GTIN (or EAN).
         </li>
         <li>
-          <b>Date de mise sur le marché</b>: release date of the product in the french format DD/MM/YY.
-        </li>
-        <li>
           <b>Marque</b> (optional): product brand.
         </li>
         <li>

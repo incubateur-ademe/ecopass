@@ -14,7 +14,6 @@ import { Status } from "../../../prisma/src/prisma"
 const product = {
   gtins: ["12345678", "87654321"],
   internalReference: "TestRef",
-  date: new Date("2024-12-31"),
   brand: "TestBrand",
   declaredScore: 99,
   product: "Jean",
@@ -36,16 +35,13 @@ const product = {
 
 const checkDecryption = (product: any, encrypted: any, decrypted: any) => {
   const objectFields = ["trims", "materials", "printing"]
-  const notEncryptedFields = ["gtins", "internalReference", "date", "brand", "declaredScore", "product"]
+  const notEncryptedFields = ["gtins", "internalReference", "brand", "declaredScore", "product"]
   const encryptedFields = Object.keys(product).filter(
     (key) => !notEncryptedFields.includes(key) && !objectFields.includes(key),
   )
 
   for (const field of notEncryptedFields) {
-    if (field === "date") {
-      expect(encrypted.product[field]).toEqual("31/12/2024")
-      expect(decrypted[field]).toEqual("31/12/2024")
-    } else if (field === "product") {
+    if (field === "product") {
       expect(encrypted.product.category).toEqual(product.product)
       expect(decrypted.category).toEqual(product.product)
     } else {
