@@ -8,6 +8,7 @@ import { auth } from "../services/auth/auth"
 import "../css/reset.css"
 import "../css/dsfr.css"
 import Matomo from "../components/Matomo/Matomo"
+import { ReactNode } from "react"
 
 export const metadata: Metadata = {
   title: "Affichage environnemental",
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
     "Ce portail a pour objectif de répondre aux articles R 541-246 et R 541-250  du Décret relatif à l'affichage environnemental textile, et de permettre ainsi aux marques de déclarer le coût environnemental de leurs produits, afin de rendre ce résultat accessible au grand public.",
 }
 
-export default async function RootLayout({ children }: { children: React.JSX.Element }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   const lang = "fr"
 
   const session = await auth()
