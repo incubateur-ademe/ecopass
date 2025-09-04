@@ -3,8 +3,18 @@ import { getSize } from "../../utils/label/size"
 
 const Label = ({ product: { score, standardized } }: { product: NonNullable<ProductWithScore["score"]> }) => {
   const size = getSize(standardized)
+  const title = `Coût environnemental : ${Math.round(score)} points d'impact, ${Math.round(standardized)} pour 100g`
+
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' width='154' height='77' viewBox='0 0 154 77' fill='none'>
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width='154'
+      height='77'
+      viewBox='0 0 154 77'
+      fill='none'
+      aria-label={title}
+      role='img'>
+      <title>{title}</title>
       <g>
         <path
           d='M36.2 76.2C16.3 76.2 0.199997 59.1 0.199997 38.1C0.199997 17.1 16.4 0 36.2 0H148.2C151.1 0 153.5 2.4 153.5 5.4V70.7C153.5 73.7 151.1 76.1 148.2 76.1H36.2V76.2Z'
