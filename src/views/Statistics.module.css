@@ -2,6 +2,7 @@
 .list {
   list-style: none;
   font-size: 2rem;
+  line-height: 2.5rem;
 
   li {
     margin-bottom: 1rem;
@@ -14,5 +15,6 @@
 
 .smallList {
   font-size: 1.75rem;
+  line-height: 2rem;
   margin-top: 0.75rem;
 }
