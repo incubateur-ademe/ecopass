@@ -1,6 +1,31 @@
 import Block from "../components/Block/Block"
 import { Stats } from "../services/stats/stats"
+import { ProductCategory } from "../types/Product"
 import styles from "./Statistics.module.css"
+
+const plural: Record<ProductCategory, string> = {
+  [ProductCategory.Chemise]: "Chemises",
+  [ProductCategory.Jean]: "Jeans",
+  [ProductCategory.JupeRobe]: "Jupes / Robes",
+  [ProductCategory.ManteauVeste]: "Manteaux / Vestes",
+  [ProductCategory.PantalonShort]: "Pantalons / Shorts",
+  [ProductCategory.Pull]: "Pulls",
+  [ProductCategory.TShirtPolo]: "T-shirts / Polos",
+  [ProductCategory.Chaussettes]: "Chaussettes",
+  [ProductCategory.CaleçonTissé]: "Caleçons (tissés)",
+  [ProductCategory.BoxerSlipTricoté]: "Boxers / Slips (tricotés)",
+  [ProductCategory.MaillotDeBain]: "Maillots de bain",
+}
+
+const getPlural = (count: number, category: string) => {
+  if (count > 1) {
+    const pluralCategory = plural[category as ProductCategory]
+    if (pluralCategory) {
+      return pluralCategory
+    }
+  }
+  return category
+}
 
 const Statistics = ({ stats }: { stats: Stats }) => {
   return (
@@ -25,11 +50,13 @@ const Statistics = ({ stats }: { stats: Stats }) => {
             </b>{" "}
             produits déclarés :
             <ul className={styles.smallList}>
-              {Object.entries(stats.products).map(([category, count]) => (
-                <li key={category}>
-                  <b>{count.toLocaleString("fr-FR")}</b> {category}
-                </li>
-              ))}
+              {Object.entries(stats.products)
+                .sort(([, countA], [, countB]) => countB - countA)
+                .map(([category, count]) => (
+                  <li key={category}>
+                    <b>{count.toLocaleString("fr-FR")}</b> {getPlural(count, category)}
+                  </li>
+                ))}
             </ul>
           </li>
         </ul>
