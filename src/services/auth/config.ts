@@ -2,8 +2,7 @@ import { v4 as uuid } from "uuid"
 import { AuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prismaClient } from "../../db/prismaClient"
-import axios from "axios"
-import { SiretAPI } from "../../types/Siret"
+import { getSiretInfo } from "../../serverFunctions/siret"
 
 export const authOptions = {
   adapter: PrismaAdapter(prismaClient),
@@ -16,16 +15,15 @@ export const authOptions = {
         })
 
         if (!organization) {
-          const result = await axios.get<SiretAPI>(`https://api.insee.fr/api-sirene/3.11/siret/${siret}`, {
-            headers: { "X-INSEE-Api-Key-Integration": process.env.INSEE_API_KEY },
-          })
-          if (result.status !== 200) {
+          const result = await getSiretInfo(siret)
+          if (!result) {
             throw new Error("Failed to fetch SIRET information from API")
           }
+
           organization = await prismaClient.organization.create({
             data: {
               siret: siret,
-              name: result.data.etablissement.uniteLegale.denominationUniteLegale,
+              name: result.etablissement.uniteLegale.denominationUniteLegale,
             },
           })
         }
