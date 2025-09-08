@@ -41,7 +41,7 @@ export const processUploadsToQueue = async () => {
     if (numberOfCreatedProduct === 0) {
       await completeUpload(upload)
     }
-    console.log(`Upload processed, ${csvData.products.length} products, ${numberOfCreatedProduct}created`)
+    console.log(`Upload processed, ${csvData.products.length} products, ${numberOfCreatedProduct} created`)
   } catch (error) {
     let message = "Erreur lors de l'analyse du fichier CSV"
     if (error && typeof error === "object" && "message" in error) {

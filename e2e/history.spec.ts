@@ -55,10 +55,10 @@ test("shows product history", async ({ page }) => {
 
   await expect(page.locator("#contenu")).toContainText("Déclaration validée")
   await expect(page.getByTestId("product-details")).toHaveText(
-    `tshirt - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Par : Xavier Ecopass (Emmaus)Version Ecobalyse : ${ecobalyseVersion}`,
+    `T-shirt / Polo - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Par : Xavier Ecopass (Emmaus)Version Ecobalyse : ${ecobalyseVersion}`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
-    `Coût environnemental : 5115 pointsCoût environnemental pour 100g : 1023 pointsIndice de durabilité : 0.671 023 pts/100g5 115Télécharger le .svg`,
+    `Coût environnemental : 5115 pointsCoût environnemental pour 100g : 1023 pointsIndice de durabilité : 0.67Coût environnemental : 5115 points d'impact, 1023 pour 100g1 023 pts/100g5 115Télécharger le .svg`,
   )
 
   await expect(page.getByTestId("history-table")).not.toBeVisible()
@@ -76,9 +76,9 @@ test("shows product history", async ({ page }) => {
 
   await expect(page.locator("#contenu")).toContainText("Déclaration obsolète")
   await expect(page.getByTestId("product-details")).toHaveText(
-    `tshirt - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Par : Xavier Ecopass (Emmaus)Version Ecobalyse : ${ecobalyseVersion}`,
+    `T-shirt / Polo - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Par : Xavier Ecopass (Emmaus)Version Ecobalyse : ${ecobalyseVersion}`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
-    `Coût environnemental : 1777 pointsCoût environnemental pour 100g : 1045 pointsIndice de durabilité : 0.671 045 pts/100g1 777Télécharger le .svg`,
+    `Coût environnemental : 1777 pointsCoût environnemental pour 100g : 1045 pointsIndice de durabilité : 0.67Coût environnemental : 1777 points d'impact, 1045 pour 100g1 045 pts/100g1 777Télécharger le .svg`,
   )
 })

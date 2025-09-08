@@ -5,6 +5,7 @@ import Block from "../Block/Block"
 import ProductScore from "./ProductScore"
 import ProductHistory from "./ProductHistory"
 import ProductScoreImpacts from "./ProductScoreImpacts"
+import { productCategories } from "../../utils/types/productCategory"
 
 const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: string; isOld?: boolean }) => {
   return (
@@ -17,7 +18,7 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
         <div data-testid='product-details'>
           <p className='fr-text--xl fr-mb-1w'>
             <b>
-              {product.category}
+              {productCategories[product.category] || product.category}
               {product.brand && <span> - {product.brand}</span>}
             </b>
           </p>
