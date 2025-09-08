@@ -1,6 +1,6 @@
 export type SiretAPI = {
   etablissement: {
-    uniteLegale: { denominationUniteLegale: string }
+    uniteLegale: { denominationUniteLegale: string; nomUniteLegale: string; prenom1UniteLegale: string }
     siret: string
     adresseEtablissement: {
       numeroVoieEtablissement: string
