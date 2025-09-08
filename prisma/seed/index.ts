@@ -6,6 +6,7 @@ const products = async () => {
   await prisma.score.deleteMany()
   await prisma.material.deleteMany()
   await prisma.accessory.deleteMany()
+  await prisma.uploadProduct.deleteMany()
   await prisma.product.deleteMany()
   await prisma.upload.deleteMany()
 }
