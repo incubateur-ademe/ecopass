@@ -36,17 +36,25 @@ const InformationBanner = () => {
         <Card
           background
           border
-          title="Quels sont les textes réglementaires qui encadrent l'affichage environnemental textile ?"
-          desc='Le ministère de la transition écologique procède actuellement à l’élaboration de deux textes réglementaires destinés à organiser le calcul et la communication du coût environnemental des produits textiles. Un dispositif – obligatoire et volontaire – qui procède de la loi « climat et résilience » du 22 août 2021. Ces projets de décret et d’arrêté ont été soumis à consultation du public du 28 novembre au 19 décembre 2024.'
+          title="Quels sont les textes réglementaires qui encadrent l'affichage du coût environnemental des vêtements ?"
+          desc='Le décret et l’arrêté qui encadrent l’affichage volontaire du coût environnemental des vêtements ont été publiés le 9 septembre. Ce cadre technique et réglementaire complet a bénéficié de l’expertise de l’Ademe et d’une large implication des acteurs du secteur textile depuis la loi Climat de 2021.'
           footer={
             <ul className='fr-links-group'>
               <li>
-                <Link href='/reglementaires/decret.docx' target='_blank' rel='noopener noreferrer' className='fr-link'>
+                <Link
+                  href='/https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000052212871'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='fr-link'>
                   Le décret
                 </Link>
               </li>
               <li>
-                <Link href='/reglementaires/arrete.docx' target='_blank' rel='noopener noreferrer' className='fr-link'>
+                <Link
+                  href='https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000052213047'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='fr-link'>
                   L'arrêté
                 </Link>
               </li>
