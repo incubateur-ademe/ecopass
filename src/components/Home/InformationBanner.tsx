@@ -42,7 +42,7 @@ const InformationBanner = () => {
             <ul className='fr-links-group'>
               <li>
                 <Link
-                  href='/https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000052212871'
+                  href='https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000052212871'
                   target='_blank'
                   rel='noopener noreferrer'
                   className='fr-link'>
