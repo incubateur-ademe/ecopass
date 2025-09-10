@@ -35,7 +35,7 @@ const ProductScore = ({
       </p>
       {score.durability > 0 && (
         <p>
-          Indice de durabilité : <b>{score.durability}</b>
+          Coefficient de durabilité : <b>{score.durability}</b>
         </p>
       )}
       <div className='fr-mt-4w'>

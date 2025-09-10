@@ -119,7 +119,7 @@ test("declare my products by API", async ({ page }) => {
     `T-shirt / Polo - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Par : Xavier Ecopass (Emmaus)Version Ecobalyse : ${ecobalyseVersion}`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
-    `Coût environnemental : 1777 pointsCoût environnemental pour 100g : 1045 pointsIndice de durabilité : 0.67Coût environnemental : 1777 points d'impact, 1045 pour 100g1 045 pts/100g1 777Télécharger le .svg`,
+    `Coût environnemental : 1777 pointsCoût environnemental pour 100g : 1045 pointsCoefficient de durabilité : 0.67Coût environnemental : 1777 points d'impact, 1045 pour 100g1 045 pts/100g1 777Télécharger le .svg`,
   )
 
   await page.getByRole("button", { name: "Voir l'historique du produit" }).click()

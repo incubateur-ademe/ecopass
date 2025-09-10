@@ -636,7 +636,7 @@
           },
           "durability": {
             "type": "number",
-            "description": "Indice de durabilité du produit"
+            "description": "Coefficient de durabilité du produit"
           },
           "acd": {
             "type": "number",
