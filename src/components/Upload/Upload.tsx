@@ -61,14 +61,19 @@ const Upload = () => {
         <Alert
           data-testid={`upload-${success ? "success" : "error"}`}
           className='fr-mt-4w'
-          title={success ? "Fichier correctement téléchargé" : "Erreur lors de l'analyse du fichier"}
+          title={
+            success
+              ? "Votre fichier a été correctement téléchargé"
+              : "Une erreur est survenue lors de l'analyse du fichier"
+          }
           severity={success ? "success" : "error"}
           description={
             success ? (
               <>
-                Nous analysons votre fichier pour vérifier qu’il contient l’ensemble des informations réglementaires, au
-                bon format. Cette étape peut prendre quelques minutes.{" "}
-                <b>Vous recevrez un mail de confirmation suite à cette analyse</b>. Vous pouvez fermer cet onglet.
+                Le système va maintenant l’analyser pour vérifier qu’il contient l’ensemble des informations
+                réglementaires au bon format. Cette étape peut prendre quelques minutes en fonction de la taille de
+                votre CSV. <b>Une fois l’analyse terminée, vous recevrez un mail vous indiquant le résultat</b>. Vous
+                pouvez fermer cet onglet.
               </>
             ) : (
               <>

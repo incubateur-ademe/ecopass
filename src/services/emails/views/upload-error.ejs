@@ -2,23 +2,41 @@
   <body>
     <p>Bonjour,</p>
     <p>
-      Votre déclaration affichage environnementale <b><%= name %></b> déposé le <%= date %> à <%= time %> présente des
-      <b>erreurs</b>.
+      Votre déclaration affichage environnementale <b><%= name %></b> déposé le <%= date %> à <%= time %> a été analysée.
+    </p>
+    <p>
+      Elle présente des <b>erreurs</b>.
     </p>
     <% if(total === 0) { %>
       <p>Nous n'avons pas réussi à analyser votre fichier.</p>
+    <% } else if (total === 1) { %>
+      <p>Le produit déclaré présente une ou plusieurs erreurs ❌</p>
     <% } else { %>
     <p>Sur les <%= total %> produits déclarés :</p>
     <ul>
-      <li><%= success %> ont bien été validés ✅</li>
-      <li><%= error %> présentent une ou plusieurs erreurs ❌</li>
+      <% if(success === 0) { %>
+        <li>Aucun produit n'a été validé</li>
+      <% } else if(success === 1) { %>
+        <li>1 a bien été validé ✅</li>
+      <% } else { %>
+        <li><%= success %> ont bien été validés ✅</li>
+      <% } %>
+      <% if(error === 1) { %>
+        <li>1 présente une ou plusieurs erreurs ❌</li>
+      <% } else { %>
+        <li><%= error %> présentent une ou plusieurs erreurs ❌</li>
+      <% } %>
     </ul>
     <% } %>
     <p>
-      Nous vous invitons à vous connecter à votre espace pour télécharger le fichier depuis
-      <a href="<%= link %>">votre tableau de suivi</a> pour identifier les modifications à apporter. Vous pourrez
-      ensuite redéposer votre déclaration.
+      Nous vous invitons à le corriger :
     </p>
+    <ol>
+      <li>connectez-vous à votre espace</li>
+      <li>téléchargez le fichier depuis <a href="<%= link %>">votre tableau de suivi</a></li>
+      <li>identifiez les modifications à apporter</li>
+      <li>vous pourrez ensuite redéposer votre déclaration</li>
+    </ol>
     <p>
       Si vous rencontrez des difficultés, vous pouvez contacter le support à cette adresse :
       <a href="mailto:<%= support %>"><%= support %></a>

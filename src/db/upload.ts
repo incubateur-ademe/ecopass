@@ -121,6 +121,15 @@ export const checkUploadsStatus = async (uploadsId: string[]) => {
       products: {
         select: { status: true },
       },
+      reUploadProducts: {
+        select: {
+          product: {
+            select: {
+              status: true,
+            },
+          },
+        },
+      },
     },
   })
 
@@ -148,6 +157,7 @@ export const getFirstFileUpload = async () =>
       createdAt: true,
       createdBy: { select: { email: true, organization: { select: { name: true } } } },
       products: { select: { status: true } },
+      reUploadProducts: { select: { product: { select: { status: true } } } },
     },
     where: { status: Status.Pending, type: UploadType.FILE },
     orderBy: { createdAt: "asc" },

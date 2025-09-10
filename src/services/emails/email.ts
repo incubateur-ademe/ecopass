@@ -31,7 +31,7 @@ const send = (toEmail: string[], subject: string, html: string) => {
 export const sendUploadSuccessEmail = async (toEmail: string, name: string | null, date: Date) => {
   return send(
     [toEmail],
-    "Déclaration validée ✅",
+    "Votre déclaration a été validée ✅",
     await getHtml("upload-success", {
       name,
       date: date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
@@ -50,7 +50,7 @@ export const sendUploadErrorEmail = async (
 ) => {
   return send(
     [toEmail],
-    "Erreurs à corriger ❌",
+    "Votre déclaration comporte des erreurs à corriger ❌",
     await getHtml("upload-error", {
       name,
       date: date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
