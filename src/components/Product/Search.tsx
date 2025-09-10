@@ -1,4 +1,5 @@
 "use client"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import { useState } from "react"
@@ -7,11 +8,17 @@ const Search = () => {
   const [gtin, setGTIN] = useState("")
   return (
     <>
-      <p>Veuillez rentrer le code GTIN du produit que vous cherchez</p>
+      <Alert
+        severity='info'
+        className='fr-mb-2w'
+        title='Ce site est en construction'
+        description="Le contenu du portail d'affichage environnemental est fourni par les marques de textiles. Comme le service vient tout juste d'être lancé, il se peut que certains produits ne soient pas encore disponibles lors de votre recherche."
+      />
+      <p>Saisissez le code-barres du produit recherché (8 ou 13 chiffres)</p>
       <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle'>
         <Input
           className='fr-col-12 fr-col-sm-9 fr-mb-0'
-          label='Code GTIN'
+          label='Code-barres'
           hideLabel
           nativeInputProps={{
             value: gtin,
