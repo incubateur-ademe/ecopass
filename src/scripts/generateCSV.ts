@@ -44,7 +44,7 @@ const generate = (name: string, length?: string) => {
       countryMaking: faker.helpers.arrayElement(Object.keys(countries)),
       countrySpinning: faker.helpers.arrayElement(Object.keys(countries)),
       impressionMapping: faker.helpers.arrayElement(["", ...Object.keys(impressionMapping)]),
-      impressionPercentage: faker.number.float({ min: 0, max: 1 }),
+      impressionPercentage: faker.number.float({ min: 0, max: 0.8 }),
       mass: faker.number.float({ min: 0.01 }),
       price: faker.number.float({ min: 1, max: 1000 }),
       airTransportRatio: faker.number.float({ min: 0, max: 1 }),

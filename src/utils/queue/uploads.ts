@@ -1,8 +1,8 @@
 import chardet from "chardet"
 import { parseCSV } from "../csv/parse"
 import { createProducts } from "../../db/product"
-import { completeUpload, failUpload } from "../../services/upload"
-import { getFirstFileUpload, updateUploadToPending } from "../../db/upload"
+import { failUpload } from "../../services/upload"
+import { checkUploadsStatus, getFirstFileUpload, updateUploadToPending } from "../../db/upload"
 import { downloadFileFromS3 } from "../s3/bucket"
 import { decryptAndDezipFile } from "../encryption/encryption"
 
@@ -39,7 +39,7 @@ export const processUploadsToQueue = async () => {
     const csvData = await parseCSV(buffer, encoding, upload)
     const numberOfCreatedProduct = await createProducts(csvData)
     if (numberOfCreatedProduct === 0) {
-      await completeUpload(upload)
+      await checkUploadsStatus([upload.id])
     }
     console.log(`Upload processed, ${csvData.products.length} products, ${numberOfCreatedProduct} created`)
   } catch (error) {

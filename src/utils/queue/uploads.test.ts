@@ -3,7 +3,7 @@ import chardet from "chardet"
 import { parseCSV } from "../csv/parse"
 import { createProducts } from "../../db/product"
 import { failUpload, completeUpload } from "../../services/upload"
-import { getFirstFileUpload, updateUploadToPending } from "../../db/upload"
+import { checkUploadsStatus, getFirstFileUpload, updateUploadToPending } from "../../db/upload"
 import { downloadFileFromS3 } from "../s3/bucket"
 import { FileUpload } from "../../db/upload"
 import { Status } from "../../../prisma/src/prisma"
@@ -22,6 +22,7 @@ const mockedParseCSV = parseCSV as jest.MockedFunction<typeof parseCSV>
 const mockedCreateProducts = createProducts as jest.MockedFunction<typeof createProducts>
 const mockedFailUpload = failUpload as jest.MockedFunction<typeof failUpload>
 const mockedCompleteUpload = completeUpload as jest.MockedFunction<typeof completeUpload>
+const mockedCheckUploadStatus = checkUploadsStatus as jest.MockedFunction<typeof checkUploadsStatus>
 const mockedGetFirstFileUpload = getFirstFileUpload as jest.MockedFunction<typeof getFirstFileUpload>
 const mockedUpdateUploadToPending = updateUploadToPending as jest.MockedFunction<typeof updateUploadToPending>
 const mockedDownloadFileFromS3 = downloadFileFromS3 as jest.MockedFunction<typeof downloadFileFromS3>
@@ -43,6 +44,7 @@ describe("processUploadsToQueue", () => {
       },
     },
     products: [{ status: Status.Pending }],
+    reUploadProducts: [],
   } satisfies FileUpload
 
   const mockBuffer = Buffer.from("csv,data,here")
@@ -130,7 +132,7 @@ describe("processUploadsToQueue", () => {
     expect(mockedParseCSV).toHaveBeenCalledWith(mockBuffer, "latin1", mockUpload)
   })
 
-  it("should complete upload when 0 products are created", async () => {
+  it("should check upload status when 0 products are created", async () => {
     const mockEmptyParsedData = {
       products: [],
       materials: [],
@@ -153,7 +155,7 @@ describe("processUploadsToQueue", () => {
     expect(mockedChardet.detect).toHaveBeenCalledWith(mockBuffer)
     expect(mockedParseCSV).toHaveBeenCalledWith(mockBuffer, "utf-8", mockUpload)
     expect(mockedCreateProducts).toHaveBeenCalledWith(mockEmptyParsedData)
-    expect(mockedCompleteUpload).toHaveBeenCalledWith(mockUpload)
+    expect(mockedCheckUploadStatus).toHaveBeenCalledWith([mockUpload.id])
     expect(mockedFailUpload).not.toHaveBeenCalled()
   })
 
