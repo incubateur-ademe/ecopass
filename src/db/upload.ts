@@ -135,11 +135,17 @@ export const checkUploadsStatus = async (uploadsId: string[]) => {
 
   return Promise.all(
     uploads
-      .filter((upload) =>
-        upload.products.every((product) => product.status === Status.Done || product.status === Status.Error),
+      .filter(
+        (upload) =>
+          upload.products.every((product) => product.status === Status.Done || product.status === Status.Error) &&
+          upload.reUploadProducts.every(
+            (product) => product.product.status === Status.Done || product.product.status === Status.Error,
+          ),
       )
       .map(async (upload) => {
-        const allDone = upload.products.every((product) => product.status === Status.Done)
+        const allDone =
+          upload.products.every((product) => product.status === Status.Done) &&
+          upload.reUploadProducts.every((product) => product.product.status === Status.Done)
         if (allDone) {
           return completeUpload(upload)
         } else {
