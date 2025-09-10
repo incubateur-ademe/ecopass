@@ -29,7 +29,7 @@ const product = {
 test("declare my products by API", async ({ page }) => {
   await login(page)
 
-  await page.getByRole("link", { name: "API" }).click()
+  await page.getByRole("link", { name: "API", exact: true }).click()
   await expect(page).toHaveURL(/.*\/api/)
 
   await expect(page.locator("#contenu")).toContainText("Vous n'avez généré aucune clé pour le moment.")
@@ -135,7 +135,7 @@ test("declare my products by API", async ({ page }) => {
     "1777",
   )
 
-  await page.getByRole("link", { name: "API" }).click()
+  await page.getByRole("link", { name: "API", exact: true }).click()
   await expect(page).toHaveURL(/.*\/api/)
 
   await expect(page.getByTestId("api-keys-table").locator("table tbody tr")).toHaveCount(1)

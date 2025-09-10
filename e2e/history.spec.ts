@@ -29,7 +29,7 @@ const product = {
 test("shows product history", async ({ page }) => {
   await login(page)
 
-  await page.getByRole("link", { name: "API" }).click()
+  await page.getByRole("link", { name: "API", exact: true }).click()
   await expect(page).toHaveURL(/.*\/api/)
 
   await page.getByRole("textbox", { name: "Nom de la clé API" }).fill("Ma clé")
