@@ -8,6 +8,7 @@ describe("productValidation", () => {
   const validProduct = {
     id: "12345",
     uploadId: "upload-123",
+    isPublic: true,
     status: Status.Pending,
     createdAt: new Date("2023-01-01"),
     updatedAt: new Date("2023-01-02"),

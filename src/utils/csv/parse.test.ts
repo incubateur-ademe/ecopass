@@ -2,12 +2,12 @@ import { FileUpload } from "../../db/upload"
 import { v4 as uuid } from "uuid"
 import { parseCSV } from "./parse"
 import { Status } from "../../../prisma/src/prisma"
-import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
+import { AccessoryType, Business, Country, Impression, MaterialType } from "../../types/Product"
 import { decryptBoolean, decryptNumber, decryptProductFields } from "../encryption/encryption"
 
 describe("parseCSV", () => {
-  const header = `GTINs/EANS,Référence interne,Marque,Score,Catégorie,Masse (en kg),Remanufacturé,Nombre de références,"Prix (en euros, TTC)",Taille de l'entreprise,Matière 1,Matière 1 pourcentage,Matière 1 origine,Matière 2,Matière 2 pourcentage,Matière 2 origine,Matière 3,Matière 3 pourcentage,Matière 3 origine,Matière 4,Matière 4 pourcentage,Matière 4 origine,Matière 5,Matière 5 pourcentage,Matière 5 origine,Matière 6,Matière 6 pourcentage,Matière 6 origine,Matière 7,Matière 7 pourcentage,Matière 7 origine,Matière 8,Matière 8 pourcentage,Matière 8 origine,Matière 9,Matière 9 pourcentage,Matière 9 origine,Matière 10,Matière 10 pourcentage,Matière 10 origine,Matière 11,Matière 11 pourcentage,Matière 11 origine,Matière 12,Matière 12 pourcentage,Matière 12 origine,Matière 13,Matière 13 pourcentage,Matière 13 origine,Matière 14,Matière 14 pourcentage,Matière 14 origine,Matière 15,Matière 15 pourcentage,Matière 15 origine,Matière 16,Matière 16 pourcentage,Matière 16 origine,Origine de filature,Origine de tissage/tricotage,Origine de l'ennoblissement/impression,Type d'impression,Pourcentage d'impression,Origine confection,Délavage,Part du transport aérien,Accessoire 1, Accessoire 1 quantité,Accessoire 2, Accessoire 2 quantité,Accessoire 3, Accessoire 3 quantité,Accessoire 4, Accessoire 4 quantité`
-  const defaultProducts = `"1234567891000;1234567891001","REF-123",Marque,"2222,63",Pull,"0,55",Non,9000,100,Grande entreprise sans service de réparation,Viscose,"90,00 %",Chine,Jute,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Chine,Chine,Chine,Pigmentaire,"20,00 %",Chine,Non,"75,00%",Bouton en métal,1,,,,,,`
+  const header = `GTINs/EANS,Référence interne,Données publiques,Marque,Score,Catégorie,Masse (en kg),Remanufacturé,Nombre de références,"Prix (en euros, TTC)",Taille de l'entreprise,Matière 1,Matière 1 pourcentage,Matière 1 origine,Matière 2,Matière 2 pourcentage,Matière 2 origine,Matière 3,Matière 3 pourcentage,Matière 3 origine,Matière 4,Matière 4 pourcentage,Matière 4 origine,Matière 5,Matière 5 pourcentage,Matière 5 origine,Matière 6,Matière 6 pourcentage,Matière 6 origine,Matière 7,Matière 7 pourcentage,Matière 7 origine,Matière 8,Matière 8 pourcentage,Matière 8 origine,Matière 9,Matière 9 pourcentage,Matière 9 origine,Matière 10,Matière 10 pourcentage,Matière 10 origine,Matière 11,Matière 11 pourcentage,Matière 11 origine,Matière 12,Matière 12 pourcentage,Matière 12 origine,Matière 13,Matière 13 pourcentage,Matière 13 origine,Matière 14,Matière 14 pourcentage,Matière 14 origine,Matière 15,Matière 15 pourcentage,Matière 15 origine,Matière 16,Matière 16 pourcentage,Matière 16 origine,Origine de filature,Origine de tissage/tricotage,Origine de l'ennoblissement/impression,Type d'impression,Pourcentage d'impression,Origine confection,Délavage,Part du transport aérien,Accessoire 1, Accessoire 1 quantité,Accessoire 2, Accessoire 2 quantité,Accessoire 3, Accessoire 3 quantité,Accessoire 4, Accessoire 4 quantité`
+  const defaultProducts = `"1234567891000;1234567891001","REF-123",Non,Marque,"2222,63",Pull,"0,55",Non,9000,100,Grande entreprise sans service de réparation,Viscose,"90,00 %",Chine,Jute,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Chine,Chine,Chine,Pigmentaire,"20,00 %",Chine,Non,"75,00%",Bouton en métal,1,,,,,,`
   const upload = {
     id: uuid(),
     name: "test.csv",
@@ -17,6 +17,7 @@ describe("parseCSV", () => {
       email: "test@test.fr",
       organization: { name: "TestOrg" },
     },
+    reUploadProducts: [],
   } satisfies FileUpload
 
   it("parses a valid CSV", async () => {
@@ -31,6 +32,7 @@ describe("parseCSV", () => {
     expect(products[0].internalReference).toBe("REF-123")
     expect(products[0].brand).toBe("Marque")
     expect(products[0].declaredScore).toBe(2222.63)
+    expect(products[0].isPublic).toBe("false")
 
     const fullProducts = products.map((product) => {
       return {
@@ -43,12 +45,7 @@ describe("parseCSV", () => {
       }
     })
     const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["1234567891000", "1234567891001"])
-    expect(parsedProduct.internalReference).toBe("REF-123")
-    expect(parsedProduct.brand).toBe("Marque")
-    expect(parsedProduct.declaredScore).toBe(2222.63)
-    expect(parsedProduct.category).toBe(ProductCategory.Pull)
+    expect(parsedProduct.isPublic).toBe(false)
     expect(parsedProduct.airTransportRatio).toBe(0.75)
     expect(parsedProduct.business).toBe(Business.WithoutServices)
     expect(parsedProduct.fading).toBe(false)
@@ -75,7 +72,7 @@ describe("parseCSV", () => {
   })
 
   it("parse a valid CSV with ecobalyse values", async () => {
-    const product = `"1234567891000;1234567891001","REF-123",Marque,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",d56bb0d5-7999-4b8b-b076-94d79099b56a,1,,,,,,`
+    const product = `"1234567891000;1234567891001","REF-123",oui,Marque,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",d56bb0d5-7999-4b8b-b076-94d79099b56a,1,,,,,,`
 
     const csv = Buffer.from(`${header}\n${product}`)
     const { products, materials, accessories } = await parseCSV(csv, null, upload)
@@ -88,6 +85,7 @@ describe("parseCSV", () => {
     expect(products[0].internalReference).toBe("REF-123")
     expect(products[0].brand).toBe("Marque")
     expect(products[0].declaredScore).toBe(2222.63)
+    expect(products[0].isPublic).toBe("true")
 
     const fullProducts = products.map((product) => {
       return {
@@ -100,12 +98,7 @@ describe("parseCSV", () => {
       }
     })
     const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["1234567891000", "1234567891001"])
-    expect(parsedProduct.internalReference).toBe("REF-123")
-    expect(parsedProduct.brand).toBe("Marque")
-    expect(parsedProduct.declaredScore).toBe(2222.63)
-    expect(parsedProduct.category).toBe(ProductCategory.Chemise)
+    expect(parsedProduct.isPublic).toBe(true)
     expect(parsedProduct.airTransportRatio).toBe(0.75)
     expect(parsedProduct.business).toBe(Business.WithServices)
     expect(parsedProduct.fading).toBe(false)
@@ -149,6 +142,7 @@ describe("parseCSV", () => {
     expect(products[0].internalReference).toBe("Test")
     expect(products[0].brand).toBe("Test")
     expect(products[0].declaredScore).toBe(-1)
+    expect(products[0].isPublic).toBe("Test")
 
     const fullProducts = products.map((product) => {
       return {
@@ -161,12 +155,7 @@ describe("parseCSV", () => {
       }
     })
     const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["Test"])
-    expect(parsedProduct.internalReference).toBe("Test")
-    expect(parsedProduct.brand).toBe("Test")
-    expect(parsedProduct.declaredScore).toBe(-1)
-    expect(parsedProduct.category).toBe("Test")
+    expect(parsedProduct.isPublic).toBe("Test")
     expect(parsedProduct.airTransportRatio).toBe("Test")
     expect(parsedProduct.business).toBe("Test")
     expect(parsedProduct.fading).toBe("Test")
@@ -193,7 +182,7 @@ describe("parseCSV", () => {
   })
 
   it("parses a valid CSV with semi colon", async () => {
-    const product = `"1234567891000;1234567891001";"REF-123";"";"2222;63";Pull;"0;55";Non;9000;100;Grande entreprise sans service de réparation;Viscose;"90,00 %";Chine;Jute;"10,00 %";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Chine;Chine;Chine;Pigmentaire;"20,00 %";Chine;Non;"75,00%";Bouton en métal;1;;;;;;`
+    const product = `"1234567891000;1234567891001";"REF-123";"oui";"";"2222;63";Pull;"0;55";Non;9000;100;Grande entreprise sans service de réparation;Viscose;"90,00 %";Chine;Jute;"10,00 %";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Chine;Chine;Chine;Pigmentaire;"20,00 %";Chine;Non;"75,00%";Bouton en métal;1;;;;;;`
     const csv = Buffer.from(`${header.replaceAll(",", ";")}\n${product}`)
     const { products, materials, accessories } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
@@ -202,7 +191,7 @@ describe("parseCSV", () => {
   })
 
   it("parses a valid CSV with tabs", async () => {
-    const product = `"1234567891000;1234567891001"\t"REF-123"\t""\t"2222\t63"\tPull\t"0\t55"\tNon\t9000\t100\tGrande entreprise sans service de réparation\tViscose\t"90,00 %"\tChine\tJute\t"10,00 %"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tChine\tChine\tChine\tPigmentaire\t"20,00 %"\tChine\tNon\t"75,00%"\tBouton en métal\t1\t\t\t\t\t\t`
+    const product = `"1234567891000;1234567891001"\t"REF-123"\t"oui"\t""\t"2222\t63"\tPull\t"0\t55"\tNon\t9000\t100\tGrande entreprise sans service de réparation\tViscose\t"90,00 %"\tChine\tJute\t"10,00 %"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tChine\tChine\tChine\tPigmentaire\t"20,00 %"\tChine\tNon\t"75,00%"\tBouton en métal\t1\t\t\t\t\t\t`
     const csv = Buffer.from(`${header.replaceAll(",", "\t")}\n${product}`)
     const { products, materials, accessories } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
@@ -212,7 +201,7 @@ describe("parseCSV", () => {
 
   it("parse a valid CSV with restricted columns name", async () => {
     const restrictedHeader =
-      "gtinseans,referenceinterne,marque,score,categorie,masse,remanufacture,nombredereferences,prix,tailledelentreprise,matiere1,matiere1pourcentage,matiere1origine,matiere2,matiere2pourcentage,matiere2origine,matiere3,matiere3pourcentage,matiere3origine,matiere4,matiere4pourcentage,matiere4origine,matiere5,matiere5pourcentage,matiere5origine,matiere6,matiere6pourcentage,matiere6origine,matiere7,matiere7pourcentage,matiere7origine,matiere8,matiere8pourcentage,matiere8origine,matiere9,matiere9pourcentage,matiere9origine,matiere10,matiere10pourcentage,matiere10origine,matiere11,matiere11pourcentage,matiere11origine,matiere12,matiere12pourcentage,matiere12origine,matiere13,matiere13pourcentage,matiere13origine,matiere14,matiere14pourcentage,matiere14origine,matiere15,matiere15pourcentage,matiere15origine,matiere16,matiere16pourcentage,matiere16origine,originedefilature,originedetissagetricotage,originedelennoblissementimpression,typedimpression,pourcentagedimpression,origineconfection,delavage,partdutransportaerien,accessoire1,accessoire1quantite,accessoire2,accessoire2quantite,accessoire3,accessoire3quantite,accessoire4,accessoire4quantite"
+      "gtinseans,referenceinterne,donneespubliques,marque,score,categorie,masse,remanufacture,nombredereferences,prix,tailledelentreprise,matiere1,matiere1pourcentage,matiere1origine,matiere2,matiere2pourcentage,matiere2origine,matiere3,matiere3pourcentage,matiere3origine,matiere4,matiere4pourcentage,matiere4origine,matiere5,matiere5pourcentage,matiere5origine,matiere6,matiere6pourcentage,matiere6origine,matiere7,matiere7pourcentage,matiere7origine,matiere8,matiere8pourcentage,matiere8origine,matiere9,matiere9pourcentage,matiere9origine,matiere10,matiere10pourcentage,matiere10origine,matiere11,matiere11pourcentage,matiere11origine,matiere12,matiere12pourcentage,matiere12origine,matiere13,matiere13pourcentage,matiere13origine,matiere14,matiere14pourcentage,matiere14origine,matiere15,matiere15pourcentage,matiere15origine,matiere16,matiere16pourcentage,matiere16origine,originedefilature,originedetissagetricotage,originedelennoblissementimpression,typedimpression,pourcentagedimpression,origineconfection,delavage,partdutransportaerien,accessoire1,accessoire1quantite,accessoire2,accessoire2quantite,accessoire3,accessoire3quantite,accessoire4,accessoire4quantite"
     const csv = Buffer.from(`${restrictedHeader}\n${defaultProducts}`)
     const { products } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)

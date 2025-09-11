@@ -13,8 +13,9 @@ import {
   getProductWithScoreHistory,
   getProductWithScoreHistoryCount,
   getOldProductWithScore,
+  getProductInformations,
 } from "./product"
-import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
+import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../types/Product"
 import { ProductAPIValidation } from "../services/validation/api"
 import { cleanDB } from "./testUtils"
 import { encryptProductFields } from "../utils/encryption/encryption"
@@ -733,6 +734,210 @@ describe("Product DB integration", () => {
       })
       expect(newProduct).not.toBeNull()
       expect(newProduct?.hash).toBe(oldHash)
+    })
+  })
+
+  describe("getProductInformations", () => {
+    it("should return null for non-existent product", async () => {
+      const result = await getProductInformations("non-existent-id")
+      expect(result).toBeNull()
+    })
+
+    it("should return null for private product", async () => {
+      const encrypted = encryptProductFields({
+        gtins: ["1234567891000"],
+        internalReference: "REF-123",
+        brand: "TestBrand",
+        product: ProductCategory.Pull,
+        declaredScore: 2222.63,
+        business: Business.Small,
+        numberOfReferences: 9000,
+        mass: 1,
+        price: 100,
+        materials: [],
+        trims: [],
+      } satisfies ProductAPIValidation)
+
+      let newId = uuid()
+      await createProducts({
+        products: [
+          {
+            ...encrypted.product,
+            error: null,
+            hash: "new-hash",
+            id: newId,
+            isPublic: "false",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 2,
+            status: Status.Pending,
+          },
+        ],
+        materials: [],
+        accessories: [],
+      })
+
+      const result = await getProductInformations(newId)
+      expect(result).toBeNull()
+    })
+
+    it("should return null for product with null isPublic", async () => {
+      const encrypted = encryptProductFields({
+        gtins: ["1234567891000"],
+        internalReference: "REF-123",
+        brand: "TestBrand",
+        product: ProductCategory.Pull,
+        declaredScore: 2222.63,
+        business: Business.Small,
+        numberOfReferences: 9000,
+        mass: 1,
+        price: 100,
+        materials: [],
+        trims: [],
+      } satisfies ProductAPIValidation)
+
+      let newId = uuid()
+      await createProducts({
+        products: [
+          {
+            ...encrypted.product,
+            error: null,
+            hash: "new-hash",
+            id: newId,
+            isPublic: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 2,
+            status: Status.Pending,
+          },
+        ],
+        materials: [],
+        accessories: [],
+      })
+
+      const result = await getProductInformations(newId)
+      expect(result).toBeNull()
+    })
+
+    it("should return null for product with nimps isPublic", async () => {
+      const encrypted = encryptProductFields({
+        gtins: ["1234567891000"],
+        internalReference: "REF-123",
+        brand: "TestBrand",
+        product: ProductCategory.Pull,
+        declaredScore: 2222.63,
+        business: Business.Small,
+        numberOfReferences: 9000,
+        mass: 1,
+        price: 100,
+        materials: [],
+        trims: [],
+      } satisfies ProductAPIValidation)
+
+      let newId = uuid()
+      await createProducts({
+        products: [
+          {
+            ...encrypted.product,
+            error: null,
+            hash: "new-hash",
+            id: newId,
+            isPublic: "nimps",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 2,
+            status: Status.Pending,
+          },
+        ],
+        materials: [],
+        accessories: [],
+      })
+
+      const result = await getProductInformations(newId)
+      expect(result).toBeNull()
+    })
+
+    it("should return decrypted product information for public product", async () => {
+      const encrypted = encryptProductFields({
+        gtins: ["1234567891000"],
+        internalReference: "REF-123",
+        brand: "TestBrand",
+        product: ProductCategory.Pull,
+        declaredScore: 2222.63,
+        business: Business.Small,
+        countryDyeing: Country.France,
+        countryFabric: Country.Inde,
+        countryMaking: Country.Bangladesh,
+        countrySpinning: Country.Cambodge,
+        numberOfReferences: 9000,
+        airTransportRatio: 0.9,
+        mass: 1,
+        price: 100,
+        fading: true,
+        upcycled: false,
+        printing: { kind: Impression.FixéLavé, ratio: 0.5 },
+        materials: [{ id: MaterialType.Viscose, share: 0.9 }],
+        trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
+      } satisfies ProductAPIValidation)
+
+      let newId = uuid()
+      await createProducts({
+        products: [
+          {
+            ...encrypted.product,
+            error: null,
+            hash: "new-hash",
+            id: newId,
+            isPublic: "true",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 2,
+            status: Status.Pending,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: newId,
+        })),
+        accessories: encrypted.accessories
+          ? encrypted.accessories.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: newId,
+            }))
+          : [],
+      })
+
+      const result = await getProductInformations(newId)
+
+      expect(result).not.toBeNull()
+
+      expect(result?.accessories).toHaveLength(1)
+      expect(result?.accessories[0].slug).toBe(AccessoryType.BoutonEnMétal)
+      expect(result?.accessories[0].quantity).toBe(1)
+
+      expect(result?.materials).toHaveLength(1)
+      expect(result?.materials[0].slug).toBe(MaterialType.Viscose)
+      expect(result?.materials[0].share).toBe(0.9)
+
+      expect(result?.business).toBe(Business.Small)
+      expect(result?.countryDyeing).toBe(Country.France)
+      expect(result?.countryFabric).toBe(Country.Inde)
+      expect(result?.countryMaking).toBe(Country.Bangladesh)
+      expect(result?.countrySpinning).toBe(Country.Cambodge)
+      expect(result?.mass).toBe(1)
+      expect(result?.price).toBe(100)
+      expect(result?.airTransportRatio).toBe(0.9)
+      expect(result?.numberOfReferences).toBe(9000)
+      expect(result?.fading).toBe(true)
+      expect(result?.upcycled).toBe(false)
+      expect(result?.impression).toBe(Impression.FixéLavé)
+      expect(result?.impressionPercentage).toBe(0.5)
     })
   })
 })

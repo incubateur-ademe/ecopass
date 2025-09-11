@@ -16,7 +16,11 @@ const Ecobalyse = () => {
         <li>
           <b>Référence interne</b> : réference utilisé en interne pour votre produit. Si vous n'en avez pas, vous pouvez
           utiliser le GTIN (ou l'EAN) principal.
-        </li>{" "}
+        </li>
+        <li>
+          <b>Données publiques</b> (optionnel) : voulez vous rendre publiques les informations de votre produit ?
+          Oui/Non.
+        </li>
         <li>
           <b>Marque</b> (optionnel) : marque du produit.
         </li>

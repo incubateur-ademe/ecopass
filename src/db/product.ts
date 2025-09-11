@@ -107,12 +107,13 @@ export const getProductsToProcess = async (take: number) => {
     take,
   })
 
-  return products.map((product) => decryptProductFields(product))
+  return products.map((product) => ({ ...product, ...decryptProductFields(product) }))
 }
 
 const productWithScoreSelect = {
   id: true,
   gtins: true,
+  isPublic: true,
   internalReference: true,
   brand: true,
   createdAt: true,
@@ -146,6 +147,38 @@ export const getProductWithScoreHistoryCount = async (gtin: string) => {
     },
   })
 }
+
+export const getProductInformations = async (id: string) => {
+  const product = await prismaClient.product.findUnique({
+    where: { id },
+    select: {
+      ...productWithScoreSelect,
+      business: true,
+      countryDyeing: true,
+      countryFabric: true,
+      countryMaking: true,
+      countrySpinning: true,
+      mass: true,
+      price: true,
+      airTransportRatio: true,
+      numberOfReferences: true,
+      fading: true,
+      upcycled: true,
+      impression: true,
+      impressionPercentage: true,
+      materials: true,
+      accessories: true,
+    },
+  })
+
+  if (product && product.isPublic === "true") {
+    return decryptProductFields(product)
+  }
+
+  return null
+}
+
+export type ProductInformations = Awaited<ReturnType<typeof getProductInformations>>
 
 export const getProductWithScore = async (gtin: string) =>
   prismaClient.product.findFirst({
@@ -293,7 +326,11 @@ export const getProductsByUploadId = async (uploadId: string) => {
     ...upload.reUploadProducts.map(({ product, uploadOrder }) => ({ ...product, uploadOrder })),
   ]
     .sort((a, b) => (a.uploadOrder || 0) - (b.uploadOrder || 0))
-    .map((product) => decryptProductFields({ ...product, upload: upload }))
+    .map((product) => ({
+      ...product,
+      upload: upload,
+      ...decryptProductFields(product),
+    }))
 }
 
 export const failProducts = async (products: { id: string; error: string }[]) => {

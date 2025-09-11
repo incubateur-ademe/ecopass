@@ -158,6 +158,8 @@ model Product {
   declaredScore     Float?   @map("declared_score")
   category          String
 
+  isPublic String? @map("is_public")
+
   // Encrypted string
   business        String
   countryDyeing   String @map("country_dyeing")

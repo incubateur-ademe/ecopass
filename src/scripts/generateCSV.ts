@@ -37,6 +37,7 @@ const generate = (name: string, length?: string) => {
     return {
       gtins: Array.from({ length: faker.number.int({ min: 1, max: 3 }) }).map(() => faker.string.numeric(13)),
       internalReference: faker.string.alphanumeric(10),
+      isPublic: faker.datatype.boolean(),
       category: faker.helpers.arrayElement(Object.keys(productCategories)),
       business: faker.helpers.arrayElement(["", ...Object.keys(businesses)]),
       countryDyeing: faker.helpers.arrayElement(Object.keys(countries)),
@@ -44,7 +45,7 @@ const generate = (name: string, length?: string) => {
       countryMaking: faker.helpers.arrayElement(Object.keys(countries)),
       countrySpinning: faker.helpers.arrayElement(Object.keys(countries)),
       impressionMapping: faker.helpers.arrayElement(["", ...Object.keys(impressionMapping)]),
-      impressionPercentage: faker.number.float({ min: 0, max: 1 }),
+      impressionPercentage: faker.number.float({ min: 0, max: 0.8 }),
       mass: faker.number.float({ min: 0.01 }),
       price: faker.number.float({ min: 1, max: 1000 }),
       airTransportRatio: faker.number.float({ min: 0, max: 1 }),
@@ -71,6 +72,7 @@ const generate = (name: string, length?: string) => {
     products.map((product) => [
       product.gtins.join(";"),
       product.internalReference,
+      product.isPublic ? "Oui" : "Non",
       "",
       "",
       product.category,
@@ -101,6 +103,7 @@ const generate = (name: string, length?: string) => {
       columns: [
         "GTINs/EANs",
         "Référence interne",
+        "Données publiques",
         "Marque",
         "Score",
         "Catégorie",

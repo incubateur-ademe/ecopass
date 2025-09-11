@@ -12,12 +12,14 @@ import { Readable } from "stream"
 import { FileUpload } from "../../db/upload"
 import { encryptProductFields } from "../encryption/encryption"
 import { hashProduct } from "../encryption/hash"
+import { getValue, simplifyValue } from "../types/mapping"
 
 type ColumnType = [
   "gtinseans",
   "referenceinterne",
   "marque",
   "score",
+  "donneespubliques",
   "categorie",
   "masse",
   "remanufacture",
@@ -121,17 +123,6 @@ const columns: Partial<Record<ColumnType[number], string>> = {
 
 const columnsValues = Object.keys(columns)
 
-const simplifyValue = (value: string | null) =>
-  value
-    ? value
-        .trim()
-        .toLowerCase()
-        .replace(/\(.*?\)/g, "")
-        .replace(/[ \/'-]/g, "")
-        .replace(/[éè]/g, "e")
-        .replace(/ç/g, "c")
-    : ""
-
 const checkHeaders = (headers: string[]) => {
   const formattedHeaders = headers.map((header) => simplifyValue(header))
 
@@ -145,15 +136,6 @@ const checkHeaders = (headers: string[]) => {
   return formattedHeaders
 }
 
-const getValue = <T>(mapping: Record<string, T>, key: string): T => {
-  const simplifiedKey = simplifyValue(key)
-  const value = mapping[simplifiedKey]
-  if (value !== undefined) {
-    return value
-  }
-  return key as T
-}
-
 const getBooleanValue = (value: string) => {
   if (value === "") {
     return undefined
@@ -165,6 +147,7 @@ const getBooleanValue = (value: string) => {
   } else if (simplifiedValue === "non" || simplifiedValue === "no" || simplifiedValue === "false") {
     return false
   }
+
   return value
 }
 
@@ -239,6 +222,9 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         internalReference: row.record["referenceinterne"] || "",
         brand: row.record["marque"] || upload.createdBy.organization?.name || "",
         declaredScore: getNumberValue(row.record["score"], 1, -1) as number | undefined,
+        isPublic: row.record["donneespubliques"]
+          ? getBooleanValue(row.record["donneespubliques"])?.toString()
+          : undefined,
         product: getValue<ProductCategory>(productCategories, row.record["categorie"]),
         airTransportRatio: getNumberValue(row.record["partdutransportaerien"], 0.01),
         business: getValue<Business>(businesses, row.record["tailledelentreprise"]),

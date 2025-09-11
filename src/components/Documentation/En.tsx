@@ -18,6 +18,9 @@ const En = () => {
           main GTIN (or EAN).
         </li>
         <li>
+          <b>Données publiques</b> (optional) : Do you want to make your product information public? Yes/No.
+        </li>
+        <li>
           <b>Marque</b> (optional): product brand.
         </li>
         <li>

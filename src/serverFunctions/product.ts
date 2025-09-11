@@ -1,14 +1,11 @@
 "use server"
-
-import { getProductWithScoreHistory, getProductWithScoreHistoryCount } from "../db/product"
-import { auth } from "../services/auth/auth"
+import {
+  getProductWithScoreHistory,
+  getProductWithScoreHistoryCount,
+  getProductInformations as dbGetProductInformations,
+} from "../db/product"
 
 export const getProductHistory = async (gtin: string, page: number, pageSize: number) => {
-  const session = await auth()
-  if (!session || !session.user) {
-    return { products: [], total: 0 }
-  }
-
   const [products, total] = await Promise.all([
     getProductWithScoreHistory(gtin, page, pageSize),
     getProductWithScoreHistoryCount(gtin),
@@ -16,3 +13,5 @@ export const getProductHistory = async (gtin: string, page: number, pageSize: nu
 
   return { products, total }
 }
+
+export const getProductInformations = async (id: string) => dbGetProductInformations(id)

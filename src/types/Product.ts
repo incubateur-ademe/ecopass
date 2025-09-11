@@ -76,6 +76,7 @@ export enum Country {
 export type ProductWithMaterialsAndAccessories = Omit<
   Product,
   | "hash"
+  | "isPublic"
   | "mass"
   | "price"
   | "airTransportRatio"
@@ -122,6 +123,7 @@ export type ParsedProduct = {
   internalReference: string
   brand: string
   declaredScore: number | undefined
+  isPublic: string | undefined
   product: ProductCategory
   airTransportRatio: string | number | undefined
   business: Business

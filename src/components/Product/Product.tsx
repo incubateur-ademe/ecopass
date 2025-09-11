@@ -6,6 +6,7 @@ import ProductScore from "./ProductScore"
 import ProductHistory from "./ProductHistory"
 import ProductScoreImpacts from "./ProductScoreImpacts"
 import { productCategories } from "../../utils/types/productCategory"
+import ProductInformations from "./ProductInformations"
 
 const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: string; isOld?: boolean }) => {
   return (
@@ -52,6 +53,11 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
           )}
         </div>
       </Block>
+      {product.isPublic ? (
+        <Block>
+          <ProductInformations id={product.id} />
+        </Block>
+      ) : null}
       {product.score ? <ProductScoreImpacts score={product.score} /> : null}
       <Block>
         <ProductHistory gtin={gtin} />

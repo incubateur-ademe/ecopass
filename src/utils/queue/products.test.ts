@@ -2,7 +2,7 @@ import { processProductsQueue } from "./products"
 import { failProducts, getProductsToProcess } from "../../db/product"
 import { checkUploadsStatus } from "../../db/upload"
 import { saveEcobalyseResults } from "../ecobalyse/api"
-import { Status } from "../../../prisma/src/prisma"
+import { Status, UploadType } from "../../../prisma/src/prisma"
 import { Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 
 jest.mock("../../db/product")
@@ -28,8 +28,23 @@ describe("processProductsQueue", () => {
     uploadOrder: 1,
     upload: {
       id: "test-upload-id",
+      error: null,
+      name: "Test Upload",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      type: UploadType.API,
+      organizationId: "org-1",
+      version: "1.0",
+      status: Status.Pending,
+      createdById: "user-1",
       createdBy: {
+        id: "user-1",
+        nom: "Dane",
+        prenom: "Jane",
+        emailVerified: new Date(),
+        agentconnect_info: {},
         email: "test@test.fr",
+        organizationId: "org-1",
         organization: {
           name: "Test Organization",
           authorizedBy: [],
@@ -37,8 +52,10 @@ describe("processProductsQueue", () => {
         },
       },
     },
+    hash: "hash",
     id: "product-1",
     gtins: ["1234567891113", "1234567891012"],
+    isPublic: true,
     internalReference: "My-ref",
     brand: "Test Organization",
     declaredScore: 123,
@@ -78,6 +95,7 @@ describe("processProductsQueue", () => {
     )
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([
       {
+        isPublic: true,
         accessories: [],
         airTransportRatio: 0.1,
         brand: "Test Organization",
@@ -163,6 +181,7 @@ describe("processProductsQueue", () => {
 
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([
       {
+        isPublic: true,
         accessories: [],
         airTransportRatio: 0.1,
         brand: "Test Organization",

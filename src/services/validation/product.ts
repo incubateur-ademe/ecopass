@@ -38,6 +38,7 @@ const productValidation = z.object({
     .min(1, "Il doit y avoir au moins un GTIN"),
   internalReference: z.string({ message: "La référence interne est obligatoire" }),
   declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
+  isPublic: z.boolean({ message: "Données publiques doit valoir 'Oui' ou 'Non'" }),
   category: z.enum(ProductCategory, { message: "Catégorie de produit invalide" }),
   airTransportRatio: z
     .number({ message: "La part de transport aérien doit être un pourcentage" })

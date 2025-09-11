@@ -45,7 +45,16 @@ async function main(email: string) {
 
   const products = user.uploads.flatMap((upload) => upload.products)
 
-  const decryptedProducts = products.map((product) => decryptProductFields(product))
+  const decryptedProducts = products.map((product) => ({
+    ...product,
+    isPublic:
+      product.isPublic === null || product.isPublic === "false"
+        ? false
+        : product.isPublic === "true"
+          ? true
+          : product.isPublic,
+    ...decryptProductFields(product),
+  }))
 
   const csv = stringify(
     decryptedProducts.map((product) => [

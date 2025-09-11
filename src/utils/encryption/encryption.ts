@@ -2,7 +2,7 @@ import crypto from "crypto"
 import { ProductAPIValidation } from "../../services/validation/api"
 import { ParsedProduct } from "../../types/Product"
 import JSZip from "jszip"
-import { Accessory, Material, Product, Score } from "../../../prisma/src/prisma"
+import { Accessory, Material, Product } from "../../../prisma/src/prisma"
 
 const ALGO = "aes-256-gcm"
 const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, "hex")
@@ -61,23 +61,37 @@ export const decryptString = (data: string) => {
 }
 
 export const decryptProductFields = (
-  product: Product & {
-    materials: Material[]
-    accessories: Accessory[]
-    score?: Score | null
-    upload: {
-      createdBy: {
-        organization: {
-          name: string
-          authorizedBy: { from: { name: string; brands: { name: string }[] } }[]
-          brands: { name: string }[]
-        } | null
-      }
-    }
-  },
+  product: Pick<
+    Product & {
+      materials: Material[]
+      accessories: Accessory[]
+    },
+    | "isPublic"
+    | "business"
+    | "countryDyeing"
+    | "countryFabric"
+    | "countryMaking"
+    | "countrySpinning"
+    | "mass"
+    | "price"
+    | "airTransportRatio"
+    | "numberOfReferences"
+    | "fading"
+    | "upcycled"
+    | "impression"
+    | "impressionPercentage"
+    | "materials"
+    | "accessories"
+  >,
 ) => ({
-  ...product,
-  category: product.category,
+  isPublic:
+    product.isPublic === null
+      ? false
+      : product.isPublic === "true"
+        ? true
+        : product.isPublic === "false"
+          ? false
+          : product.isPublic,
   business: decryptString(product.business),
   countryDyeing: decryptString(product.countryDyeing),
   countryFabric: decryptString(product.countryFabric),
@@ -111,6 +125,7 @@ export function encryptProductFields(product: ProductAPIValidation | ParsedProdu
       internalReference: product.internalReference,
       brand: product.brand,
       declaredScore: product.declaredScore || null,
+      isPublic: product.isPublic === undefined ? null : product.isPublic.toString(),
       category: product.product,
       airTransportRatio: encrypt(product.airTransportRatio),
       business: encrypt(product.business),

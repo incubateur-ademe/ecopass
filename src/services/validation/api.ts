@@ -33,6 +33,7 @@ const productAPIValidation = z.object({
   gtins: z.array(z.string().regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")).min(1),
   internalReference: z.string(),
   declaredScore: z.number().optional(),
+  isPublic: z.boolean().optional(),
   product: z.enum(productValues),
   airTransportRatio: z.number().min(0).max(1).optional(),
   upcycled: z.boolean().optional(),

@@ -9,10 +9,10 @@ import {
   decryptNumber,
   decryptBoolean,
 } from "./encryption"
-import { Status } from "../../../prisma/src/prisma"
 
 const product = {
   gtins: ["12345678", "87654321"],
+  isPublic: "oui",
   internalReference: "TestRef",
   brand: "TestBrand",
   declaredScore: 99,
@@ -35,7 +35,7 @@ const product = {
 
 const checkDecryption = (product: any, encrypted: any, decrypted: any) => {
   const objectFields = ["trims", "materials", "printing"]
-  const notEncryptedFields = ["gtins", "internalReference", "brand", "declaredScore", "product"]
+  const notEncryptedFields = ["gtins", "internalReference", "brand", "declaredScore", "product", "isPublic"]
   const encryptedFields = Object.keys(product).filter(
     (key) => !notEncryptedFields.includes(key) && !objectFields.includes(key),
   )
@@ -43,10 +43,21 @@ const checkDecryption = (product: any, encrypted: any, decrypted: any) => {
   for (const field of notEncryptedFields) {
     if (field === "product") {
       expect(encrypted.product.category).toEqual(product.product)
-      expect(decrypted.category).toEqual(product.product)
+      expect(decrypted.category).toEqual(undefined)
+    } else if (field === "isPublic") {
+      expect(encrypted.product[field]).toEqual(product[field])
+      expect(decrypted[field]).toEqual(
+        product.isPublic === null
+          ? false
+          : product.isPublic === "true"
+            ? true
+            : product.isPublic === "false"
+              ? false
+              : product.isPublic,
+      )
     } else {
       expect(encrypted.product[field]).toEqual(product[field])
-      expect(decrypted[field]).toEqual(product[field])
+      expect(decrypted[field]).toEqual(undefined)
     }
   }
 
@@ -96,20 +107,9 @@ describe("encryption utils", () => {
   it("encryptProductFields returns encrypted fields and decrypts it", () => {
     const encrypted = encryptProductFields(product)
     const decrypted = decryptProductFields({
-      status: Status.Pending,
-      id: uuid(),
-      hash: "test-hash",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      error: null,
-      uploadId: uuid(),
-      uploadOrder: 0,
       ...encrypted.product,
       materials: encrypted.materials.map((material) => ({ ...material, id: uuid(), productId: uuid() })),
       accessories: encrypted.accessories?.map((accessory) => ({ ...accessory, id: uuid(), productId: uuid() })) || [],
-      upload: {
-        createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
-      },
     })
     checkDecryption(product, encrypted, decrypted)
   })
