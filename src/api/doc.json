@@ -387,6 +387,10 @@
             "type": "string",
             "description": "Marque du produit"
           },
+          "declaredScore": {
+            "type": "number",
+            "description": "Score Ecobalyse, si vous l'avez calculé. Attention, si il est différent de notre calcul, le produit sera en erreur."
+          },
           "mass": {
             "type": "number",
             "description": "Masse du produit fini, en kilogrammes",
