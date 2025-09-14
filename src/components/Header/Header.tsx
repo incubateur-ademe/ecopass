@@ -1,7 +1,5 @@
 "use client"
-
 import { Header as HeaderDSFR } from "@codegouvfr/react-dsfr/Header"
-import { Badge } from "@codegouvfr/react-dsfr/Badge"
 import { Session } from "next-auth"
 import { usePathname } from "next/navigation"
 
@@ -14,14 +12,7 @@ const Header = ({ session }: { session: Session | null }) => {
         href: "/",
         title: "Accueil - Affichage environnemental",
       }}
-      serviceTitle={
-        <>
-          Affichage environnemental
-          <Badge as='span' noIcon severity='success'>
-            Beta
-          </Badge>
-        </>
-      }
+      serviceTitle={<>Affichage environnemental</>}
       navigation={
         session
           ? [
