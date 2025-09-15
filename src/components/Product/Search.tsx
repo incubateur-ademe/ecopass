@@ -4,16 +4,22 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import { useState } from "react"
 
-const Search = () => {
+const Search = ({ withAlert }: { withAlert?: boolean }) => {
   const [gtin, setGTIN] = useState("")
   return (
     <>
-      <Alert
-        severity='info'
-        className='fr-mb-2w'
-        title='Ce site est en construction'
-        description="Le contenu du portail d'affichage environnemental est fourni par les marques de textiles. Comme le service vient tout juste d'être lancé, il se peut que certains produits ne soient pas encore disponibles lors de votre recherche."
-      />
+      <div className='fr-mt-4w'>
+        {withAlert ? (
+          <Alert
+            severity='info'
+            className='fr-mb-2w'
+            title='Ce site est en construction'
+            description="Le contenu du portail d'affichage environnemental est fourni par les marques de textiles. Comme le service vient tout juste d'être lancé, il se peut que certains produits ne soient pas encore disponibles lors de votre recherche."
+          />
+        ) : (
+          <h2>Cherchez un autre produit</h2>
+        )}
+      </div>
       <p>Saisissez le code-barres du produit recherché (8 ou 13 chiffres)</p>
       <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle'>
         <Input
