@@ -1,6 +1,4 @@
 "use client"
-
-import { CallOut } from "@codegouvfr/react-dsfr/CallOut"
 import { Upload as UploadDSFR } from "@codegouvfr/react-dsfr/Upload"
 import { useCallback, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -37,31 +35,28 @@ const Upload = () => {
 
   const sizeError = file ? file.size > 1 * 1024 * 1024 : false
   return (
-    <div className={success || error ? "" : styles.container}>
-      <CallOut title='Aide'>
-        <p>
-          Vous pouvez télécharger{" "}
-          <Link href='/exemple/exemple.csv' className='fr-link' prefetch={false}>
-            un exemple
-          </Link>{" "}
-          ou consulter{" "}
-          <Link href='/documentation' className='fr-link' prefetch={false}>
-            la documentation
-          </Link>
-          .
-        </p>
-        <p>
-          Si vous avez besoin d'aide, veuillez contacter notre support à l'adresse suivante :{" "}
-          <Link
-            className='fr-link'
-            href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}
-            prefetch={false}
-            target='_blank'
-            rel='noopener noreferrer'>
-            {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
-          </Link>
-        </p>
-      </CallOut>
+    <>
+      <p>
+        Vous pouvez télécharger{" "}
+        <Link href='/exemple/exemple.csv' className='fr-link' prefetch={false}>
+          un exemple
+        </Link>{" "}
+        ou consulter{" "}
+        <Link href='/documentation' className='fr-link' prefetch={false}>
+          la documentation
+        </Link>
+      </p>
+      <p className='fr-mb-4w'>
+        Si vous avez besoin d'aide, veuillez contacter notre support à l'adresse suivante :{" "}
+        <Link
+          className='fr-link'
+          href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}
+          prefetch={false}
+          target='_blank'
+          rel='noopener noreferrer'>
+          {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
+        </Link>
+      </p>
       {success || error ? (
         <Alert
           data-testid={`upload-${success ? "success" : "error"}`}
@@ -98,7 +93,7 @@ const Upload = () => {
           }
         />
       ) : (
-        <div>
+        <>
           <UploadDSFR
             label='Déposez votre fichier pour déclarer vos produits.'
             disabled={uploading}
@@ -113,9 +108,9 @@ const Upload = () => {
           <LoadingButton disabled={!file || sizeError} onClick={upload} loading={uploading} className={styles.button}>
             Envoyer mon fichier pour validation
           </LoadingButton>
-        </div>
+        </>
       )}
-    </div>
+    </>
   )
 }
 
