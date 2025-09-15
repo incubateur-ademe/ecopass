@@ -11,7 +11,7 @@ const SearchBanner = () => {
         Vous pouvez rechercher un produit par son code-barres pour avoir plus d'informations sur sont coût
         environnemental.
       </p>
-      <Search />
+      <Search withAlert />
     </div>
   )
 }

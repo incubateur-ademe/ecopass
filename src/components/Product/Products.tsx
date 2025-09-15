@@ -31,7 +31,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
   ) : (
     <>
       <DownloadScores brand={brand} />
-      <Search />
+      <Search withAlert />
       <div data-testid='products-table'>
         <Table
           className={styles.table}
