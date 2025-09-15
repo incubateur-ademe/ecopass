@@ -8,13 +8,7 @@ import { Status } from "../../../prisma/src/prisma"
 import { formatDateTime } from "../../services/format"
 import Table from "../Table/Table"
 import styles from "./Uploads.module.css"
-
-const statusTitle: Record<Status, string> = {
-  [Status.Done]: "Déclaration validée",
-  [Status.Error]: "À corriger",
-  [Status.Pending]: "Analyse en cours",
-  [Status.Processing]: "Analyse en cours",
-}
+import StatusBadge from "./StatusBadge"
 
 const Uploads = async ({ page }: { page: number }) => {
   const session = await auth()
@@ -37,9 +31,7 @@ const Uploads = async ({ page }: { page: number }) => {
         data={uploads.map((upload) => [
           formatDateTime(upload.createdAt),
           upload.name,
-          upload.status === Status.Processing
-            ? `${statusTitle[upload.status]} ${upload.total > 0 ? `(${upload.done}/${upload.total})` : ""}`
-            : statusTitle[upload.status],
+          <StatusBadge status={upload.status} total={upload.total} done={upload.success} key={`status-${upload.id}`} />,
           (upload.status === Status.Error || upload.status === Status.Done) && upload.total > 0
             ? `${upload.success}/${upload.total}`
             : "",
