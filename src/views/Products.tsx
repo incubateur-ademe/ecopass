@@ -22,7 +22,7 @@ const ProductsPage = ({
         <h1>Mes produits</h1>
         {brands.length > 1 && <BrandSelection brands={brands} brand={brand} />}
         {productsCount === 0 ? (
-          <p>Vous n'avez pas encore déclaré de produits</p>
+          <p>Vous n'avez pas encore déclaré de produits.</p>
         ) : (
           <p>
             Vous avez <b>{productsCount}</b>{" "}

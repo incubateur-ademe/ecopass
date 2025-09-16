@@ -26,7 +26,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
       <Link className='fr-link' href='/declarations'>
         Mes déclarations
       </Link>{" "}
-      pour deposer un produit.
+      pour enregistrer un produit.
     </p>
   ) : (
     <>

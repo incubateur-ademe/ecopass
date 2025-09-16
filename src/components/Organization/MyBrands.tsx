@@ -7,7 +7,7 @@ const MyBrands = ({ organization }: { organization: UserOrganization }) => {
     <>
       {organization.brands.length === 0 ? (
         <>
-          <p>Vous n'avez pas encore déclarer de marques.</p>
+          <p>Vous n'avez pas encore déclaré de marques.</p>
           <p>Tout vos produits apparaitront sur le nom de votre organisation ({organization.name}).</p>
         </>
       ) : (
