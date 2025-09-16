@@ -39,7 +39,7 @@ const Upload = () => {
   return (
     <div className={success || error ? "" : styles.container}>
       <CallOut title='Aide'>
-        <p>
+        <span>
           Vous pouvez télécharger{" "}
           <Link href='/exemple/exemple.csv' className='fr-link' prefetch={false}>
             un exemple
@@ -49,8 +49,9 @@ const Upload = () => {
             la documentation
           </Link>
           .
-        </p>
-        <p>
+        </span>
+        <br />
+        <span>
           Si vous avez besoin d'aide, veuillez contacter notre support à l'adresse suivante :{" "}
           <Link
             className='fr-link'
@@ -60,7 +61,7 @@ const Upload = () => {
             rel='noopener noreferrer'>
             {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
           </Link>
-        </p>
+        </span>
       </CallOut>
       {success || error ? (
         <Alert

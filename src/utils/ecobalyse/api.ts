@@ -46,7 +46,7 @@ const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories):
     business: product.business ? businessesMapping[product.business] : undefined,
     countryDyeing: product.countryDyeing ? countryMapping[product.countryDyeing] : undefined,
     countryFabric: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
-    countryMaking: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
+    countryMaking: product.countryMaking ? countryMapping[product.countryMaking] : undefined,
     countrySpinning: product.countrySpinning ? countryMapping[product.countrySpinning] : undefined,
     printing:
       product.impression && product.impressionPercentage
@@ -97,7 +97,7 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     internalReference: undefined,
     declaredScore: undefined,
   }
-
+  console.log(productData)
   const result = await runElmFunction<EcobalyseResponse>({
     method: "POST",
     url: "/textile/simulator/detailed",
