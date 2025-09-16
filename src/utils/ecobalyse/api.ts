@@ -97,7 +97,7 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     internalReference: undefined,
     declaredScore: undefined,
   }
-  console.log(productData)
+
   const result = await runElmFunction<EcobalyseResponse>({
     method: "POST",
     url: "/textile/simulator/detailed",
