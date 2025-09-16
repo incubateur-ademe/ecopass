@@ -15,7 +15,7 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
         <Alert
           severity='error'
           title='Erreur lors du téléchargement'
-          description='Veuillez reessayer, si le problème persite merci de nous contacter'
+          description='Veuillez réessayer, si le problème persiste, merci de nous contacter.'
           className='fr-mt-2w'
         />
       )}
