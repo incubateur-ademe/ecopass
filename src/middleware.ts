@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
           `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.php?idsite=${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}&rec=1&${param}`,
           {
             method: "POST",
-          }
+          },
         )
         return resolve()
       }
