@@ -43,7 +43,7 @@ test("manage branch", async ({ page }) => {
   await page.getByRole("row", { name: "Emmaus Solidarité Supprimer" }).getByRole("button").click()
   await page.getByRole("row", { name: "Emmaus Connect" }).getByRole("button").click()
 
-  await expect(page.locator("#contenu")).toContainText("Vous n'avez pas encore déclarer de marques.")
+  await expect(page.locator("#contenu")).toContainText("Vous n'avez pas encore déclaré de marques.")
 })
 
 test("manage delegation", async ({ page }) => {
