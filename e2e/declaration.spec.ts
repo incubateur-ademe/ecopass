@@ -17,7 +17,7 @@ test("declare my products", async ({ page }) => {
   await expect(page).toHaveURL(/.*\/declaration/)
 
   await expect(page.getByTestId("uploads-table").locator("table tbody tr")).toHaveCount(0)
-  await expect(page.locator("#contenu")).toContainText("Aucun fichier pour le moment.")
+  await expect(page.locator("#contenu")).toContainText("Aucun fichier n’a été déposé pour le moment.")
 
   await expect(page.getByTestId("upload-success")).not.toBeVisible()
   await expect(page.getByRole("button", { name: "Envoyer mon fichier pour validation" })).toBeDisabled()

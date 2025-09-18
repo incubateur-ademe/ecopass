@@ -6,6 +6,7 @@ import { formatDateTime } from "../../services/format"
 import styles from "./Products.module.css"
 import { useState } from "react"
 import Alert from "@codegouvfr/react-dsfr/Alert"
+import StatusBadge from "./StatusBadge"
 
 const ExportsTable = ({ exports }: { exports: Export[] }) => {
   const [error, setError] = useState<boolean>(false)
@@ -27,9 +28,9 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
         headers={["Date", "Status", "Nom", ""]}
         data={exports.map((item) => [
           formatDateTime(item.createdAt),
-          item.status,
+          <StatusBadge status={item.status} key={item.id} />,
           item.name,
-          item.status == Status.Done ? <DownloadExport name={item.name} key={item.name} setError={setError} /> : "",
+          item.status == Status.Done ? <DownloadExport name={item.name} key={item.id} setError={setError} /> : "",
         ])}
       />
     </>
