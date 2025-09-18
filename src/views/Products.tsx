@@ -43,7 +43,7 @@ const ProductsPage = ({
           <p>
             Pour télécharger l'affichage environnemental de vos produits, veuillez cliquer sur le bouton ci dessous.
           </p>
-          <p>Note : Vos exports restent disponibles 30 jours.</p>
+          <p>Note : Vos fichiers restent disponibles 30 jours.</p>
           <br />
           <NewExport brand={brand} />
           <Suspense>

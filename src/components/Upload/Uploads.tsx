@@ -19,7 +19,7 @@ const Uploads = async ({ page }: { page: number }) => {
   const uploads = await getUploadsByUserId(session.user.id, page - 1)
 
   return uploads.length === 0 ? (
-    <p>Aucun fichier pour le moment.</p>
+    <p>Aucun fichier n’a été déposé pour le moment.</p>
   ) : (
     <div data-testid='uploads-table'>
       <Table
@@ -27,7 +27,7 @@ const Uploads = async ({ page }: { page: number }) => {
         fixed
         caption='Mes fichiers'
         noCaption
-        headers={["Date de dépot", "Nom du fichier", "Statut", "Nombre de produits validés", "Résultat"]}
+        headers={["Date de dépot", "Nom du fichier", "Statut", "Nombre de produits validés", "Fichier de résultat"]}
         data={uploads.map((upload) => [
           formatDateTime(upload.createdAt),
           upload.name,

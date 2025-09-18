@@ -40,26 +40,30 @@ const Upload = () => {
     <div className={success || error ? "" : styles.container}>
       <CallOut title='Aide'>
         <span>
-          Vous pouvez télécharger{" "}
-          <Link href='/exemple/exemple.csv' className='fr-link' prefetch={false}>
-            un exemple
-          </Link>{" "}
-          ou consulter{" "}
-          <Link href='/documentation' className='fr-link' prefetch={false}>
-            la documentation
+          Vous souhaitez un modèle de fichier CSV ?{" "}
+          <Link href='/exemple/exemple.csv' className='fr-link fr-callout__text' prefetch={false}>
+            Téléchargez notre template
           </Link>
           .
         </span>
         <br />
         <span>
-          Si vous avez besoin d'aide, veuillez contacter notre support à l'adresse suivante :{" "}
+          Comment concevoir un fichier de déclaration pour le portail ?{" "}
+          <Link href='/documentation' className='fr-link fr-callout__text' prefetch={false}>
+            Consultez l'aide en ligne
+          </Link>
+          .
+        </span>
+        <br />
+        <span>
+          Si vous avez besoin d’aide,{" "}
           <Link
-            className='fr-link'
+            className='fr-link fr-callout__text'
             href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}
             prefetch={false}
             target='_blank'
             rel='noopener noreferrer'>
-            {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
+            vous pouvez contacter le service support.
           </Link>
         </span>
       </CallOut>
