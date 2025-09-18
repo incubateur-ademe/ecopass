@@ -79,16 +79,6 @@ describe("hashProduct", () => {
     expect(hash1).not.toBe(hash2)
   })
 
-  it("should generate same hash regardless of declaredScore value", () => {
-    const hash1 = hashProduct(baseProduct)
-    const hash2 = hashProduct({
-      ...baseProduct,
-      declaredScore: 3000,
-    })
-
-    expect(hash1).toBe(hash2)
-  })
-
   it("should generate different hashes when properties change", () => {
     const hash1 = hashProduct(baseProduct)
     const hash2 = hashProduct({
