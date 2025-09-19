@@ -1,6 +1,6 @@
 import { processUploadsToQueue } from "./uploads"
 import chardet from "chardet"
-import { parseCSV } from "../csv/parse"
+import { parseCSV } from "../parsing/csv/parse"
 import { createProducts } from "../../db/product"
 import { failUpload, completeUpload } from "../../services/upload"
 import { checkUploadsStatus, getFirstFileUpload, updateUploadToPending } from "../../db/upload"
@@ -10,7 +10,7 @@ import { Status } from "../../../prisma/src/prisma"
 import { decryptAndDezipFile } from "../encryption/encryption"
 
 jest.mock("chardet")
-jest.mock("../csv/parse")
+jest.mock("../parsing/csv/parse")
 jest.mock("../../db/product")
 jest.mock("../../services/upload")
 jest.mock("../../db/upload")
