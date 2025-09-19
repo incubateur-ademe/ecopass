@@ -119,6 +119,41 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "Déclaration de test",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Test réussi.",
+                  "properties": {
+                    "result": {
+                      "type": "string",
+                      "enum": ["success"]
+                    },
+                    "detail": {
+                      "type": "object",
+                      "description": "Détail des impacts environnementaux du produit",
+                      "properties": {
+                        "score": {
+                          "type": "number",
+                          "description": "Score environnemental global du produit",
+                          "example": 1572.054048756191
+                        },
+                        "durability": {
+                          "type": "number",
+                          "description": "Indice de durabilité du produit (entre 0 et 1)",
+                          "example": 0.67,
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "201": {
             "description": "Déclaration validée",
             "content": {
@@ -369,6 +404,11 @@
         "additionalProperties": false,
         "required": ["gtins", "internalReference", "mass", "materials", "product"],
         "properties": {
+          "test": {
+            "type": "boolean",
+            "description": "Indique si c'est une déclaration de test (true) ou une déclaration réelle (false ou absent)",
+            "default": false
+          },
           "gtins": {
             "type": "array",
             "description": "Les codes GTIN (ou EAN) du produit, format 13 ou 8 chiffres",

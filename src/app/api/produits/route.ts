@@ -68,6 +68,14 @@ export async function POST(req: Request) {
     if (product.data.declaredScore && Math.round(score.score) !== product.data.declaredScore) {
       return NextResponse.json({ error: "Le score déclaré ne correspond pas au score calculé." }, { status: 400 })
     }
+
+    if (product.data.test) {
+      return NextResponse.json(
+        { result: "success", detail: { score: score.score, durability: score.durability } },
+        { status: 200 },
+      )
+    }
+
     await createScore(api.user, product.data, { ...score, standardized: (score.score / product.data.mass) * 0.1 }, hash)
     return NextResponse.json({ result: "success" }, { status: 201 })
   } catch (error) {
