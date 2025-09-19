@@ -16,6 +16,9 @@ const product = {
   internalReference: "REF-100",
   marque: "Emmaus",
   mass: 0.17,
+  countryDyeing: "IN",
+  countryFabric: "CN",
+  countryMaking: "MM",
   materials: [
     {
       id: "ei-coton",
@@ -47,6 +50,15 @@ test("declare my products by API", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(401)
+
+  // A test upload should succeed but not create a product
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, internalReference: "REF-99", gtins: ["9876543210123"], test: true },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(200)
 
   // A first upload should succeed
   response = await page.request.post("http://localhost:3000/api/produits", {
@@ -112,27 +124,27 @@ test("declare my products by API", async ({ page }) => {
     "REF-100",
   )
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
-    "1 777",
+    "1 755",
   )
   await page.getByTestId("products-table").locator("table tbody tr").nth(0).getByRole("link").click()
   await expect(page.getByTestId("product-details")).toHaveText(
     `T-shirt / Polo - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Par : Xavier Ecopass (Emmaus)Version Ecobalyse : ${ecobalyseVersion}`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
-    `Coût environnemental : 1777 pointsCoût environnemental pour 100g : 1045 pointsCoefficient de durabilité : 0.67Coût environnemental : 1777 points d'impact, 1045 pour 100g1 045 pts/100g1 777Télécharger le .svg`,
+    `Coût environnemental : 1755 pointsCoût environnemental pour 100g : 1032 pointsCoefficient de durabilité : 0.67Coût environnemental : 1755 points d'impact, 1032 pour 100g1 032 pts/100g1 755Télécharger le .svg`,
   )
 
   await page.getByRole("button", { name: "Voir l'historique du produit" }).click()
 
   await expect(page.getByTestId("history-table").locator("table tbody tr")).toHaveCount(3)
   await expect(page.getByTestId("history-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
-    "1777",
+    "1755",
   )
   await expect(page.getByTestId("history-table").locator("table tbody tr").nth(1).locator("td").nth(3)).toHaveText(
-    "1878",
+    "1857",
   )
   await expect(page.getByTestId("history-table").locator("table tbody tr").nth(2).locator("td").nth(3)).toHaveText(
-    "1777",
+    "1755",
   )
 
   await page.getByRole("link", { name: "API", exact: true }).click()

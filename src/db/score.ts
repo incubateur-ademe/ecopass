@@ -16,45 +16,48 @@ export const createScore = async (
   score: Omit<Prisma.ScoreCreateInput, "product">,
   hash: string,
 ) =>
-  prismaClient.$transaction(async (transaction) => {
-    if (!user.organization) {
-      throw new Error("User organization not found")
-    }
+  prismaClient.$transaction(
+    async (transaction) => {
+      if (!user.organization) {
+        throw new Error("User organization not found")
+      }
 
-    const encrypted = encryptProductFields(product)
+      const encrypted = encryptProductFields(product)
 
-    return transaction.score.create({
-      data: {
-        ...score,
-        product: {
-          create: {
-            ...encrypted.product,
-            hash,
-            brand: encrypted.product.brand || user.organization.name,
-            status: Status.Done,
-            upload: {
-              create: {
-                createdById: user.id,
-                organizationId: user.organization.id,
-                version: ecobalyseVersion,
-                type: UploadType.API,
-                status: Status.Done,
+      return transaction.score.create({
+        data: {
+          ...score,
+          product: {
+            create: {
+              ...encrypted.product,
+              hash,
+              brand: encrypted.product.brand || user.organization.name,
+              status: Status.Done,
+              upload: {
+                create: {
+                  createdById: user.id,
+                  organizationId: user.organization.id,
+                  version: ecobalyseVersion,
+                  type: UploadType.API,
+                  status: Status.Done,
+                },
               },
-            },
-            materials: {
-              createMany: {
-                data: encrypted.materials,
+              materials: {
+                createMany: {
+                  data: encrypted.materials,
+                },
               },
+              accessories: encrypted.accessories
+                ? {
+                    createMany: {
+                      data: encrypted.accessories,
+                    },
+                  }
+                : undefined,
             },
-            accessories: encrypted.accessories
-              ? {
-                  createMany: {
-                    data: encrypted.accessories,
-                  },
-                }
-              : undefined,
           },
         },
-      },
-    })
-  })
+      })
+    },
+    { timeout: 180000 },
+  )

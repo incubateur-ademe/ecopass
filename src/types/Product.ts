@@ -100,9 +100,9 @@ export type ProductWithMaterialsAndAccessories = Omit<
   upcycled?: boolean
   category: ProductCategory
   business?: Business
-  countryDyeing?: Country
-  countryFabric?: Country
-  countryMaking?: Country
+  countryDyeing: Country
+  countryFabric: Country
+  countryMaking: Country
   countrySpinning?: Country
   impression?: Impression
   impressionPercentage?: number

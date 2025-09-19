@@ -30,6 +30,7 @@ const accessoryValidation = z.object({
 })
 
 const productAPIValidation = z.object({
+  test: z.boolean().optional(),
   gtins: z.array(z.string().regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")).min(1),
   internalReference: z.string(),
   declaredScore: z.number().optional(),
@@ -41,9 +42,9 @@ const productAPIValidation = z.object({
   mass: z.number().min(0.01),
   numberOfReferences: z.number().min(1).max(999999).optional(),
   price: z.number().min(1).max(1000).optional(),
-  countryDyeing: z.enum(countryValues).optional(),
-  countryFabric: z.enum(countryValues).optional(),
-  countryMaking: z.enum(countryValues).optional(),
+  countryDyeing: z.enum(countryValues),
+  countryFabric: z.enum(countryValues),
+  countryMaking: z.enum(countryValues),
   countrySpinning: z.enum(countryValues).optional(),
   printing: z
     .object({

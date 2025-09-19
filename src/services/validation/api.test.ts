@@ -15,6 +15,9 @@ describe("productAPIValidation", () => {
         share: 1,
       },
     ],
+    countryDyeing: "CN",
+    countryFabric: "FR",
+    countryMaking: "ROC",
     trims: [{ id: "86b877ff-0d59-482f-bb34-3ff306b07496", quantity: 2 }],
   }
 
@@ -304,6 +307,15 @@ describe("productAPIValidation", () => {
     ])
   })
 
+  it("does not allow product with printing ratio too big", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "pigment", ratio: 0.85 } }, [
+      {
+        path: ["printing", "ratio"],
+        message: "Too big: expected number to be <=0.8",
+      },
+    ])
+  })
+
   it("does not allow product with invalid printing ratio", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "pigment", ratio: "Tout" } }, [
       {
@@ -397,5 +409,49 @@ describe("productAPIValidation", () => {
       { trims: [{ ...validProduct.trims[0], quantity: 0 }] },
       [{ path: ["trims", "0", "quantity"], message: "Too small: expected number to be >=1" }],
     )
+  })
+
+  it("does not allow product without countryDyeing", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { countryDyeing: undefined }, [
+      {
+        path: ["countryDyeing"],
+        message:
+          'Invalid option: expected one of "REO"|"REE"|"RAS"|"RAF"|"RME"|"RLA"|"RNA"|"ROC"|"MM"|"BD"|"CN"|"FR"|"IN"|"KH"|"MA"|"PK"|"TN"|"TR"|"VN"',
+      },
+    ])
+  })
+
+  it("does not allow product without countryFabric", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { countryFabric: undefined }, [
+      {
+        path: ["countryFabric"],
+        message:
+          'Invalid option: expected one of "REO"|"REE"|"RAS"|"RAF"|"RME"|"RLA"|"RNA"|"ROC"|"MM"|"BD"|"CN"|"FR"|"IN"|"KH"|"MA"|"PK"|"TN"|"TR"|"VN"',
+      },
+    ])
+  })
+
+  it("does not allow product without countryMaking", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { countryMaking: undefined }, [
+      {
+        path: ["countryMaking"],
+        message:
+          'Invalid option: expected one of "REO"|"REE"|"RAS"|"RAF"|"RME"|"RLA"|"RNA"|"ROC"|"MM"|"BD"|"CN"|"FR"|"IN"|"KH"|"MA"|"PK"|"TN"|"TR"|"VN"',
+      },
+    ])
+  })
+
+  it("allows valid product with test field set to true", () => {
+    const result = productAPIValidation.safeParse({
+      ...validProduct,
+      test: true,
+    })
+    expect(result.success).toEqual(true)
+  })
+
+  it("does not allow product with invalid test", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { test: "nimps" }, [
+      { path: ["test"], message: "Invalid input: expected boolean, received string" },
+    ])
   })
 })
