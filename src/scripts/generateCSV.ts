@@ -162,7 +162,7 @@ const generate = (name: string, length?: string) => {
         "Origine de l'ennoblissement/impression",
         "Type d'impression",
         "Pourcentage d'impression",
-        "Origine confection",
+        "Origine de confection",
         "Délavage",
         "Part du transport aérien",
         "Accessoire 1",

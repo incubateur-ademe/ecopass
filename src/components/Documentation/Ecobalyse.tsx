@@ -73,13 +73,13 @@ const Ecobalyse = () => {
           </p>
         </li>
         <li>
-          <b>Origine de tissage/tricotage</b> (optionnel) : pays pour l'étape de tissage/tricotage.
+          <b>Origine de tissage/tricotage</b> : pays pour l'étape de tissage/tricotage.
         </li>
         <li>
-          <b>Origine de l'ennoblissement/impression</b> (optionnel) : pays pour l'étape d'ennoblissement/impression.
+          <b>Origine de l'ennoblissement/impression</b> : pays pour l'étape d'ennoblissement/impression.
         </li>
         <li>
-          <b>Origine confection</b> (optionnel) : pays pour l'étape de confection.
+          <b>Origine de confection</b> : pays pour l'étape de confection.
         </li>
         <li>
           <b>Type d'impression</b> (optionnel) : type de procédé d'impression effectuée sur le produit à choisir dans la
