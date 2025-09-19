@@ -1,4 +1,5 @@
 import Button from "@codegouvfr/react-dsfr/Button"
+import { ecobalyseVersion } from "../../utils/ecobalyse/config"
 
 const En = () => {
   return (
@@ -21,8 +22,8 @@ const En = () => {
           <b>Marque</b> (optional): product brand.
         </li>
         <li>
-          <b>Score</b> (optional): Ecobalyse score, if you have calculated it. Warning: if it is different from our
-          calculation, the product will be flagged as an error.
+          <b>Score</b> (optional): Ecobalyse score (version {ecobalyseVersion}), if you have calculated it. Warning: if
+          it is different from our calculation, the product will be flagged as an error.
           <p className='fr-hint-text'>If not defined, the calculated score will be used.</p>
         </li>
         <li>
