@@ -402,7 +402,16 @@
       "ProductQuery": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["gtins", "internalReference", "mass", "materials", "product"],
+        "required": [
+          "gtins",
+          "internalReference",
+          "mass",
+          "materials",
+          "product",
+          "countryDyeing",
+          "countryFabric",
+          "countryMaking"
+        ],
         "properties": {
           "test": {
             "type": "boolean",

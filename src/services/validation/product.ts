@@ -58,9 +58,9 @@ const productValidation = z.object({
     .min(1, "Le prix doit être supérieur à 1 €")
     .max(1000, "Le prix doit être inférieur à 1000 €")
     .optional(),
-  countryDyeing: z.enum(Country, { message: "Origine de l'ennoblissement/impression invalide" }).optional(),
-  countryFabric: z.enum(Country, { message: "Origine de tissage/tricotage invalide" }).optional(),
-  countryMaking: z.enum(Country, { message: "Origine confection invalide" }).optional(),
+  countryDyeing: z.enum(Country, { message: "Origine de l'ennoblissement/impression invalide" }),
+  countryFabric: z.enum(Country, { message: "Origine de tissage/tricotage invalide" }),
+  countryMaking: z.enum(Country, { message: "Origine de confection invalide" }),
   countrySpinning: z.enum(Country, { message: "Origine de filature invalide" }).optional(),
   impression: z.enum(Impression, { message: "Type d'impression invalide" }).optional(),
   impressionPercentage: z

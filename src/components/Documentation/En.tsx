@@ -64,19 +64,19 @@ const En = () => {
           </ul>
         </li>
         <li>
-          <b>Origine origin</b> (optional): country for the spinning stage.
+          <b>Origine de filature</b> (optional): country for the spinning stage.
           <p className='fr-hint-text'>
             If not defined, the country of the most represented material in the mix will be used.
           </p>
         </li>
         <li>
-          <b>Origine de tissage/tricotage</b> (optional): country for the weaving/knitting stage.
+          <b>Origine de tissage/tricotage</b>: country for the weaving/knitting stage.
         </li>
         <li>
-          <b>Origine de l'ennoblissement/impression</b> (optional): country for the finishing/printing stage.
+          <b>Origine de l'ennoblissement/impression</b>: country for the finishing/printing stage.
         </li>
         <li>
-          <b>Origine confection</b> (optional): country for the manufacturing stage.
+          <b>Origine de confection</b>: country for the manufacturing stage.
         </li>
         <li>
           <b>Type d'impression</b> (optional): type of printing process performed on the product, to choose from:

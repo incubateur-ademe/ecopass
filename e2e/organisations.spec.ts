@@ -9,6 +9,9 @@ const product = {
   internalReference: "REF-099",
   brand: "Emmaus Connect",
   mass: 0.17,
+  countryDyeing: "IN",
+  countryFabric: "CN",
+  countryMaking: "MM",
   materials: [
     {
       id: "ei-coton",

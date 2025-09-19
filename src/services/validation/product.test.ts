@@ -18,6 +18,9 @@ describe("productValidation", () => {
     declaredScore: null,
     category: ProductCategory.Jean,
     mass: 0.5,
+    countryDyeing: Country.Chine,
+    countryFabric: Country.France,
+    countryMaking: Country.RégionEuropeDeLOuest,
     materials: [
       {
         id: "material-1",
@@ -361,7 +364,7 @@ describe("productValidation", () => {
       {
         countryMaking: "Ici",
       },
-      [{ path: ["countryMaking"], message: "Origine confection invalide" }],
+      [{ path: ["countryMaking"], message: "Origine de confection invalide" }],
     )
   })
 
@@ -511,5 +514,23 @@ describe("productValidation", () => {
       { accessories: [{ ...validProduct.accessories[0], quantity: undefined }] },
       [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être un nombre" }],
     )
+  })
+
+  it("does not allow product without countryDyeing", () => {
+    expectZodValidationToFail(productValidation, validProduct, { countryDyeing: undefined }, [
+      { path: ["countryDyeing"], message: "Origine de l'ennoblissement/impression invalide" },
+    ])
+  })
+
+  it("does not allow product without countryFabric", () => {
+    expectZodValidationToFail(productValidation, validProduct, { countryFabric: undefined }, [
+      { path: ["countryFabric"], message: "Origine de tissage/tricotage invalide" },
+    ])
+  })
+
+  it("does not allow product without countryMaking", () => {
+    expectZodValidationToFail(productValidation, validProduct, { countryMaking: undefined }, [
+      { path: ["countryMaking"], message: "Origine de confection invalide" },
+    ])
   })
 })

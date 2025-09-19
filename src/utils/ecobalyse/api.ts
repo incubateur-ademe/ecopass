@@ -44,9 +44,9 @@ const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories):
   const result = {
     airTransportRatio: product.airTransportRatio,
     business: product.business ? businessesMapping[product.business] : undefined,
-    countryDyeing: product.countryDyeing ? countryMapping[product.countryDyeing] : undefined,
-    countryFabric: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
-    countryMaking: product.countryMaking ? countryMapping[product.countryMaking] : undefined,
+    countryDyeing: countryMapping[product.countryDyeing],
+    countryFabric: countryMapping[product.countryFabric],
+    countryMaking: countryMapping[product.countryMaking],
     countrySpinning: product.countrySpinning ? countryMapping[product.countrySpinning] : undefined,
     printing:
       product.impression && product.impressionPercentage

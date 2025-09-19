@@ -78,7 +78,7 @@ type ColumnType = [
   "originedelennoblissementimpression",
   "typedimpression",
   "pourcentagedimpression",
-  "origineconfection",
+  "originedeconfection",
   "delavage",
   "partdutransportaerien",
   "accessoire1",
@@ -113,7 +113,7 @@ const columns: Partial<Record<ColumnType[number], string>> = {
   originedelennoblissementimpression: "Origine de l'ennoblissement/impression",
   typedimpression: "Type d'impression",
   pourcentagedimpression: "Pourcentage d'impression",
-  origineconfection: "Origine confection",
+  originedeconfection: "Origine de confection",
   delavage: "Délavage",
   partdutransportaerien: "Part du transport aérien",
   accessoire1: "Accessoire 1",
@@ -238,7 +238,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         price: getNumberValue(row.record["prix"]),
         countryDyeing: getValue<Country>(countries, row.record["originedelennoblissementimpression"]),
         countryFabric: getValue<Country>(countries, row.record["originedetissagetricotage"]),
-        countryMaking: getValue<Country>(countries, row.record["origineconfection"]),
+        countryMaking: getValue<Country>(countries, row.record["originedeconfection"]),
         countrySpinning: getValue<Country>(countries, row.record["originedefilature"]),
         printing:
           row.record["typedimpression"] || row.record["pourcentagedimpression"]
