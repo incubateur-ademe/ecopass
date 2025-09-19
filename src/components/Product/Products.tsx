@@ -11,6 +11,7 @@ import styles from "./Products.module.css"
 import Link from "next/link"
 import DownloadScores from "./DownloadScores"
 import { productCategories } from "../../utils/types/productCategory"
+import { simplifyValue } from "../../utils/parsing/parsing"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
@@ -41,7 +42,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
           headers={["Date de dépot", "Catégorie", "Référence interne", "Score", ""]}
           data={products.map((product) => [
             formatDate(product.createdAt),
-            productCategories[product.category] || product.category,
+            productCategories[simplifyValue(product.category)] || product.category,
             product.internalReference,
             formatNumber(product.score?.score),
             <Button linkProps={{ href: `/produits/${product.gtins[0]}` }} key={product.gtins[0]}>

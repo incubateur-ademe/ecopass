@@ -6,6 +6,7 @@ import ProductScore from "./ProductScore"
 import ProductHistory from "./ProductHistory"
 import ProductScoreImpacts from "./ProductScoreImpacts"
 import { productCategories } from "../../utils/types/productCategory"
+import { simplifyValue } from "../../utils/parsing/parsing"
 
 const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: string; isOld?: boolean }) => {
   return (
@@ -18,7 +19,7 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
         <div data-testid='product-details'>
           <p className='fr-text--xl fr-mb-1w'>
             <b>
-              {productCategories[product.category] || product.category}
+              {productCategories[simplifyValue(product.category)] || product.category}
               {product.brand && <span> - {product.brand}</span>}
             </b>
           </p>
