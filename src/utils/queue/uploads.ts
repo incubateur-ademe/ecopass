@@ -1,5 +1,5 @@
 import chardet from "chardet"
-import { parseCSV } from "../csv/parse"
+import { parseCSV } from "../parsing/csv/parse"
 import { createProducts } from "../../db/product"
 import { failUpload } from "../../services/upload"
 import { checkUploadsStatus, getFirstFileUpload, updateUploadToPending } from "../../db/upload"

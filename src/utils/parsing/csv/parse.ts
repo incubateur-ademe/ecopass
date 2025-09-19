@@ -1,17 +1,18 @@
 import { parse } from "csv-parse"
-import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
+import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../../types/Product"
 import { v4 as uuid } from "uuid"
-import { countries } from "../types/country"
-import { productCategories } from "../types/productCategory"
-import { businesses } from "../types/business"
-import { materials as allMaterials } from "../types/material"
-import { accessories as allAccessories } from "../types/accessory"
-import { Accessory, Material, Product, Status } from "../../../prisma/src/prisma"
-import { impressions } from "../types/impression"
+import { countries } from "../../types/country"
+import { productCategories } from "../../types/productCategory"
+import { businesses } from "../../types/business"
+import { materials as allMaterials } from "../../types/material"
+import { accessories as allAccessories } from "../../types/accessory"
+import { Accessory, Material, Product, Status } from "../../../../prisma/src/prisma"
+import { impressions } from "../../types/impression"
 import { Readable } from "stream"
-import { FileUpload } from "../../db/upload"
-import { encryptProductFields } from "../encryption/encryption"
-import { hashProduct } from "../encryption/hash"
+import { FileUpload } from "../../../db/upload"
+import { encryptProductFields } from "../../encryption/encryption"
+import { hashProduct } from "../../encryption/hash"
+import { simplifyValue } from "../parsing"
 
 type ColumnType = [
   "gtinseans",
@@ -120,17 +121,6 @@ const columns: Partial<Record<ColumnType[number], string>> = {
 }
 
 const columnsValues = Object.keys(columns)
-
-const simplifyValue = (value: string | null) =>
-  value
-    ? value
-        .trim()
-        .toLowerCase()
-        .replace(/\(.*?\)/g, "")
-        .replace(/[ \/'-]/g, "")
-        .replace(/[éè]/g, "e")
-        .replace(/ç/g, "c")
-    : ""
 
 const checkHeaders = (headers: string[]) => {
   const formattedHeaders = headers.map((header) => simplifyValue(header))

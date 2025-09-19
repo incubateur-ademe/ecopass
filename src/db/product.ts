@@ -1,6 +1,7 @@
 import { Accessory, Material, Prisma, Product, Status } from "../../prisma/src/prisma"
 import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"
+import { simplifyValue } from "../utils/parsing/parsing"
 import { productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
 
@@ -361,7 +362,7 @@ export const getProductCountByCategory = async () => {
 
   const categoryCount = result.reduce(
     (acc, item) => {
-      const category = productCategories[item.category] || item.category
+      const category = productCategories[simplifyValue(item.category)] || item.category
       if (!acc[category]) {
         acc[category] = 0
       }
