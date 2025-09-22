@@ -170,7 +170,7 @@ model Product {
   mass                 String
   price                String
   airTransportRatio    String @map("air_transport_ratio")
-  numberOfReferences   String
+  numberOfReferences   String @map("number_of_references")
   impressionPercentage String @map("impression_percentage")
 
   // Encrypted boolean
@@ -207,7 +207,7 @@ model Material {
   share String
 
   product   Product @relation(fields: [productId], references: [id])
-  productId String
+  productId String  @map("product_id")
 
   @@index([productId], map: "idx_material_product_id")
   @@map("materials")
@@ -223,7 +223,7 @@ model Accessory {
   quantity String
 
   product   Product @relation(fields: [productId], references: [id])
-  productId String
+  productId String  @map("product_id")
 
   @@index([productId], map: "idx_accessory_product_id")
   @@map("accessories")
