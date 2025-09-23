@@ -8,10 +8,15 @@ import { uploadFileToS3 } from "../utils/s3/bucket"
 import { encryptAndZipFile } from "../utils/encryption/encryption"
 import path from "path"
 
-const ALLOWED_MIME_TYPES = ["text/csv", "application/csv", "application/vnd.ms-excel"]
+const ALLOWED_MIME_TYPES = [
+  "text/csv",
+  "application/csv",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+]
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024
-const ALLOWED_FILE_EXTENSIONS = [".csv"]
+const ALLOWED_FILE_EXTENSIONS = [".csv", ".xlsx"]
 
 const sanitizeFileName = (fileName: string): string => {
   return fileName

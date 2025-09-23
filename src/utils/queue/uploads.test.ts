@@ -1,6 +1,7 @@
 import { processUploadsToQueue } from "./uploads"
 import chardet from "chardet"
 import { parseCSV } from "../parsing/csv/parse"
+import { parseExcel } from "../parsing/excel/parse"
 import { createProducts } from "../../db/product"
 import { failUpload, completeUpload } from "../../services/upload"
 import { checkUploadsStatus, getFirstFileUpload, updateUploadToPending } from "../../db/upload"
@@ -11,6 +12,7 @@ import { decryptAndDezipFile } from "../encryption/encryption"
 
 jest.mock("chardet")
 jest.mock("../parsing/csv/parse")
+jest.mock("../parsing/excel/parse")
 jest.mock("../../db/product")
 jest.mock("../../services/upload")
 jest.mock("../../db/upload")
@@ -19,6 +21,7 @@ jest.mock("../encryption/encryption")
 
 const mockedChardet = chardet as jest.Mocked<typeof chardet>
 const mockedParseCSV = parseCSV as jest.MockedFunction<typeof parseCSV>
+const mockedParseExcel = parseExcel as jest.MockedFunction<typeof parseExcel>
 const mockedCreateProducts = createProducts as jest.MockedFunction<typeof createProducts>
 const mockedFailUpload = failUpload as jest.MockedFunction<typeof failUpload>
 const mockedCompleteUpload = completeUpload as jest.MockedFunction<typeof completeUpload>
@@ -192,6 +195,35 @@ describe("processUploadsToQueue", () => {
 
     await processUploadsToQueue()
 
-    expect(mockedFailUpload).toHaveBeenCalledWith(mockUpload, "Erreur lors de l'analyse du fichier CSV")
+    expect(mockedFailUpload).toHaveBeenCalledWith(mockUpload, "Erreur lors de l'analyse du fichier")
+  })
+
+  it("should call parseCSV for CSV files", async () => {
+    const csvUpload = { ...mockUpload, name: "test-file.csv" }
+    mockedGetFirstFileUpload.mockResolvedValue(csvUpload)
+    mockedDownloadFileFromS3.mockResolvedValue(Buffer.from("encrypted-zip-data"))
+    mockedDecryptAndDezipFile.mockResolvedValue(mockBuffer)
+    mockedChardet.detect.mockReturnValue("utf-8")
+    mockedParseCSV.mockResolvedValue(mockParsedData)
+    mockedCreateProducts.mockResolvedValue(1)
+
+    await processUploadsToQueue()
+
+    expect(mockedParseCSV).toHaveBeenCalledWith(mockBuffer, "utf-8", csvUpload)
+    expect(mockedParseExcel).not.toHaveBeenCalled()
+  })
+
+  it("should call parseExcel for Excel files", async () => {
+    const excelUpload = { ...mockUpload, name: "test-file.xlsx" }
+    mockedGetFirstFileUpload.mockResolvedValue(excelUpload)
+    mockedDownloadFileFromS3.mockResolvedValue(Buffer.from("encrypted-zip-data"))
+    mockedDecryptAndDezipFile.mockResolvedValue(mockBuffer)
+    mockedParseExcel.mockResolvedValue(mockParsedData)
+    mockedCreateProducts.mockResolvedValue(1)
+
+    await processUploadsToQueue()
+
+    expect(mockedParseExcel).toHaveBeenCalledWith(mockBuffer, excelUpload)
+    expect(mockedParseCSV).not.toHaveBeenCalled()
   })
 })
