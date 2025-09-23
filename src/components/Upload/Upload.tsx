@@ -39,12 +39,20 @@ const Upload = () => {
   return (
     <div className={success || error ? "" : styles.container}>
       <CallOut title='Aide'>
+        <span>Vous souhaitez un modèle ?</span>
+        <br />
         <span>
-          Vous souhaitez un modèle de fichier CSV ?{" "}
-          <Link href='/exemple/exemple.csv' className='fr-link fr-callout__text' prefetch={false}>
-            Téléchargez notre template
+          <span className='fr-icon-arrow-right-s-fill' aria-hidden='true' />{" "}
+          <Link href='/exemple/exemple.xlsx' className='fr-link fr-callout__text' prefetch={false}>
+            Téléchargez notre template Excel
           </Link>
-          .
+        </span>
+        <br />
+        <span>
+          <span className='fr-icon-arrow-right-s-fill' aria-hidden='true' />{" "}
+          <Link href='/exemple/exemple.csv' className='fr-link fr-callout__text' prefetch={false}>
+            Téléchargez notre template CSV
+          </Link>
         </span>
         <br />
         <span>
@@ -107,11 +115,11 @@ const Upload = () => {
           <UploadDSFR
             label='Déposez votre fichier pour déclarer vos produits.'
             disabled={uploading}
-            hint='Format CSV uniquement, 1mb max'
+            hint='Format CSV ou XLSX, 1mb max'
             state={sizeError ? "error" : "default"}
             stateRelatedMessage={sizeError ? "Le fichier doit faire moins de 1mb" : ""}
             nativeInputProps={{
-              accept: ".csv",
+              accept: ".csv, .xlsx",
               onChange: (event) => setFile(event.target.files?.[0] || null),
             }}
           />
