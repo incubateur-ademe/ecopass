@@ -40,7 +40,7 @@ const Statistics = ({ stats }: { stats: Stats }) => {
             <b>{stats.fileUploads.toLocaleString("fr-FR")}</b> CSV déposés
           </li>
           <li>
-            <b>{stats.apiUploads.toLocaleString("fr-FR")}</b> produits déclarés via l'API
+            <b>{stats.apiUploads.toLocaleString("fr-FR")}</b> déclarations via l'API
           </li>
           <li>
             <b>
@@ -48,7 +48,7 @@ const Statistics = ({ stats }: { stats: Stats }) => {
                 .reduce((acc, count) => acc + count, 0)
                 .toLocaleString("fr-FR")}
             </b>{" "}
-            produits déclarés :
+            produits déposés :
             <ul className={styles.smallList}>
               {Object.entries(stats.products)
                 .sort(([, countA], [, countB]) => countB - countA)
