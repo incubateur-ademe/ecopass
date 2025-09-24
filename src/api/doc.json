@@ -448,19 +448,19 @@
           },
           "product": {
             "type": "string",
-            "description": "Identifiant du produit (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/api/textile/products`)\n",
+            "description": "Identifiant du produit (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/products`)\n",
             "enum": [
-              "calecon",
-              "chaussettes",
               "chemise",
               "jean",
               "jupe",
-              "maillot",
               "manteau",
               "pantalon",
               "pull",
+              "tshirt",
+              "chaussettes",
+              "calecon",
               "slip",
-              "tshirt"
+              "maillot-de-bain"
             ]
           },
           "materials": {
@@ -484,25 +484,25 @@
           },
           "countryDyeing": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Teinture** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/apitextile/countries`)\n",
+            "description": "Code pays pour l'étape de **Teinture** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/apitextile/countries`)\n",
             "minLength": 2,
             "maxLength": 2
           },
           "countryFabric": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Tissage/Tricotage** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/apitextile/countries`)\n",
+            "description": "Code pays pour l'étape de **Tissage/Tricotage** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/apitextile/countries`)\n",
             "minLength": 2,
             "maxLength": 2
           },
           "countryMaking": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Confection** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/apitextile/countries`)\n",
+            "description": "Code pays pour l'étape de **Confection** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/apitextile/countries`)\n",
             "minLength": 2,
             "maxLength": 2
           },
           "countrySpinning": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Filature** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/apitextile/countries`).\nSi non spécifié, le pays de filature pris en considération est celui de production de\nla matière la plus représentée dans le mix.\n",
+            "description": "Code pays pour l'étape de **Filature** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/apitextile/countries`).\nSi non spécifié, le pays de filature pris en considération est celui de production de\nla matière la plus représentée dans le mix.\n",
             "minLength": 2,
             "maxLength": 2
           },
@@ -539,7 +539,7 @@
             }
           },
           "trims": {
-            "description": "Liste des accessoires du vêtement (boutons, zip, etc).\nLa liste des accessoires disponibles est accessible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/api/textile/trims`.\n",
+            "description": "Liste des accessoires du vêtement (boutons, zip, etc).\nLa liste des accessoires disponibles est accessible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/trims`.\n",
             "type": "array",
             "items": {
               "type": "object",
@@ -569,7 +569,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Identifiant de la matière, la liste des matières disponibles est accessible sur le\npoint d'entrée `https://ecobalyse.beta.gouv.fr/versions/v5.0.0/api/textile/materials`\n"
+            "description": "Identifiant de la matière, la liste des matières disponibles est accessible sur le\npoint d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/materials`\n"
           },
           "share": {
             "type": "number",
