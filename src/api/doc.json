@@ -171,6 +171,22 @@
               }
             }
           },
+          "208": {
+            "description": "La nouvelle déclaration est identique à l'ancienne",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "enum": ["Le produit existe déjà."]
+                    }
+                  }
+                }
+              }
+            }
+          },
           "400": {
             "description": "Paramètres invalides",
             "content": {
@@ -824,21 +840,24 @@
         }
       },
       "InvalidParametersError": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "Code d'erreur, par exemple `invalid_parameters`"
-          },
-          "message": {
-            "type": "string",
-            "description": "Message d'erreur décrivant le problème"
-          },
-          "path": {
-            "type": "array",
-            "description": "Chemin des paramètres invalides dans la requête",
-            "items": {
-              "type": "string"
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Code d'erreur, par exemple `invalid_parameters`"
+            },
+            "message": {
+              "type": "string",
+              "description": "Message d'erreur décrivant le problème"
+            },
+            "path": {
+              "type": "array",
+              "description": "Chemin des paramètres invalides dans la requête",
+              "items": {
+                "type": "string"
+              }
             }
           }
         }
