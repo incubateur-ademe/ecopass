@@ -45,7 +45,7 @@ const ProductHistory = ({ gtin }: { gtin: string }) => {
         headers={["Déposé le", "Par", "Version Ecobalyse", "Score", ""]}
         data={history.map((version) => [
           formatDate(version.createdAt),
-          `${version.upload.createdBy.prenom} ${version.upload.createdBy.nom} (${version.upload.createdBy.organization?.name})`,
+          version.upload.createdBy.organization?.name,
           version.upload.version,
           version.score === null ? "" : Math.round(version.score.score),
           <Button linkProps={{ href: `/produits/${version.gtins[0]}/${version.id}` }} key={version.id}>
