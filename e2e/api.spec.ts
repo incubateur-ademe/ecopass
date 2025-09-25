@@ -97,13 +97,15 @@ test("declare my products by API", async ({ page }) => {
   expect(response.status()).toBe(201)
 
   response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, internalReference: "REF-101", declaredScore: 100 },
+    data: { ...product, internalReference: "REF-101", declaredScore: 100.25 },
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
   })
   expect(response.status()).toBe(400)
-  expect(await response.text()).toEqual('{"error":"Le score déclaré ne correspond pas au score calculé."}')
+  expect(await response.text()).toEqual(
+    '{"error":"Le score déclaré (100.25) ne correspond pas au score calculé (1754.6384371121455)"}',
+  )
 
   response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, internalReference: "REF-102", mass: undefined },
