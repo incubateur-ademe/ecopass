@@ -32,13 +32,11 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
           <p>
             Déposé le : <b>{formatDate(product.createdAt)}</b>
           </p>
-          <p>
-            Par :{" "}
-            <b>
-              {product.upload.createdBy.prenom} {product.upload.createdBy.nom} (
-              {product.upload.createdBy.organization?.name})
-            </b>
-          </p>
+          {product.upload.createdBy.organization && (
+            <p>
+              Par : <b>{product.upload.createdBy.organization.name}</b>
+            </p>
+          )}
           <p>
             Version Ecobalyse : <b>{product.upload.version}</b>
           </p>

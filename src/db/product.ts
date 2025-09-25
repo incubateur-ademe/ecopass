@@ -122,7 +122,7 @@ const productWithScoreSelect = {
   upload: {
     select: {
       version: true,
-      createdBy: { select: { organization: { select: { name: true } }, nom: true, prenom: true } },
+      createdBy: { select: { organization: { select: { name: true } } } },
     },
   },
 } satisfies Prisma.ProductSelect
