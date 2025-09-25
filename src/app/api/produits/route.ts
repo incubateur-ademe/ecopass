@@ -65,8 +65,13 @@ export async function POST(req: Request) {
     }
 
     const score = await computeEcobalyseScore(product.data)
-    if (product.data.declaredScore && Math.round(score.score) !== product.data.declaredScore) {
-      return NextResponse.json({ error: "Le score déclaré ne correspond pas au score calculé." }, { status: 400 })
+    if (product.data.declaredScore && Math.round(score.score) !== Math.round(product.data.declaredScore)) {
+      return NextResponse.json(
+        {
+          error: `Le score déclaré (${product.data.declaredScore}) ne correspond pas au score calculé (${score.score})`,
+        },
+        { status: 400 },
+      )
     }
 
     if (product.data.test) {
