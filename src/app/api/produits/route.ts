@@ -61,15 +61,19 @@ export async function POST(req: Request) {
     const hash = hashProduct(product.data)
 
     if (lastProduct && lastProduct.hash === hash) {
-      return NextResponse.json({ error: "Le produit existe déjà." }, { status: 208 })
+      return NextResponse.json({ message: "Le produit existe déjà." }, { status: 208 })
     }
 
     const score = await computeEcobalyseScore(product.data)
-    if (product.data.declaredScore && Math.round(score.score) !== Math.round(product.data.declaredScore)) {
+    if (product.data.declaredScore && Math.round(score.score) !== product.data.declaredScore) {
       return NextResponse.json(
-        {
-          error: `Le score déclaré (${product.data.declaredScore}) ne correspond pas au score calculé (${score.score})`,
-        },
+        [
+          {
+            code: "invalid_value",
+            path: ["declaredScore"],
+            message: `Le score déclaré (${product.data.declaredScore}) ne correspond pas au score calculé (${score.score})`,
+          },
+        ],
         { status: 400 },
       )
     }
