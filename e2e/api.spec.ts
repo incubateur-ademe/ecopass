@@ -104,7 +104,7 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(400)
   expect(await response.text()).toEqual(
-    '{"error":"Le score déclaré (100.25) ne correspond pas au score calculé (1754.6384371121455)"}',
+    '[{"code":"invalid_value","path":["declaredScore"],"message":"Le score déclaré (100.25) ne correspond pas au score calculé (1754.6384371121455)"}]',
   )
 
   response = await page.request.post("http://localhost:3000/api/produits", {
