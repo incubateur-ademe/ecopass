@@ -168,10 +168,34 @@ const getNumberValue = (value: string, factor?: number, defaultValue?: number) =
 }
 
 const delimiters = [",", ";", "\t"]
+
+const estimateBestDelimiter = (fileStart: string): string => {
+  const counts = delimiters.reduce((acc, value) => ({ ...acc, [value]: 0 }), {} as Record<string, number>)
+
+  for (const char of fileStart) {
+    if (delimiters.includes(char)) {
+      counts[char]++
+    }
+  }
+
+  let bestDelimiter = delimiters[0]
+  let maxCount = 0
+
+  for (const delimiter of delimiters) {
+    if (counts[delimiter] > maxCount) {
+      bestDelimiter = delimiter
+      maxCount = counts[delimiter]
+    }
+  }
+  return bestDelimiter
+}
+
 export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: NonNullable<FileUpload>) => {
   const encodingToUse = (encoding as BufferEncoding) || "utf-8"
 
-  let bestDelimiter = ","
+  const fileStart = buffer.toString("utf8", 0, Math.min(buffer.length, 1024))
+
+  let bestDelimiter = estimateBestDelimiter(fileStart)
 
   for (const delimiter of delimiters) {
     const stream = Readable.from(buffer)
@@ -202,7 +226,6 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
   }
 
   const stream = Readable.from(buffer)
-
   const products: (Product & { materials: undefined; accessories: undefined })[] = []
   const materials: Material[] = []
   const accessories: Accessory[] = []
