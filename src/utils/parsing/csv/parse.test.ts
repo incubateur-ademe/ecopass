@@ -17,6 +17,7 @@ describe("parseCSV", () => {
       email: "test@test.fr",
       organization: { name: "TestOrg" },
     },
+    reUploadProducts: [],
   } satisfies FileUpload
 
   it("parses a valid CSV", async () => {
@@ -230,6 +231,20 @@ describe("parseCSV", () => {
     const csv = Buffer.from(`Test,Header\nValue1,Value2`)
     await expect(parseCSV(csv, null, upload)).rejects.toThrow(
       "Colonne(s) manquante(s): GTINs/Eans, Référence interne, Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Accessoire 1, Accessoire 1 quantité",
+    )
+  })
+
+  it("give proper errors on some missing header", async () => {
+    const csv = Buffer.from(`GTINs/Eans, Référence interne\nValue1,Value2`)
+    await expect(parseCSV(csv, null, upload)).rejects.toThrow(
+      "Colonne(s) manquante(s): Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Accessoire 1, Accessoire 1 quantité",
+    )
+  })
+
+  it("give proper errors on some missing header and ; delimiter", async () => {
+    const csv = Buffer.from(`GTINs/Eans; Référence interne\nValue1;Value2`)
+    await expect(parseCSV(csv, null, upload)).rejects.toThrow(
+      "Colonne(s) manquante(s): Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Accessoire 1, Accessoire 1 quantité",
     )
   })
 
