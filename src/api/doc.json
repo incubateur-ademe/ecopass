@@ -495,7 +495,7 @@
           },
           "business": {
             "type": "string",
-            "description": "Type d'entreprise et d'offre de services :\n\n- `small-business` : PME/TPE\n- `large-business-with-services` : Grande entreprise avec service de réparation\n- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation\n",
+            "description": "Type d'entreprise et d'offre de services :\n\n- `small-business` : TPE/PME\n- `large-business-with-services` : Grande entreprise avec service de réparation\n- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation\n",
             "enum": ["small-business", "large-business-with-services", "large-business-without-services"]
           },
           "countryDyeing": {
