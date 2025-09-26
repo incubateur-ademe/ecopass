@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     }
 
     const score = await computeEcobalyseScore(product.data)
-    if (product.data.declaredScore && Math.round(score.score) !== product.data.declaredScore) {
+    if (product.data.declaredScore && Math.round(score.score) !== Math.round(product.data.declaredScore)) {
       return NextResponse.json(
         [
           {
