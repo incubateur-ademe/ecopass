@@ -4,10 +4,12 @@ import { parseCSV } from "./parse"
 import { Status } from "../../../../prisma/src/prisma"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../../types/Product"
 import { decryptBoolean, decryptNumber, decryptProductFields } from "../../encryption/encryption"
+import { defaultHeaders, defaultProductRow } from "../parsingTest"
 
 describe("parseCSV", () => {
-  const header = `GTINs/EANS,Référence interne,Marque,Score,Catégorie,Masse (en kg),Remanufacturé,Nombre de références,"Prix (en euros, TTC)",Taille de l'entreprise,Matière 1,Matière 1 pourcentage,Matière 1 origine,Matière 2,Matière 2 pourcentage,Matière 2 origine,Matière 3,Matière 3 pourcentage,Matière 3 origine,Matière 4,Matière 4 pourcentage,Matière 4 origine,Matière 5,Matière 5 pourcentage,Matière 5 origine,Matière 6,Matière 6 pourcentage,Matière 6 origine,Matière 7,Matière 7 pourcentage,Matière 7 origine,Matière 8,Matière 8 pourcentage,Matière 8 origine,Matière 9,Matière 9 pourcentage,Matière 9 origine,Matière 10,Matière 10 pourcentage,Matière 10 origine,Matière 11,Matière 11 pourcentage,Matière 11 origine,Matière 12,Matière 12 pourcentage,Matière 12 origine,Matière 13,Matière 13 pourcentage,Matière 13 origine,Matière 14,Matière 14 pourcentage,Matière 14 origine,Matière 15,Matière 15 pourcentage,Matière 15 origine,Matière 16,Matière 16 pourcentage,Matière 16 origine,Origine de filature,Origine de tissage/tricotage,Origine de l'ennoblissement/impression,Type d'impression,Pourcentage d'impression,Origine de confection,Délavage,Part du transport aérien,Accessoire 1, Accessoire 1 quantité,Accessoire 2, Accessoire 2 quantité,Accessoire 3, Accessoire 3 quantité,Accessoire 4, Accessoire 4 quantité`
-  const defaultProducts = `"1234567891000;1234567891001","REF-123",Marque,"2222,63",Pull,"0,55",Non,9000,100,Grande entreprise sans service de réparation,Viscose,"90,00 %",Chine,Jute,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Chine,Chine,Chine,Pigmentaire,"20,00 %",Chine,Non,"75,00%",Bouton en métal,1,,,,,,`
+  const header = `"${defaultHeaders.join('","')}"`
+  const defaultProducts = `"${defaultProductRow.join('","')}"`
+
   const upload = {
     id: uuid(),
     name: "test.csv",
@@ -256,7 +258,7 @@ describe("parseCSV", () => {
   })
 
   it("default brand to user brand", async () => {
-    const csv = Buffer.from(`${header}\n${defaultProducts.replace("Marque", '""')}`)
+    const csv = Buffer.from(`${header}\n${defaultProducts.replace("Marque", "")}`)
     const { products } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
     expect(products[0].brand).toEqual("TestOrg")
@@ -283,7 +285,7 @@ describe("parseCSV", () => {
   })
 
   it("default declared score to -1", async () => {
-    const csv = Buffer.from(`${header}\n${defaultProducts.replace('"2222,63"', "nimps")}`)
+    const csv = Buffer.from(`${header}\n${defaultProducts.replace("2222.63", "nimps")}`)
     const { products } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
     expect(products[0].declaredScore).toBe(-1)

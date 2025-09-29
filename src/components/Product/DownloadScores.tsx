@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react"
 import LoadingButton from "../Button/LoadingButton"
 import { exportScores } from "../../serverFunctions/export"
-import { downloadCSV } from "../../services/download"
+import { downloadFile } from "../../services/download"
 
 const DownloadScores = ({ brand }: { brand?: string }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -11,7 +11,7 @@ const DownloadScores = ({ brand }: { brand?: string }) => {
     setIsLoading(true)
     exportScores(brand)
       .then((csv) => {
-        downloadCSV(csv, brand ? `${brand}-scores.csv` : "scores.csv")
+        downloadFile(csv, brand ? `${brand}-scores.csv` : "scores.csv")
       })
       .finally(() => {
         setIsLoading(false)
