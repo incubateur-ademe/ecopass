@@ -37,7 +37,7 @@ const Statistics = ({ stats }: { stats: Stats }) => {
             <b>{stats.visits.toLocaleString("fr-FR")}</b> visites
           </li>
           <li>
-            <b>{stats.fileUploads.toLocaleString("fr-FR")}</b> CSV déposés
+            <b>{stats.fileUploads.toLocaleString("fr-FR")}</b> fichiers déposés
           </li>
           <li>
             <b>{stats.apiUploads.toLocaleString("fr-FR")}</b> déclarations via l'API
