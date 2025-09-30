@@ -1,3 +1,4 @@
+import Link from "next/link"
 import Block from "../components/Block/Block"
 import { Stats } from "../services/stats/stats"
 import { ProductCategory } from "../types/Product"
@@ -48,7 +49,7 @@ const Statistics = ({ stats }: { stats: Stats }) => {
                 .reduce((acc, count) => acc + count, 0)
                 .toLocaleString("fr-FR")}
             </b>{" "}
-            produits déposés :
+            produits déposés par <b>{stats.distinctBrands.toLocaleString("fr-FR")}</b> marques :
             <ul className={styles.smallList}>
               {Object.entries(stats.products)
                 .sort(([, countA], [, countB]) => countB - countA)
@@ -60,6 +61,13 @@ const Statistics = ({ stats }: { stats: Stats }) => {
             </ul>
           </li>
         </ul>
+        <Link
+          className='fr-link'
+          href='https://stats.beta.gouv.fr/index.php?module=CoreHome&action=index&idSite=226&period=day&date=yesterday'
+          target='_blank'
+          rel='noopener noreferrer'>
+          Découvrez toutes les statistiques du site Impact CO₂ sur le tableau de bord de notre outil de suivi Matomo
+        </Link>
       </Block>
     </>
   )
