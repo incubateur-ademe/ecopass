@@ -30,12 +30,8 @@ const InformationBanner = () => {
           desc="L'affichage environnemental du textile permet de calculer l'impact de chaque vêtement, en considérant l'ensemble des opérations sur son cycle de vie (ex: fabrication du coton, filage, teinture, ennoblissement, transport, fin de vie)."
           titleAs='h3'
           footer={
-            <Link
-              href='https://fabrique-numerique.gitbook.io/ecobalyse/alimentaire/old/pages-textiles-old/demarche'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='fr-link'>
-              Consultez la documentation sur la méthode de calcul
+            <Link href='/notice-reglementaire.pdf' target='_blank' rel='noopener noreferrer' className='fr-link'>
+              Téléchargez la notice règlementaire (PDF, 1.6 Mo)
             </Link>
           }
         />
