@@ -374,3 +374,14 @@ export const getProductCountByCategory = async () => {
 
   return categoryCount
 }
+
+export const getDistinctBrandCount = async () => {
+  const result = await prismaClient.product.groupBy({
+    by: ["brand"],
+    where: {
+      status: Status.Done,
+    },
+  })
+
+  return result.length
+}

@@ -48,7 +48,7 @@ const Statistics = ({ stats }: { stats: Stats }) => {
                 .reduce((acc, count) => acc + count, 0)
                 .toLocaleString("fr-FR")}
             </b>{" "}
-            produits déposés :
+            produits déposés par <b>{stats.distinctBrands.toLocaleString("fr-FR")}</b> marques :
             <ul className={styles.smallList}>
               {Object.entries(stats.products)
                 .sort(([, countA], [, countB]) => countB - countA)

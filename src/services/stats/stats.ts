@@ -1,5 +1,5 @@
 import axios from "axios"
-import { getProductCountByCategory } from "../../db/product"
+import { getProductCountByCategory, getDistinctBrandCount } from "../../db/product"
 import { getDoneAPIUploadCount, getDoneFileUploadCount } from "../../db/upload"
 
 const getVisits = async () => {
@@ -24,11 +24,12 @@ const getVisits = async () => {
 }
 
 export const computeStats = async () => {
-  const [visits, products, fileUploads, apiUploads] = await Promise.all([
+  const [visits, products, fileUploads, apiUploads, distinctBrands] = await Promise.all([
     getVisits(),
     getProductCountByCategory(),
     getDoneFileUploadCount(),
     getDoneAPIUploadCount(),
+    getDistinctBrandCount(),
   ])
 
   return {
@@ -36,6 +37,7 @@ export const computeStats = async () => {
     products,
     fileUploads,
     apiUploads,
+    distinctBrands,
   }
 }
 
