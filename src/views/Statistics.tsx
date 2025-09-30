@@ -66,7 +66,7 @@ const Statistics = ({ stats }: { stats: Stats }) => {
           href='https://stats.beta.gouv.fr/index.php?module=CoreHome&action=index&idSite=226&period=day&date=yesterday'
           target='_blank'
           rel='noopener noreferrer'>
-          Découvrez toutes les statistiques du site Impact CO₂ sur le tableau de bord de notre outil de suivi Matomo
+          Découvrez toutes les statistiques du site sur le tableau de bord de notre outil de suivi Matomo
         </Link>
       </Block>
     </>
