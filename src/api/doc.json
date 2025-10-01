@@ -396,7 +396,7 @@
         "value": {
           "gtins": ["1234567890123", "1234567890124"],
           "internalReference": "REF-123",
-          "marque": "Ma Marque",
+          "brand": "Ma Marque",
           "mass": 0.17,
           "materials": [
             {
