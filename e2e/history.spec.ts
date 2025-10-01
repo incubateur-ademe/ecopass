@@ -14,7 +14,7 @@ test.beforeEach(async () => {
 const product = {
   gtins: ["1234567890123"],
   internalReference: "REF-100",
-  marque: "Emmaus",
+  brand: "Emmaus",
   mass: 0.17,
   countryDyeing: "IN",
   countryFabric: "CN",
