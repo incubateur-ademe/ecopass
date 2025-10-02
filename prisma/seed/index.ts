@@ -1,4 +1,4 @@
-import { PrismaClient } from "../src/prisma"
+import { PrismaClient, UserRole } from "../src/prisma"
 
 const prisma = new PrismaClient()
 
@@ -27,6 +27,17 @@ const users = async () => {
         createMany: {
           data: [{ name: "Emmaus Solidarité" }, { name: "Emmaus Connect" }],
         },
+      },
+    },
+  })
+  await prisma.user.create({
+    data: {
+      email: "ecopass-admin-dev@yopmail.com",
+      role: UserRole.ADMIN,
+      nom: "Ecopass",
+      prenom: "Admin",
+      organization: {
+        connect: { siret: "31723624800017" },
       },
     },
   })
