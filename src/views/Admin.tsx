@@ -1,14 +1,28 @@
 import Block from "../components/Block/Block"
-import { formatDateTime } from "../services/format"
+import Table from "../components/Table/Table"
 import { AdminStats } from "../services/stats/stats"
+import { formatDateTime } from "../services/format"
 
 const Admin = ({ stats }: { stats: AdminStats }) => {
   return (
     <Block>
       <h1>Admin Dashboard</h1>
-      <ul>
-        {stats &&
-          stats
+      {stats && (
+        <Table
+          fixed
+          caption='Statistiques'
+          noCaption
+          headers={[
+            "Nom",
+            "Utilisateurs",
+            "Premier upload",
+            "Dernier upload",
+            "Produits",
+            "Uploads fichier",
+            "Uploads API",
+            "Produits par marque",
+          ]}
+          data={stats
             .sort((a, b) => {
               if (b.uploadDates.last && a.uploadDates.last) {
                 return b.uploadDates.last.getTime() - a.uploadDates.last.getTime()
@@ -17,54 +31,33 @@ const Admin = ({ stats }: { stats: AdminStats }) => {
               } else if (a.uploadDates.last) {
                 return -1
               } else {
-                return b.organizationName.localeCompare(a.organizationName)
+                return a.organizationName.localeCompare(b.organizationName)
               }
             })
-            .map((info) => (
-              <li key={info.organizationName}>
-                <strong>{info.organizationName}</strong> :
-                <ul>
-                  <li>
-                    <b>{info.userCount}</b> utilisateur{info.userCount > 1 ? "s" : ""}
-                  </li>
-                  {info.uploadDates.first && info.uploadDates.last && (
-                    <>
-                      <li>
-                        première déclaration le : <b>{formatDateTime(info.uploadDates.first)}</b>
+            .map((info) => [
+              info.organizationName,
+              info.userCount,
+              info.uploadDates.first ? formatDateTime(info.uploadDates.first) : "",
+              info.uploadDates.last ? formatDateTime(info.uploadDates.last) : "",
+              info.totalProducts,
+              `${info.uploads.file} (${info.uploads.fileDone} réussi${info.uploads.fileDone > 1 ? "s" : ""})`,
+              `${info.uploads.api} (${info.uploads.apiDone} réussi${info.uploads.apiDone > 1 ? "s" : ""})`,
+              Object.keys(info.brandCounts).length > 0 ? (
+                <ul key={info.organizationName}>
+                  {Object.entries(info.brandCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([name, count]) => (
+                      <li key={name}>
+                        {name} : <b>{count}</b>
                       </li>
-                      <li>
-                        dernière déclaration le : <b>{formatDateTime(info.uploadDates.last)}</b>
-                      </li>
-                    </>
-                  )}
-                  <li>
-                    <b>{info.totalProducts}</b> produit{info.totalProducts > 1 ? "s" : ""}
-                  </li>
-                  <li>
-                    <b>{info.uploads.file}</b> fichier{info.uploads.file > 1 ? "s" : ""} uploadé
-                    {info.uploads.file > 1 ? "s" : ""} (<b>{info.uploads.fileDone}</b> réussi
-                    {info.uploads.fileDone > 1 ? "s" : ""})
-                  </li>
-                  <li>
-                    <b>{info.uploads.api}</b> déclaration{info.uploads.api > 1 ? "s" : ""} API (
-                    <b>{info.uploads.apiDone}</b> réussie{info.uploads.apiDone > 1 ? "s" : ""})
-                  </li>
-                  <li>
-                    <b>Marques :</b>
-                    <ul>
-                      {Object.entries(info.brandCounts)
-                        .sort((a, b) => b[1] - a[1])
-                        .map(([name, count]) => (
-                          <li key={name}>
-                            {name} : <b>{count}</b> produit{count > 1 ? "s" : ""}
-                          </li>
-                        ))}
-                    </ul>
-                  </li>
+                    ))}
                 </ul>
-              </li>
-            ))}
-      </ul>
+              ) : (
+                ""
+              ),
+            ])}
+        />
+      )}
     </Block>
   )
 }
