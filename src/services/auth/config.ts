@@ -3,6 +3,7 @@ import { AuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prismaClient } from "../../db/prismaClient"
 import { getSiretInfo } from "../../serverFunctions/siret"
+import { UserRole } from "../../../prisma/src/prisma"
 
 export const authOptions = {
   adapter: PrismaAdapter(prismaClient),
@@ -82,7 +83,6 @@ export const authOptions = {
           prenom: profile.given_name,
           nom: profile.usual_name,
           email: profile.email,
-          poste: profile.belonging_population,
           agentconnect_info: profile,
         }
       },
@@ -95,6 +95,7 @@ export const authOptions = {
     async jwt({ token, account, user }) {
       if (user) {
         token.id = user.id
+        token.role = user.role
       }
 
       if (account) {
@@ -106,6 +107,7 @@ export const authOptions = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
+        session.user.role = token.role as UserRole
         session.provider = token.provider as string
         session.idToken = token.idToken as string
       }
