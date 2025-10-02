@@ -2,9 +2,11 @@
 import { Header as HeaderDSFR } from "@codegouvfr/react-dsfr/Header"
 import { Session } from "next-auth"
 import { usePathname } from "next/navigation"
+import { UserRole } from "../../../prisma/src/prisma"
 
 const Header = ({ session }: { session: Session | null }) => {
   const pathname = usePathname()
+
   return (
     <HeaderDSFR
       brandTop='République Française'
@@ -14,7 +16,7 @@ const Header = ({ session }: { session: Session | null }) => {
       }}
       serviceTitle={<>Affichage environnemental</>}
       navigation={
-        session
+        session && session.user
           ? [
               { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
               {
@@ -29,11 +31,14 @@ const Header = ({ session }: { session: Session | null }) => {
                 text: "Mon organisation",
                 isActive: pathname.startsWith("/organisation"),
               },
+              ...(session.user.role === UserRole.ADMIN
+                ? [{ linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }]
+                : []),
             ]
           : []
       }
       quickAccessItems={
-        session
+        session && session.user
           ? [
               {
                 linkProps: {

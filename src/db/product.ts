@@ -1,4 +1,4 @@
-import { Accessory, Material, Prisma, Product, Status } from "../../prisma/src/prisma"
+import { Accessory, Material, Prisma, Product, Status, UploadType } from "../../prisma/src/prisma"
 import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { simplifyValue } from "../utils/parsing/parsing"
@@ -384,4 +384,79 @@ export const getDistinctBrandCount = async () => {
   })
 
   return result.length
+}
+
+export const getBrandInformation = async () => {
+  const organizations = await prismaClient.organization.findMany({
+    select: {
+      id: true,
+      name: true,
+      users: { select: { email: true } },
+      upload: {
+        select: {
+          id: true,
+          type: true,
+          status: true,
+          createdAt: true,
+          products: {
+            where: {
+              status: Status.Done,
+            },
+            select: {
+              brand: true,
+              internalReference: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  return organizations.map((organization) => {
+    const userCount = organization.users.length
+    const apiUploads = organization.upload.filter((upload) => upload.type === UploadType.API)
+    const fileUploads = organization.upload.filter((upload) => upload.type === UploadType.FILE)
+
+    const uploadDates = organization.upload.map((upload) => upload.createdAt).sort((a, b) => a.getTime() - b.getTime())
+    const firstUploadDate = uploadDates.length > 0 ? uploadDates[0] : null
+    const lastUploadDate = uploadDates.length > 0 ? uploadDates[uploadDates.length - 1] : null
+
+    const brandStats = organization.upload
+      .flatMap((upload) => upload.products)
+      .reduce(
+        (acc, product) => {
+          if (!acc[product.brand]) {
+            acc[product.brand] = new Set<string>()
+          }
+          acc[product.brand].add(product.internalReference)
+          return acc
+        },
+        {} as Record<string, Set<string>>,
+      )
+
+    const brandCounts = Object.entries(brandStats).reduce(
+      (acc, [brand, internalRefs]) => {
+        acc[brand] = internalRefs.size
+        return acc
+      },
+      {} as Record<string, number>,
+    )
+
+    return {
+      organizationName: organization.name,
+      userCount,
+      uploads: {
+        api: apiUploads.length,
+        apiDone: apiUploads.filter((upload) => upload.status === Status.Done).length,
+        file: fileUploads.length,
+        fileDone: fileUploads.filter((upload) => upload.status === Status.Done).length,
+      },
+      uploadDates: {
+        first: firstUploadDate,
+        last: lastUploadDate,
+      },
+      brandCounts,
+      totalProducts: Object.values(brandCounts).reduce((sum, count) => sum + count, 0),
+    }
+  })
 }

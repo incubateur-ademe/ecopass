@@ -1,6 +1,9 @@
+"use server"
 import axios from "axios"
-import { getProductCountByCategory, getDistinctBrandCount } from "../../db/product"
+import { getProductCountByCategory, getDistinctBrandCount, getBrandInformation } from "../../db/product"
 import { getDoneAPIUploadCount, getDoneFileUploadCount } from "../../db/upload"
+import { auth } from "../auth/auth"
+import { UserRole } from "../../../prisma/src/prisma"
 
 const getVisits = async () => {
   const token = process.env.MATOMO_API_TOKEN as string
@@ -42,3 +45,14 @@ export const computeStats = async () => {
 }
 
 export type Stats = Awaited<ReturnType<typeof computeStats>>
+
+export const computeAdminStats = async () => {
+  const session = await auth()
+  if (!session || !session.user || session.user.role !== UserRole.ADMIN) {
+    return null
+  }
+
+  return getBrandInformation()
+}
+
+export type AdminStats = Awaited<ReturnType<typeof computeAdminStats>>
