@@ -21,6 +21,7 @@ describe("processProductsQueue", () => {
 
   const mockProduct = {
     error: null,
+    hash: "test-hash",
     status: Status.Pending,
     createdAt: new Date(),
     updatedAt: new Date(),
