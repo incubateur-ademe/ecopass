@@ -67,6 +67,15 @@ export const getUserOrganization = async (userId: string) => {
             where: { active: true },
             orderBy: { createdAt: "desc" },
           },
+          authorizedBy: {
+            select: {
+              id: true,
+              createdAt: true,
+              from: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
+            },
+            where: { active: true },
+            orderBy: { createdAt: "desc" },
+          },
         },
       },
     },

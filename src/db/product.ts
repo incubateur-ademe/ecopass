@@ -447,7 +447,6 @@ export const getBrandInformation = async () => {
       userCount,
       uploads: {
         api: apiUploads.length,
-        apiDone: apiUploads.filter((upload) => upload.status === Status.Done).length,
         file: fileUploads.length,
         fileDone: fileUploads.filter((upload) => upload.status === Status.Done).length,
       },
