@@ -31,7 +31,7 @@ const InformationBanner = () => {
           titleAs='h3'
           footer={
             <Link href='/notice-reglementaire.pdf' target='_blank' rel='noopener noreferrer' className='fr-link'>
-              Téléchargez la notice règlementaire (PDF, 1.6 Mo)
+              Téléchargez la notice règlementaire (PDF, 1.5 Mo)
             </Link>
           }
         />
