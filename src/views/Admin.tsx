@@ -41,14 +41,14 @@ const Admin = ({ stats }: { stats: AdminStats }) => {
               info.uploadDates.last ? formatDateTime(info.uploadDates.last) : "",
               info.totalProducts,
               `${info.uploads.file} (${info.uploads.fileDone} réussi${info.uploads.fileDone > 1 ? "s" : ""})`,
-              `${info.uploads.api} (${info.uploads.apiDone} réussi${info.uploads.apiDone > 1 ? "s" : ""})`,
+              info.uploads.api,
               Object.keys(info.brandCounts).length > 0 ? (
                 <ul key={info.organizationName}>
                   {Object.entries(info.brandCounts)
                     .sort((a, b) => b[1] - a[1])
                     .map(([name, count]) => (
                       <li key={name}>
-                        {name} : <b>{count}</b>
+                        {name} : {count}
                       </li>
                     ))}
                 </ul>
