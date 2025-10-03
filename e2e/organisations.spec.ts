@@ -106,6 +106,37 @@ test("manage delegation", async ({ page }) => {
     expect(response.status()).toBe(201)
   }, 3)
 
+  await retry(async () => {
+    response = await page.request.get("http://localhost:3000/api/organization", {
+      headers: {
+        Authorization: "nimps",
+      },
+    })
+    expect(response.status()).toBe(401)
+  }, 3)
+
+  await retry(async () => {
+    response = await page.request.get("http://localhost:3000/api/organization", {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    })
+    expect(response.status()).toBe(200)
+    expect(await response.json()).toEqual({
+      name: "DEPARTEMENT DE SEINE ET MARNE",
+      brands: [],
+      authorizedBy: [
+        {
+          createdAt: expect.any(String),
+          name: "Emmaus",
+          siret: "31723624800017",
+          brands: ["Emmaus Solidarité", "Emmaus Connect"],
+        },
+      ],
+      authorizeOrganization: [],
+    })
+  }, 3)
+
   await logout(page)
   await login(page, "ecopass-no-organization@yopmail.com")
 
@@ -141,6 +172,21 @@ test("manage delegation", async ({ page }) => {
   expect(await response.text()).toEqual(
     '[{"code":"invalid_value","values":["DEPARTEMENT DE SEINE ET MARNE"],"path":["brand"],"message":"Invalid input: expected \\"DEPARTEMENT DE SEINE ET MARNE\\""}]',
   )
+
+  await retry(async () => {
+    response = await page.request.get("http://localhost:3000/api/organization", {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    })
+    expect(response.status()).toBe(200)
+    expect(await response.json()).toEqual({
+      name: "DEPARTEMENT DE SEINE ET MARNE",
+      brands: [],
+      authorizedBy: [],
+      authorizeOrganization: [],
+    })
+  }, 3)
 
   await logout(page)
   await login(page, "ecopass-no-organization@yopmail.com")

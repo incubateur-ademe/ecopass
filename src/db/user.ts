@@ -62,7 +62,7 @@ export const getUserOrganization = async (userId: string) => {
             select: {
               id: true,
               createdAt: true,
-              to: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
+              to: { select: { id: true, name: true, siret: true } },
             },
             where: { active: true },
             orderBy: { createdAt: "desc" },
