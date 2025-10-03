@@ -204,7 +204,7 @@ describe("API Ecobalyse", () => {
         {
           ...mockProduct,
           business: undefined,
-          countryDyeing: undefined,
+          numberOfReferences: undefined,
           materials: [{ ...mockProduct.materials[0], country: undefined }],
         },
       ])
@@ -221,10 +221,10 @@ describe("API Ecobalyse", () => {
           countryFabric: "IN",
           countryMaking: "BD",
           countrySpinning: "MM",
+          countryDyeing: "FR",
           fading: false,
           mass: 0.5,
           materials: [{ id: "ei-coton", share: 1, productId: "product-1", slug: "Coton" }],
-          numberOfReferences: 100,
           price: 25.99,
           printing: { kind: "pigment", ratio: 0.2 },
           product: "tshirt",
@@ -463,6 +463,9 @@ describe("API Ecobalyse", () => {
       declaredScore: 123,
       business: "large-business-without-services",
       countrySpinning: "CN",
+      countryFabric: "IN",
+      countryMaking: "BD",
+      countryDyeing: "FR",
       mass: 0.15,
       materials: [
         {
@@ -497,6 +500,9 @@ describe("API Ecobalyse", () => {
           internalReference: undefined,
           business: "large-business-without-services",
           countrySpinning: "CN",
+          countryFabric: "IN",
+          countryMaking: "BD",
+          countryDyeing: "FR",
           mass: 0.15,
           materials: [{ id: "ei-coton", share: 1, spinning: "UnconventionalSpinning" }],
           numberOfReferences: 100000,

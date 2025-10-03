@@ -111,6 +111,9 @@ describe("Product DB integration", () => {
       price: 100,
       materials: [{ id: MaterialType.Viscose, share: 0.9 }],
       trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
+      countryDyeing: "FR",
+      countryFabric: "FR",
+      countryMaking: "FR",
     } satisfies ProductAPIValidation)
 
     await createProducts({
@@ -165,6 +168,9 @@ describe("Product DB integration", () => {
       price: 100,
       materials: [],
       trims: [],
+      countryDyeing: "FR",
+      countryFabric: "FR",
+      countryMaking: "FR",
     } satisfies ProductAPIValidation)
 
     let newId = uuid()
@@ -274,6 +280,9 @@ describe("Product DB integration", () => {
       price: 100,
       materials: [],
       trims: [],
+      countryDyeing: "FR",
+      countryFabric: "FR",
+      countryMaking: "FR",
     } satisfies ProductAPIValidation)
 
     for (let i = 0; i < 5; i++) {
@@ -330,6 +339,9 @@ describe("Product DB integration", () => {
       price: 100,
       materials: [],
       trims: [],
+      countryDyeing: "FR",
+      countryFabric: "FR",
+      countryMaking: "FR",
     } satisfies ProductAPIValidation)
 
     await prismaTest.product.create({
@@ -461,6 +473,9 @@ describe("Product DB integration", () => {
         price: 75,
         materials: [{ id: MaterialType.Coton, share: 1.0 }],
         trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
+        countryDyeing: "FR",
+        countryFabric: "FR",
+        countryMaking: "FR",
       } satisfies ProductAPIValidation)
 
       const numberOfCreatedProducts = await createProducts({
@@ -531,6 +546,9 @@ describe("Product DB integration", () => {
         price: 60,
         materials: [{ id: MaterialType.Viscose, share: 0.8 }],
         trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
+        countryDyeing: "FR",
+        countryFabric: "FR",
+        countryMaking: "FR",
       } satisfies ProductAPIValidation)
 
       const numberOfCreatedProducts = await createProducts({
@@ -606,6 +624,9 @@ describe("Product DB integration", () => {
         price: 80,
         materials: [{ id: MaterialType.Lin, share: 0.7 }],
         trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
+        countryDyeing: "FR",
+        countryFabric: "FR",
+        countryMaking: "FR",
       } satisfies ProductAPIValidation)
 
       const numberOfCreatedProducts = await createProducts({
@@ -697,6 +718,9 @@ describe("Product DB integration", () => {
         price: 90,
         materials: [{ id: MaterialType.Coton, share: 0.5 }],
         trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
+        countryDyeing: "FR",
+        countryFabric: "FR",
+        countryMaking: "FR",
       } satisfies ProductAPIValidation)
 
       const numberOfCreatedProducts = await createProducts({
