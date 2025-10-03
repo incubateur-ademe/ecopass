@@ -239,6 +239,9 @@ model Organization {
   name  String
   siret String @unique
 
+  effectif String?
+  naf      String?
+
   authorizedBy            AuthorizedOrganization[] @relation("ToOrg")
   authorizedOrganizations AuthorizedOrganization[] @relation("FromOrg")
 

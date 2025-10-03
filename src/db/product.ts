@@ -386,11 +386,14 @@ export const getDistinctBrandCount = async () => {
   return result.length
 }
 
-export const getBrandInformation = async () => {
+export const getBrandsInformations = async () => {
   const organizations = await prismaClient.organization.findMany({
     select: {
       id: true,
       name: true,
+      siret: true,
+      effectif: true,
+      naf: true,
       users: { select: { email: true } },
       upload: {
         select: {
@@ -443,7 +446,10 @@ export const getBrandInformation = async () => {
     )
 
     return {
-      organizationName: organization.name,
+      name: organization.name,
+      siret: organization.siret,
+      effectif: organization.effectif,
+      naf: organization.naf,
       userCount,
       uploads: {
         api: apiUploads.length,
