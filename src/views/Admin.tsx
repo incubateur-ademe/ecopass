@@ -31,11 +31,17 @@ const Admin = ({ stats }: { stats: AdminStats }) => {
               } else if (a.uploadDates.last) {
                 return -1
               } else {
-                return a.organizationName.localeCompare(b.organizationName)
+                return a.name.localeCompare(b.name)
               }
             })
             .map((info) => [
-              info.organizationName,
+              <>
+                <span>
+                  {info.name} - {info.siret} ({info.effectif} salariés)
+                </span>
+                <br />
+                {info.naf}
+              </>,
               info.userCount,
               info.uploadDates.first ? formatDateTime(info.uploadDates.first) : "",
               info.uploadDates.last ? formatDateTime(info.uploadDates.last) : "",
@@ -43,7 +49,7 @@ const Admin = ({ stats }: { stats: AdminStats }) => {
               `${info.uploads.file} (${info.uploads.fileDone} réussi${info.uploads.fileDone > 1 ? "s" : ""})`,
               info.uploads.api,
               Object.keys(info.brandCounts).length > 0 ? (
-                <ul key={info.organizationName}>
+                <ul key={info.name}>
                   {Object.entries(info.brandCounts)
                     .sort((a, b) => b[1] - a[1])
                     .map(([name, count]) => (
