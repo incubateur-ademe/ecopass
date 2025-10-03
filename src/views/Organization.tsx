@@ -1,6 +1,7 @@
 import Block from "../components/Block/Block"
 import MyBrands from "../components/Organization/MyBrands"
 import MyDelegations from "../components/Organization/MyDelegations"
+import OtherDelegations from "../components/Organization/OtherDelegations"
 import { UserOrganization } from "../db/user"
 
 const Organization = ({ organization }: { organization: UserOrganization }) => {
@@ -14,6 +15,7 @@ const Organization = ({ organization }: { organization: UserOrganization }) => {
       <Block>
         <h2>Mes délégations</h2>
         <MyDelegations organization={organization} />
+        <OtherDelegations organization={organization} />
       </Block>
     </>
   )

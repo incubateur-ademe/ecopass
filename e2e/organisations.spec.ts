@@ -28,7 +28,7 @@ test.beforeEach(async () => {
   await execAsync("npx prisma db seed")
 })
 
-test("manage branch", async ({ page }) => {
+test("manage brands", async ({ page }) => {
   await login(page)
 
   await page.getByRole("link", { name: "Mon organisation" }).click()
@@ -77,7 +77,8 @@ test("manage delegation", async ({ page }) => {
   await expect(page).toHaveURL(/.*\/organisation/)
 
   await expect(page.locator("h1").last()).toHaveText("Mon organisation Emmaus")
-  await expect(page.getByTestId("delegations-table").locator("table tbody tr")).toHaveCount(0)
+  await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
+  await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(0)
 
   await expect(page.getByTestId("organization-card")).not.toBeVisible()
   await page.getByRole("textbox", { name: "SIRET" }).fill("22770001000555")
@@ -89,10 +90,11 @@ test("manage delegation", async ({ page }) => {
     .getByTestId("organization-card")
     .getByRole("button", { name: "Déléguer mes droits à cette organisation" })
     .click()
-  await expect(page.getByTestId("delegations-table").locator("table tbody tr")).toHaveCount(1)
-  await expect(page.getByTestId("delegations-table").locator("table tbody tr").locator("td").nth(1)).toHaveText(
+  await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(1)
+  await expect(page.getByTestId("to-delegations-table").locator("table tbody tr").locator("td").nth(1)).toHaveText(
     "22770001000555",
   )
+  await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(0)
 
   await retry(async () => {
     response = await page.request.post("http://localhost:3000/api/produits", {
@@ -104,15 +106,30 @@ test("manage delegation", async ({ page }) => {
     expect(response.status()).toBe(201)
   }, 3)
 
+  await logout(page)
+  await login(page, "ecopass-no-organization@yopmail.com")
+
+  await page.getByRole("link", { name: "Mon organisation" }).click()
+  await expect(page).toHaveURL(/.*\/organisation/)
+
+  await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
+  await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(1)
+  await expect(page.getByTestId("from-delegations-table").locator("table tbody tr").locator("td").nth(1)).toHaveText(
+    "31723624800017",
+  )
+
+  await logout(page)
+  await login(page)
+
   await page.getByRole("link", { name: "Mon organisation" }).click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
   await page
-    .getByTestId("delegations-table")
+    .getByTestId("to-delegations-table")
     .locator("table tbody tr")
     .getByRole("button", { name: "Supprimer" })
     .click()
-  await expect(page.getByTestId("delegations-table").locator("table tbody tr")).toHaveCount(0)
+  await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
 
   response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, internalReference: "REF-097" },
