@@ -83,7 +83,7 @@
             }
           },
           "401": {
-            "description": "Non autorisé",
+            "description": "Authentification requise - L'utilisateur doit fournir un token Bearer valide dans l'en-tête Authorization. Cette erreur survient si le token est manquant, invalide ou expiré.",
             "content": {
               "application/json": {
                 "schema": {
@@ -196,6 +196,16 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentification requise - L'utilisateur doit fournir un token Bearer valide dans l'en-tête Authorization. Cette erreur survient si le token est manquant, invalide ou expiré.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
           }
         }
       }
@@ -300,7 +310,7 @@
             }
           },
           "400": {
-            "description": "Paramètres de pagination invalides",
+            "description": "Paramètres invalides",
             "content": {
               "application/json": {
                 "schema": {
@@ -379,6 +389,89 @@
           }
         }
       }
+    },
+    "/organization": {
+      "get": {
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Consultation"],
+        "summary": "Récupère les informations de son organisation",
+        "description": "Permet de consulter les informations complètes de l'organisation de l'utilisateur authentifié. Cette route nécessite un token d'authentification valide. Les informations retournées incluent les marques de l'organisation et les relations d'autorisation (délégations) bidirectionnelles avec d'autres organisations.",
+        "responses": {
+          "200": {
+            "description": "Informations de l'organisation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationResponse"
+                },
+                "example": {
+                  "name": "Ma Société",
+                  "brands": ["Ma Marque Premium", "Ma Marque Eco"],
+                  "authorizedOrganizations": [
+                    {
+                      "createdAt": "2025-10-03T10:30:00Z",
+                      "to": {
+                        "name": "Société Partenaire",
+                        "siret": "98765432109876"
+                      }
+                    }
+                  ],
+                  "authorizedBy": [
+                    {
+                      "createdAt": "2025-09-15T14:20:00Z",
+                      "from": {
+                        "name": "Société Mère",
+                        "siret": "11223344556677",
+                        "brands": ["Marque A"]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise - L'utilisateur doit fournir un token Bearer valide dans l'en-tête Authorization. Cette erreur survient si le token est manquant, invalide ou expiré.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Organisation non trouvée - L'utilisateur authentifié n'est associé à aucune organisation. Cela peut arriver si le compte utilisateur n'a pas encore été configuré avec une organisation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur interne du serveur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Erreur interne du serveur"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -415,6 +508,112 @@
       }
     },
     "schemas": {
+      "OrganizationSummary": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nom de l'organisation",
+            "example": "Société Partenaire"
+          },
+          "siret": {
+            "type": "string",
+            "description": "SIRET de l'organisation",
+            "example": "12345678901234"
+          }
+        }
+      },
+      "OrganizationWithBrands": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/OrganizationSummary"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "brands": {
+                "type": "array",
+                "description": "Marques de l'organisation",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        ]
+      },
+      "Authorization": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date de création de l'autorisation",
+            "example": "2025-10-03T10:30:00Z"
+          }
+        },
+        "required": ["createdAt"]
+      },
+      "AuthorizedOrganization": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Authorization"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "to": {
+                "$ref": "#/components/schemas/OrganizationSummary"
+              }
+            },
+            "required": ["to"]
+          }
+        ]
+      },
+      "AuthorizingOrganization": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Authorization"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "from": {
+                "$ref": "#/components/schemas/OrganizationWithBrands"
+              }
+            },
+            "required": ["from"]
+          }
+        ]
+      },
+      "OrganizationResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nom de l'organisation",
+            "example": "Ma Société"
+          },
+          "brands": {
+            "type": "array",
+            "description": "Liste des marques de l'organisation",
+            "items": { "type": "string" }
+          },
+          "authorizedOrganizations": {
+            "type": "array",
+            "description": "Liste des organisations qui peuvent déclarer des produits pour vous",
+            "items": {
+              "$ref": "#/components/schemas/AuthorizedOrganization"
+            }
+          },
+          "authorizedBy": {
+            "type": "array",
+            "description": "Liste des organisations vous autorisent à déclarer des produits pour elles",
+            "items": {
+              "$ref": "#/components/schemas/AuthorizingOrganization"
+            }
+          }
+        },
+        "required": ["name", "brands", "authorizedOrganizations", "authorizedBy"]
+      },
       "ProductQuery": {
         "type": "object",
         "additionalProperties": false,
