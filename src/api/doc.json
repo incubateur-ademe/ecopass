@@ -445,7 +445,7 @@
             }
           },
           "404": {
-            "description": "Organisation non trouvée - L'utilisateur authentifié n'est associé à aucune organisation. Cela peut arriver si le compte utilisateur n'a pas encore été configuré avec une organisation.",
+            "description": "Pas d'information sur l'organisation.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1024,7 +1024,7 @@
           "error": {
             "type": "string",
             "description": "Message d'erreur",
-            "example": "Produit non trouvé"
+            "example": "Objet non trouvé"
           }
         }
       },
