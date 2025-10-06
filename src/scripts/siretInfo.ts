@@ -18,9 +18,11 @@ const main = async () => {
         naf: info.etablissement.uniteLegale.activitePrincipaleUniteLegale,
       },
     })
+
     console.log(
       `Mise à jour de l'organisation ID ${organization.id} avec effectif ${info.etablissement.uniteLegale.trancheEffectifsUniteLegale} et NAF ${info.etablissement.uniteLegale.activitePrincipaleUniteLegale}`,
     )
+    await new Promise((resolve) => setTimeout(resolve, 3000))
   }
 }
 
