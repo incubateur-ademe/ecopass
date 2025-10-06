@@ -53,7 +53,7 @@ const scanFileContent = async (buffer: Buffer): Promise<boolean> => {
 export const uploadFile = async (file: File) => {
   const session = await auth()
   if (!session || !session.user) {
-    return "Utilisateur non authentifié"
+    return "Veuillez vous reconnecter et réessayer"
   }
 
   try {
