@@ -95,8 +95,8 @@ const Upload = () => {
               </>
             ) : (
               <>
-                Une erreur inconnue est survenue lors de l'analyse du fichier. Si l'erreur persiste n'hesitez pas à nous
-                envoyer votre fichier par mail, à l'adresse suivante, pour analyse plus approfondie.
+                {error}. Si l'erreur persiste n'hesitez pas à nous envoyer votre fichier par mail, à l'adresse suivante,
+                pour analyse plus approfondie.
                 <br />
                 <Link
                   className='fr-link'
