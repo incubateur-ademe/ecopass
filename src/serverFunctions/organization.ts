@@ -61,6 +61,8 @@ export const authorizeOrganization = async (siret: string) => {
       data: {
         siret,
         name: info.etablissement.uniteLegale.denominationUniteLegale,
+        effectif: info.etablissement.uniteLegale.trancheEffectifsUniteLegale,
+        naf: info.etablissement.uniteLegale.activitePrincipaleUniteLegale,
       },
     })
     id = newOrganization.id
