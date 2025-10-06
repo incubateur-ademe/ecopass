@@ -107,7 +107,7 @@ test("manage delegation", async ({ page }) => {
   }, 3)
 
   await retry(async () => {
-    response = await page.request.get("http://localhost:3000/api/organization", {
+    response = await page.request.get("http://localhost:3000/api/organisation", {
       headers: {
         Authorization: "nimps",
       },
@@ -116,7 +116,7 @@ test("manage delegation", async ({ page }) => {
   }, 3)
 
   await retry(async () => {
-    response = await page.request.get("http://localhost:3000/api/organization", {
+    response = await page.request.get("http://localhost:3000/api/organisation", {
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
@@ -174,7 +174,7 @@ test("manage delegation", async ({ page }) => {
   )
 
   await retry(async () => {
-    response = await page.request.get("http://localhost:3000/api/organization", {
+    response = await page.request.get("http://localhost:3000/api/organisation", {
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
