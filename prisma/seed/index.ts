@@ -23,6 +23,8 @@ const users = async () => {
     data: {
       siret: "31723624800017",
       name: "Emmaus",
+      effectif: "41",
+      naf: "87.90B",
       brands: {
         createMany: {
           data: [{ name: "Emmaus Solidarité" }, { name: "Emmaus Connect" }],

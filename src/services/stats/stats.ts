@@ -1,6 +1,6 @@
 "use server"
 import axios from "axios"
-import { getProductCountByCategory, getDistinctBrandCount, getBrandInformation } from "../../db/product"
+import { getProductCountByCategory, getDistinctBrandCount, getBrandsInformations } from "../../db/product"
 import { getDoneAPIUploadCount, getDoneFileUploadCount } from "../../db/upload"
 import { auth } from "../auth/auth"
 import { UserRole } from "../../../prisma/src/prisma"
@@ -52,7 +52,7 @@ export const computeAdminStats = async () => {
     return null
   }
 
-  return getBrandInformation()
+  return getBrandsInformations()
 }
 
 export type AdminStats = Awaited<ReturnType<typeof computeAdminStats>>

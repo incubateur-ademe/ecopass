@@ -25,6 +25,8 @@ export const authOptions = {
             data: {
               siret: siret,
               name: result.etablissement.uniteLegale.denominationUniteLegale,
+              effectif: result.etablissement.uniteLegale.trancheEffectifsUniteLegale,
+              naf: result.etablissement.uniteLegale.activitePrincipaleUniteLegale,
             },
           })
         }
