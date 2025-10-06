@@ -43,7 +43,7 @@ const Admin = ({ stats }: { stats: AdminStats }) => {
               .map((info) => [
                 <div key={info.name}>
                   <span>
-                    {info.name} - {info.siret} ({info.effectif} salariés)
+                    {info.name} - {info.siret} {info.effectif !== "NN" && `(${info.effectif} salariés)`}
                   </span>
 
                   {info.naf !== null && (

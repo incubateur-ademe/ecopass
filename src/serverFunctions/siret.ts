@@ -18,7 +18,8 @@ export const getSiretInfo = async (siret: string) => {
     }
 
     return result.data
-  } catch {
+  } catch (e) {
+    console.error("Error fetching SIRET information:", e)
     return null
   }
 }
