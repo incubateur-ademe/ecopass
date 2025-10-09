@@ -9,33 +9,37 @@ export const authOptions = {
   adapter: PrismaAdapter(prismaClient),
   events: {
     createUser: async ({ user }) => {
-      const siret = user.agentconnect_info?.siret || ""
-      if (siret) {
-        let organization = await prismaClient.organization.findUnique({
-          where: { siret },
-        })
+      try {
+        const siret = user.agentconnect_info?.siret || ""
+        if (siret) {
+          let organization = await prismaClient.organization.findUnique({
+            where: { siret },
+          })
 
-        if (!organization) {
-          const result = await getSiretInfo(siret)
-          if (!result) {
-            throw new Error("Failed to fetch SIRET information from API")
+          if (!organization) {
+            const result = await getSiretInfo(siret)
+            if (!result) {
+              throw new Error("Failed to fetch SIRET information from API")
+            }
+
+            organization = await prismaClient.organization.create({
+              data: {
+                siret: siret,
+                name: result.etablissement.uniteLegale.denominationUniteLegale,
+                effectif: result.etablissement.uniteLegale.trancheEffectifsUniteLegale,
+                naf: result.etablissement.uniteLegale.activitePrincipaleUniteLegale,
+              },
+            })
           }
-
-          organization = await prismaClient.organization.create({
+          await prismaClient.user.update({
+            where: { id: user.id },
             data: {
-              siret: siret,
-              name: result.etablissement.uniteLegale.denominationUniteLegale,
-              effectif: result.etablissement.uniteLegale.trancheEffectifsUniteLegale,
-              naf: result.etablissement.uniteLegale.activitePrincipaleUniteLegale,
+              organizationId: organization.id,
             },
           })
         }
-        await prismaClient.user.update({
-          where: { id: user.id },
-          data: {
-            organizationId: organization.id,
-          },
-        })
+      } catch (error) {
+        console.error("Error in createUser event:", error)
       }
     },
   },
