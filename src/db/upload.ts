@@ -162,7 +162,27 @@ export const getFirstFileUpload = async () =>
       id: true,
       name: true,
       createdAt: true,
-      createdBy: { select: { email: true, organization: { select: { name: true } } } },
+      createdBy: {
+        select: {
+          email: true,
+          organization: {
+            select: {
+              name: true,
+              brands: { select: { name: true } },
+              authorizedBy: {
+                select: {
+                  from: {
+                    select: {
+                      name: true,
+                      brands: { select: { name: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       products: { select: { status: true } },
       reUploadProducts: { select: { product: { select: { status: true } } } },
     },
