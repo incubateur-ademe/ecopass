@@ -699,25 +699,25 @@
           },
           "countryDyeing": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Teinture** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/apitextile/countries`)\n",
+            "description": "Code pays pour l'étape de **Teinture** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)\n",
             "minLength": 2,
             "maxLength": 2
           },
           "countryFabric": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Tissage/Tricotage** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/apitextile/countries`)\n",
+            "description": "Code pays pour l'étape de **Tissage/Tricotage** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)\n",
             "minLength": 2,
             "maxLength": 2
           },
           "countryMaking": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Confection** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/apitextile/countries`)\n",
+            "description": "Code pays pour l'étape de **Confection** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)\n",
             "minLength": 2,
             "maxLength": 2
           },
           "countrySpinning": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Filature** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/apitextile/countries`).\nSi non spécifié, le pays de filature pris en considération est celui de production de\nla matière la plus représentée dans le mix.\n",
+            "description": "Code pays pour l'étape de **Filature** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`).\nSi non spécifié, le pays de filature pris en considération est celui de production de\nla matière la plus représentée dans le mix.\n",
             "minLength": 2,
             "maxLength": 2
           },
