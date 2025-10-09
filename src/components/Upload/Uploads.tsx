@@ -7,7 +7,6 @@ import Download from "./Download"
 import { Status } from "../../../prisma/src/prisma"
 import { formatDateTime } from "../../services/format"
 import Table from "../Table/Table"
-import styles from "./Uploads.module.css"
 import StatusBadge from "./StatusBadge"
 
 const Uploads = async ({ page }: { page: number }) => {
@@ -23,7 +22,6 @@ const Uploads = async ({ page }: { page: number }) => {
   ) : (
     <div data-testid='uploads-table'>
       <Table
-        className={styles.table}
         fixed
         caption='Mes fichiers'
         noCaption
