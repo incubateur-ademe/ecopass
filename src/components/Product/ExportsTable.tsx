@@ -3,7 +3,6 @@ import Table from "../Table/Table"
 import { Export, Status } from "../../../prisma/src/prisma"
 import DownloadExport from "./DownloadExport"
 import { formatDateTime } from "../../services/format"
-import styles from "./Products.module.css"
 import { useState } from "react"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import StatusBadge from "./StatusBadge"
@@ -21,7 +20,6 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
         />
       )}
       <Table
-        className={styles.table}
         fixed
         caption='Mes produits'
         noCaption

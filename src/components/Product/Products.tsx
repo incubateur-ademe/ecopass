@@ -7,7 +7,6 @@ import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
 import { formatDate, formatNumber } from "../../services/format"
 import Table from "../Table/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
-import styles from "./Products.module.css"
 import Link from "next/link"
 import DownloadScores from "./DownloadScores"
 import { productCategories } from "../../utils/types/productCategory"
@@ -35,7 +34,6 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
       <Search withAlert />
       <div data-testid='products-table'>
         <Table
-          className={styles.table}
           fixed
           caption='Mes produits'
           noCaption
