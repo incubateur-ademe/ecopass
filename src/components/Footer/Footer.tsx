@@ -4,7 +4,13 @@ import Link from "next/link"
 const Footer = () => {
   return (
     <FooterDSFR
-      brandTop='République Française'
+      brandTop={
+        <>
+          République
+          <br />
+          Française
+        </>
+      }
       homeLinkProps={{
         href: "/",
         title: "Accueil - Affichage environnemental",
