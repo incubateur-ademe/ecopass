@@ -17,7 +17,18 @@ describe("parseCSV", () => {
     products: [],
     createdBy: {
       email: "test@test.fr",
-      organization: { name: "TestOrg" },
+      organization: {
+        name: "TestOrg",
+        authorizedBy: [
+          {
+            from: {
+              name: "OtherOrg",
+              brands: [{ name: "otherBrand" }],
+            },
+          },
+        ],
+        brands: [{ name: "TestBrand" }],
+      },
     },
     reUploadProducts: [],
   } satisfies FileUpload

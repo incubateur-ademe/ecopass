@@ -12,6 +12,7 @@ import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
 import { hashProduct } from "../../encryption/hash"
 import { checkHeaders, getBooleanValue, getNumberValue, getValue } from "../parsing"
+import { getAuthorizedBrands } from "../../organization/brands"
 
 export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
   const products: (Product & { materials: undefined; accessories: undefined })[] = []
@@ -114,7 +115,10 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
     products.push({
       error: null,
       id: productId,
-      hash: hashProduct(rawProduct),
+      hash: hashProduct(
+        rawProduct,
+        upload && upload.createdBy.organization ? getAuthorizedBrands(upload.createdBy.organization) : [],
+      ),
       createdAt: now,
       updatedAt: now,
       uploadId: upload ? upload.id : "",
