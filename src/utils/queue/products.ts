@@ -2,6 +2,7 @@ import { failProducts, getProductsToProcess } from "../../db/product"
 import { checkUploadsStatus } from "../../db/upload"
 import { getUserProductValidation } from "../../services/validation/product"
 import { saveEcobalyseResults } from "../ecobalyse/api"
+import { getAuthorizedBrands } from "../organization/brands"
 
 const batchSize = parseInt(process.env.BATCH_SIZE || "10", 10)
 
@@ -23,12 +24,7 @@ export const processProductsQueue = async () => {
         },
       }
     }
-    const userProductValidation = getUserProductValidation([
-      organization.name,
-      ...organization.brands.map(({ name }) => name),
-      ...organization.authorizedBy.map((authorization) => authorization.from.name),
-      ...organization.authorizedBy.flatMap((authorization) => authorization.from.brands.map(({ name }) => name)),
-    ])
+    const userProductValidation = getUserProductValidation(getAuthorizedBrands(organization))
     return {
       id: product.id,
       ...userProductValidation.safeParse(product),

@@ -13,6 +13,7 @@ import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
 import { hashProduct } from "../../encryption/hash"
 import { checkHeaders, ColumnType, getBooleanValue, getNumberValue, getValue } from "../parsing"
+import { getAuthorizedBrands } from "../../organization/brands"
 
 type CSVRow = {
   info: { records: number }
@@ -167,7 +168,10 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       products.push({
         error: null,
         id: productId,
-        hash: hashProduct(rawProduct),
+        hash: hashProduct(
+          rawProduct,
+          upload.createdBy.organization ? getAuthorizedBrands(upload.createdBy.organization) : [],
+        ),
         createdAt: now,
         updatedAt: now,
         uploadId: upload.id,

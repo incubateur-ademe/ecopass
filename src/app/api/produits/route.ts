@@ -6,6 +6,7 @@ import { updateAPIUse } from "../../../db/user"
 import { getUserProductAPIValidation, productsListValidation } from "../../../services/validation/api"
 import { getLastProductByGtin, getOrganizationProductsByUserIdAndBrand } from "../../../db/product"
 import { hashProduct } from "../../../utils/encryption/hash"
+import { getAuthorizedBrands } from "../../../utils/organization/brands"
 
 export async function GET(req: Request) {
   const api = await getApiUser(req.headers)
@@ -45,20 +46,17 @@ export async function POST(req: Request) {
     await updateAPIUse(api.key)
 
     const body = await req.json()
-    const product = getUserProductAPIValidation([
-      api.user.organization.name,
-      ...api.user.organization.brands.map(({ name }) => name),
-      ...api.user.organization.authorizedBy.map((authorization) => authorization.from.name),
-      ...api.user.organization.authorizedBy.flatMap((authorization) =>
-        authorization.from.brands.map(({ name }) => name),
-      ),
-    ]).safeParse({ ...body, brand: body.brand || api.user.organization.name || "" })
+    const brands = getAuthorizedBrands(api.user.organization)
+    const product = getUserProductAPIValidation(brands).safeParse({
+      ...body,
+      brand: body.brand || api.user.organization.name || "",
+    })
 
     if (!product.success) {
       return NextResponse.json(product.error.issues, { status: 400 })
     }
     const lastProduct = await getLastProductByGtin(product.data.gtins[0])
-    const hash = hashProduct(product.data)
+    const hash = hashProduct(product.data, brands)
 
     if (lastProduct && lastProduct.hash === hash) {
       return NextResponse.json({ message: "Le produit existe déjà." }, { status: 208 })
