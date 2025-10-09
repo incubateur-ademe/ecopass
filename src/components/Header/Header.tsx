@@ -9,7 +9,13 @@ const Header = ({ session }: { session: Session | null }) => {
 
   return (
     <HeaderDSFR
-      brandTop='République Française'
+      brandTop={
+        <>
+          République
+          <br />
+          Française
+        </>
+      }
       homeLinkProps={{
         href: "/",
         title: "Accueil - Affichage environnemental",
