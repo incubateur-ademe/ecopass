@@ -4,6 +4,7 @@ import { PageProps } from "../../../.next/types/app/page"
 import { Metadata } from "next"
 import { auth } from "../../services/auth/auth"
 import { getOrganizationProductsByUserId, getOrganizationProductsCountByUserIdAndBrand } from "../../db/product"
+import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
   title: "Mes produits - Affichage environnemental",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 const ProductsPage = async ({ searchParams }: PageProps) => {
   const session = await auth()
   if (!session || !session.user) {
-    return null
+    redirect("/")
   }
 
   const params = await searchParams
