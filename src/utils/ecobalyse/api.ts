@@ -40,6 +40,12 @@ const removeUndefined = <T>(obj: T): T => {
   return obj
 }
 
+const impressionPercentages = [0.01, 0.05, 0.2, 0.5, 0.8]
+const getImpressionRatioMajorant = (percentage: number): number => {
+  const majorant = impressionPercentages.find((value) => percentage <= value)
+  return majorant || 0.8
+}
+
 const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories): EcobalyseProduct => {
   const result = {
     airTransportRatio: product.airTransportRatio,
@@ -50,7 +56,10 @@ const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories):
     countrySpinning: product.countrySpinning ? countryMapping[product.countrySpinning] : undefined,
     printing:
       product.impression && product.impressionPercentage
-        ? { kind: impressionMapping[product.impression], ratio: product.impressionPercentage }
+        ? {
+            kind: impressionMapping[product.impression],
+            ratio: getImpressionRatioMajorant(product.impressionPercentage),
+          }
         : undefined,
     fading: product.fading,
     mass: product.mass,

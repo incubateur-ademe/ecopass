@@ -453,6 +453,38 @@ describe("API Ecobalyse", () => {
       expect(results[1]?.id).toBe("product-2")
       expect(results[1]?.score).toBe(92.3)
     })
+
+    it("should use impression percentage pejorant values", async () => {
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+
+      await saveEcobalyseResults([{ ...mockProduct, impressionPercentage: 0.4 }])
+
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: {
+          brand: undefined,
+          declaredScore: undefined,
+          gtins: undefined,
+          internalReference: undefined,
+          airTransportRatio: 0.1,
+          business: "small-business",
+          countryDyeing: "FR",
+          countryFabric: "IN",
+          countryMaking: "BD",
+          countrySpinning: "MM",
+          fading: false,
+          mass: 0.5,
+          materials: [{ id: "ei-coton", share: 1, country: "KH", productId: "product-1", slug: "Coton" }],
+          numberOfReferences: 100,
+          price: 25.99,
+          printing: { kind: "pigment", ratio: 0.5 },
+          product: "tshirt",
+          trims: [{ id: "d56bb0d5-7999-4b8b-b076-94d79099b56a", quantity: 5 }],
+          upcycled: false,
+        },
+      })
+    })
   })
 
   describe("computeEcobalyseScore", () => {
