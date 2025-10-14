@@ -7,6 +7,7 @@ import { getUserProductAPIValidation, productsListValidation } from "../../../se
 import { getLastProductByGtin, getOrganizationProductsByUserIdAndBrand } from "../../../db/product"
 import { hashProduct } from "../../../utils/encryption/hash"
 import { getAuthorizedBrands } from "../../../utils/organization/brands"
+import { scoreIsValid } from "../../../utils/validation/score"
 
 export async function GET(req: Request) {
   const api = await getApiUser(req.headers)
@@ -63,7 +64,7 @@ export async function POST(req: Request) {
     }
 
     const score = await computeEcobalyseScore(product.data)
-    if (product.data.declaredScore && Math.round(score.score) !== Math.round(product.data.declaredScore)) {
+    if (product.data.declaredScore && !scoreIsValid(product.data.declaredScore, score.score)) {
       return NextResponse.json(
         [
           {
