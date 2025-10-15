@@ -13,6 +13,7 @@ import { prismaClient } from "../../db/prismaClient"
 import { Status } from "../../../prisma/src/prisma"
 import { ProductAPIValidation } from "../../services/validation/api"
 import { runElmFunction } from "./elm"
+import { scoreIsValid } from "../validation/score"
 
 type EcobalyseProduct = Omit<ProductAPIValidation, "brand" | "gtins" | "internalReference" | "declaredScore">
 
@@ -134,7 +135,7 @@ export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAcce
       try {
         const result = await computeEcobalyseScore(convertProductToEcobalyse(product))
 
-        if (product.declaredScore && Math.round(product.declaredScore) !== Math.round(result.score)) {
+        if (product.declaredScore && !scoreIsValid(product.declaredScore, result.score)) {
           return failProducts([
             {
               id: product.id,
