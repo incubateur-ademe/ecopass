@@ -39,7 +39,7 @@ describe("processProductsQueue", () => {
       },
     },
     id: "product-1",
-    gtins: ["1234567891113", "1234567891012"],
+    gtins: ["1234567891118", "1234567891019"],
     internalReference: "My-ref",
     brand: "Test Organization",
     declaredScore: 123,
@@ -92,7 +92,7 @@ describe("processProductsQueue", () => {
         declaredScore: 123,
         error: null,
         fading: false,
-        gtins: ["1234567891113", "1234567891012"],
+        gtins: ["1234567891118", "1234567891019"],
         id: "product-1",
         impression: "Pigmentaire",
         impressionPercentage: 0.2,
@@ -148,7 +148,8 @@ describe("processProductsQueue", () => {
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
         id: "product-1",
-        error: "Le code GTIN doit contenir 8 ou 13 chiffres",
+        error:
+          "Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
     ])
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
@@ -177,7 +178,7 @@ describe("processProductsQueue", () => {
         declaredScore: 123,
         error: null,
         fading: false,
-        gtins: ["1234567891113", "1234567891012"],
+        gtins: ["1234567891118", "1234567891019"],
         id: "product-1",
         impression: "Pigmentaire",
         impressionPercentage: 0.2,
@@ -203,7 +204,8 @@ describe("processProductsQueue", () => {
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
         id: "product-2",
-        error: "Le code GTIN doit contenir 8 ou 13 chiffres",
+        error:
+          "Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
     ])
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id", "test-upload-id-2"])

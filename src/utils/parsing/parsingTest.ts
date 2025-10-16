@@ -76,7 +76,7 @@ export const defaultHeaders = [
 ]
 
 export const defaultProductRow = [
-  "1234567891000;1234567891001",
+  "2234567891001;3234567891000",
   "REF-123",
   "Marque",
   2222.63,

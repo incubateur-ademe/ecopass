@@ -5,7 +5,7 @@ import { login, logout } from "./utils/login"
 import { retry } from "./utils/retry"
 
 const product = {
-  gtins: ["1234567890123"],
+  gtins: ["1234567890128"],
   internalReference: "REF-099",
   brand: "Emmaus Connect",
   mass: 0.17,

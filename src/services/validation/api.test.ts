@@ -4,7 +4,7 @@ import { expectZodValidationToFail } from "./zodValidationTest"
 describe("productAPIValidation", () => {
   const productAPIValidation = getUserProductAPIValidation(["Test Brand", "Test Brand 2"])
   const validProduct = {
-    gtins: ["12345678"],
+    gtins: ["12345670"],
     internalReference: "TestRef",
     brand: "Test Brand",
     product: "jean",
@@ -112,6 +112,12 @@ describe("productAPIValidation", () => {
   it("does not allow product with empty GTINs", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { gtins: [] }, [
       { path: ["gtins"], message: "Too small: expected array to have >=1 items" },
+    ])
+  })
+
+  it("does not allow product with invalid gtin code control", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { gtins: ["1234567891012"] }, [
+      { path: ["gtins", "0"], message: "Le code GTIN n'est pas valide (somme de contrôle incorrecte)" },
     ])
   })
 

@@ -145,7 +145,7 @@ describe("getApiUser", () => {
                 from: {
                   id: "auth-org-id",
                   name: "Auth Org",
-                  siret: "12345678901234",
+                  siret: "1234567890128",
                   brands: [{ id: "brand-id", name: "Auth Brand" }],
                 },
               },
