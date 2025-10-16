@@ -41,7 +41,7 @@ describe("parseCSV", () => {
     expect(accessories).toHaveLength(1)
 
     expect(products[0].status).toBe(Status.Pending)
-    expect(products[0].gtins).toEqual(["1234567891000", "1234567891001"])
+    expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
     expect(products[0].internalReference).toBe("REF-123")
     expect(products[0].brand).toBe("Marque")
     expect(products[0].declaredScore).toBe(2222.63)
@@ -58,7 +58,7 @@ describe("parseCSV", () => {
     })
     const parsedProduct = decryptProductFields(fullProducts[0])
     expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["1234567891000", "1234567891001"])
+    expect(parsedProduct.gtins).toEqual(["2234567891001", "3234567891000"])
     expect(parsedProduct.internalReference).toBe("REF-123")
     expect(parsedProduct.brand).toBe("Marque")
     expect(parsedProduct.declaredScore).toBe(2222.63)
@@ -89,7 +89,7 @@ describe("parseCSV", () => {
   })
 
   it("parse a valid CSV with ecobalyse values", async () => {
-    const product = `"1234567891000;1234567891001","REF-123",Marque,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",d56bb0d5-7999-4b8b-b076-94d79099b56a,1,,,,,,`
+    const product = `"2234567891001;3234567891000","REF-123",Marque,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",d56bb0d5-7999-4b8b-b076-94d79099b56a,1,,,,,,`
 
     const csv = Buffer.from(`${header}\n${product}`)
     const { products, materials, accessories } = await parseCSV(csv, null, upload)
@@ -98,7 +98,7 @@ describe("parseCSV", () => {
     expect(accessories).toHaveLength(1)
 
     expect(products[0].status).toBe(Status.Pending)
-    expect(products[0].gtins).toEqual(["1234567891000", "1234567891001"])
+    expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
     expect(products[0].internalReference).toBe("REF-123")
     expect(products[0].brand).toBe("Marque")
     expect(products[0].declaredScore).toBe(2222.63)
@@ -115,7 +115,7 @@ describe("parseCSV", () => {
     })
     const parsedProduct = decryptProductFields(fullProducts[0])
     expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["1234567891000", "1234567891001"])
+    expect(parsedProduct.gtins).toEqual(["2234567891001", "3234567891000"])
     expect(parsedProduct.internalReference).toBe("REF-123")
     expect(parsedProduct.brand).toBe("Marque")
     expect(parsedProduct.declaredScore).toBe(2222.63)
@@ -207,7 +207,7 @@ describe("parseCSV", () => {
   })
 
   it("parses a valid CSV with semi colon", async () => {
-    const product = `"1234567891000;1234567891001";"REF-123";"";"2222;63";Pull;"0;55";Non;9000;100;Grande entreprise sans service de réparation;Viscose;"90,00 %";Chine;Jute;"10,00 %";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Chine;Chine;Chine;Pigmentaire;"20,00 %";Chine;Non;"75,00%";Bouton en métal;1;;;;;;`
+    const product = `"2234567891001;3234567891000";"REF-123";"";"2222;63";Pull;"0;55";Non;9000;100;Grande entreprise sans service de réparation;Viscose;"90,00 %";Chine;Jute;"10,00 %";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Chine;Chine;Chine;Pigmentaire;"20,00 %";Chine;Non;"75,00%";Bouton en métal;1;;;;;;`
     const csv = Buffer.from(`${header.replaceAll(",", ";")}\n${product}`)
     const { products, materials, accessories } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
@@ -216,7 +216,7 @@ describe("parseCSV", () => {
   })
 
   it("parses a valid CSV with tabs", async () => {
-    const product = `"1234567891000;1234567891001"\t"REF-123"\t""\t"2222\t63"\tPull\t"0\t55"\tNon\t9000\t100\tGrande entreprise sans service de réparation\tViscose\t"90,00 %"\tChine\tJute\t"10,00 %"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tChine\tChine\tChine\tPigmentaire\t"20,00 %"\tChine\tNon\t"75,00%"\tBouton en métal\t1\t\t\t\t\t\t`
+    const product = `"2234567891001;3234567891000"\t"REF-123"\t""\t"2222\t63"\tPull\t"0\t55"\tNon\t9000\t100\tGrande entreprise sans service de réparation\tViscose\t"90,00 %"\tChine\tJute\t"10,00 %"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tChine\tChine\tChine\tPigmentaire\t"20,00 %"\tChine\tNon\t"75,00%"\tBouton en métal\t1\t\t\t\t\t\t`
     const csv = Buffer.from(`${header.replaceAll(",", "\t")}\n${product}`)
     const { products, materials, accessories } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
@@ -262,7 +262,7 @@ describe("parseCSV", () => {
   })
 
   it("does not fail when missing gtins", async () => {
-    const csv = Buffer.from(`${header}\n${defaultProducts.replace('"1234567891000;1234567891001"', '""')}`)
+    const csv = Buffer.from(`${header}\n${defaultProducts.replace('"2234567891001;3234567891000"', '""')}`)
     const { products } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
     expect(products[0].gtins).toEqual([""])

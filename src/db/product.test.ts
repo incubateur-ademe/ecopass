@@ -64,7 +64,7 @@ describe("Product DB integration", () => {
     baseProduct = {
       id: uuid(),
       hash: "test-hash",
-      gtins: ["1234567891001"],
+      gtins: ["3234567891000"],
       internalReference: "REF-124",
       brand: "TestBrand2",
       category: "pull",
@@ -100,7 +100,7 @@ describe("Product DB integration", () => {
 
     productId = uuid()
     const encrypted = encryptProductFields({
-      gtins: ["1234567891000"],
+      gtins: ["2234567891001"],
       internalReference: "REF-123",
       brand: "TestBrand",
       product: ProductCategory.Pull,
@@ -157,7 +157,7 @@ describe("Product DB integration", () => {
 
   it("getProductsByUploadId and order them", async () => {
     const encrypted = encryptProductFields({
-      gtins: ["1234567891000"],
+      gtins: ["2234567891001"],
       internalReference: "REF-123",
       brand: "TestBrand",
       product: ProductCategory.Pull,
@@ -242,7 +242,7 @@ describe("Product DB integration", () => {
   })
 
   it("getProductWithScoreHistoryCount returns correct count", async () => {
-    const gtin = "1234567891002"
+    const gtin = "2234567891001"
     const productIds = []
 
     for (let i = 0; i < 3; i++) {
@@ -265,11 +265,11 @@ describe("Product DB integration", () => {
   })
 
   it("getProductWithScoreHistory returns products with pagination", async () => {
-    const gtin = "1234567891003"
+    const gtin = "4234567891009"
     const productIds = []
 
     const encrypted = encryptProductFields({
-      gtins: ["1234567891000"],
+      gtins: ["2234567891001"],
       internalReference: "REF-123",
       brand: "TestBrand",
       product: ProductCategory.Pull,
@@ -322,13 +322,13 @@ describe("Product DB integration", () => {
   })
 
   it("getOldProductWithScore returns specific product version", async () => {
-    const gtin = "1234567891005"
+    const gtin = "6234567891007"
 
     const productId1 = uuid()
     const productId2 = uuid()
 
     const encrypted = encryptProductFields({
-      gtins: ["1234567891000"],
+      gtins: ["2234567891001"],
       internalReference: "REF-123",
       brand: "TestBrand",
       product: ProductCategory.Pull,
@@ -441,7 +441,7 @@ describe("Product DB integration", () => {
   })
 
   it("getOldProductWithScore only returns products with Done status", async () => {
-    const gtin = "1234567891007"
+    const gtin = "8234567891005"
     const productId = uuid()
 
     await prismaTest.product.create({

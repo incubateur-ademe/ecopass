@@ -13,7 +13,7 @@ describe("productValidation", () => {
     updatedAt: new Date("2023-01-02"),
     error: null,
     brand: "Test Brand",
-    gtins: ["1234567890123"],
+    gtins: ["1234567890128"],
     internalReference: "TestRef",
     declaredScore: null,
     category: ProductCategory.Jean,
@@ -185,6 +185,12 @@ describe("productValidation", () => {
   it("does not allow product with empty GTINs", () => {
     expectZodValidationToFail(productValidation, validProduct, { gtins: [] }, [
       { path: ["gtins"], message: "Il doit y avoir au moins un GTIN" },
+    ])
+  })
+
+  it("does not allow product with invalid gtin code control", () => {
+    expectZodValidationToFail(productValidation, validProduct, { gtins: ["1234567891012"] }, [
+      { path: ["gtins", "0"], message: "Le code GTIN n'est pas valide (somme de contrôle incorrecte)" },
     ])
   })
 

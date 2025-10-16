@@ -59,7 +59,7 @@ describe("parseExcel", () => {
     expect(accessories).toHaveLength(1)
 
     expect(products[0].status).toBe(Status.Pending)
-    expect(products[0].gtins).toEqual(["1234567891000", "1234567891001"])
+    expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
     expect(products[0].internalReference).toBe("REF-123")
     expect(products[0].brand).toBe("Marque")
     expect(products[0].declaredScore).toBe(2222.63)
@@ -77,7 +77,7 @@ describe("parseExcel", () => {
 
     const parsedProduct = decryptProductFields(fullProducts[0])
     expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["1234567891000", "1234567891001"])
+    expect(parsedProduct.gtins).toEqual(["2234567891001", "3234567891000"])
     expect(parsedProduct.internalReference).toBe("REF-123")
     expect(parsedProduct.brand).toBe("Marque")
     expect(parsedProduct.declaredScore).toBe(2222.63)
@@ -171,7 +171,7 @@ describe("parseExcel", () => {
 
   it("handles missing headers", async () => {
     const incompleteHeaders = ["Header1", "Header2"]
-    const incompleteRow = ["1234567891000", "REF-123"]
+    const incompleteRow = ["2234567891001", "REF-123"]
     const excelBuffer = createExcelBuffer([incompleteHeaders, incompleteRow])
 
     await expect(parseExcel(excelBuffer, upload)).rejects.toThrow(
@@ -207,7 +207,7 @@ describe("parseExcel", () => {
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(2)
     expect(accessories).toHaveLength(1)
-    expect(products[0].gtins).toEqual(["1234567891000", "1234567891001"])
+    expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
     expect(products[0].brand).toBe("Marque")
   })
 
@@ -219,7 +219,7 @@ describe("parseExcel", () => {
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(2)
     expect(accessories).toHaveLength(1)
-    expect(products[0].gtins).toEqual(["1234567891000", "1234567891001"])
+    expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
     expect(products[0].brand).toBe("Marque")
   })
 })
