@@ -397,29 +397,28 @@ describe("productValidation", () => {
       {
         impressionPercentage: "Tout",
       },
-      [{ path: ["impressionPercentage"], message: "Le pourcentage d'impression doit être un pourcentage" }],
+      [
+        {
+          path: ["impressionPercentage"],
+          message: "Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%",
+        },
+      ],
     )
   })
 
-  it("does not allow product with too low impression percentage", () => {
+  it("does not allow product with impression percentage not in range", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
       {
-        impressionPercentage: -1,
+        impressionPercentage: 0.4,
       },
-      [{ path: ["impressionPercentage"], message: "Le pourcentage d'impression doit être supérieur à 0%" }],
-    )
-  })
-
-  it("does not allow product with invalid impression percentage", () => {
-    expectZodValidationToFail(
-      productValidation,
-      validProduct,
-      {
-        impressionPercentage: 0.9,
-      },
-      [{ path: ["impressionPercentage"], message: "Le pourcentage d'impression doit être inférieur à 80%" }],
+      [
+        {
+          path: ["impressionPercentage"],
+          message: "Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%",
+        },
+      ],
     )
   })
 

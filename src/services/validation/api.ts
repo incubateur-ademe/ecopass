@@ -8,6 +8,7 @@ import {
   productMapping,
 } from "../../utils/ecobalyse/mappings"
 import { Return } from "@prisma/client/runtime/library"
+import { PrintingRatio } from "./printing"
 
 const epsilon = 1e-10
 
@@ -49,7 +50,7 @@ const productAPIValidation = z.object({
   printing: z
     .object({
       kind: z.enum(printingValues),
-      ratio: z.number().min(0).max(0.8).optional(),
+      ratio: z.enum(PrintingRatio).optional(),
     })
     .optional(),
   materials: z.array(materialValidation).refine((materials) => {

@@ -1,6 +1,7 @@
 import z from "zod"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 import { Status } from "../../../prisma/src/prisma"
+import { PrintingRatio } from "./printing"
 
 const epsilon = 1e-10
 
@@ -64,9 +65,7 @@ const productValidation = z.object({
   countrySpinning: z.enum(Country, { message: "Origine de filature invalide" }).optional(),
   impression: z.enum(Impression, { message: "Type d'impression invalide" }).optional(),
   impressionPercentage: z
-    .number({ message: "Le pourcentage d'impression doit être un pourcentage" })
-    .min(0, "Le pourcentage d'impression doit être supérieur à 0%")
-    .max(0.8, "Le pourcentage d'impression doit être inférieur à 80%")
+    .enum(PrintingRatio, { message: "Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%" })
     .optional(),
   materials: z.array(materialValidation).refine((materials) => {
     const totalShare = materials.reduce((acc, material) => acc + material.share, 0)
