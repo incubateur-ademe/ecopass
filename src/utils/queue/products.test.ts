@@ -54,7 +54,7 @@ describe("processProductsQueue", () => {
     category: ProductCategory.TShirtPolo,
     upcycled: false,
     impression: Impression.Pigmentaire,
-    impressionPercentage: 0.1,
+    impressionPercentage: 0.2,
     airTransportRatio: 0.1,
     fading: false,
     materials: [
@@ -95,7 +95,7 @@ describe("processProductsQueue", () => {
         gtins: ["1234567891113", "1234567891012"],
         id: "product-1",
         impression: "Pigmentaire",
-        impressionPercentage: 0.1,
+        impressionPercentage: 0.2,
         internalReference: "My-ref",
         mass: 0.15,
         materials: [
@@ -180,7 +180,7 @@ describe("processProductsQueue", () => {
         gtins: ["1234567891113", "1234567891012"],
         id: "product-1",
         impression: "Pigmentaire",
-        impressionPercentage: 0.1,
+        impressionPercentage: 0.2,
         internalReference: "My-ref",
         mass: 0.15,
         materials: [
