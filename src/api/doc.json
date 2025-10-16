@@ -749,7 +749,8 @@
               },
               "ratio": {
                 "type": "number",
-                "description": "Pourcentage de surface imprimée, exprimé entre `0` et `0.8`\n"
+                "description": "Pourcentage de surface imprimée",
+                "enum": [0.01, 0.05, 0.2, 0.5, 0.8]
               }
             }
           },
