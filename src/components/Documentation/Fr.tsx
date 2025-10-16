@@ -90,7 +90,7 @@ const Fr = () => {
           </ul>
         </li>
         <li>
-          <b>Pourcentage d'impression</b> (optionnel) : pourcentage de surface imprimée (entre 0% et 80%).
+          <b>Pourcentage d'impression</b> (optionnel) : pourcentage de surface imprimée (1%, 5%, 20%, 50% ou 80%).
         </li>
         <li>
           <b>Délavage</b> (optionnel) : Y a t'il application d'un procédé de délavage pour l'étape de confection du
