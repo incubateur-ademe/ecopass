@@ -8,6 +8,8 @@ import {
   productMapping,
 } from "../../utils/ecobalyse/mappings"
 import { Return } from "@prisma/client/runtime/library"
+import { PrintingRatio } from "./printing"
+import { isValidGtin } from "../../utils/validation/gtin"
 
 const epsilon = 1e-10
 
@@ -31,7 +33,14 @@ const accessoryValidation = z.object({
 
 const productAPIValidation = z.object({
   test: z.boolean().optional(),
-  gtins: z.array(z.string().regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")).min(1),
+  gtins: z
+    .array(
+      z
+        .string()
+        .regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")
+        .refine(isValidGtin, "Le code GTIN n'est pas valide (somme de contrôle incorrecte)"),
+    )
+    .min(1),
   internalReference: z.string(),
   declaredScore: z.number().optional(),
   product: z.enum(productValues),
@@ -49,7 +58,7 @@ const productAPIValidation = z.object({
   printing: z
     .object({
       kind: z.enum(printingValues),
-      ratio: z.number().min(0).max(0.8).optional(),
+      ratio: z.enum(PrintingRatio).optional(),
     })
     .optional(),
   materials: z.array(materialValidation).refine((materials) => {

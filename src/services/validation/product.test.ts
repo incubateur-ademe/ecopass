@@ -13,7 +13,7 @@ describe("productValidation", () => {
     updatedAt: new Date("2023-01-02"),
     error: null,
     brand: "Test Brand",
-    gtins: ["1234567890123"],
+    gtins: ["1234567890128"],
     internalReference: "TestRef",
     declaredScore: null,
     category: ProductCategory.Jean,
@@ -185,6 +185,12 @@ describe("productValidation", () => {
   it("does not allow product with empty GTINs", () => {
     expectZodValidationToFail(productValidation, validProduct, { gtins: [] }, [
       { path: ["gtins"], message: "Il doit y avoir au moins un GTIN" },
+    ])
+  })
+
+  it("does not allow product with invalid gtin code control", () => {
+    expectZodValidationToFail(productValidation, validProduct, { gtins: ["1234567891012"] }, [
+      { path: ["gtins", "0"], message: "Le code GTIN n'est pas valide (somme de contrôle incorrecte)" },
     ])
   })
 
@@ -397,29 +403,28 @@ describe("productValidation", () => {
       {
         impressionPercentage: "Tout",
       },
-      [{ path: ["impressionPercentage"], message: "Le pourcentage d'impression doit être un pourcentage" }],
+      [
+        {
+          path: ["impressionPercentage"],
+          message: "Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%",
+        },
+      ],
     )
   })
 
-  it("does not allow product with too low impression percentage", () => {
+  it("does not allow product with impression percentage not in range", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
       {
-        impressionPercentage: -1,
+        impressionPercentage: 0.4,
       },
-      [{ path: ["impressionPercentage"], message: "Le pourcentage d'impression doit être supérieur à 0%" }],
-    )
-  })
-
-  it("does not allow product with invalid impression percentage", () => {
-    expectZodValidationToFail(
-      productValidation,
-      validProduct,
-      {
-        impressionPercentage: 0.9,
-      },
-      [{ path: ["impressionPercentage"], message: "Le pourcentage d'impression doit être inférieur à 80%" }],
+      [
+        {
+          path: ["impressionPercentage"],
+          message: "Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%",
+        },
+      ],
     )
   })
 

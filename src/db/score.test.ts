@@ -56,7 +56,7 @@ describe("Score DB integration", () => {
     baseProduct = {
       id: uuid(),
       hash: "test-hash",
-      gtins: ["1234567891001"],
+      gtins: ["3234567891000"],
       internalReference: "REF-124",
       brand: "TestBrand2",
       category: "pull",
@@ -197,7 +197,7 @@ describe("Score DB integration", () => {
       outOfEuropeEOL: 1.2,
     }
     const product = {
-      gtins: ["1234567891000"],
+      gtins: ["2234567891001"],
       internalReference: "REF-123",
       brand: "TestBrand",
       product: ProductCategory.Pull,

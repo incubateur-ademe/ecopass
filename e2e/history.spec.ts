@@ -12,7 +12,7 @@ test.beforeEach(async () => {
 })
 
 const product = {
-  gtins: ["1234567890123"],
+  gtins: ["1234567890128"],
   internalReference: "REF-100",
   brand: "Emmaus",
   mass: 0.17,
@@ -54,11 +54,11 @@ test("shows product history", async ({ page }) => {
   })
   expect(response.status()).toBe(201)
 
-  await page.goto("http://localhost:3000/produits/1234567890123")
+  await page.goto("http://localhost:3000/produits/1234567890128")
 
   await expect(page.locator("#contenu")).toContainText("Déclaration validée")
   await expect(page.getByTestId("product-details")).toHaveText(
-    `T-shirt / Polo - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
+    `T-shirt / Polo - EmmausRéférence interne : REF-100Code GTINs : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
     `Coût environnemental : 5117 pointsCoût environnemental pour 100g : 1023 pointsCoefficient de durabilité : 0.67Coût environnemental : 5117 points d'impact, 1023 pour 100g1 023 pts/100g5 117Télécharger le .svg`,
@@ -79,7 +79,7 @@ test("shows product history", async ({ page }) => {
 
   await expect(page.locator("#contenu")).toContainText("Déclaration obsolète")
   await expect(page.getByTestId("product-details")).toHaveText(
-    `T-shirt / Polo - EmmausRéférence interne : REF-100Code GTINs : 1234567890123Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
+    `T-shirt / Polo - EmmausRéférence interne : REF-100Code GTINs : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
     `Coût environnemental : 1755 pointsCoût environnemental pour 100g : 1032 pointsCoefficient de durabilité : 0.67Coût environnemental : 1755 points d'impact, 1032 pour 100g1 032 pts/100g1 755Télécharger le .svg`,

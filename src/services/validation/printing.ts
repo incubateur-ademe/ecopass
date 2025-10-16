@@ -1,0 +1,7 @@
+export enum PrintingRatio {
+  RATIO_1_PERCENT = 0.01,
+  RATIO_5_PERCENT = 0.05,
+  RATIO_20_PERCENT = 0.2,
+  RATIO_50_PERCENT = 0.5,
+  RATIO_80_PERCENT = 0.8,
+}

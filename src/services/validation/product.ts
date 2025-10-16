@@ -1,6 +1,8 @@
 import z from "zod"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 import { Status } from "../../../prisma/src/prisma"
+import { PrintingRatio } from "./printing"
+import { isValidGtin } from "../../utils/validation/gtin"
 
 const epsilon = 1e-10
 
@@ -32,9 +34,15 @@ const productValidation = z.object({
   updatedAt: z.date(),
   error: z.string().nullable(),
   gtins: z
-    .array(z.string().regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres"), {
-      message: "Il doit y avoir au moins un GTIN",
-    })
+    .array(
+      z
+        .string()
+        .regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")
+        .refine(isValidGtin, "Le code GTIN n'est pas valide (somme de contrôle incorrecte)"),
+      {
+        message: "Il doit y avoir au moins un GTIN",
+      },
+    )
     .min(1, "Il doit y avoir au moins un GTIN"),
   internalReference: z.string({ message: "La référence interne est obligatoire" }),
   declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
@@ -64,9 +72,7 @@ const productValidation = z.object({
   countrySpinning: z.enum(Country, { message: "Origine de filature invalide" }).optional(),
   impression: z.enum(Impression, { message: "Type d'impression invalide" }).optional(),
   impressionPercentage: z
-    .number({ message: "Le pourcentage d'impression doit être un pourcentage" })
-    .min(0, "Le pourcentage d'impression doit être supérieur à 0%")
-    .max(0.8, "Le pourcentage d'impression doit être inférieur à 80%")
+    .enum(PrintingRatio, { message: "Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%" })
     .optional(),
   materials: z.array(materialValidation).refine((materials) => {
     const totalShare = materials.reduce((acc, material) => acc + material.share, 0)

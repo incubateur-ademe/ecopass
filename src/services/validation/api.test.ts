@@ -4,7 +4,7 @@ import { expectZodValidationToFail } from "./zodValidationTest"
 describe("productAPIValidation", () => {
   const productAPIValidation = getUserProductAPIValidation(["Test Brand", "Test Brand 2"])
   const validProduct = {
-    gtins: ["12345678"],
+    gtins: ["12345670"],
     internalReference: "TestRef",
     brand: "Test Brand",
     product: "jean",
@@ -112,6 +112,12 @@ describe("productAPIValidation", () => {
   it("does not allow product with empty GTINs", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { gtins: [] }, [
       { path: ["gtins"], message: "Too small: expected array to have >=1 items" },
+    ])
+  })
+
+  it("does not allow product with invalid gtin code control", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { gtins: ["1234567891012"] }, [
+      { path: ["gtins", "0"], message: "Le code GTIN n'est pas valide (somme de contrôle incorrecte)" },
     ])
   })
 
@@ -298,20 +304,11 @@ describe("productAPIValidation", () => {
     ])
   })
 
-  it("does not allow product with printing ratio too big", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "pigment", ratio: 0.85 } }, [
+  it("does not allow product with printing ratio not in allowed values", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "pigment", ratio: 0.4 } }, [
       {
         path: ["printing", "ratio"],
-        message: "Too big: expected number to be <=0.8",
-      },
-    ])
-  })
-
-  it("does not allow product with printing ratio too big", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "pigment", ratio: 0.85 } }, [
-      {
-        path: ["printing", "ratio"],
-        message: "Too big: expected number to be <=0.8",
+        message: "Invalid option: expected one of 0.01|0.05|0.2|0.5|0.8",
       },
     ])
   })
@@ -320,7 +317,7 @@ describe("productAPIValidation", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "pigment", ratio: "Tout" } }, [
       {
         path: ["printing", "ratio"],
-        message: "Invalid input: expected number, received string",
+        message: "Invalid option: expected one of 0.01|0.05|0.2|0.5|0.8",
       },
     ])
   })
