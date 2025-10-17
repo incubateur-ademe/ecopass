@@ -31,17 +31,6 @@ describe("productAPIValidation", () => {
     expect(result.success).toEqual(true)
   })
 
-  it("allows valid product with partial printing", () => {
-    const result = productAPIValidation.safeParse({
-      ...validProduct,
-      printing: {
-        kind: "pigment",
-        ratio: undefined,
-      },
-    })
-    expect(result.success).toEqual(true)
-  })
-
   it("allows valid full product", () => {
     const result = productAPIValidation.safeParse({
       ...validProduct,
@@ -287,7 +276,7 @@ describe("productAPIValidation", () => {
   })
 
   it("does not allow product with invalid printing kind", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "Pigmen" } }, [
+    expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "Pigmen", ratio: 0.5 } }, [
       {
         path: ["printing", "kind"],
         message: 'Invalid option: expected one of "pigment"|"substantive"',
@@ -306,6 +295,15 @@ describe("productAPIValidation", () => {
 
   it("does not allow product with printing ratio not in allowed values", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "pigment", ratio: 0.4 } }, [
+      {
+        path: ["printing", "ratio"],
+        message: "Invalid option: expected one of 0.01|0.05|0.2|0.5|0.8",
+      },
+    ])
+  })
+
+  it("does not allow product with partial printing", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { printing: { kind: "pigment" } }, [
       {
         path: ["printing", "ratio"],
         message: "Invalid option: expected one of 0.01|0.05|0.2|0.5|0.8",
