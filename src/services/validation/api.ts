@@ -57,7 +57,7 @@ const productAPIValidation = z.object({
   printing: z
     .object({
       kind: z.enum(printingValues),
-      ratio: z.enum(PrintingRatio).optional(),
+      ratio: z.enum(PrintingRatio),
     })
     .optional(),
   materials: z.array(materialValidation).refine((materials) => {
