@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     const brands = getAuthorizedBrands(api.user.organization)
     const product = getUserProductAPIValidation(brands).safeParse({
       ...body,
-      brand: body.brand || api.user.organization.name || "",
+      brand: (body.brand || api.user.organization.name || "").trim(),
     })
 
     if (!product.success) {

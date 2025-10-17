@@ -102,7 +102,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       const rawProduct = {
         gtins: (row.record["gtinseans"] || "").split(";").map((gtin) => gtin.trim()),
         internalReference: row.record["referenceinterne"] || "",
-        brand: row.record["marque"] || upload.createdBy.organization?.name || "",
+        brand: (row.record["marque"] || upload.createdBy.organization?.name || "").trim(),
         declaredScore: getNumberValue(row.record["score"], 1, -1) as number | undefined,
         product: getValue<ProductCategory>(productCategories, row.record["categorie"]),
         airTransportRatio: getNumberValue(row.record["partdutransportaerien"], 0.01),
