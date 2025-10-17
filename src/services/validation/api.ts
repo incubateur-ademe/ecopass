@@ -32,7 +32,6 @@ const accessoryValidation = z.object({
 })
 
 const productAPIValidation = z.object({
-  test: z.boolean().optional(),
   gtins: z
     .array(
       z

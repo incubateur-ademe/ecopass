@@ -437,18 +437,4 @@ describe("productAPIValidation", () => {
       },
     ])
   })
-
-  it("allows valid product with test field set to true", () => {
-    const result = productAPIValidation.safeParse({
-      ...validProduct,
-      test: true,
-    })
-    expect(result.success).toEqual(true)
-  })
-
-  it("does not allow product with invalid test", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { test: "nimps" }, [
-      { path: ["test"], message: "Invalid input: expected boolean, received string" },
-    ])
-  })
 })
