@@ -10,6 +10,13 @@
   }
 }
 
+.bannerTest {
+  @media screen and (max-width: 992px) {
+    flex-direction: column-reverse;
+    flex-wrap: wrap;
+  }
+}
+
 .cards {
   display: flex;
   justify-content: space-between;
@@ -36,6 +43,18 @@
   }
 }
 
+.alert {
+  min-width: 700px;
+
+  @media screen and (max-width: 1248px) {
+    min-width: 500px;
+  }
+
+  @media screen and (max-width: 992px) {
+    min-width: 100%;
+  }
+}
+
 .small {
   max-width: 200px;
 }
@@ -44,6 +63,11 @@
   color: var(--blue-france-sun-113-625);
   font-size: 2.5rem;
   line-height: 3rem;
+
+  @media screen and (max-width: 575px) {
+    font-size: 2rem;
+    line-height: 2.5rem;
+  }
 }
 
 .description {

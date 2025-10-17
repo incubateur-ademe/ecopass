@@ -1,6 +1,7 @@
 import ejs, { Data } from "ejs"
 import nodemailer from "nodemailer"
 import SMTPTransport from "nodemailer/lib/smtp-transport"
+import { isTestEnvironment } from "../../utils/test"
 
 const mailTransport = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
@@ -31,8 +32,8 @@ const send = (toEmail: string[], subject: string, html: string) => {
 export const sendUploadSuccessEmail = async (toEmail: string, name: string | null, date: Date) => {
   return send(
     [toEmail],
-    "Votre déclaration a été validée ✅",
-    await getHtml("upload-success", {
+    isTestEnvironment() ? "Test de déclaration valide ✅" : "Votre déclaration a été validée ✅",
+    await getHtml(isTestEnvironment() ? "test-upload-success" : "upload-success", {
       name,
       date: date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
       time: date.toLocaleTimeString("fr-FR", { timeZone: "Europe/Paris" }),
@@ -50,8 +51,10 @@ export const sendUploadErrorEmail = async (
 ) => {
   return send(
     [toEmail],
-    "Votre déclaration comporte des erreurs à corriger ❌",
-    await getHtml("upload-error", {
+    isTestEnvironment()
+      ? "Test de déclaration : des erreurs sont à corriger ❌"
+      : "Votre déclaration comporte des erreurs à corriger ❌",
+    await getHtml(isTestEnvironment() ? "test-upload-error" : "upload-error", {
       name,
       date: date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
       time: date.toLocaleTimeString("fr-FR", { timeZone: "Europe/Paris" }),

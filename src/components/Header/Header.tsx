@@ -3,6 +3,7 @@ import { Header as HeaderDSFR } from "@codegouvfr/react-dsfr/Header"
 import { Session } from "next-auth"
 import { usePathname } from "next/navigation"
 import { UserRole } from "../../../prisma/src/prisma"
+import { isTestEnvironment } from "../../utils/test"
 
 const Header = ({ session }: { session: Session | null }) => {
   const pathname = usePathname()
@@ -20,7 +21,8 @@ const Header = ({ session }: { session: Session | null }) => {
         href: "/",
         title: "Accueil - Affichage environnemental",
       }}
-      serviceTitle={<>Affichage environnemental</>}
+      serviceTitle='Affichage environnemental'
+      serviceTagline={isTestEnvironment() ? "Serveur de test" : undefined}
       navigation={
         session && session.user
           ? [

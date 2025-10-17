@@ -1,8 +1,10 @@
-import { Card } from "@codegouvfr/react-dsfr/Card"
+import { Tile } from "@codegouvfr/react-dsfr/Tile"
 import Block from "../components/Block/Block"
 import HomeBanner from "../components/Home/HomeBanner"
 import InformationBanner from "../components/Home/InformationBanner"
 import SearchBanner from "../components/Home/SearchBanner"
+import Badge from "@codegouvfr/react-dsfr/Badge"
+import { isTestEnvironment } from "../utils/test"
 
 const Home = ({ connected }: { connected?: boolean }) => {
   return (
@@ -12,36 +14,44 @@ const Home = ({ connected }: { connected?: boolean }) => {
         {connected && (
           <div className='fr-grid-row fr-grid-row--gutters fr-mt-3w'>
             <div className='fr-col-12 fr-col-md-6'>
-              <Card
-                background
-                border
-                enlargeLink
-                title='Mes déclarations'
+              <Tile
+                orientation='horizontal'
+                start={<Badge>dépôt officiel</Badge>}
+                title='Déclarer mes produits'
+                imageUrl='/images/contract.svg'
                 titleAs='h2'
-                desc='Déclarer mes produits et suivre leur status.'
+                desc={
+                  <>
+                    Déclarer <b>officiellement</b> vos produits et suivez leur statut
+                  </>
+                }
                 linkProps={{ href: "/declarations" }}
               />
             </div>
             <div className='fr-col-12 fr-col-md-6'>
-              <Card
-                background
-                border
-                enlargeLink
-                title='Mes produits'
+              <Tile
+                orientation='horizontal'
+                start={<Badge>Suivi des produits</Badge>}
+                title='Consulter mes produits'
+                imageUrl='/images/search.svg'
                 titleAs='h2'
-                desc='Consulter mes produits déclarés.'
+                desc='Consultez tous vos produits déclarés'
                 linkProps={{ href: "/produits" }}
               />
             </div>
           </div>
         )}
       </Block>
-      <Block large>
-        <SearchBanner />
-      </Block>
-      <Block large secondary>
-        <InformationBanner />
-      </Block>
+      {(connected || !isTestEnvironment()) && (
+        <>
+          <Block large>
+            <SearchBanner />
+          </Block>
+          <Block large secondary>
+            <InformationBanner />
+          </Block>
+        </>
+      )}
     </>
   )
 }
