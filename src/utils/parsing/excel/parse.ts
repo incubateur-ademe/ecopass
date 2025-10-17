@@ -54,7 +54,7 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
     const rawProduct = {
       gtins: (row[headerMapping["gtinseans"]] || "").split(/[,;\n]/).map((gtin) => gtin.trim()),
       internalReference: row[headerMapping["referenceinterne"]] || "",
-      brand: row[headerMapping["marque"]] || (upload ? upload.createdBy.organization?.name || "" : ""),
+      brand: (row[headerMapping["marque"]] || upload?.createdBy.organization?.name || "").trim(),
       declaredScore: getNumberValue(row[headerMapping["score"]] || "", 1, -1) as number | undefined,
       product: getValue<ProductCategory>(productCategories, row[headerMapping["categorie"]]),
       airTransportRatio: getNumberValue(row[headerMapping["partdutransportaerien"]] || ""),
