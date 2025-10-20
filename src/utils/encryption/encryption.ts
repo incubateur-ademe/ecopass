@@ -1,8 +1,8 @@
 import crypto from "crypto"
-import { ProductAPIValidation } from "../../services/validation/api"
+import { ProductInformationAPI } from "../../services/validation/api"
 import { ParsedProduct } from "../../types/Product"
 import JSZip from "jszip"
-import { Accessory, Material, Product, Score } from "../../../prisma/src/prisma"
+import { Accessory, Material, ProductInformation } from "../../../prisma/src/prisma"
 
 const ALGO = "aes-256-gcm"
 const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, "hex")
@@ -61,19 +61,9 @@ export const decryptString = (data: string) => {
 }
 
 export const decryptProductFields = (
-  product: Product & {
+  product: ProductInformation & {
     materials: Material[]
     accessories: Accessory[]
-    score?: Score | null
-    upload: {
-      createdBy: {
-        organization: {
-          name: string
-          authorizedBy: { from: { name: string; brands: { name: string }[] } }[]
-          brands: { name: string }[]
-        } | null
-      }
-    }
   },
 ) => ({
   ...product,
@@ -104,13 +94,9 @@ export const decryptProductFields = (
   })),
 })
 
-export function encryptProductFields(product: ProductAPIValidation | ParsedProduct) {
+export function encryptProductFields(product: ProductInformationAPI | ParsedProduct) {
   return {
     product: {
-      gtins: product.gtins,
-      internalReference: product.internalReference,
-      brand: product.brand,
-      declaredScore: product.declaredScore || null,
       category: product.product,
       airTransportRatio: encrypt(product.airTransportRatio),
       business: encrypt(product.business),

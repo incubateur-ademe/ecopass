@@ -20,8 +20,10 @@ const ProductsPage = async ({ searchParams }: PageProps) => {
   const page = params.page ? parseInt(params.page as string, 10) : 1
   const brand = params.brand ? (params.brand as string) : undefined
 
-  const brands = await getOrganizationProductsByUserId(session.user.id)
-  const productsCount = await getOrganizationProductsCountByUserIdAndBrand(session.user.id, brand)
+  const [brands, productsCount] = await Promise.all([
+    getOrganizationProductsByUserId(session.user.id),
+    getOrganizationProductsCountByUserIdAndBrand(session.user.id, brand),
+  ])
 
   return (
     <>

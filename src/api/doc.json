@@ -175,6 +175,89 @@
         }
       }
     },
+    "/produits/lot": {
+      "post": {
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Déclaration"],
+        "summary": "Déclare un lot de produits sur le portail de l'Affichage Environnemental.",
+        "description": "Permet de déclarer plusieurs produits regroupés en lot. Tous les produits du lot partagent les mêmes métadonnées (GTINs, référence interne, marque, score déclaré) mais peuvent avoir des informations techniques différentes (matériaux, pays, etc.).",
+        "requestBody": {
+          "description": "Requête modélisant les paramètres du lot de produits à déclarer",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductBatchQuery"
+              },
+              "examples": {
+                "lotTShirts": {
+                  "$ref": "#/components/examples/lotTShirts"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Déclaration de lot validée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Déclaration de lot réussie.",
+                  "properties": {
+                    "result": {
+                      "type": "string",
+                      "enum": ["success"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "208": {
+            "description": "Le nouveau lot est identique à l'ancien",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "enum": ["Le produit existe déjà."]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidParametersError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise - L'utilisateur doit fournir un token Bearer valide dans l'en-tête Authorization. Cette erreur survient si le token est manquant, invalide ou expiré.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/produits/{gtin}": {
       "get": {
         "tags": ["Consultation"],
@@ -470,6 +553,55 @@
           "countryMaking": "FR",
           "fabricProcess": "knitting-mix"
         }
+      },
+      "lotTShirts": {
+        "summary": "Lot de T-Shirt/Pantalon",
+        "value": {
+          "gtins": ["1234567890128"],
+          "internalReference": "LOT-456",
+          "brand": "Ma Marque",
+          "products": [
+            {
+              "mass": 0.17,
+              "materials": [
+                {
+                  "id": "ei-coton",
+                  "share": 1,
+                  "country": "FR"
+                }
+              ],
+              "product": "tshirt",
+              "countrySpinning": "FR",
+              "countryFabric": "FR",
+              "countryDyeing": "FR",
+              "countryMaking": "FR"
+            },
+            {
+              "mass": 0.15,
+              "materials": [
+                {
+                  "id": "ei-coton",
+                  "share": 0.8,
+                  "country": "FR"
+                },
+                {
+                  "id": "ei-pet",
+                  "share": 0.2,
+                  "country": "CN"
+                }
+              ],
+              "product": "pantalon",
+              "countrySpinning": "FR",
+              "countryFabric": "FR",
+              "countryDyeing": "FR",
+              "countryMaking": "BD",
+              "printing": {
+                "kind": "pigment",
+                "ratio": 0.2
+              }
+            }
+          ]
+        }
       }
     },
     "schemas": {
@@ -758,6 +890,165 @@
             "description": "Code du pays d'origine de la matière",
             "minLength": 2,
             "maxLength": 2
+          }
+        }
+      },
+      "ProductBatchQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gtins", "internalReference", "products"],
+        "properties": {
+          "gtins": {
+            "type": "array",
+            "description": "Les codes GTIN (ou EAN) du lot de produits, format 13 ou 8 chiffres",
+            "items": {
+              "type": "string",
+              "pattern": "^(\\d{8}|\\d{13})$",
+              "example": "1234567890123"
+            }
+          },
+          "internalReference": {
+            "type": "string",
+            "description": "Référence interne du lot de produits",
+            "example": "LOT-123"
+          },
+          "brand": {
+            "type": "string",
+            "description": "Marque commune du lot de produits"
+          },
+          "declaredScore": {
+            "type": "number",
+            "description": "Score Ecobalyse total du lot, si vous l'avez calculé. Attention, si il est différent de notre calcul, le lot sera en erreur."
+          },
+          "products": {
+            "type": "array",
+            "description": "Liste des produits composant le lot",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["mass", "materials", "product", "countryDyeing", "countryFabric", "countryMaking"],
+              "properties": {
+                "mass": {
+                  "type": "number",
+                  "description": "Masse du produit fini, en kilogrammes",
+                  "minimum": 0.01,
+                  "example": 0.17
+                },
+                "product": {
+                  "type": "string",
+                  "description": "Identifiant du produit (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/products`)\n",
+                  "enum": [
+                    "chemise",
+                    "jean",
+                    "jupe",
+                    "manteau",
+                    "pantalon",
+                    "pull",
+                    "tshirt",
+                    "chaussettes",
+                    "calecon",
+                    "slip",
+                    "maillot-de-bain"
+                  ]
+                },
+                "materials": {
+                  "type": "array",
+                  "description": "Liste des matières composant ce produit",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductQueryMaterial"
+                  }
+                },
+                "countryDyeing": {
+                  "type": "string",
+                  "description": "Code du pays d'ennoblissement / impression",
+                  "minLength": 2,
+                  "maxLength": 2
+                },
+                "countryFabric": {
+                  "type": "string",
+                  "description": "Code du pays de tissage / tricotage",
+                  "minLength": 2,
+                  "maxLength": 2
+                },
+                "countryMaking": {
+                  "type": "string",
+                  "description": "Code du pays de confection",
+                  "minLength": 2,
+                  "maxLength": 2
+                },
+                "countrySpinning": {
+                  "type": "string",
+                  "description": "Code du pays de filature",
+                  "minLength": 2,
+                  "maxLength": 2
+                },
+                "airTransportRatio": {
+                  "type": "number",
+                  "description": "Part de transport aérien",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "upcycled": {
+                  "type": "boolean",
+                  "description": "Le produit est-il remanufacturé ?"
+                },
+                "business": {
+                  "type": "string",
+                  "description": "Type d'entreprise",
+                  "enum": ["small-business", "large-business-with-services", "large-business-without-services"]
+                },
+                "fading": {
+                  "type": "boolean",
+                  "description": "Le produit a-t-il subi un délavage ?"
+                },
+                "numberOfReferences": {
+                  "type": "number",
+                  "description": "Nombre de références du produit",
+                  "minimum": 1,
+                  "maximum": 999999
+                },
+                "price": {
+                  "type": "number",
+                  "description": "Prix de vente du produit en euros",
+                  "minimum": 1,
+                  "maximum": 1000
+                },
+                "printing": {
+                  "type": "object",
+                  "description": "Informations sur l'impression",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "description": "Type d'impression",
+                      "enum": ["pigment", "conventional"]
+                    },
+                    "ratio": {
+                      "type": "string",
+                      "description": "Pourcentage d'impression",
+                      "enum": ["1%", "5%", "20%", "50%", "80%"]
+                    }
+                  }
+                },
+                "trims": {
+                  "type": "array",
+                  "description": "Liste des accessoires du produit",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Identifiant de l'accessoire"
+                      },
+                      "quantity": {
+                        "type": "number",
+                        "description": "Quantité de l'accessoire",
+                        "minimum": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
