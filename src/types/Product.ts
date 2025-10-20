@@ -1,5 +1,3 @@
-import { Accessory, Material, Product } from "../../prisma/src/prisma"
-
 export enum Impression {
   Pigmentaire = "Pigmentaire",
   FixéLavé = "Fixé-lavé",
@@ -73,55 +71,7 @@ export enum Country {
   Vietnam = "Vietnam",
 }
 
-export type ProductWithMaterialsAndAccessories = Omit<
-  Product,
-  | "hash"
-  | "mass"
-  | "price"
-  | "airTransportRatio"
-  | "numberOfReferences"
-  | "fading"
-  | "upcycled"
-  | "category"
-  | "business"
-  | "countryDyeing"
-  | "countryFabric"
-  | "countryMaking"
-  | "countrySpinning"
-  | "impression"
-  | "impressionPercentage"
-  | "uploadOrder"
-> & {
-  mass: number
-  price?: number
-  airTransportRatio?: number
-  numberOfReferences?: number
-  fading?: boolean
-  upcycled?: boolean
-  category: ProductCategory
-  business?: Business
-  countryDyeing: Country
-  countryFabric: Country
-  countryMaking: Country
-  countrySpinning?: Country
-  impression?: Impression
-  impressionPercentage?: number
-  materials: (Omit<Material, "slug" | "country" | "share"> & {
-    slug: MaterialType
-    country?: Country
-    share: number
-  })[]
-  accessories: (Omit<Accessory, "slug" | "quantity"> & {
-    slug: AccessoryType
-    quantity: number
-  })[]
-}
-
 export type ParsedProduct = {
-  gtins: string[]
-  internalReference: string
-  brand: string
-  declaredScore: number | undefined
   product: ProductCategory
   airTransportRatio: string | number | undefined
   business: Business

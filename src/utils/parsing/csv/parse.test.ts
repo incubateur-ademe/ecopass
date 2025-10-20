@@ -35,7 +35,7 @@ describe("parseCSV", () => {
 
   it("parses a valid CSV", async () => {
     const csv = Buffer.from(`${header}\n${defaultProducts}`)
-    const { products, materials, accessories } = await parseCSV(csv, null, upload)
+    const { products, informations, materials, accessories } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(2)
     expect(accessories).toHaveLength(1)
@@ -46,22 +46,17 @@ describe("parseCSV", () => {
     expect(products[0].brand).toBe("Marque")
     expect(products[0].declaredScore).toBe(2222.63)
 
-    const fullProducts = products.map((product) => {
+    const fullProducts = informations.map((information) => {
       return {
-        ...product,
-        materials: materials.filter((material) => material.productId === product.id),
-        accessories: accessories.filter((accessory) => accessory.productId === product.id),
+        ...information,
+        materials: materials.filter((material) => material.productId === information.id),
+        accessories: accessories.filter((accessory) => accessory.productId === information.id),
         upload: {
           createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
         },
       }
     })
     const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["2234567891001", "3234567891000"])
-    expect(parsedProduct.internalReference).toBe("REF-123")
-    expect(parsedProduct.brand).toBe("Marque")
-    expect(parsedProduct.declaredScore).toBe(2222.63)
     expect(parsedProduct.category).toBe(ProductCategory.Pull)
     expect(parsedProduct.airTransportRatio).toBe(0.75)
     expect(parsedProduct.business).toBe(Business.WithoutServices)
@@ -92,7 +87,7 @@ describe("parseCSV", () => {
     const product = `"2234567891001;3234567891000","REF-123",Marque,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",d56bb0d5-7999-4b8b-b076-94d79099b56a,1,,,,,,`
 
     const csv = Buffer.from(`${header}\n${product}`)
-    const { products, materials, accessories } = await parseCSV(csv, null, upload)
+    const { products, informations, materials, accessories } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(2)
     expect(accessories).toHaveLength(1)
@@ -103,22 +98,17 @@ describe("parseCSV", () => {
     expect(products[0].brand).toBe("Marque")
     expect(products[0].declaredScore).toBe(2222.63)
 
-    const fullProducts = products.map((product) => {
+    const fullProducts = informations.map((information) => {
       return {
-        ...product,
-        materials: materials.filter((material) => material.productId === product.id),
-        accessories: accessories.filter((accessory) => accessory.productId === product.id),
+        ...information,
+        materials: materials.filter((material) => material.productId === information.id),
+        accessories: accessories.filter((accessory) => accessory.productId === information.id),
         upload: {
           createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
         },
       }
     })
     const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["2234567891001", "3234567891000"])
-    expect(parsedProduct.internalReference).toBe("REF-123")
-    expect(parsedProduct.brand).toBe("Marque")
-    expect(parsedProduct.declaredScore).toBe(2222.63)
     expect(parsedProduct.category).toBe(ProductCategory.Chemise)
     expect(parsedProduct.airTransportRatio).toBe(0.75)
     expect(parsedProduct.business).toBe(Business.WithServices)
@@ -153,7 +143,7 @@ describe("parseCSV", () => {
       .join(",")
 
     const csv = Buffer.from(`${header}\n${invalidValues}`)
-    const { products, materials, accessories } = await parseCSV(csv, null, upload)
+    const { products, informations, materials, accessories } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(16)
     expect(accessories).toHaveLength(4)
@@ -164,22 +154,17 @@ describe("parseCSV", () => {
     expect(products[0].brand).toBe("Test")
     expect(products[0].declaredScore).toBe(-1)
 
-    const fullProducts = products.map((product) => {
+    const fullProducts = informations.map((information) => {
       return {
-        ...product,
-        materials: materials.filter((material) => material.productId === product.id),
-        accessories: accessories.filter((accessory) => accessory.productId === product.id),
+        ...information,
+        materials: materials.filter((material) => material.productId === information.id),
+        accessories: accessories.filter((accessory) => accessory.productId === information.id),
         upload: {
           createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
         },
       }
     })
     const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["Test"])
-    expect(parsedProduct.internalReference).toBe("Test")
-    expect(parsedProduct.brand).toBe("Test")
-    expect(parsedProduct.declaredScore).toBe(-1)
     expect(parsedProduct.category).toBe("Test")
     expect(parsedProduct.airTransportRatio).toBe("Test")
     expect(parsedProduct.business).toBe("Test")
@@ -289,9 +274,9 @@ describe("parseCSV", () => {
   trueValues.forEach((value) => {
     it(`undersands ${value} as boolean value`, async () => {
       const csv = Buffer.from(`${header}\n${defaultProducts.replaceAll("Non", value)}`)
-      const { products } = await parseCSV(csv, null, upload)
-      expect(products).toHaveLength(1)
-      expect(decryptBoolean(products[0].fading)).toBe(true)
+      const { informations } = await parseCSV(csv, null, upload)
+      expect(informations).toHaveLength(1)
+      expect(decryptBoolean(informations[0].fading)).toBe(true)
     })
   })
 
@@ -299,9 +284,9 @@ describe("parseCSV", () => {
   falseValues.forEach((value) => {
     it(`undersands ${value} as boolean value`, async () => {
       const csv = Buffer.from(`${header}\n${defaultProducts.replaceAll("Non", value)}`)
-      const { products } = await parseCSV(csv, null, upload)
-      expect(products).toHaveLength(1)
-      expect(decryptBoolean(products[0].fading)).toBe(false)
+      const { informations } = await parseCSV(csv, null, upload)
+      expect(informations).toHaveLength(1)
+      expect(decryptBoolean(informations[0].fading)).toBe(false)
     })
   })
 
@@ -314,9 +299,9 @@ describe("parseCSV", () => {
 
   it("allows non specified %", async () => {
     const csv = Buffer.from(`${header}\n${defaultProducts.replaceAll(",00%", "")}`)
-    const { products } = await parseCSV(csv, null, upload)
-    expect(products).toHaveLength(1)
+    const { informations } = await parseCSV(csv, null, upload)
+    expect(informations).toHaveLength(1)
 
-    expect(decryptNumber(products[0].airTransportRatio)).toBe(0.75)
+    expect(decryptNumber(informations[0].airTransportRatio)).toBe(0.75)
   })
 })

@@ -3,6 +3,7 @@ import { AccessoryType, Business, Country, Impression, MaterialType, ProductCate
 import { Status } from "../../../prisma/src/prisma"
 import { PrintingRatio } from "./printing"
 import { isValidGtin } from "../../utils/validation/gtin"
+import { Return } from "@prisma/client/runtime/library"
 
 const epsilon = 1e-10
 
@@ -28,10 +29,10 @@ const accessoryValidation = z.object({
 
 const productValidation = z.object({
   id: z.string(),
+  productId: z.string(),
   uploadId: z.string(),
   status: z.enum(Status, { message: "Statut invalide" }),
   createdAt: z.date(),
-  updatedAt: z.date(),
   error: z.string().nullable(),
   gtins: z
     .array(
@@ -98,3 +99,5 @@ export const getUserProductValidation = (brands: [string, ...string[]]) =>
 
       return true
     }, "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié")
+
+export type ParsedProductValidation = z.infer<Return<typeof getUserProductValidation>>

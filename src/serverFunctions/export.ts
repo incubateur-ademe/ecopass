@@ -14,7 +14,7 @@ export const exportScores = async (brand?: string) => {
   }
   const products = await getOrganizationProductsByUserIdAndBrand(session.user.id, 0, undefined, brand)
 
-  const data = products.map((product) => [product.internalReference, product.score?.score])
+  const data = products.map((product) => [product.internalReference, product.score ? Math.round(product.score) : ""])
 
   const headers = ["Référence interne", "Score"]
 
@@ -48,17 +48,12 @@ export const exportUpload = async (uploadId: string) => {
   }
 
   const products = await getProductsByUploadId(uploadId)
-
   const data = products.map((product) => {
     let error = ""
     if (product.status === Status.Error) {
       error = product.error || "Erreur inconnue"
     }
-    return [
-      product.internalReference,
-      product.score !== null && product.score !== undefined ? Math.round(product.score.score) : "",
-      error,
-    ]
+    return [product.internalReference, product.score ? Math.round(product.score) : "", error]
   })
 
   const headers = ["Référence interne", "Score", "Erreur"]

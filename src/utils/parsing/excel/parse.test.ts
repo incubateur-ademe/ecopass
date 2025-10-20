@@ -52,7 +52,7 @@ describe("parseExcel", () => {
 
   it("parses a valid Excel file", async () => {
     const excelBuffer = createExcelBuffer([defaultHeaders, defaultProducts])
-    const { products, materials, accessories } = await parseExcel(excelBuffer, upload)
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
 
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(2)
@@ -64,23 +64,17 @@ describe("parseExcel", () => {
     expect(products[0].brand).toBe("Marque")
     expect(products[0].declaredScore).toBe(2222.63)
 
-    const fullProducts = products.map((product) => {
+    const fullProducts = informations.map((information) => {
       return {
-        ...product,
-        materials: materials.filter((material) => material.productId === product.id),
-        accessories: accessories.filter((accessory) => accessory.productId === product.id),
+        ...information,
+        materials: materials.filter((material) => material.productId === information.id),
+        accessories: accessories.filter((accessory) => accessory.productId === information.id),
         upload: {
           createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
         },
       }
     })
-
     const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["2234567891001", "3234567891000"])
-    expect(parsedProduct.internalReference).toBe("REF-123")
-    expect(parsedProduct.brand).toBe("Marque")
-    expect(parsedProduct.declaredScore).toBe(2222.63)
     expect(parsedProduct.category).toBe(ProductCategory.Pull)
     expect(parsedProduct.airTransportRatio).toBe(0.75)
     expect(parsedProduct.business).toBe(Business.WithoutServices)
@@ -111,7 +105,7 @@ describe("parseExcel", () => {
     const invalidRow = defaultHeaders.map(() => "Test")
 
     const excelBuffer = createExcelBuffer([defaultHeaders, invalidRow])
-    const { products, materials, accessories } = await parseExcel(excelBuffer, upload)
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
 
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(16)
@@ -123,23 +117,17 @@ describe("parseExcel", () => {
     expect(products[0].brand).toBe("Test")
     expect(products[0].declaredScore).toBe(-1)
 
-    const fullProducts = products.map((product) => {
+    const fullProducts = informations.map((information) => {
       return {
-        ...product,
-        materials: materials.filter((material) => material.productId === product.id),
-        accessories: accessories.filter((accessory) => accessory.productId === product.id),
+        ...information,
+        materials: materials.filter((material) => material.productId === information.id),
+        accessories: accessories.filter((accessory) => accessory.productId === information.id),
         upload: {
           createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
         },
       }
     })
-
     const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["Test"])
-    expect(parsedProduct.internalReference).toBe("Test")
-    expect(parsedProduct.brand).toBe("Test")
-    expect(parsedProduct.declaredScore).toBe(-1)
     expect(parsedProduct.category).toBe("Test")
     expect(parsedProduct.airTransportRatio).toBe("Test")
     expect(parsedProduct.business).toBe("Test")
