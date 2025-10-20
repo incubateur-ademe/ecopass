@@ -11,9 +11,13 @@ async function main(email: string) {
         include: {
           products: {
             include: {
-              materials: true,
-              accessories: true,
-              score: true,
+              informations: {
+                include: {
+                  materials: true,
+                  accessories: true,
+                  score: true,
+                },
+              },
               upload: {
                 include: {
                   createdBy: {
@@ -45,15 +49,15 @@ async function main(email: string) {
 
   const products = user.uploads.flatMap((upload) => upload.products)
 
-  const decryptedProducts = products.map((product) => decryptProductFields(product))
+  const decryptedProducts = products.map((product) => decryptProductFields(product.informations[0]))
 
   const csv = stringify(
-    decryptedProducts.map((product) => [
-      product.error,
-      product.gtins,
-      product.internalReference,
-      product.brand,
-      product.declaredScore,
+    decryptedProducts.map((product, index) => [
+      products[index].error,
+      products[index].gtins,
+      products[index].internalReference,
+      products[index].brand,
+      products[index].declaredScore,
       product.category,
       product.mass,
       product.upcycled,
