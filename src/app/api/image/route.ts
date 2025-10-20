@@ -33,11 +33,11 @@ export async function GET(request: NextRequest) {
 
       case "gtin": {
         const product = await getProductWithScore(validatedData.gtin)
-        if (!product || !product.score) {
+        if (!product || !product.score || !product.standardized) {
           return NextResponse.json({ error: "Produit non trouvé ou sans score pour ce GTIN" }, { status: 404 })
         }
-        productScore = product.score.score
-        productStandardized = product.score.standardized
+        productScore = product.score
+        productStandardized = product.standardized
         break
       }
     }

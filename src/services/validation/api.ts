@@ -31,17 +31,7 @@ const accessoryValidation = z.object({
   quantity: z.number().min(1),
 })
 
-const productAPIValidation = z.object({
-  gtins: z
-    .array(
-      z
-        .string()
-        .regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")
-        .refine(isValidGtin, "Le code GTIN n'est pas valide (somme de contrôle incorrecte)"),
-    )
-    .min(1),
-  internalReference: z.string(),
-  declaredScore: z.number().optional(),
+const product = z.object({
   product: z.enum(productValues),
   airTransportRatio: z.number().min(0).max(1).optional(),
   upcycled: z.boolean().optional(),
@@ -67,12 +57,46 @@ const productAPIValidation = z.object({
   trims: z.array(accessoryValidation).optional(),
 })
 
+export type ProductInformationAPI = z.infer<typeof product>
+
+const metaData = z.object({
+  gtins: z
+    .array(
+      z
+        .string()
+        .regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")
+        .refine(isValidGtin, "Le code GTIN n'est pas valide (somme de contrôle incorrecte)"),
+    )
+    .min(1),
+  internalReference: z.string(),
+  declaredScore: z.number().optional(),
+})
+
+export type ProductMetadataAPI = z.infer<typeof metaData> & { brand: string }
+
+const productAPIValidation = z.object({
+  ...metaData.shape,
+  ...product.shape,
+})
+
 export const getUserProductAPIValidation = (brands: [string, ...string[]]) =>
   productAPIValidation.extend({
     brand: z.enum(brands),
   })
 
 export type ProductAPIValidation = z.infer<Return<typeof getUserProductAPIValidation>>
+
+const productsAPIValidation = z.object({
+  ...metaData.shape,
+  products: z.array(product).min(2, { message: "Il faut au moins 2 produits dans le lot." }),
+})
+
+export const getUserProductsAPIValidation = (brands: [string, ...string[]]) =>
+  productsAPIValidation.extend({
+    brand: z.enum(brands),
+  })
+
+export type ProductsAPIValidation = z.infer<Return<typeof getUserProductsAPIValidation>>
 
 export const paginationValidation = z.object({
   page: z.number().min(0),
