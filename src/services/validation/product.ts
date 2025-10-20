@@ -82,8 +82,19 @@ const productValidation = z.object({
 })
 
 export const getUserProductValidation = (brands: [string, ...string[]]) =>
-  productValidation.extend({
-    brand: z.enum(brands, {
-      message: `Marque invalide. Voici la liste de vos marques : ${brands.map((brand) => `"${brand}"`).join(", ")}`,
-    }),
-  })
+  productValidation
+    .extend({
+      brand: z.enum(brands, {
+        message: `Marque invalide. Voici la liste de vos marques : ${brands.map((brand) => `"${brand}"`).join(", ")}`,
+      }),
+    })
+    .refine((product) => {
+      const hasImpression = product.impression !== undefined
+      const hasImpressionPercentage = product.impressionPercentage !== undefined
+
+      if ((hasImpression && !hasImpressionPercentage) || (hasImpressionPercentage && !hasImpression)) {
+        return false
+      }
+
+      return true
+    }, "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié")

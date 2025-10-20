@@ -1,5 +1,5 @@
 import { Status } from "../../../prisma/src/prisma"
-import { AccessoryType, Business, Country, MaterialType, ProductCategory } from "../../types/Product"
+import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 import { getUserProductValidation } from "./product"
 import { expectZodValidationToFail } from "./zodValidationTest"
 
@@ -393,6 +393,40 @@ describe("productValidation", () => {
         impression: "Oui",
       },
       [{ path: ["impression"], message: "Type d'impression invalide" }],
+    )
+  })
+
+  it("does not allow product with only impression percentage", () => {
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        impression: undefined,
+        impressionPercentage: 0.8,
+      },
+      [
+        {
+          path: [],
+          message: "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié",
+        },
+      ],
+    )
+  })
+
+  it("does not allow product with only impression", () => {
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        impression: Impression.FixéLavé,
+        impressionPercentage: undefined,
+      },
+      [
+        {
+          path: [],
+          message: "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié",
+        },
+      ],
     )
   })
 
