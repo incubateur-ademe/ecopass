@@ -557,13 +557,21 @@ describe("productValidation", () => {
 
   it("does not allow product without countryDyeing", () => {
     expectZodValidationToFail(productValidation, validProduct, { countryDyeing: undefined }, [
-      { path: ["countryDyeing"], message: "Origine de l'ennoblissement/impression invalide" },
+      {
+        path: [""],
+        message:
+          "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé",
+      },
     ])
   })
 
   it("does not allow product without countryFabric", () => {
     expectZodValidationToFail(productValidation, validProduct, { countryFabric: undefined }, [
-      { path: ["countryFabric"], message: "Origine de tissage/tricotage invalide" },
+      {
+        path: [""],
+        message:
+          "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé",
+      },
     ])
   })
 
@@ -571,5 +579,15 @@ describe("productValidation", () => {
     expectZodValidationToFail(productValidation, validProduct, { countryMaking: undefined }, [
       { path: ["countryMaking"], message: "Origine de confection invalide" },
     ])
+  })
+
+  it("allows upcycled product without countryDyeing and countryFabric", () => {
+    const result = productValidation.safeParse({
+      ...validProduct,
+      upcycled: true,
+      countryDyeing: undefined,
+      countryFabric: undefined,
+    })
+    expect(result.success).toEqual(true)
   })
 })

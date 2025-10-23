@@ -67,8 +67,8 @@ const productValidation = z.object({
     .min(1, "Le prix doit être supérieur à 1 €")
     .max(1000, "Le prix doit être inférieur à 1000 €")
     .optional(),
-  countryDyeing: z.enum(Country, { message: "Origine de l'ennoblissement/impression invalide" }),
-  countryFabric: z.enum(Country, { message: "Origine de tissage/tricotage invalide" }),
+  countryDyeing: z.enum(Country, { message: "Origine de l'ennoblissement/impression invalide" }).optional(),
+  countryFabric: z.enum(Country, { message: "Origine de tissage/tricotage invalide" }).optional(),
   countryMaking: z.enum(Country, { message: "Origine de confection invalide" }),
   countrySpinning: z.enum(Country, { message: "Origine de filature invalide" }).optional(),
   impression: z.enum(Impression, { message: "Type d'impression invalide" }).optional(),
@@ -99,5 +99,11 @@ export const getUserProductValidation = (brands: [string, ...string[]]) =>
 
       return true
     }, "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié")
+    .refine((data) => {
+      if (!data.upcycled) {
+        return data.countryDyeing !== undefined && data.countryFabric !== undefined
+      }
+      return true
+    }, "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé")
 
 export type ParsedProductValidation = z.infer<Return<typeof getUserProductValidation>>

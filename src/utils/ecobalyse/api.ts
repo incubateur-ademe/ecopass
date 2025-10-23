@@ -45,8 +45,8 @@ const convertProductToEcobalyse = (product: ParsedProductValidation): EcobalyseP
   const result = {
     airTransportRatio: product.airTransportRatio,
     business: product.business ? businessesMapping[product.business] : undefined,
-    countryDyeing: countryMapping[product.countryDyeing],
-    countryFabric: countryMapping[product.countryFabric],
+    countryDyeing: product.countryDyeing ? countryMapping[product.countryDyeing] : undefined,
+    countryFabric: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
     countryMaking: countryMapping[product.countryMaking],
     countrySpinning: product.countrySpinning ? countryMapping[product.countrySpinning] : undefined,
     printing:
