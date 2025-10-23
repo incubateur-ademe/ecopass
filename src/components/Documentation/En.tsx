@@ -70,10 +70,12 @@ const En = () => {
           </p>
         </li>
         <li>
-          <b>Origine de tissage/tricotage</b>: country for the weaving/knitting stage.
+          <b>Origine de tissage/tricotage</b> (optional): country for the weaving/knitting stage. Mandatory if the
+          product is not upcycled.
         </li>
         <li>
-          <b>Origine de l'ennoblissement/impression</b>: country for the finishing/printing stage.
+          <b>Origine de l'ennoblissement/impression</b> (optional): country for the finishing/printing stage. Mandatory
+          if the product is not upcycled.
         </li>
         <li>
           <b>Origine de confection</b>: country for the manufacturing stage.
