@@ -26,8 +26,8 @@ export const processProductsQueue = async () => {
     }
     const userProductValidation = getUserProductValidation(getAuthorizedBrands(organization))
     return {
+      ...userProductValidation.safeParse({ ...product, ...product.informations[0] }),
       id: product.id,
-      ...userProductValidation.safeParse(product),
     }
   })
 
@@ -37,7 +37,7 @@ export const processProductsQueue = async () => {
       validatedProducts
         .filter((result) => !result.success)
         .map((result) => ({
-          id: result.id,
+          productId: result.id,
           error: result.error.issues.map((issue) => issue.message).join(", "),
         })),
     ),

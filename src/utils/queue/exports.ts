@@ -5,10 +5,11 @@ import { getSVG } from "../label/svg"
 import { uploadFileToS3 } from "../s3/bucket"
 
 const renderLabelSVG = (product: ProductWithScore) => {
-  if (!product.score) {
+  if (!product.score || !product.standardized) {
     return null
   }
-  return getSVG(product.score.score, product.score.standardized)
+
+  return getSVG(product.score, product.standardized)
 }
 
 export const processExportsQueue = async () => {

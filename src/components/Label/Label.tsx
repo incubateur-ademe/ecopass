@@ -1,7 +1,6 @@
-import { ProductWithScore } from "../../db/product"
 import { getSize } from "../../utils/label/size"
 
-const Label = ({ product: { score, standardized } }: { product: NonNullable<ProductWithScore["score"]> }) => {
+const Label = ({ product: { score, standardized } }: { product: { score: number; standardized: number } }) => {
   const size = getSize(standardized)
   const title = `Coût environnemental : ${Math.round(score)} points d'impact, ${Math.round(standardized)} pour 100g`
 

@@ -9,7 +9,7 @@ import Table from "../Table/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Link from "next/link"
 import DownloadScores from "./DownloadScores"
-import { productCategories } from "../../utils/types/productCategory"
+import { BATCH_CATEGORY, productCategories } from "../../utils/types/productCategory"
 import { simplifyValue } from "../../utils/parsing/parsing"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
@@ -40,9 +40,11 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
           headers={["Date de dépot", "Catégorie", "Référence interne", "Score", ""]}
           data={products.map((product) => [
             formatDate(product.createdAt),
-            productCategories[simplifyValue(product.category)] || product.category,
+            product.informations.length === 1
+              ? productCategories[simplifyValue(product.informations[0].category)] || product.informations[0].category
+              : BATCH_CATEGORY,
             product.internalReference,
-            formatNumber(product.score?.score),
+            product.score ? formatNumber(product.score) : "",
             <Button linkProps={{ href: `/produits/${product.gtins[0]}` }} key={product.gtins[0]}>
               Voir le produit
             </Button>,
