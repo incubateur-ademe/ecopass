@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "API du portail de l'Affichage Environnemental",
-    "description": "La version numérique de ce document est accessible [ici](https://affichage-environnemental.ecobalyse.beta.gouv.fr/api/documentation).<br /><br />La route `POST /produits` qui permet de déclarer des produits est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/versions/v7.0.0/#/api).<br />Il faut en plus rajouter les informations réglementaires de son produit, à savoir : les codes GTINs et la référence interne.<br /><br />Certaines routes nécessite d'être authentifié avec un `Bearer token`.<br />Vous pouvez le générer sur votre [page API](https://affichage-environnemental.ecobalyse.beta.gouv.fr/api).",
+    "description": "La version numérique de ce document est accessible [ici](https://affichage-environnemental.ecobalyse.beta.gouv.fr/api/documentation).<br/>La route `POST /produits` qui permet de déclarer des produits est basée sur [l'API Écobalyse](https://ecobalyse.beta.gouv.fr/versions/v7.0.0/#/api).<br/>Il faut en plus rajouter les informations réglementaires de son produit, à savoir : les codes GTINs et la référence interne.<br/>Certaines routes nécessite d'être authentifié avec un `Bearer token`.<br/>Vous pouvez le générer sur votre [page API](https://affichage-environnemental.ecobalyse.beta.gouv.fr/api).",
     "version": "1.0.0"
   },
   "servers": [
@@ -525,7 +525,7 @@
   "components": {
     "securitySchemes": {
       "bearer": {
-        "description": "Cette clé API, permet de vous identifier. Vous pouvez gerer vos clés dans la rubrique *API*\n",
+        "description": "Cette clé API, permet de vous identifier. Vous pouvez gerer vos clés dans la rubrique *API*",
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "UUID"
@@ -714,16 +714,7 @@
       "ProductQuery": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "gtins",
-          "internalReference",
-          "mass",
-          "materials",
-          "product",
-          "countryDyeing",
-          "countryFabric",
-          "countryMaking"
-        ],
+        "required": ["gtins", "internalReference", "mass", "materials", "product", "countryMaking"],
         "properties": {
           "gtins": {
             "type": "array",
@@ -755,7 +746,7 @@
           },
           "product": {
             "type": "string",
-            "description": "Identifiant du produit (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/products`)\n",
+            "description": "Identifiant du produit (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/products`)",
             "enum": [
               "chemise",
               "jean",
@@ -780,63 +771,63 @@
           },
           "airTransportRatio": {
             "type": "number",
-            "description": "Part de **transport aérien** entre l'étape de **Confection** et l'étape de **Distribution**, entre `0` et `1`\n",
+            "description": "Part de **transport aérien** entre l'étape de **Confection** et l'étape de **Distribution**, entre `0` et `1`",
             "minimum": 0,
             "maximum": 1
           },
           "business": {
             "type": "string",
-            "description": "Type d'entreprise et d'offre de services :\n\n- `small-business` : TPE/PME\n- `large-business-with-services` : Grande entreprise avec service de réparation\n- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation\n",
+            "description": "Type d'entreprise et d'offre de services :<br/>- `small-business` : TPE/PME<br/>- `large-business-with-services` : Grande entreprise avec service de réparation<br/>- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation",
             "enum": ["small-business", "large-business-with-services", "large-business-without-services"]
           },
           "countryDyeing": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Teinture** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)\n",
+            "description": "Code pays pour l'étape de **Teinture** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)<br/>Ce champs est requis si `upcycled` n'est pas `true`.",
             "minLength": 2,
-            "maxLength": 2
+            "maxLength": 3
           },
           "countryFabric": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Tissage/Tricotage** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)\n",
+            "description": "Code pays pour l'étape de **Tissage/Tricotage** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)<br/>Ce champs est requis si `upcycled` n'est pas `true`.",
             "minLength": 2,
-            "maxLength": 2
+            "maxLength": 3
           },
           "countryMaking": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Confection** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)\n",
+            "description": "Code pays pour l'étape de **Confection** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)",
             "minLength": 2,
-            "maxLength": 2
+            "maxLength": 3
           },
           "countrySpinning": {
             "type": "string",
-            "description": "Code pays pour l'étape de **Filature** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`).\nSi non spécifié, le pays de filature pris en considération est celui de production de\nla matière la plus représentée dans le mix.\n",
+            "description": "Code pays pour l'étape de **Filature** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`).<br/>Si non spécifié, le pays de filature pris en considération est celui de production de<br/>la matière la plus représentée dans le mix.",
             "minLength": 2,
-            "maxLength": 2
+            "maxLength": 3
           },
           "fading": {
             "type": "boolean",
-            "description": "Active l'application du **procédé de délavage** pour l'étape de confection d'un produit.\n"
+            "description": "Active l'application du **procédé de délavage** pour l'étape de confection d'un produit."
           },
           "numberOfReferences": {
-            "description": "Nombre de références au catalogue de la marque.\n",
+            "description": "Nombre de références au catalogue de la marque.",
             "type": "number",
             "minimum": 1,
             "maximum": 999999
           },
           "price": {
-            "description": "Prix du produit, en Euros (€).\n",
+            "description": "Prix du produit, en Euros (€).",
             "type": "number",
             "minimum": 1,
             "maximum": 1000
           },
           "printing": {
             "type": "object",
-            "description": "Ce paramètre permet de préciser le type d'impression effectuée sur le produit.\nPar exemple, `{\"kind\": \"pigment\", \"ratio\": 0.1}` signifie impression pigmentaire sur 10%\nde la superficie du vêtement.\n",
+            "description": "Ce paramètre permet de préciser le type d'impression effectuée sur le produit.<br/>Par exemple, `{\"kind\": \"pigment\", \"ratio\": 0.1}` signifie impression pigmentaire sur 10%<br/>de la superficie du vêtement.",
             "required": ["kind"],
             "properties": {
               "kind": {
                 "type": "string",
-                "description": "Type de procédé d'impression pouvant prendre les valeurs suivantes :\n- `pigment` pour une impression pigmentaire ;\n- `substantive` pour une impression fixé/lavé ;\n",
+                "description": "Type de procédé d'impression pouvant prendre les valeurs suivantes :<br/>- `pigment` pour une impression pigmentaire ;<br/>- `substantive` pour une impression fixé/lavé ;",
                 "enum": ["pigment", "substantive"]
               },
               "ratio": {
@@ -847,7 +838,7 @@
             }
           },
           "trims": {
-            "description": "Liste des accessoires du vêtement (boutons, zip, etc).\nLa liste des accessoires disponibles est accessible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/trims`.\n",
+            "description": "Liste des accessoires du vêtement (boutons, zip, etc).<br/>La liste des accessoires disponibles est accessible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/trims`.",
             "type": "array",
             "items": {
               "type": "object",
@@ -864,24 +855,24 @@
             }
           },
           "upcycled": {
-            "description": "Produit remanufacturé\n",
+            "description": "Produit remanufacturé",
             "type": "boolean"
           }
         }
       },
       "ProductQueryMaterial": {
         "type": "object",
-        "description": "Liste des matières composant le produit\n",
+        "description": "Liste des matières composant le produit",
         "additionalProperties": false,
         "required": ["id", "share"],
         "properties": {
           "id": {
             "type": "string",
-            "description": "Identifiant de la matière, la liste des matières disponibles est accessible sur le\npoint d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/materials`\n"
+            "description": "Identifiant de la matière, la liste des matières disponibles est accessible sur le<br/>point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/materials`"
           },
           "share": {
             "type": "number",
-            "description": "Part du produit que cette matière représente (entre `0` et `1`)\n",
+            "description": "Part du produit que cette matière représente (entre `0` et `1`)",
             "minimum": 0.01,
             "maximum": 1
           },
@@ -926,7 +917,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["mass", "materials", "product", "countryDyeing", "countryFabric", "countryMaking"],
+              "required": ["mass", "materials", "product", "countryMaking"],
               "properties": {
                 "mass": {
                   "type": "number",
@@ -936,7 +927,7 @@
                 },
                 "product": {
                   "type": "string",
-                  "description": "Identifiant du produit (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/products`)\n",
+                  "description": "Identifiant du produit (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/products`)",
                   "enum": [
                     "chemise",
                     "jean",
@@ -953,99 +944,100 @@
                 },
                 "materials": {
                   "type": "array",
-                  "description": "Liste des matières composant ce produit",
+                  "description": "Liste des matières composant le vêtement",
                   "items": {
                     "$ref": "#/components/schemas/ProductQueryMaterial"
-                  }
-                },
-                "countryDyeing": {
-                  "type": "string",
-                  "description": "Code du pays d'ennoblissement / impression",
-                  "minLength": 2,
-                  "maxLength": 2
-                },
-                "countryFabric": {
-                  "type": "string",
-                  "description": "Code du pays de tissage / tricotage",
-                  "minLength": 2,
-                  "maxLength": 2
-                },
-                "countryMaking": {
-                  "type": "string",
-                  "description": "Code du pays de confection",
-                  "minLength": 2,
-                  "maxLength": 2
-                },
-                "countrySpinning": {
-                  "type": "string",
-                  "description": "Code du pays de filature",
-                  "minLength": 2,
-                  "maxLength": 2
+                  },
+                  "minItems": 1
                 },
                 "airTransportRatio": {
                   "type": "number",
-                  "description": "Part de transport aérien",
+                  "description": "Part de **transport aérien** entre l'étape de **Confection** et l'étape de **Distribution**, entre `0` et `1`",
                   "minimum": 0,
                   "maximum": 1
                 },
-                "upcycled": {
-                  "type": "boolean",
-                  "description": "Le produit est-il remanufacturé ?"
-                },
                 "business": {
                   "type": "string",
-                  "description": "Type d'entreprise",
+                  "description": "Type d'entreprise et d'offre de services :<br/>- `small-business` : TPE/PME<br/>- `large-business-with-services` : Grande entreprise avec service de réparation<br/>- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation",
                   "enum": ["small-business", "large-business-with-services", "large-business-without-services"]
+                },
+                "countryDyeing": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Teinture** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)<br/>Ce champs est requis si `upcycled` n'est pas `true`.",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "countryFabric": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Tissage/Tricotage** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)<br/>Ce champs est requis si `upcycled` n'est pas `true`.",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "countryMaking": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Confection** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "countrySpinning": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Filature** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`).<br/>Si non spécifié, le pays de filature pris en considération est celui de production de<br/>la matière la plus représentée dans le mix.",
+                  "minLength": 2,
+                  "maxLength": 3
                 },
                 "fading": {
                   "type": "boolean",
-                  "description": "Le produit a-t-il subi un délavage ?"
+                  "description": "Active l'application du **procédé de délavage** pour l'étape de confection d'un produit."
                 },
                 "numberOfReferences": {
+                  "description": "Nombre de références au catalogue de la marque.",
                   "type": "number",
-                  "description": "Nombre de références du produit",
                   "minimum": 1,
                   "maximum": 999999
                 },
                 "price": {
+                  "description": "Prix du produit, en Euros (€).",
                   "type": "number",
-                  "description": "Prix de vente du produit en euros",
                   "minimum": 1,
                   "maximum": 1000
                 },
                 "printing": {
                   "type": "object",
-                  "description": "Informations sur l'impression",
+                  "description": "Ce paramètre permet de préciser le type d'impression effectuée sur le produit.<br/>Par exemple, `{\"kind\": \"pigment\", \"ratio\": 0.1}` signifie impression pigmentaire sur 10%<br/>de la superficie du vêtement.",
+                  "required": ["kind"],
                   "properties": {
                     "kind": {
                       "type": "string",
-                      "description": "Type d'impression",
-                      "enum": ["pigment", "conventional"]
+                      "description": "Type de procédé d'impression pouvant prendre les valeurs suivantes :<br/>- `pigment` pour une impression pigmentaire ;<br/>- `substantive` pour une impression fixé/lavé ;",
+                      "enum": ["pigment", "substantive"]
                     },
                     "ratio": {
-                      "type": "string",
-                      "description": "Pourcentage d'impression",
-                      "enum": ["1%", "5%", "20%", "50%", "80%"]
+                      "type": "number",
+                      "description": "Pourcentage de surface imprimée",
+                      "enum": [0.01, 0.05, 0.2, 0.5, 0.8]
                     }
                   }
                 },
                 "trims": {
+                  "description": "Liste des accessoires du vêtement (boutons, zip, etc).<br/>La liste des accessoires disponibles est accessible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/trims`.",
                   "type": "array",
-                  "description": "Liste des accessoires du produit",
                   "items": {
                     "type": "object",
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "Identifiant de l'accessoire"
+                        "format": "uuid"
                       },
                       "quantity": {
-                        "type": "number",
-                        "description": "Quantité de l'accessoire",
-                        "minimum": 1
+                        "type": "integer",
+                        "minimum": 0
                       }
                     }
                   }
+                },
+                "upcycled": {
+                  "description": "Produit remanufacturé",
+                  "type": "boolean"
                 }
               }
             }
