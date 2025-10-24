@@ -11,7 +11,7 @@ import { impressions } from "../../types/impression"
 import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
 import { hashParsedProduct } from "../../encryption/hash"
-import { checkHeaders, getBooleanValue, getNumberValue, getValue } from "../parsing"
+import { checkHeaders, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
 
 export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
@@ -36,6 +36,7 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
 
   const headers = data[0]
   const formattedHeaders = checkHeaders(headers)
+  const hasAccessoire1 = formattedHeaders.includes("accessoire1")
 
   const headerMapping: Record<string, number> = {}
   formattedHeaders.forEach((header, index) => {
@@ -88,14 +89,21 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
         })
         .filter((material) => material !== null)
         .filter((material) => material.id),
-      trims: Array.from({ length: 4 })
-        .map((_, index) => {
-          const id = getValue<AccessoryType>(allAccessories, row[headerMapping[`accessoire${index + 1}`]])
-          const quantity = getNumberValue(row[headerMapping[`accessoire${index + 1}quantite`]])
-          return id ? { id, quantity } : null
-        })
-        .filter((accessory) => accessory !== null)
-        .filter((accessory) => accessory.id),
+      trims: hasAccessoire1
+        ? Array.from({ length: 4 })
+            .map((_, index) => {
+              const id = getValue<AccessoryType>(allAccessories, row[headerMapping[`accessoire${index + 1}`]])
+              const quantity = getNumberValue(row[headerMapping[`accessoire${index + 1}quantite`]])
+              return id ? { id, quantity } : null
+            })
+            .filter((accessory) => accessory !== null)
+            .filter((accessory) => accessory.id)
+        : trimsColumnValues
+            .map((key) => ({
+              id: getValue<AccessoryType>(allAccessories, key.replace("quantitede", "")),
+              quantity: getNumberValue(row[headerMapping[key]]),
+            }))
+            .filter((trim) => trim.quantity !== undefined),
     }
 
     const encrypted = encryptProductFields(rawProduct)
@@ -143,6 +151,7 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
     informations.push({
       id: productId,
       productId: id,
+      emptyTrims: !hasAccessoire1 && rawProduct.trims.length === 0,
       ...encrypted.product,
     })
   }

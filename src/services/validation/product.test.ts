@@ -268,10 +268,10 @@ describe("productValidation", () => {
       validProduct,
       {
         accessories: [
-          { ...validProduct.materials[0], id: "accessory-1", slug: AccessoryType.BoutonEnMétal, quantity: 0 },
+          { ...validProduct.materials[0], id: "accessory-1", slug: AccessoryType.BoutonEnMétal, quantity: -1 },
         ],
       },
-      [{ path: ["accessories", "0", "quantity"], message: "La quantité de l'accessoire doit être supérieure à 1" }],
+      [{ path: ["accessories", "0", "quantity"], message: "La quantité de l'accessoire doit être supérieure à 0" }],
     )
   })
 
@@ -541,8 +541,8 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { accessories: [{ ...validProduct.accessories[0], quantity: 0 }] },
-      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être supérieure à 1" }],
+      { accessories: [{ ...validProduct.accessories[0], quantity: -1 }] },
+      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être supérieure à 0" }],
     )
   })
 

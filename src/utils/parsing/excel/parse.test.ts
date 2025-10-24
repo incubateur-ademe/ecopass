@@ -101,6 +101,62 @@ describe("parseExcel", () => {
     expect(parsedProduct.accessories[0].quantity).toBe(1)
   })
 
+  it("parses a valid Excel with Accessoires", async () => {
+    const excelBuffer = createExcelBuffer([
+      [
+        ...defaultHeaders.slice(0, -4),
+        "Accessoire 1",
+        "Accessoire 1 quantité",
+        "Accessoire 2",
+        "Accessoire 2 quantité",
+        "Accessoire 3",
+        "Accessoire 3 quantité",
+        "Accessoire 4",
+        "Accessoire 4 quantité",
+      ],
+      [...defaultProducts.slice(0, -4), "Bouton en métal", 1, "", "", "", "", "", ""],
+    ])
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(materials).toHaveLength(2)
+    expect(accessories).toHaveLength(1)
+
+    const fullProducts = informations.map((information) => {
+      return {
+        ...information,
+        materials: materials.filter((material) => material.productId === information.id),
+        accessories: accessories.filter((accessory) => accessory.productId === information.id),
+        upload: {
+          createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
+        },
+      }
+    })
+    const parsedProduct = decryptProductFields(fullProducts[0])
+    expect(parsedProduct.accessories[0].slug).toBe(AccessoryType.BoutonEnMétal)
+    expect(parsedProduct.accessories[0].quantity).toBe(1)
+  })
+
+  it("parses a valid CSV with empty trims", async () => {
+    const excelBuffer = createExcelBuffer([defaultHeaders, [...defaultProducts.slice(0, -4), "0", "", "", ""]])
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(1)
+    expect(informations[0].emptyTrims).toBe(false)
+    expect(materials).toHaveLength(2)
+    expect(accessories).toHaveLength(1)
+  })
+
+  it("parses a valid CSV with default trims", async () => {
+    const excelBuffer = createExcelBuffer([defaultHeaders, [...defaultProducts.slice(0, -4), "", "", "", ""]])
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(1)
+    expect(informations[0].emptyTrims).toBe(true)
+    expect(materials).toHaveLength(2)
+    expect(accessories).toHaveLength(0)
+  })
+
   it("parses all invalid values", async () => {
     const invalidRow = defaultHeaders.map(() => "Test")
 
@@ -147,7 +203,6 @@ describe("parseExcel", () => {
     expect(parsedProduct.materials[0].country).toBe("Test")
     expect(parsedProduct.materials[0].share).toBe("Test")
     expect(parsedProduct.accessories).toHaveLength(4)
-    expect(parsedProduct.accessories[0].slug).toBe("Test")
     expect(parsedProduct.accessories[0].quantity).toBe("Test")
   })
 
@@ -163,7 +218,7 @@ describe("parseExcel", () => {
     const excelBuffer = createExcelBuffer([incompleteHeaders, incompleteRow])
 
     await expect(parseExcel(excelBuffer, upload)).rejects.toThrow(
-      "Colonne(s) manquante(s): GTINs/Eans, Référence interne, Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Accessoire 1, Accessoire 1 quantité",
+      "Colonne(s) manquante(s): GTINs/Eans, Référence interne, Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Quantité de bouton en métal, Quantité de bouton en plastique, Quantité de zip long, Quantité de zip court",
     )
   })
 

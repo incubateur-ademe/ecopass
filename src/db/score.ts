@@ -56,6 +56,7 @@ export const createScore = async (
             data: {
               ...encrypted.product,
               productId: createdBatch.id,
+              emptyTrims: product.trims === undefined,
               materials: {
                 createMany: {
                   data: encrypted.materials,
