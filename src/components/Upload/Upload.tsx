@@ -37,7 +37,7 @@ const Upload = () => {
   return (
     <div className={success || error ? "" : styles.container}>
       <Alert
-        className={styles.help}
+        className={success || error ? "" : styles.help}
         title='Aide'
         severity='info'
         description={
