@@ -24,7 +24,7 @@ const accessoryValidation = z.object({
   slug: z.enum(AccessoryType, { message: "Type d'accessoire invalide" }),
   quantity: z
     .number({ message: "La quantité de l'accessoire doit être un nombre" })
-    .min(1, "La quantité de l'accessoire doit être supérieure à 1"),
+    .min(0, "La quantité de l'accessoire doit être supérieure à 0"),
 })
 
 const productValidation = z.object({
@@ -34,6 +34,7 @@ const productValidation = z.object({
   status: z.enum(Status, { message: "Statut invalide" }),
   createdAt: z.date(),
   error: z.string().nullable(),
+  emptyTrims: z.boolean().optional(),
   gtins: z
     .array(
       z

@@ -141,24 +141,25 @@ const Fr = () => {
       </p>
       <br />
       <h3>Informations sur les accessoires</h3>
-      <p>Pour chaque accessoire, ajoutez les colonnes suivantes (jusqu’à 4 accessoires) :</p>
+      <p>
+        <b>Attention</b>, si vous n'avez pas d'accessoires, vous devez remplir ces champs avec la valeur 0.
+        <br />
+        Dans le cas contraire les accesoires par défaut seront appliqués.
+      </p>
       <ul>
         <li>
-          <b>Accessoire X</b> : type d’accessoire à choisir dans la liste suivante :
-          <ul>
-            <li>Zip long</li>
-            <li>Zip court</li>
-            <li>Bouton en plastique</li>
-            <li>Bouton en métal</li>
-          </ul>
+          <b>Quantité de zip long</b>
         </li>
         <li>
-          <b>Accessoire X quantité</b> : quantité d'accessoire dans le produit (min: 1).
+          <b>Quantité de zip court</b>
+        </li>
+        <li>
+          <b>Quantité de bouton en plastique</b>
+        </li>
+        <li>
+          <b>Quantité de bouton en métal</b>
         </li>
       </ul>
-      <p>
-        Remplacez <b>X</b> par un nombre de 1 à 4 (ex : Accessoire 1, Accessoire 1 quantité, Accessoire 2…).
-      </p>
       <br />
       <h3>Pays</h3>
       <p>La liste des pays disponibles est la suivante :</p>
