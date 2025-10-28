@@ -57,9 +57,6 @@ const Fr = () => {
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optionnel) : type d'entreprise et d'offre de services :
-          <p className='fr-hint-text'>
-            si pas de valeur définie, on utilise "Grande entreprise sans service de réparation"
-          </p>
           <ul>
             <li>TPE/PME</li>
             <li>Grande entreprise avec service de réparation</li>
