@@ -13,7 +13,18 @@ const Home = ({ connected }: { connected?: boolean }) => {
         <HomeBanner withConnection={!connected} />
         {connected && (
           <div className='fr-grid-row fr-grid-row--gutters fr-mt-3w'>
-            <div className='fr-col-12 fr-col-md-6'>
+            <div className='fr-col-12 fr-col-lg-4'>
+              <Tile
+                orientation='horizontal'
+                start={<Badge>Vos marques</Badge>}
+                title='Listez vos marques'
+                imageUrl='/images/catalog.svg'
+                titleAs='h2'
+                desc='Énumérez la liste de vos marques qui ont des produits à déclarer'
+                linkProps={{ href: "/organisation" }}
+              />
+            </div>
+            <div className='fr-col-12 fr-col-lg-4'>
               <Tile
                 orientation='horizontal'
                 start={<Badge>dépôt officiel</Badge>}
@@ -28,7 +39,7 @@ const Home = ({ connected }: { connected?: boolean }) => {
                 linkProps={{ href: "/declarations" }}
               />
             </div>
-            <div className='fr-col-12 fr-col-md-6'>
+            <div className='fr-col-12 fr-col-lg-4'>
               <Tile
                 orientation='horizontal'
                 start={<Badge>Suivi des produits</Badge>}
