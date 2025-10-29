@@ -6,16 +6,17 @@ import { productCategories } from "../../types/productCategory"
 import { businesses } from "../../types/business"
 import { materials as allMaterials } from "../../types/material"
 import { accessories as allAccessories } from "../../types/accessory"
-import { Accessory, Material, Product, Status } from "../../../../prisma/src/prisma"
+import { Accessory, Material, Product, ProductInformation, Status } from "../../../../prisma/src/prisma"
 import { impressions } from "../../types/impression"
 import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
-import { hashProduct } from "../../encryption/hash"
+import { hashParsedProduct } from "../../encryption/hash"
 import { checkHeaders, getBooleanValue, getNumberValue, getValue } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
 
 export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
-  const products: (Product & { materials: undefined; accessories: undefined })[] = []
+  const products: Product[] = []
+  const informations: (ProductInformation & { materials: undefined; accessories: undefined })[] = []
   const materials: Material[] = []
   const accessories: Accessory[] = []
 
@@ -49,13 +50,15 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
     if (!row || row.every((cell) => !cell)) {
       continue
     }
+    const id = uuid()
     const productId = uuid()
 
+    const gtins = (row[headerMapping["gtinseans"]] || "").split(/[,;\n]/).map((gtin) => gtin.trim())
+    const internalReference = row[headerMapping["referenceinterne"]] || ""
+    const brand = (row[headerMapping["marque"]] || upload?.createdBy.organization?.name || "").trim()
+    const declaredScore = getNumberValue(row[headerMapping["score"]] || "", 1, -1) as number | undefined
+
     const rawProduct = {
-      gtins: (row[headerMapping["gtinseans"]] || "").split(/[,;\n]/).map((gtin) => gtin.trim()),
-      internalReference: row[headerMapping["referenceinterne"]] || "",
-      brand: (row[headerMapping["marque"]] || upload?.createdBy.organization?.name || "").trim(),
-      declaredScore: getNumberValue(row[headerMapping["score"]] || "", 1, -1) as number | undefined,
       product: getValue<ProductCategory>(productCategories, row[headerMapping["categorie"]]),
       airTransportRatio: getNumberValue(row[headerMapping["partdutransportaerien"]] || ""),
       business: getValue<Business>(businesses, row[headerMapping["tailledelentreprise"]]),
@@ -115,18 +118,34 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
     products.push({
       error: null,
       id: productId,
-      hash: hashProduct(
+      score: null,
+      standardized: null,
+      hash: hashParsedProduct(
+        {
+          gtins: gtins,
+          internalReference: internalReference,
+          brand: brand,
+          declaredScore: declaredScore,
+        },
         rawProduct,
-        upload && upload.createdBy.organization ? getAuthorizedBrands(upload.createdBy.organization) : [],
+        upload?.createdBy.organization ? getAuthorizedBrands(upload.createdBy.organization) : [],
       ),
       createdAt: now,
-      updatedAt: now,
       uploadId: upload ? upload.id : "",
       uploadOrder: rowIndex,
       status: Status.Pending,
+      gtins: gtins,
+      internalReference: internalReference,
+      brand: brand,
+      declaredScore: declaredScore || null,
+    })
+
+    informations.push({
+      id: productId,
+      productId: id,
       ...encrypted.product,
     })
   }
 
-  return { products, materials, accessories }
+  return { products, informations, materials, accessories }
 }
