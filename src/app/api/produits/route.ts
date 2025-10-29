@@ -61,7 +61,7 @@ export async function POST(req: Request) {
 
     if (body.test) {
       return NextResponse.json(
-        "Il n'est plus possible de faire des tests via l'API. Veuillez vous dirigez vers le site de test https://test.ecopass.app",
+        "Il n'est plus possible de faire des tests via l'API. Veuillez vous dirigez vers le site de test https://test-affichage-environnemental.ecobalyse.beta.gouv.fr",
       )
     }
 
