@@ -27,10 +27,6 @@
     min-width: min(400px, 100%);
     flex: 1;
   }
-
-  h3 {
-    color: var(--blue-france-sun-113-625);
-  }
 }
 
 .image {
@@ -60,7 +56,6 @@
 }
 
 .title {
-  color: var(--blue-france-sun-113-625);
   font-size: 2.5rem;
   line-height: 3rem;
 
@@ -71,7 +66,6 @@
 }
 
 .description {
-  color: var(--blue-france-sun-113-625);
   font-size: 1.25rem;
   line-height: 1.75rem;
   margin-block: 1.5rem;
