@@ -49,35 +49,35 @@ const NewDelegation = () => {
   return (
     <>
       <h3 className='fr-mt-2w'>Déléguer mes droits</h3>
-      <p>Veuillez entrer le SIRET de l'entreprise à laquelle vous souhaitez déléguer vos droits.</p>
-      <p className='fr-mb-2w'>
-        Pour connaitre le SIRET d'une entreprise vous pouvez vous rendre sur{" "}
-        <Link
-          href='https://annuaire-entreprises.data.gouv.fr/'
-          className='fr-link'
-          target='_blank'
-          rel='noopener noreferrer'>
-          l'Annuaire des Entreprises
-        </Link>
-        .
-      </p>
       <Input
-        label='SIRET'
+        label="Veuillez entrer le SIRET de l'entreprise à laquelle vous souhaitez déléguer vos droits."
         hintText='Le SIRET doit être composé de 14 chiffres.'
         nativeInputProps={{ required: true, name: "name", value: siret, onChange: (e) => setSiret(e.target.value) }}
+        state='info'
+        stateRelatedMessage={
+          <span>
+            Pour connaitre le SIRET d'une entreprise vous pouvez vous rendre sur{" "}
+            <Link href='https://annuaire-entreprises.data.gouv.fr/' target='_blank' rel='noopener noreferrer'>
+              l'Annuaire des Entreprises
+            </Link>
+            .
+          </span>
+        }
       />
       {searching && <p>Chargement des informations...</p>}
       {organization && (
-        <Card
-          data-testid='organization-card'
-          title={organization.uniteLegale.denominationUniteLegale}
-          desc={`${organization.adresseEtablissement.numeroVoieEtablissement}${organization.adresseEtablissement.indiceRepetitionEtablissement || ""} ${organization.adresseEtablissement.typeVoieEtablissement} ${organization.adresseEtablissement.libelleVoieEtablissement}, ${organization.adresseEtablissement.codePostalEtablissement} ${organization.adresseEtablissement.libelleCommuneEtablissement}`}
-          footer={
-            <LoadingButton loading={loading} onClick={delegateOrganization}>
-              Déléguer mes droits à cette organisation
-            </LoadingButton>
-          }
-        />
+        <div className='fr-mb-4w'>
+          <Card
+            data-testid='organization-card'
+            title={organization.uniteLegale.denominationUniteLegale}
+            desc={`${organization.adresseEtablissement.numeroVoieEtablissement}${organization.adresseEtablissement.indiceRepetitionEtablissement || ""} ${organization.adresseEtablissement.typeVoieEtablissement} ${organization.adresseEtablissement.libelleVoieEtablissement}, ${organization.adresseEtablissement.codePostalEtablissement} ${organization.adresseEtablissement.libelleCommuneEtablissement}`}
+            footer={
+              <LoadingButton loading={loading} onClick={delegateOrganization}>
+                Déléguer mes droits à cette organisation
+              </LoadingButton>
+            }
+          />
+        </div>
       )}
     </>
   )

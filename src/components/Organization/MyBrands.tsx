@@ -1,3 +1,4 @@
+import Alert from "@codegouvfr/react-dsfr/Alert"
 import { UserOrganization } from "../../db/user"
 import Brands from "./Brands"
 import NewBrand from "./NewBrand"
@@ -6,20 +7,24 @@ const MyBrands = ({ organization }: { organization: UserOrganization }) => {
   return (
     <>
       {organization.brands.length === 0 ? (
-        <>
-          <p>Vous n'avez pas encore déclaré de marques.</p>
-          <p>Tous vos produits apparaîtront sous le nom de votre organisation ({organization.name}).</p>
-        </>
+        <Alert
+          severity='info'
+          title="Vous n'avez pas déclaré de marques"
+          description={`Tous vos produits apparaîtront sous le nom de votre organisation (${organization.name}).`}
+        />
       ) : (
-        <>
-          <p>
-            Vous pouvez déclarer vos produits soit sous le nom de votre organisation ({organization.name}), soit sous un
-            des noms ci-dessous.
-          </p>
-          <Brands brands={organization.brands} />
-        </>
+        <Alert
+          severity='info'
+          small
+          description={`Tous vos produits apparaîtront sous le nom de votre organisation (${organization.name}).`}
+        />
       )}
-      <NewBrand />
+      <div className='fr-mt-4w'>
+        <NewBrand />
+      </div>
+      <div className='fr-mt-4w'>
+        <Brands brands={[{ name: organization.name, id: "todo" }, ...organization.brands]} />
+      </div>
     </>
   )
 }

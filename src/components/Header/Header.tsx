@@ -29,14 +29,18 @@ const Header = ({ session }: { session: Session | null }) => {
               { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
               {
                 linkProps: { href: "/declarations" },
-                text: "Mes déclarations",
+                text: "Déclarations",
                 isActive: pathname.startsWith("/declarations"),
               },
-              { linkProps: { href: "/produits" }, text: "Mes produits", isActive: pathname.startsWith("/produits") },
+              {
+                linkProps: { href: "/produits" },
+                text: "Produits déclarés",
+                isActive: pathname.startsWith("/produits"),
+              },
               { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") },
               {
                 linkProps: { href: "/organisation" },
-                text: "Mon organisation",
+                text: "Organisation",
                 isActive: pathname.startsWith("/organisation"),
               },
               ...(session.user.role === UserRole.ADMIN

@@ -1,0 +1,9 @@
+.container {
+  background-color: var(--grey-950-100);
+  padding: 2rem;
+}
+
+.badge {
+  margin-top: 1rem;
+  display: block;
+}

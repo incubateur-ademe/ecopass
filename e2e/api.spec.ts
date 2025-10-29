@@ -215,7 +215,7 @@ test("declare my products by API", async ({ page }) => {
     '[{"expected":"number","code":"invalid_type","path":["products",0,"mass"],"message":"Invalid input: expected number, received undefined"}]',
   )
 
-  await page.getByRole("link", { name: "Mes produits" }).click()
+  await page.getByRole("link", { name: "Produits déclarés" }).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)
@@ -250,7 +250,7 @@ test("declare my products by API", async ({ page }) => {
     "5347",
   )
 
-  await page.getByRole("link", { name: "Mes produits" }).click()
+  await page.getByRole("link", { name: "Produits déclarés" }).click()
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
     "T-shirt / Polo",
   )

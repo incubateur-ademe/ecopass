@@ -22,7 +22,7 @@ const Delegations = ({
         fixed
         caption='Mes délégations'
         noCaption
-        headers={["Nom", "Siret", "Autorisé le", type === "from" ? "Marques" : ""]}
+        headers={["Nom", "Autorisé le", "Siret", type === "from" ? "Marques" : "Action"]}
         data={organizations.map((organization) =>
           "to" in organization
             ? [
@@ -41,8 +41,8 @@ const Delegations = ({
               ]
             : [
                 organization.from.name,
-                organization.from.siret,
                 formatDateTime(organization.createdAt),
+                organization.from.siret,
                 organization.from.brands.map((b) => b.name).join(", "),
               ],
         )}

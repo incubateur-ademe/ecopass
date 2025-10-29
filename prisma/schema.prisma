@@ -247,10 +247,19 @@ model Accessory {
   @@map("accessories")
 }
 
+enum OrganizationType {
+  Brand
+  Distributor
+  BrandAndDistributor
+  Consultancy
+}
+
 model Organization {
   id    String @id @default(uuid())
   name  String
   siret String @unique
+
+  type OrganizationType?
 
   effectif String?
   naf      String?

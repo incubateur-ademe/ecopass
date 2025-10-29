@@ -49,6 +49,20 @@ export const updateAPIUse = async (apiKey: string) =>
     data: { lastUsed: new Date() },
   })
 
+export const getUserOrganizationType = async (userId: string) => {
+  const user = await prismaClient.user.findFirst({
+    where: { id: userId },
+    select: {
+      organization: {
+        select: {
+          type: true,
+        },
+      },
+    },
+  })
+  return user?.organization?.type || null
+}
+
 export const getUserOrganization = async (userId: string) => {
   const user = await prismaClient.user.findFirst({
     where: { id: userId },
@@ -57,6 +71,7 @@ export const getUserOrganization = async (userId: string) => {
         select: {
           id: true,
           name: true,
+          type: true,
           brands: { select: { id: true, name: true } },
           authorizedOrganizations: {
             select: {
