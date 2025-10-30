@@ -31,7 +31,7 @@ test.beforeEach(async () => {
 test("manage brands", async ({ page }) => {
   await login(page)
 
-  await page.getByRole("link", { name: "Mon organisation" }).click()
+  await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
   await expect(page.getByTestId("brand-row-name")).toHaveCount(2)
@@ -73,7 +73,7 @@ test("manage delegation", async ({ page }) => {
   await logout(page)
   await login(page)
 
-  await page.getByRole("link", { name: "Mon organisation" }).click()
+  await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
   await expect(page.locator("h1").last()).toHaveText("Mon organisation Emmaus")
@@ -140,7 +140,7 @@ test("manage delegation", async ({ page }) => {
   await logout(page)
   await login(page, "ecopass-no-organization@yopmail.com")
 
-  await page.getByRole("link", { name: "Mon organisation" }).click()
+  await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
@@ -152,7 +152,7 @@ test("manage delegation", async ({ page }) => {
   await logout(page)
   await login(page)
 
-  await page.getByRole("link", { name: "Mon organisation" }).click()
+  await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
   await page
@@ -191,7 +191,7 @@ test("manage delegation", async ({ page }) => {
   await logout(page)
   await login(page, "ecopass-no-organization@yopmail.com")
 
-  await page.getByRole("link", { name: "Mes produits" }).nth(0).click()
+  await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)

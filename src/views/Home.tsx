@@ -16,11 +16,11 @@ const Home = ({ connected }: { connected?: boolean }) => {
             <div className='fr-col-12 fr-col-lg-4'>
               <Tile
                 orientation='horizontal'
-                start={<Badge>Vos marques</Badge>}
-                title='Listez vos marques'
+                start={<Badge>Organisation</Badge>}
+                title='Gérez votre organisation'
                 imageUrl='/images/catalog.svg'
                 titleAs='h2'
-                desc='Énumérez la liste de vos marques qui ont des produits à déclarer'
+                desc='Listez vos marques et organisez vos délégations.'
                 linkProps={{ href: "/organisation" }}
               />
             </div>
@@ -28,12 +28,12 @@ const Home = ({ connected }: { connected?: boolean }) => {
               <Tile
                 orientation='horizontal'
                 start={<Badge>dépôt officiel</Badge>}
-                title='Déclarer mes produits'
+                title='Déclarer vos produits'
                 imageUrl='/images/contract.svg'
                 titleAs='h2'
                 desc={
                   <>
-                    Déclarer <b>officiellement</b> vos produits et suivez leur statut
+                    Déclarez <b>officiellement</b> vos produits et suivez leur statut.
                   </>
                 }
                 linkProps={{ href: "/declarations" }}
@@ -42,11 +42,11 @@ const Home = ({ connected }: { connected?: boolean }) => {
             <div className='fr-col-12 fr-col-lg-4'>
               <Tile
                 orientation='horizontal'
-                start={<Badge>Suivi des produits</Badge>}
-                title='Consulter mes produits'
+                start={<Badge>produits</Badge>}
+                title='Consulter vos produits'
                 imageUrl='/images/search.svg'
                 titleAs='h2'
-                desc='Consultez tous vos produits déclarés'
+                desc='Retrouvez ici tous vos produits déclarés.'
                 linkProps={{ href: "/produits" }}
               />
             </div>
