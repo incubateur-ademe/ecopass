@@ -109,7 +109,7 @@ test("declare my products by API", async ({ page }) => {
     '[{"expected":"number","code":"invalid_type","path":["mass"],"message":"Invalid input: expected number, received undefined"}]',
   )
 
-  await page.getByRole("link", { name: "Mes produits" }).click()
+  await page.getByRole("link", { name: "Produits déclarés" }).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
