@@ -17,7 +17,7 @@ const Home = ({ connected }: { connected?: boolean }) => {
               <Tile
                 orientation='horizontal'
                 start={<Badge>Organisation</Badge>}
-                title='Gérez votre organisation'
+                title='Gérez votre entreprise'
                 imageUrl='/images/catalog.svg'
                 titleAs='h2'
                 desc='Listez vos marques et organisez vos délégations.'
