@@ -69,6 +69,19 @@ const Upload = () => {
             <br />
             <br />
             <span>
+              Si vous voulez faire un test avant de vous lancer, rejoignez{" "}
+              <Link
+                href='https://test-affichage-environnemental.ecobalyse.beta.gouv.fr/'
+                className='fr-link'
+                target='_blank'
+                rel='noopener noreferrer'>
+                le serveur de test
+              </Link>
+              .
+            </span>
+            <br />
+            <br />
+            <span>
               Si vous avez besoin d’aide,{" "}
               <Link
                 className='fr-link'
