@@ -85,7 +85,7 @@ export const uploadFile = async (file: File) => {
     await uploadFileToS3(id, zip, "upload")
     await createUpload(session.user.id, UploadType.FILE, sanitizedFileName, id)
 
-    return null // Succès
+    return null
   } catch (error) {
     console.error("Error during upload:", error)
     return "Erreur inconnue lors du traitement du fichier"

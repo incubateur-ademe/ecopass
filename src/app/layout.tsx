@@ -9,6 +9,8 @@ import "../css/reset.css"
 import "../css/dsfr.css"
 import Matomo from "../components/Matomo/Matomo"
 import { ReactNode } from "react"
+import TestBanner from "../components/Test/TestBanner"
+import { isTestEnvironment } from "../utils/test"
 
 export const metadata: Metadata = {
   title: "Affichage environnemental",
@@ -32,6 +34,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <AuthProvider session={session}>
             <Header session={session} />
             <main id='contenu' role='main' tabIndex={-1}>
+              {isTestEnvironment() && <TestBanner />}
               {children}
             </main>
             <Footer />

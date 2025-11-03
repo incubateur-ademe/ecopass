@@ -1,6 +1,4 @@
 "use client"
-
-import { CallOut } from "@codegouvfr/react-dsfr/CallOut"
 import { Upload as UploadDSFR } from "@codegouvfr/react-dsfr/Upload"
 import { useCallback, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -38,43 +36,65 @@ const Upload = () => {
   const sizeError = file ? file.size > 1 * 1024 * 1024 : false
   return (
     <div className={success || error ? "" : styles.container}>
-      <CallOut title='Aide'>
-        <span>Vous souhaitez un modèle ?</span>
-        <br />
-        <span>
-          <span className='fr-icon-arrow-right-s-fill' aria-hidden='true' />{" "}
-          <Link href='/exemple/exemple.xlsx' className='fr-link fr-callout__text' prefetch={false}>
-            Téléchargez notre template Excel
-          </Link>
-        </span>
-        <br />
-        <span>
-          <span className='fr-icon-arrow-right-s-fill' aria-hidden='true' />{" "}
-          <Link href='/exemple/exemple.csv' className='fr-link fr-callout__text' prefetch={false}>
-            Téléchargez notre template CSV
-          </Link>
-        </span>
-        <br />
-        <span>
-          Comment concevoir un fichier de déclaration pour le portail ?{" "}
-          <Link href='/documentation' className='fr-link fr-callout__text' prefetch={false}>
-            Consultez l'aide en ligne
-          </Link>
-          .
-        </span>
-        <br />
-        <span>
-          Si vous avez besoin d’aide,{" "}
-          <Link
-            className='fr-link fr-callout__text'
-            href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}
-            prefetch={false}
-            target='_blank'
-            rel='noopener noreferrer'>
-            vous pouvez contacter le service support.
-          </Link>
-        </span>
-      </CallOut>
+      <Alert
+        className={styles.help}
+        title='Aide'
+        severity='info'
+        description={
+          <>
+            <span>Vous souhaitez un modèle ?</span>
+            <br />
+            <span>
+              <span className='fr-icon-arrow-right-s-fill' aria-hidden='true' />{" "}
+              <Link href='/exemple/exemple.xlsx' className='fr-link' prefetch={false}>
+                Téléchargez notre template Excel
+              </Link>
+            </span>
+            <br />
+            <span>
+              <span className='fr-icon-arrow-right-s-fill' aria-hidden='true' />{" "}
+              <Link href='/exemple/exemple.csv' className='fr-link' prefetch={false}>
+                Téléchargez notre template CSV
+              </Link>
+            </span>
+            <br />
+            <br />
+            <span>
+              Comment concevoir un fichier de déclaration pour le portail ?{" "}
+              <Link href='/documentation' className='fr-link' prefetch={false}>
+                Consultez l'aide en ligne
+              </Link>
+              .
+            </span>
+            <br />
+            <br />
+            <span>
+              Si vous voulez faire un test avant de vous lancer, rejoignez{" "}
+              <Link
+                href='https://test-affichage-environnemental.ecobalyse.beta.gouv.fr/'
+                className='fr-link'
+                target='_blank'
+                rel='noopener noreferrer'>
+                le serveur de test
+              </Link>
+              .
+            </span>
+            <br />
+            <br />
+            <span>
+              Si vous avez besoin d’aide,{" "}
+              <Link
+                className='fr-link'
+                href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`}
+                prefetch={false}
+                target='_blank'
+                rel='noopener noreferrer'>
+                vous pouvez contacter le service support.
+              </Link>
+            </span>
+          </>
+        }
+      />
       {success || error ? (
         <Alert
           data-testid={`upload-${success ? "success" : "error"}`}
@@ -111,7 +131,7 @@ const Upload = () => {
           }
         />
       ) : (
-        <div>
+        <div className={styles.upload}>
           <UploadDSFR
             label='Déposez votre fichier pour déclarer vos produits.'
             disabled={uploading}

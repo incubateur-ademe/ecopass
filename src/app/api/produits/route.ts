@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     const brands = getAuthorizedBrands(api.user.organization)
     const product = getUserProductAPIValidation(brands).safeParse({
       ...body,
-      brand: body.brand || api.user.organization.name || "",
+      brand: (body.brand || api.user.organization.name || "").trim(),
     })
 
     if (!product.success) {
@@ -58,6 +58,12 @@ export async function POST(req: Request) {
     }
     const lastProduct = await getLastProductByGtin(product.data.gtins[0])
     const hash = hashProduct(product.data, brands)
+
+    if (body.test) {
+      return NextResponse.json(
+        "Il n'est plus possible de faire des tests via l'API. Veuillez vous dirigez vers le site de test https://test-affichage-environnemental.ecobalyse.beta.gouv.fr",
+      )
+    }
 
     if (lastProduct && lastProduct.hash === hash) {
       return NextResponse.json({ message: "Le produit existe déjà." }, { status: 208 })
@@ -74,13 +80,6 @@ export async function POST(req: Request) {
           },
         ],
         { status: 400 },
-      )
-    }
-
-    if (product.data.test) {
-      return NextResponse.json(
-        { result: "success", detail: { score: score.score, durability: score.durability } },
-        { status: 200 },
       )
     }
 

@@ -51,15 +51,6 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(401)
 
-  // A test upload should succeed but not create a product
-  response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, internalReference: "REF-99", gtins: ["9876543210128"], test: true },
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  })
-  expect(response.status()).toBe(200)
-
   // A first upload should succeed
   response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
@@ -118,7 +109,7 @@ test("declare my products by API", async ({ page }) => {
     '[{"expected":"number","code":"invalid_type","path":["mass"],"message":"Invalid input: expected number, received undefined"}]',
   )
 
-  await page.getByRole("link", { name: "Mes produits" }).click()
+  await page.getByRole("link", { name: "Produits déclarés" }).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)

@@ -400,7 +400,6 @@ export const getBrandsInformations = async () => {
           id: true,
           type: true,
           status: true,
-          createdAt: true,
           products: {
             where: {
               status: Status.Done,
@@ -408,6 +407,7 @@ export const getBrandsInformations = async () => {
             select: {
               brand: true,
               internalReference: true,
+              createdAt: true,
             },
           },
         },
@@ -420,31 +420,31 @@ export const getBrandsInformations = async () => {
     const apiUploads = organization.upload.filter((upload) => upload.type === UploadType.API)
     const fileUploads = organization.upload.filter((upload) => upload.type === UploadType.FILE)
 
-    const uploadDates = organization.upload.map((upload) => upload.createdAt).sort((a, b) => a.getTime() - b.getTime())
-    const firstUploadDate = uploadDates.length > 0 ? uploadDates[0] : null
-    const lastUploadDate = uploadDates.length > 0 ? uploadDates[uploadDates.length - 1] : null
-
-    const brandStats = organization.upload
+    const brands = organization.upload
       .flatMap((upload) => upload.products)
       .reduce(
         (acc, product) => {
-          if (!acc[product.brand]) {
-            acc[product.brand] = new Set<string>()
+          const brand = acc[product.brand]
+          if (!brand) {
+            acc[product.brand] = {
+              references: new Set<string>([product.internalReference]),
+              firstDepositDate: product.createdAt,
+              lastDepositDate: product.createdAt,
+            }
+          } else {
+            brand.references.add(product.internalReference)
+            if (product.createdAt < brand.firstDepositDate) {
+              brand.firstDepositDate = product.createdAt
+            }
+            if (product.createdAt > brand.lastDepositDate) {
+              brand.lastDepositDate = product.createdAt
+            }
           }
-          acc[product.brand].add(product.internalReference)
+
           return acc
         },
-        {} as Record<string, Set<string>>,
+        {} as Record<string, { references: Set<string>; firstDepositDate: Date; lastDepositDate: Date }>,
       )
-
-    const brandCounts = Object.entries(brandStats).reduce(
-      (acc, [brand, internalRefs]) => {
-        acc[brand] = internalRefs.size
-        return acc
-      },
-      {} as Record<string, number>,
-    )
-
     return {
       name: organization.name,
       siret: organization.siret,
@@ -456,12 +456,13 @@ export const getBrandsInformations = async () => {
         file: fileUploads.length,
         fileDone: fileUploads.filter((upload) => upload.status === Status.Done).length,
       },
-      uploadDates: {
-        first: firstUploadDate,
-        last: lastUploadDate,
-      },
-      brandCounts,
-      totalProducts: Object.values(brandCounts).reduce((sum, count) => sum + count, 0),
+      brands: Object.entries(brands).map(([brandName, brand]) => ({
+        name: brandName,
+        organization: organization.name,
+        totalProducts: brand.references.size,
+        firstDepositDate: brand.firstDepositDate,
+        lastDepositDate: brand.lastDepositDate,
+      })),
     }
   })
 }
