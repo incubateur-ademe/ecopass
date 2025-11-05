@@ -24,7 +24,7 @@ const HomeBanner = ({ withConnection = true }: HomeBannerProps) => {
           <>
             {!isTestEnvironment() && (
               <p className={styles.description}>
-                Vous êtes une marque ou un bureau d'étude ?
+                Vous êtes une marque ou un bureau d'études ?
                 <br />
                 Connectez-vous avec ProConnect pour déclarer le coût environnemental de vos produits.
               </p>

@@ -65,7 +65,7 @@ describe("API Ecobalyse", () => {
       productId: "product-1",
       gtins: ["1234567890123"],
       internalReference: "REF-001",
-      brand: "Test Brand",
+      brandId: "Test Brand",
       status: Status.Pending,
       error: null,
       createdAt: new Date(),

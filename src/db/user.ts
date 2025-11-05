@@ -13,13 +13,21 @@ export const getUserByApiKey = async (apiKey: string) =>
             select: {
               id: true,
               name: true,
+              type: true,
               authorizedBy: {
                 select: {
-                  from: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
+                  from: {
+                    select: {
+                      id: true,
+                      name: true,
+                      siret: true,
+                      brands: { select: { active: true, id: true, name: true }, where: { active: true } },
+                    },
+                  },
                 },
                 where: { active: true },
               },
-              brands: { select: { name: true } },
+              brands: { select: { active: true, id: true, name: true, default: true }, where: { active: true } },
             },
           },
         },
@@ -49,6 +57,20 @@ export const updateAPIUse = async (apiKey: string) =>
     data: { lastUsed: new Date() },
   })
 
+export const getUserOrganizationType = async (userId: string) => {
+  const user = await prismaClient.user.findFirst({
+    where: { id: userId },
+    select: {
+      organization: {
+        select: {
+          type: true,
+        },
+      },
+    },
+  })
+  return user?.organization?.type || null
+}
+
 export const getUserOrganization = async (userId: string) => {
   const user = await prismaClient.user.findFirst({
     where: { id: userId },
@@ -57,7 +79,9 @@ export const getUserOrganization = async (userId: string) => {
         select: {
           id: true,
           name: true,
-          brands: { select: { id: true, name: true } },
+          type: true,
+          naf: true,
+          brands: { select: { id: true, name: true, default: true, active: true } },
           authorizedOrganizations: {
             select: {
               id: true,
@@ -71,7 +95,14 @@ export const getUserOrganization = async (userId: string) => {
             select: {
               id: true,
               createdAt: true,
-              from: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
+              from: {
+                select: {
+                  id: true,
+                  name: true,
+                  siret: true,
+                  brands: { select: { id: true, name: true, default: true, active: true } },
+                },
+              },
             },
             where: { active: true },
             orderBy: { createdAt: "desc" },

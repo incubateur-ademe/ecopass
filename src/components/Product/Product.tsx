@@ -78,7 +78,7 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
                 ? BATCH_CATEGORY
                 : productCategories[simplifyValue(product.informations[0].category)] ||
                   product.informations[0].category}
-              {product.brand && <span> - {product.brand}</span>}
+              {product.brand && <span> - {product.brand.name}</span>}
             </b>
           </p>
           <p>
