@@ -168,13 +168,13 @@ export const getFirstFileUpload = async () =>
           organization: {
             select: {
               name: true,
-              brands: { select: { name: true } },
+              brands: { select: { default: true, name: true, id: true, active: true } },
               authorizedBy: {
                 select: {
                   from: {
                     select: {
                       name: true,
-                      brands: { select: { name: true } },
+                      brands: { select: { name: true, id: true, active: true } },
                     },
                   },
                 },

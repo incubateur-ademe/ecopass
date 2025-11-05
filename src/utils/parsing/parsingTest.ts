@@ -1,7 +1,7 @@
 export const defaultHeaders = [
   "GTINs/EANS",
   "Référence interne",
-  "Marque",
+  "Marque ID",
   "Score",
   "Catégorie",
   "Masse (en kg)",
@@ -74,7 +74,7 @@ export const defaultHeaders = [
 export const defaultProductRow = [
   "2234567891001;3234567891000",
   "REF-123",
-  "Marque",
+  "781c0fcd-372e-4032-8088-d83e103726f2",
   2222.63,
   "Pull",
   0.55,

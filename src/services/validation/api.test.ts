@@ -6,7 +6,7 @@ describe("productAPIValidation", () => {
   const validProduct = {
     gtins: ["12345670"],
     internalReference: "TestRef",
-    brand: "Test Brand",
+    brandId: "Test Brand",
     product: "jean",
     mass: 1.23,
     materials: [
@@ -59,11 +59,11 @@ describe("productAPIValidation", () => {
       productAPIValidation,
       validProduct,
       {
-        brand: "Nop",
+        brandId: "Nop",
       },
       [
         {
-          path: ["brand"],
+          path: ["brandId"],
           message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
         },
       ],
@@ -75,11 +75,11 @@ describe("productAPIValidation", () => {
       productAPIValidation,
       validProduct,
       {
-        brand: "",
+        brandId: "",
       },
       [
         {
-          path: ["brand"],
+          path: ["brandId"],
           message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
         },
       ],
@@ -117,8 +117,8 @@ describe("productAPIValidation", () => {
   })
 
   it("does not allow product without brand", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { brand: undefined }, [
-      { path: ["brand"], message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"' },
+    expectZodValidationToFail(productAPIValidation, validProduct, { brandId: undefined }, [
+      { path: ["brandId"], message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"' },
     ])
   })
 
@@ -465,7 +465,7 @@ describe("productsAPIValidation", () => {
   const validProducts = {
     gtins: ["12345670"],
     internalReference: "TestRef",
-    brand: "Test Brand",
+    brandId: "Test Brand",
     products: [validProductBase, { ...validProductBase, mass: 2.45 }],
   }
 
@@ -513,11 +513,11 @@ describe("productsAPIValidation", () => {
       productsAPIValidation,
       validProducts,
       {
-        brand: "Nop",
+        brandId: "Nop",
       },
       [
         {
-          path: ["brand"],
+          path: ["brandId"],
           message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
         },
       ],
@@ -529,11 +529,11 @@ describe("productsAPIValidation", () => {
       productsAPIValidation,
       validProducts,
       {
-        brand: "",
+        brandId: "",
       },
       [
         {
-          path: ["brand"],
+          path: ["brandId"],
           message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
         },
       ],
@@ -571,8 +571,8 @@ describe("productsAPIValidation", () => {
   })
 
   it("does not allow products without brand", () => {
-    expectZodValidationToFail(productsAPIValidation, validProducts, { brand: undefined }, [
-      { path: ["brand"], message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"' },
+    expectZodValidationToFail(productsAPIValidation, validProducts, { brandId: undefined }, [
+      { path: ["brandId"], message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"' },
     ])
   })
 

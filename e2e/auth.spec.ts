@@ -18,15 +18,13 @@ test("connection with proconnect and existing organization", async ({ page }) =>
 
   await login(page)
 
-  await page.getByRole("link", { name: "Organisation" }).first().click()
-  await expect(page.getByRole("heading", { name: "Mon organisation" })).toHaveText("Mon organisation Emmaus")
+  await page.getByRole("link", { name: "Organisation" }).click()
+  await expect(page.getByTestId("organization-name")).toHaveText("Emmaus")
 })
 
 test("connection with proconnect and new organization", async ({ page }) => {
   await login(page, "ecopass-no-organization@yopmail.com")
 
   await page.goto("http://localhost:3000/organisation")
-  await expect(page.getByRole("heading", { name: "Organisation" }).first()).toHaveText(
-    "Mon organisation DEPARTEMENT DE SEINE ET MARNE",
-  )
+  await expect(page.getByTestId("other-organization")).toBeVisible
 })

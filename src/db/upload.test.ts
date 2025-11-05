@@ -32,7 +32,7 @@ describe("Upload DB integration", () => {
 
   const baseProduct = {
     internalReference: "REF-124",
-    brand: "TestBrand2",
+    brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
     declaredScore: 3000.5,
     informations: {
       create: {
@@ -58,7 +58,18 @@ describe("Upload DB integration", () => {
     await cleanDB()
 
     const organization = await prismaTest.organization.create({
-      data: { name: "TestOrg", siret: "12345678901234" },
+      data: {
+        name: "TestOrg",
+        siret: "12345678901234",
+        brands: {
+          createMany: {
+            data: [
+              { name: "TestOrg", id: "69147ca8-09c6-4ae6-b731-d5344f080491", default: true },
+              { name: "TestBrand", id: "abf5acc4-fabc-4082-b49a-61b00b5cfcad" },
+            ],
+          },
+        },
+      },
     })
     testOrganizationId = organization.id
 

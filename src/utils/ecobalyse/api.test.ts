@@ -65,7 +65,7 @@ describe("API Ecobalyse", () => {
       productId: "product-1",
       gtins: ["1234567890123"],
       internalReference: "REF-001",
-      brand: "Test Brand",
+      brandId: "Test Brand",
       status: Status.Pending,
       error: null,
       createdAt: new Date(),
@@ -116,7 +116,7 @@ describe("API Ecobalyse", () => {
         method: "POST",
         url: "/textile/simulator/detailed",
         body: {
-          brand: undefined,
+          brandId: undefined,
           declaredScore: undefined,
           gtins: undefined,
           internalReference: undefined,
@@ -210,7 +210,7 @@ describe("API Ecobalyse", () => {
         method: "POST",
         url: "/textile/simulator/detailed",
         body: {
-          brand: undefined,
+          brandId: undefined,
           declaredScore: undefined,
           gtins: undefined,
           internalReference: undefined,
@@ -301,7 +301,7 @@ describe("API Ecobalyse", () => {
         method: "POST",
         url: "/textile/simulator/detailed",
         body: {
-          brand: undefined,
+          brandId: undefined,
           declaredScore: undefined,
           gtins: undefined,
           internalReference: undefined,
@@ -338,7 +338,7 @@ describe("API Ecobalyse", () => {
         method: "POST",
         url: "/textile/simulator/detailed",
         body: {
-          brand: undefined,
+          brandId: undefined,
           declaredScore: undefined,
           gtins: undefined,
           internalReference: undefined,
@@ -549,7 +549,7 @@ describe("API Ecobalyse", () => {
     const mockAPIProduct = {
       gtins: ["1234567891113", "1234567891012"],
       internalReference: "My-ref",
-      brand: "TOTALENERGIES SE",
+      brandId: "TOTALENERGIES SE",
       declaredScore: 123,
       business: "large-business-without-services",
       countrySpinning: "CN",
@@ -584,7 +584,7 @@ describe("API Ecobalyse", () => {
         method: "POST",
         url: "/textile/simulator/detailed",
         body: {
-          brand: undefined,
+          brandId: undefined,
           declaredScore: undefined,
           gtins: undefined,
           internalReference: undefined,

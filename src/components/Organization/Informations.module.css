@@ -1,0 +1,23 @@
+.container {
+  background-color: var(--grey-950-100);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.badge {
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.hint {
+  font-size: 0.875rem;
+  a {
+    font-size: 0.875rem;
+    &:after {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+}

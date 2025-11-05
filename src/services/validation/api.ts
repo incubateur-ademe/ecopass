@@ -72,7 +72,7 @@ const metaData = z.object({
   declaredScore: z.number().optional(),
 })
 
-export type ProductMetadataAPI = z.infer<typeof metaData> & { brand: string }
+export type ProductMetadataAPI = z.infer<typeof metaData> & { brandId: string }
 
 const productAPIValidation = z.object({
   ...metaData.shape,
@@ -82,7 +82,7 @@ const productAPIValidation = z.object({
 export const getUserProductAPIValidation = (brands: [string, ...string[]]) =>
   productAPIValidation
     .extend({
-      brand: z.enum(brands),
+      brandId: z.enum(brands),
     })
     .refine(
       (data) => {
@@ -107,7 +107,7 @@ const productsAPIValidation = z.object({
 export const getUserProductsAPIValidation = (brands: [string, ...string[]]) =>
   productsAPIValidation
     .extend({
-      brand: z.enum(brands),
+      brandId: z.enum(brands),
     })
     .refine(
       (data) => {

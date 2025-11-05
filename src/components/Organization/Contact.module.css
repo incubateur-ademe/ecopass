@@ -1,0 +1,18 @@
+.tile {
+  margin-top: 2rem;
+  @media screen and (max-width: 767px) {
+    :global(.fr-tile__header) {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 575px) {
+    :global(.fr-tile--horizontal) {
+      padding: 1rem 1rem 1.25rem 1rem;
+    }
+
+    :global(.fr-tile__desc) {
+      word-break: break-word;
+    }
+  }
+}
