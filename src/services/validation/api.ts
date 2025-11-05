@@ -72,7 +72,7 @@ const metaData = z.object({
   declaredScore: z.number().optional(),
 })
 
-export type ProductMetadataAPI = z.infer<typeof metaData> & { brand: string }
+export type ProductMetadataAPI = z.infer<typeof metaData> & { brandId: string }
 
 const productAPIValidation = z.object({
   ...metaData.shape,

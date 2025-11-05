@@ -474,7 +474,7 @@
                       "from": {
                         "name": "Société Mère",
                         "siret": "11223344556677",
-                        "brands": ["Marque A"]
+                        "brands": [{ "name": "Marque A", "id": "a1b2c3d4-e5f6-7890-ab12-cd34ef56gh78" }]
                       }
                     }
                   ]
@@ -631,7 +631,21 @@
               "brands": {
                 "type": "array",
                 "description": "Marques de l'organisation",
-                "items": { "type": "string" }
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID de la marque",
+                      "example": "b1a2c3d4-e5f6-7890-ab12-cd34ef56gh78"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nom de la marque",
+                      "example": "Ma Marque Premium"
+                    }
+                  }
+                }
               }
             }
           }
@@ -1066,8 +1080,13 @@
             "description": "Référence interne du produit"
           },
           "brand": {
-            "type": "string",
-            "description": "Marque du produit"
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Marque du produit"
+              }
+            }
           },
           "createdAt": {
             "type": "string",

@@ -3,7 +3,7 @@
 import { Select } from "@codegouvfr/react-dsfr/Select"
 import { useRouter } from "next/navigation"
 
-const BrandSelection = ({ brands, brand }: { brands: string[]; brand?: string }) => {
+const BrandSelection = ({ brands, brand }: { brands: { name: string; id: string }[]; brand?: string }) => {
   const router = useRouter()
   return (
     <>
@@ -19,8 +19,8 @@ const BrandSelection = ({ brands, brand }: { brands: string[]; brand?: string })
         }}>
         <option value=''>Toutes les marques</option>
         {brands.map((brand) => (
-          <option key={brand} value={brand}>
-            {brand}
+          <option key={brand.id} value={brand.id}>
+            {brand.name}
           </option>
         ))}
       </Select>
