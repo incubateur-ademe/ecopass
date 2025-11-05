@@ -8,12 +8,12 @@ import {
   productMapping,
 } from "./mappings"
 import { createProductScore, failProducts } from "../../db/product"
-import { ProductWithMaterialsAndAccessories } from "../../types/Product"
 import { prismaClient } from "../../db/prismaClient"
 import { Status } from "../../../prisma/src/prisma"
 import { ProductAPIValidation } from "../../services/validation/api"
 import { runElmFunction } from "./elm"
 import { scoreIsValid } from "../validation/score"
+import { ParsedProductValidation } from "../../services/validation/product"
 
 type EcobalyseProduct = Omit<ProductAPIValidation, "brand" | "gtins" | "internalReference" | "declaredScore">
 
@@ -41,7 +41,7 @@ const removeUndefined = <T>(obj: T): T => {
   return obj
 }
 
-const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories): EcobalyseProduct => {
+const convertProductToEcobalyse = (product: ParsedProductValidation): EcobalyseProduct => {
   const result = {
     airTransportRatio: product.airTransportRatio,
     business: product.business ? businessesMapping[product.business] : undefined,
@@ -129,7 +129,7 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
   }
 }
 
-export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAccessories[]) =>
+export const saveEcobalyseResults = async (products: ParsedProductValidation[]) =>
   Promise.all(
     products.map(async (product) => {
       try {
@@ -138,16 +138,12 @@ export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAcce
         if (product.declaredScore && !scoreIsValid(product.declaredScore, result.score)) {
           return failProducts([
             {
-              id: product.id,
+              productId: product.productId,
               error: `Le score déclaré (${product.declaredScore}) ne correspond pas au score calculé (${result.score})`,
             },
           ])
         }
-        await createProductScore({
-          productId: product.id,
-          standardized: (result.score / product.mass) * 0.1,
-          ...result,
-        })
+        await createProductScore(result, product)
 
         return {
           id: product.id,
