@@ -28,7 +28,7 @@ const Home = ({ connected }: { connected?: boolean }) => {
               <Tile
                 orientation='horizontal'
                 start={<Badge>dépôt officiel</Badge>}
-                title='Déclarer vos produits'
+                title='Déclarez vos produits'
                 imageUrl='/images/contract.svg'
                 titleAs='h2'
                 desc={
@@ -43,7 +43,7 @@ const Home = ({ connected }: { connected?: boolean }) => {
               <Tile
                 orientation='horizontal'
                 start={<Badge>produits</Badge>}
-                title='Consulter vos produits'
+                title='Consultez vos produits'
                 imageUrl='/images/search.svg'
                 titleAs='h2'
                 desc='Retrouvez ici tous vos produits déclarés.'
