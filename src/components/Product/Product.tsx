@@ -27,7 +27,7 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
             Référence interne : <b>{product.internalReference}</b>
           </p>
           <p>
-            Code GTINs : <b>{product.gtins.join(", ")}</b>
+            Code barre{product.gtins.length > 1 ? "s" : ""} : <b>{product.gtins.join(", ")}</b>
           </p>
           <p>
             Déposé le : <b>{formatDate(product.createdAt)}</b>
