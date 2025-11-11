@@ -24,7 +24,7 @@ const DownloadExport = ({ name, setError }: { name: string; setError: Dispatch<S
     }
 
     setLoading(false)
-  }, [name])
+  }, [name, setError])
 
   return (
     <LoadingButton onClick={download} loading={loading}>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   new Promise<void>(async (resolve, reject) => {
     try {
       const { searchParams } = new URL(request.url)
