@@ -40,8 +40,8 @@ const product = z.object({
   mass: z.number().min(0.01),
   numberOfReferences: z.number().min(1).max(999999).optional(),
   price: z.number().min(1).max(1000).optional(),
-  countryDyeing: z.enum(countryValues),
-  countryFabric: z.enum(countryValues),
+  countryDyeing: z.enum(countryValues).optional(),
+  countryFabric: z.enum(countryValues).optional(),
   countryMaking: z.enum(countryValues),
   countrySpinning: z.enum(countryValues).optional(),
   printing: z
@@ -80,9 +80,22 @@ const productAPIValidation = z.object({
 })
 
 export const getUserProductAPIValidation = (brands: [string, ...string[]]) =>
-  productAPIValidation.extend({
-    brand: z.enum(brands),
-  })
+  productAPIValidation
+    .extend({
+      brand: z.enum(brands),
+    })
+    .refine(
+      (data) => {
+        if (!data.upcycled) {
+          return data.countryDyeing !== undefined && data.countryFabric !== undefined
+        }
+        return true
+      },
+      {
+        message: "countryDyeing et countryFabric sont requis quand upcycled n'est pas true",
+        path: [""],
+      },
+    )
 
 export type ProductAPIValidation = z.infer<Return<typeof getUserProductAPIValidation>>
 
@@ -92,9 +105,24 @@ const productsAPIValidation = z.object({
 })
 
 export const getUserProductsAPIValidation = (brands: [string, ...string[]]) =>
-  productsAPIValidation.extend({
-    brand: z.enum(brands),
-  })
+  productsAPIValidation
+    .extend({
+      brand: z.enum(brands),
+    })
+    .refine(
+      (data) => {
+        return data.products.every((product) => {
+          if (!product.upcycled) {
+            return product.countryDyeing !== undefined && product.countryFabric !== undefined
+          }
+          return true
+        })
+      },
+      {
+        message: "countryDyeing et countryFabric sont requis pour chaque produit quand upcycled n'est pas true",
+        path: ["products"],
+      },
+    )
 
 export type ProductsAPIValidation = z.infer<Return<typeof getUserProductsAPIValidation>>
 
