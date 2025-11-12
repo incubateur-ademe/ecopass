@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
       }
 
       await fetch(
-        `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.php?idsite=${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}&rec=1&${param}`,
+        `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.php?idsite=${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}&rec=1&${encodeURIComponent(param)}`,
         {
           method: "POST",
         },
