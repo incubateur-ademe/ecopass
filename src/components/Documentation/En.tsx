@@ -56,7 +56,6 @@ const En = () => {
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optional): type of company and service offer:
-          <p className='fr-hint-text'>If not defined, "Large company without repair service" will be used.</p>
           <ul>
             <li>Small company</li>
             <li>Large company with repair service</li>
