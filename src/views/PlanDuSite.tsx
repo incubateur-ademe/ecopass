@@ -49,8 +49,13 @@ const PlanDuSite = () => {
           </Link>
         </li>
       </ul>
-      <h2>Informations légales</h2>
+      <h2>Autres</h2>
       <ul className='fr-mb-4w'>
+        <li>
+          <Link className='fr-link' prefetch={false} href='/mentions-legales'>
+            Mentions légales
+          </Link>
+        </li>
         <li>
           <Link className='fr-link' prefetch={false} href='/politique-de-confidentialite'>
             Politique de confidentialité
