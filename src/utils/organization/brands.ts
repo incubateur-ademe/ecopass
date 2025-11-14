@@ -1,13 +1,12 @@
 import { Brand } from "../../../prisma/src/prisma"
 
 export const getAuthorizedBrands = (organization: {
-  name: string
-  brands: Pick<Brand, "name">[]
-  authorizedBy: { from: { name: string; brands: Pick<Brand, "name">[] } }[]
+  brands: Pick<Brand, "id" | "active">[]
+  authorizedBy: { from: { brands: Pick<Brand, "id" | "active">[] } }[]
 }) =>
   [
-    organization.name,
-    ...organization.brands.map(({ name }) => name),
-    ...organization.authorizedBy.map((authorization) => authorization.from.name),
-    ...organization.authorizedBy.flatMap((authorization) => authorization.from.brands.map(({ name }) => name)),
+    ...organization.brands.filter((brand) => brand.active).map(({ id }) => id),
+    ...organization.authorizedBy.flatMap((authorization) =>
+      authorization.from.brands.filter((brand) => brand.active).map(({ id }) => id),
+    ),
   ] as [string, ...string[]]

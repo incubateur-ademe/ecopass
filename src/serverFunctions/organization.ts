@@ -1,4 +1,6 @@
 "use server"
+import { OrganizationType } from "../../prisma/src/prisma"
+import { createOrganization } from "../db/organization"
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
 import { getSiretInfo } from "./siret"
@@ -57,14 +59,7 @@ export const authorizeOrganization = async (siret: string) => {
     if (!info) {
       return "Aucune organisation trouvée pour ce SIRET"
     }
-    const newOrganization = await prismaClient.organization.create({
-      data: {
-        siret,
-        name: info.etablissement.uniteLegale.denominationUniteLegale,
-        effectif: info.etablissement.uniteLegale.trancheEffectifsUniteLegale,
-        naf: info.etablissement.uniteLegale.activitePrincipaleUniteLegale,
-      },
-    })
+    const newOrganization = await createOrganization(siret)
     id = newOrganization.id
   }
 
@@ -103,5 +98,26 @@ export const removeOrganizationAuthorization = async (id: string) => {
   await prismaClient.authorizedOrganization.update({
     where: { id, fromId: user.organization.id, active: true },
     data: { active: false, removedAt: new Date() },
+  })
+}
+
+export const updateOrganizationType = async (type: OrganizationType) => {
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+  const user = await prismaClient.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      organization: true,
+    },
+  })
+
+  if (!user || !user.organization) {
+    return "Aucune organisation trouvée pour l'utilisateur"
+  }
+  await prismaClient.organization.update({
+    where: { id: user.organization.id },
+    data: { type },
   })
 }
