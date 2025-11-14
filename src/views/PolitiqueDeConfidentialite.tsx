@@ -1,24 +1,18 @@
 import Block from "../components/Block/Block"
-import { LegalNotice } from "@incubateur-ademe/legal-pages-react/LegalNotice"
-import styles from "./PolitiqueDeConfidentialite.module.css"
+import styles from "./MentionsLegales.module.css"
 
 const PolitiqueDeConfidentialite = () => {
   return (
     <Block className={styles.container}>
-      <LegalNotice
-        includeBetaGouv
-        siteName='Affichage Environnemental'
-        siteUrl={process.env.NEXTAUTH_URL!}
-        licenceUrl='https://github.com/incubateur-ademe/ecopass/blob/main/LICENSE'
-        privacyPolicyUrl='/politique-de-confidentialite'
-        siteHost={{
-          name: "Scalingo",
-          address: "13 rue Jacques Peirotes, 67000 Strasbourg",
-          country: "France",
-          email: "hello@scalingo.com",
-        }}
-        contactEmail={process.env.NEXT_PUBLIC_SUPPORT_MAIL!}
-      />
+      <h1>Politique de confidentialité</h1>
+      <p>
+        <strong>Mis à jour le 13/11/2025</strong>
+      </p>
+      <h2>1. Qui est responsable de la plateforme ?</h2>
+      <p>
+        La plateforme est sous la responsabilité du Commissariat général au développement durable, représenté par
+        monsieur Brice Huet, Commissaire général et délégué interministériel au développement durable.
+      </p>
     </Block>
   )
 }
