@@ -6,6 +6,7 @@ const PolitiqueDeConfidentialite = () => {
   return (
     <Block className={styles.container}>
       <h1>Politique de confidentialité</h1>
+      <p>Mis à jour le 18/11/2025</p>
       <h2>Qui est responsable de la plateforme ?</h2>
       <p>
         La plateforme est sous la responsabilité du Commissariat général au développement durable, représenté par
