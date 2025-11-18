@@ -35,7 +35,7 @@ const Footer = () => {
         )
       }
       termsLinkProps={{
-        href: "/politique-de-confidentialite",
+        href: "/mentions-legales",
         prefetch: false,
       }}
       websiteMapLinkProps={{
@@ -43,6 +43,9 @@ const Footer = () => {
         prefetch: false,
       }}
       bottomItems={[
+        <Link key='politique' className='fr-footer__bottom-link' href='/politique-de-confidentialite'>
+          Politique de confidentialité
+        </Link>,
         <Link key='stats' className='fr-footer__bottom-link' href='/stats'>
           Statistiques
         </Link>,
