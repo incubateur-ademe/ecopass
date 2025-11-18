@@ -45,7 +45,7 @@ const ProductScoreImpacts = ({ score }: { score: NonNullable<ProductWithScore["s
             Détails des impacts environnementaux{" "}
             <Link
               className={styles.link}
-              href='https://ecobalyse.beta.gouv.fr/#/explore/textile/impacts'
+              href='https://ecobalyse.beta.gouv.fr/versions/v7.0.0/#/explore/textile/impacts'
               target='_blank'
               rel='noreferrer noopener'>
               <span className='fr-icon-questionnaire-line' />
