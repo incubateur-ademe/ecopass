@@ -14,17 +14,17 @@ const PlanDuSite = () => {
         </li>
         <li>
           <Link className='fr-link' prefetch={false} href='/produits'>
-            Mes produits
+            Produits déclarés
           </Link>
         </li>
         <li>
           <Link className='fr-link' prefetch={false} href='/declarations'>
-            Mes déclarations
+            Déclarations
           </Link>
         </li>
         <li>
           <Link className='fr-link' prefetch={false} href='/organisation'>
-            Mon organisation
+            Organisation
           </Link>
         </li>
       </ul>

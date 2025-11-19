@@ -15,7 +15,7 @@ import { runElmFunction } from "./elm"
 import { scoreIsValid } from "../validation/score"
 import { ParsedProductValidation } from "../../services/validation/product"
 
-type EcobalyseProduct = Omit<ProductAPIValidation, "brand" | "gtins" | "internalReference" | "declaredScore">
+type EcobalyseProduct = Omit<ProductAPIValidation, "brandId" | "gtins" | "internalReference" | "declaredScore">
 
 const removeUndefined = <T>(obj: T): T => {
   if (obj === null || obj === undefined) {
@@ -97,7 +97,7 @@ export const getEcobalyseIds = async (type: "materials" | "products" | "trims") 
 export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
   const productData = {
     ...product,
-    brand: undefined,
+    brandId: undefined,
     gtins: undefined,
     internalReference: undefined,
     declaredScore: undefined,

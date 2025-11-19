@@ -10,7 +10,7 @@ describe("hashProduct", () => {
   const baseProduct: ProductMetadataAPI = {
     gtins: ["1234567890123"],
     internalReference: "REF-TEST",
-    brand: "TestBrand",
+    brandId: "f05259c6-1599-431a-91ae-e7943405e4d6",
     declaredScore: 1500,
   }
 
@@ -157,8 +157,8 @@ describe("hashProduct", () => {
 
     it("should include authorized brand information in hash", () => {
       const hash1 = hashParsedProduct(baseProduct, baseParsedInformations, [])
-      const hash2 = hashParsedProduct(baseProduct, baseParsedInformations, ["ExternalBrand"])
-      const hash3 = hashParsedProduct(baseProduct, baseParsedInformations, ["TestBrand"])
+      const hash2 = hashParsedProduct(baseProduct, baseParsedInformations, ["39c78b8a-8e97-4464-96c5-e420820e1c20"])
+      const hash3 = hashParsedProduct(baseProduct, baseParsedInformations, ["f05259c6-1599-431a-91ae-e7943405e4d6"])
 
       expect(hash1).toBe(hash2)
       expect(hash1).not.toBe(hash3)
@@ -247,8 +247,8 @@ describe("hashProduct", () => {
 
     it("should include authorized brand information in hash", () => {
       const hash1 = hashProductAPI(baseProduct, baseAPIInformations, [])
-      const hash2 = hashProductAPI(baseProduct, baseAPIInformations, ["ExternalBrand"])
-      const hash3 = hashProductAPI(baseProduct, baseAPIInformations, ["TestBrand"])
+      const hash2 = hashProductAPI(baseProduct, baseAPIInformations, ["39c78b8a-8e97-4464-96c5-e420820e1c20"])
+      const hash3 = hashProductAPI(baseProduct, baseAPIInformations, ["f05259c6-1599-431a-91ae-e7943405e4d6"])
 
       expect(hash1).toBe(hash2)
       expect(hash1).not.toBe(hash3)

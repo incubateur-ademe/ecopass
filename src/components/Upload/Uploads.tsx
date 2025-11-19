@@ -8,6 +8,7 @@ import { Status } from "../../../prisma/src/prisma"
 import { formatDateTime } from "../../services/format"
 import Table from "../Table/Table"
 import StatusBadge from "./StatusBadge"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 
 const Uploads = async ({ page }: { page: number }) => {
   const session = await auth()
@@ -18,7 +19,7 @@ const Uploads = async ({ page }: { page: number }) => {
   const uploads = await getUploadsByUserId(session.user.id, page - 1)
 
   return uploads.length === 0 ? (
-    <p>Aucun fichier n’a été déposé pour le moment.</p>
+    <Alert severity='info' small description='Aucun fichier n’a été déposé pour le moment.' />
   ) : (
     <div data-testid='uploads-table'>
       <Table
