@@ -1,6 +1,6 @@
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import Products from "../../views/Products"
-import { PageProps } from "../../../.next/types/app/page"
+import { PageProps } from "../../types/Next"
 import { Metadata } from "next"
 import { getOrganizationProductsByUserId, getOrganizationProductsCountByUserIdAndBrand } from "../../db/product"
 import { tryAndGetSession } from "../../services/auth/redirect"
