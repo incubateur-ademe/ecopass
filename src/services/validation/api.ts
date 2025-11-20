@@ -101,7 +101,11 @@ export type ProductAPIValidation = z.infer<Return<typeof getUserProductAPIValida
 
 const productsAPIValidation = z.object({
   ...metaData.shape,
-  products: z.array(product).min(2, { message: "Il faut au moins 2 produits dans le lot." }),
+  price: product.shape.price,
+  numberOfReferences: product.shape.numberOfReferences,
+  products: z
+    .array(product.omit({ price: true, numberOfReferences: true }))
+    .min(2, { message: "Il faut au moins 2 produits dans le lot." }),
 })
 
 export const getUserProductsAPIValidation = (brands: [string, ...string[]]) =>
