@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { getApiUser } from "../../services/auth/auth"
-import { computeEcobalyseScore } from "../ecobalyse/api"
+import { computeBatchInformations, computeEcobalyseScore } from "../ecobalyse/api"
 import { createScore } from "../../db/score"
 import { updateAPIUse } from "../../db/user"
 import {
@@ -35,7 +35,7 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
 
     if (body.test) {
       return NextResponse.json(
-        "Il n'est plus possible de faire des tests via l'API. Veuillez vous dirigez vers le site de test https://test.ecopass.app",
+        "Il n'est plus possible de faire des tests via l'API. Veuillez vous diriger vers le site de test https://test-affichage-environnemental.ecobalyse.beta.gouv.fr/",
       )
     }
 
@@ -63,7 +63,11 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
         declaredScore: productValidation.data.declaredScore,
         brandId: productValidation.data.brandId,
       }
-      informations = productValidation.data.products
+      informations = computeBatchInformations(
+        productValidation.data.price,
+        productValidation.data.numberOfReferences,
+        productValidation.data.products,
+      )
     } else {
       const productValidation = getUserProductAPIValidation(brands).safeParse({
         ...body,

@@ -10,7 +10,7 @@ import {
 import { createProductScore, failProducts } from "../../db/product"
 import { prismaClient } from "../../db/prismaClient"
 import { Status } from "../../../prisma/src/prisma"
-import { ProductAPIValidation } from "../../services/validation/api"
+import { ProductAPIValidation, ProductInformationAPI } from "../../services/validation/api"
 import { runElmFunction } from "./elm"
 import { scoreIsValid } from "../validation/score"
 import { ParsedProductValidation } from "../../services/validation/product"
@@ -106,7 +106,7 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
   const result = await runElmFunction<EcobalyseResponse>({
     method: "POST",
     url: "/textile/simulator/detailed",
-    body: productData,
+    body: removeUndefined(productData),
   })
 
   return {
@@ -162,3 +162,39 @@ export const saveEcobalyseResults = async (products: ParsedProductValidation[]) 
       }
     }),
   )
+
+const reparationCosts: Record<string, number> = {
+  chemise: 10,
+  jean: 14,
+  jupe: 19,
+  manteau: 31,
+  pantalon: 14,
+  pull: 15,
+  tshirt: 10,
+  chaussettes: 9,
+  calecon: 9,
+  slip: 9,
+  "maillot-de-bain": 9,
+}
+export const computeBatchInformations = (
+  price: number | undefined,
+  numberOfReferences: number | undefined,
+  products: ProductInformationAPI[],
+) => {
+  if (price === undefined) {
+    return products.map((product) => ({
+      ...product,
+      numberOfReferences,
+    }))
+  }
+
+  const ratios = products.map((p) => {
+    const ratio = reparationCosts[p.product] ?? 1
+    return ratio
+  })
+
+  const totalRatio = ratios.reduce((acc, value) => acc + value, 0)
+  const productsPrice = ratios.map((ratio) => (ratio / totalRatio) * price)
+
+  return products.map((product, i) => ({ ...product, price: productsPrice[i], numberOfReferences }))
+}

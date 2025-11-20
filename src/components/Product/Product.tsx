@@ -10,56 +10,58 @@ import { simplifyValue } from "../../utils/parsing/parsing"
 
 const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: string; isOld?: boolean }) => {
   const isBatch = product.informations.length > 1
-  const totalScore = {
-    ...product.informations.reduce(
-      (acc, value) => {
-        if (value.score) {
-          return {
-            acd: acc.acd + value.score.acd,
-            cch: acc.cch + value.score.cch,
-            durability: acc.durability + value.score.durability,
-            etf: acc.etf + value.score.etf,
-            fru: acc.fru + value.score.fru,
-            fwe: acc.fwe + value.score.fwe,
-            htc: acc.htc + value.score.htc,
-            htn: acc.htn + value.score.htn,
-            ior: acc.ior + value.score.ior,
-            ldu: acc.ldu + value.score.ldu,
-            microfibers: acc.microfibers + value.score.microfibers,
-            mru: acc.mru + value.score.mru,
-            outOfEuropeEOL: acc.outOfEuropeEOL + value.score.outOfEuropeEOL,
-            ozd: acc.ozd + value.score.ozd,
-            pco: acc.pco + value.score.pco,
-            pma: acc.pma + value.score.pma,
-            swe: acc.swe + value.score.swe,
-            tre: acc.tre + value.score.tre,
-            wtu: acc.wtu + value.score.wtu,
-          }
+  const scores = product.informations.reduce(
+    (acc, value) => {
+      if (value.score) {
+        return {
+          scoreWithoutDurability: acc.scoreWithoutDurability + value.score.score * value.score.durability,
+          acd: acc.acd + value.score.acd,
+          cch: acc.cch + value.score.cch,
+          etf: acc.etf + value.score.etf,
+          fru: acc.fru + value.score.fru,
+          fwe: acc.fwe + value.score.fwe,
+          htc: acc.htc + value.score.htc,
+          htn: acc.htn + value.score.htn,
+          ior: acc.ior + value.score.ior,
+          ldu: acc.ldu + value.score.ldu,
+          microfibers: acc.microfibers + value.score.microfibers,
+          mru: acc.mru + value.score.mru,
+          outOfEuropeEOL: acc.outOfEuropeEOL + value.score.outOfEuropeEOL,
+          ozd: acc.ozd + value.score.ozd,
+          pco: acc.pco + value.score.pco,
+          pma: acc.pma + value.score.pma,
+          swe: acc.swe + value.score.swe,
+          tre: acc.tre + value.score.tre,
+          wtu: acc.wtu + value.score.wtu,
         }
-        return acc
-      },
-      {
-        acd: 0,
-        cch: 0,
-        durability: 0,
-        etf: 0,
-        fru: 0,
-        fwe: 0,
-        htc: 0,
-        htn: 0,
-        ior: 0,
-        ldu: 0,
-        microfibers: 0,
-        mru: 0,
-        outOfEuropeEOL: 0,
-        ozd: 0,
-        pco: 0,
-        pma: 0,
-        swe: 0,
-        tre: 0,
-        wtu: 0,
-      },
-    ),
+      }
+      return acc
+    },
+    {
+      scoreWithoutDurability: 0,
+      acd: 0,
+      cch: 0,
+      etf: 0,
+      fru: 0,
+      fwe: 0,
+      htc: 0,
+      htn: 0,
+      ior: 0,
+      ldu: 0,
+      microfibers: 0,
+      mru: 0,
+      outOfEuropeEOL: 0,
+      ozd: 0,
+      pco: 0,
+      pma: 0,
+      swe: 0,
+      tre: 0,
+      wtu: 0,
+    },
+  )
+  const totalScore = {
+    ...scores,
+    durability: product.score ? scores.scoreWithoutDurability / product.score : 0,
     score: product.score ?? 0,
     standardized: product.standardized ?? 0,
   }
@@ -107,17 +109,14 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
               score={{
                 score: product.score,
                 standardized: product.standardized,
-                durability:
-                  product.informations.length === 1 && product.informations[0].score
-                    ? product.informations[0].score.durability
-                    : 0,
+                durability: totalScore.durability,
               }}
               internalReference={product.internalReference}
             />
           )}
         </div>
       </Block>
-      {totalScore ? <ProductScoreImpacts score={totalScore} /> : null}
+      <ProductScoreImpacts score={totalScore} />
       <Block>
         <ProductHistory gtin={gtin} />
       </Block>
