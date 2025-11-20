@@ -183,7 +183,7 @@
           }
         ],
         "tags": ["Déclaration"],
-        "summary": "Déclare un lot de produits sur le portail de l'Affichage Environnemental.",
+        "summary": "Déclare un lot de produits sur le portail de l'Affichage Environnemental. Uniquement disponible sur le serveur de test.",
         "description": "Permet de déclarer plusieurs produits regroupés en lot. Tous les produits du lot partagent les mêmes métadonnées (GTINs, référence interne, marque, score déclaré) mais peuvent avoir des informations techniques différentes (matériaux, pays, etc.).",
         "requestBody": {
           "description": "Requête modélisant les paramètres du lot de produits à déclarer",
@@ -563,6 +563,8 @@
           "gtins": ["1234567890128"],
           "internalReference": "LOT-456",
           "brandId": "74a1ce48-56e1-452e-ba9b-0c55fae4ed85",
+          "price": 45,
+          "numberOfReferences": 1500,
           "products": [
             {
               "mass": 0.17,
@@ -928,6 +930,18 @@
             "type": "number",
             "description": "Score Ecobalyse total du lot, si vous l'avez calculé. Attention, si il est différent de notre calcul, le lot sera en erreur."
           },
+          "numberOfReferences": {
+            "description": "Nombre de références au catalogue de la marque.",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 999999
+          },
+          "price": {
+            "description": "Prix du lot de produit, en Euros (€).",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 1000
+          },
           "products": {
             "type": "array",
             "description": "Liste des produits composant le lot",
@@ -1005,18 +1019,6 @@
                 "fading": {
                   "type": "boolean",
                   "description": "Active l'application du **procédé de délavage** pour l'étape de confection d'un produit."
-                },
-                "numberOfReferences": {
-                  "description": "Nombre de références au catalogue de la marque.",
-                  "type": "number",
-                  "minimum": 1,
-                  "maximum": 999999
-                },
-                "price": {
-                  "description": "Prix du produit, en Euros (€).",
-                  "type": "number",
-                  "minimum": 1,
-                  "maximum": 1000
                 },
                 "printing": {
                   "type": "object",
