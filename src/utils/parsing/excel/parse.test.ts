@@ -222,4 +222,31 @@ describe("parseExcel", () => {
     expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
     expect(products[0].brand).toBe("Marque")
   })
+
+  it("ignores materials with empty or whitespace-only values", async () => {
+    const row = [...defaultProducts]
+    const matiere3Index = defaultHeaders.indexOf("Matière 3")
+    row[matiere3Index] = " "
+    row[matiere3Index + 1] = "0.5"
+
+    const excelBuffer = createExcelBuffer([defaultHeaders, row])
+    const { products, materials } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(materials).toHaveLength(2)
+
+    const fullProducts = products.map((product) => ({
+      ...product,
+      materials: materials.filter((material) => material.productId === product.id),
+      accessories: [],
+      upload: {
+        createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
+      },
+    }))
+
+    const parsedProduct = decryptProductFields(fullProducts[0])
+    expect(parsedProduct.materials).toHaveLength(2)
+    expect(parsedProduct.materials[0].slug).toBe(MaterialType.Viscose)
+    expect(parsedProduct.materials[1].slug).toBe(MaterialType.Jute)
+  })
 })
