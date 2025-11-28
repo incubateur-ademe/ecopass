@@ -240,6 +240,16 @@ describe("parseCSV", () => {
     expect(accessories).toHaveLength(2)
   })
 
+  it("ignores materials with empty or whitespace-only values", async () => {
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts.replace('"Jute","10,00 %"","","","', '"Jute","10,00 %"",""," ","')}`,
+    )
+    const { products, materials } = await parseCSV(csv, null, upload)
+
+    expect(products).toHaveLength(1)
+    expect(materials).toHaveLength(2)
+  })
+
   it("give proper errors on missing header", async () => {
     const csv = Buffer.from(`Test,Header\nValue1,Value2`)
     await expect(parseCSV(csv, null, upload)).rejects.toThrow(
