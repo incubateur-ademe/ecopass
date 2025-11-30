@@ -286,6 +286,81 @@ describe("API Ecobalyse", () => {
       ])
     })
 
+    it("should remove trims when they are undefined", async () => {
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+
+      const results = await saveEcobalyseResults([
+        {
+          ...mockProduct,
+          accessories: [],
+          emptyTrims: true,
+        },
+      ])
+
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: {
+          brand: undefined,
+          declaredScore: undefined,
+          gtins: undefined,
+          internalReference: undefined,
+          airTransportRatio: 0.1,
+          business: "small-business",
+          countryFabric: "IN",
+          countryMaking: "BD",
+          countrySpinning: "MM",
+          countryDyeing: "FR",
+          fading: false,
+          mass: 0.5,
+          materials: [{ id: "ei-coton", share: 1, productId: "id-1", slug: "Coton", country: "KH" }],
+          price: 25.99,
+          numberOfReferences: 100,
+          printing: { kind: "pigment", ratio: 0.2 },
+          product: "tshirt",
+          upcycled: false,
+        },
+      })
+    })
+
+    it("should pass trims when they are empty", async () => {
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+
+      const results = await saveEcobalyseResults([
+        {
+          ...mockProduct,
+          accessories: [],
+          emptyTrims: false,
+        },
+      ])
+
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: {
+          brand: undefined,
+          declaredScore: undefined,
+          gtins: undefined,
+          internalReference: undefined,
+          airTransportRatio: 0.1,
+          business: "small-business",
+          countryFabric: "IN",
+          countryMaking: "BD",
+          countrySpinning: "MM",
+          countryDyeing: "FR",
+          fading: false,
+          mass: 0.5,
+          materials: [{ id: "ei-coton", share: 1, productId: "id-1", slug: "Coton", country: "KH" }],
+          price: 25.99,
+          numberOfReferences: 100,
+          printing: { kind: "pigment", ratio: 0.2 },
+          trims: [],
+          product: "tshirt",
+          upcycled: false,
+        },
+      })
+    })
+
     it("should fail if declared score is different", async () => {
       mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
       const productWithDeclaredScore = {

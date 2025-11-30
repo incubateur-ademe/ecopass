@@ -11,7 +11,7 @@ import { impressions } from "../../types/impression"
 import { Readable } from "stream"
 import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
-import { checkHeaders, ColumnType, getBooleanValue, getNumberValue, getValue } from "../parsing"
+import { checkHeaders, ColumnType, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
 import { hashParsedProduct } from "../../encryption/hash"
 
@@ -83,10 +83,16 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
   const materials: Material[] = []
   const accessories: Accessory[] = []
 
+  let hasAccessoire1 = false
+
   const now = new Date()
   await new Promise<void>((resolve, reject) => {
     const parser = parse({
-      columns: (headers: string[]) => checkHeaders(headers),
+      columns: (headers: string[]) => {
+        const availableHeaders = checkHeaders(headers)
+        hasAccessoire1 = availableHeaders.includes("accessoire1")
+        return availableHeaders
+      },
       delimiter: bestDelimiter,
       skip_empty_lines: true,
       trim: true,
@@ -139,16 +145,23 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
           })
           .filter((material) => material !== null)
           .filter((material) => material.id),
-        trims: Array.from({ length: 4 })
-          .map((_, index) => {
-            //@ts-expect-error : managed from 1 to 4
-            const id = getValue<AccessoryType>(allAccessories, row.record[`accessoire${index + 1}`])
-            //@ts-expect-error : managed from 1 to 4
-            const quantity = getNumberValue(row.record[`accessoire${index + 1}quantite`])
-            return id ? { id, quantity } : null
-          })
-          .filter((accessory) => accessory !== null)
-          .filter((accessory) => accessory.id),
+        trims: hasAccessoire1
+          ? Array.from({ length: 4 })
+              .map((_, index) => {
+                //@ts-expect-error : managed from 1 to 4
+                const id = getValue<AccessoryType>(allAccessories, row.record[`accessoire${index + 1}`])
+                //@ts-expect-error : managed from 1 to 4
+                const quantity = getNumberValue(row.record[`accessoire${index + 1}quantite`])
+                return id ? { id, quantity } : null
+              })
+              .filter((accessory) => accessory !== null)
+              .filter((accessory) => accessory.id)
+          : trimsColumnValues
+              .map((key) => ({
+                id: getValue<AccessoryType>(allAccessories, key.replace("quantitede", "")),
+                quantity: getNumberValue(row.record[key]),
+              }))
+              .filter((trim) => trim.quantity !== undefined),
       }
 
       const encrypted = encryptProductFields(rawProduct)
@@ -196,6 +209,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       informations.push({
         id: productId,
         productId: id,
+        emptyTrims: !hasAccessoire1 && rawProduct.trims.length === 0,
         ...encrypted.product,
       })
     })

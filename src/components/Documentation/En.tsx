@@ -136,24 +136,25 @@ const En = () => {
       </p>
       <br />
       <h3>Accessory information</h3>
-      <p>For each accessory, add the following columns (up to 4 accessories):</p>
+      <p>
+        <b>Warning</b>: if you don't have any accessories, you must fill these fields with the value 0.
+        <br />
+        Otherwise, default accessories will be applied.
+      </p>
       <ul>
         <li>
-          <b>Accessoire X</b>: type of accessory to choose from the following list:
-          <ul>
-            <li>Long zip</li>
-            <li>Short zip</li>
-            <li>Plastic button</li>
-            <li>Metal button</li>
-          </ul>
+          <b>Quantité de zip long</b>: Long zipper quantity
         </li>
         <li>
-          <b>Accessoire X quantité</b>: quantity of the accessory in the product (min: 1).
+          <b>Quantité de zip court</b>: Short zipper quantity
+        </li>
+        <li>
+          <b>Quantité de bouton en plastique</b>: Plastic button quantity
+        </li>
+        <li>
+          <b>Quantité de bouton en métal</b>: Metal button quantity
         </li>
       </ul>
-      <p>
-        Replace <b>X</b> with a number from 1 to 4 (e.g., Accessoire 1, Accessoire 1 quantité, Accessoire 2…).
-      </p>
       <br />
       <h3>Countries</h3>
       <p>The list of available countries is as follows:</p>
