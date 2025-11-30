@@ -258,6 +258,203 @@
         }
       }
     },
+    "/produits/tous": {
+      "get": {
+        "tags": ["Consultation"],
+        "summary": "Récupère tous les produits publics disponibles",
+        "description": "Permet de consulter la liste paginée de tous les produits avec le statut 'Done' (validés), dédupliqués par GTIN. Pour chaque GTIN, seul le produit le plus récent est retourné. Cette route est publique et ne nécessite pas d'authentification.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "description": "Numéro de la page à récupérer (commence à 0)",
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            },
+            "description": "Nombre d'éléments par page (maximum 500)",
+            "example": 100
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste paginée des produits publics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "gtin": {
+                            "type": "string",
+                            "description": "Code GTIN du produit"
+                          },
+                          "internalReference": {
+                            "type": "string",
+                            "description": "Référence interne du produit"
+                          },
+                          "brand": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Nom de la marque"
+                              }
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Date de création de la déclaration"
+                          },
+                          "category": {
+                            "type": "string",
+                            "description": "Catégorie du produit"
+                          },
+                          "score": {
+                            "$ref": "#/components/schemas/ProductScore"
+                          },
+                          "upload": {
+                            "type": "object",
+                            "properties": {
+                              "version": {
+                                "type": "string",
+                                "description": "Version de la déclaration"
+                              },
+                              "createdBy": {
+                                "type": "object",
+                                "properties": {
+                                  "organization": {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string",
+                                        "description": "Nom de l'organisation"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "description": "Numéro de la page actuelle"
+                        },
+                        "size": {
+                          "type": "integer",
+                          "description": "Nombre d'éléments par page"
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Nombre total d'éléments uniques (GTINs)"
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "description": "Nombre total de pages"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "gtin": "1234567890123",
+                      "internalReference": "REF-123",
+                      "brand": {
+                        "name": "Marque A"
+                      },
+                      "createdAt": "2025-11-27T10:00:00Z",
+                      "category": "T-shirt",
+                      "score": {
+                        "score": 2311.08,
+                        "standardized": 955.01,
+                        "durability": 1.06,
+                        "acd": 0.105,
+                        "cch": 2.794,
+                        "etf": 172.27,
+                        "fru": 44.07,
+                        "fwe": 0.0007,
+                        "htc": 1.25e-9,
+                        "htn": 1.25e-7,
+                        "ior": 8.66,
+                        "ldu": 48.77,
+                        "mru": 0.0014,
+                        "ozd": 2.33e-7,
+                        "pco": 0.024,
+                        "pma": 2.9e-7,
+                        "swe": 0.007,
+                        "tre": 0.085,
+                        "wtu": 0.438,
+                        "microfibers": 129.95,
+                        "outOfEuropeEOL": 138.12
+                      },
+                      "upload": {
+                        "version": "7.0.0",
+                        "createdBy": {
+                          "organization": {
+                            "name": "Organisation A"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "pagination": {
+                    "page": 0,
+                    "size": 100,
+                    "total": 1250,
+                    "totalPages": 13
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres de pagination invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "error": "Invalid pagination parameters"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/produits/{gtin}": {
       "get": {
         "tags": ["Consultation"],
@@ -1117,7 +1314,6 @@
           "createdAt": "2025-08-08T10:17:58.231Z",
           "category": "Chaussettes",
           "score": {
-            "id": "30f9a0f5-929f-4566-950b-9d671b3df8c3",
             "score": 2311.078426292239,
             "standardized": 955.008359333349,
             "durability": 1.06,
@@ -1138,8 +1334,7 @@
             "tre": 0.0852166469255385,
             "wtu": 0.4375728953090684,
             "microfibers": 129.9470834508611,
-            "outOfEuropeEOL": 138.1201431619307,
-            "productId": "7a183a57-e5bc-4170-a770-66654281aab9"
+            "outOfEuropeEOL": 138.1201431619307
           },
           "upload": {
             "version": "7.0.0",
@@ -1157,11 +1352,6 @@
         "type": "object",
         "description": "Score environnemental du produit",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Identifiant unique du score"
-          },
           "score": {
             "type": "number",
             "description": "Score environnemental total (en points)"
@@ -1245,11 +1435,6 @@
           "outOfEuropeEOL": {
             "type": "number",
             "description": "Fin de vie hors Europe (en points)"
-          },
-          "productId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Identifiant du produit associé"
           }
         }
       },
