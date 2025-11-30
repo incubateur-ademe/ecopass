@@ -6,7 +6,7 @@ const Declarations = ({ page }: { page: number }) => {
   return (
     <>
       <Block>
-        <h1>Mes Déclarations</h1>
+        <h1>Mes déclarations</h1>
         <h2>Nouvelle déclaration</h2>
         <Upload />
       </Block>

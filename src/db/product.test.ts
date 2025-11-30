@@ -13,6 +13,7 @@ import {
   getProductWithScoreHistory,
   getProductWithScoreHistoryCount,
   getOldProductWithScore,
+  getProductsToProcess,
 } from "./product"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { ProductInformationAPI } from "../services/validation/api"
@@ -30,7 +31,20 @@ describe("Product DB integration", () => {
     await cleanDB()
 
     const organization = await prismaTest.organization.create({
-      data: { name: "TestOrg", siret: "12345678901234" },
+      data: {
+        name: "TestOrg",
+        siret: "12345678901234",
+        brands: {
+          createMany: {
+            data: [
+              { name: "TestOrg", id: "69147ca8-09c6-4ae6-b731-d5344f080491", default: true },
+              { name: "TestBrand", id: "abf5acc4-fabc-4082-b49a-61b00b5cfcad" },
+              { name: "TestBrand2", id: "656fcd2e-4a9c-4313-bc8b-71e6e4fe91df" },
+              { name: "TestBrand3", id: "68cac5fc-a25e-4b37-96c6-bac1a421934b" },
+            ],
+          },
+        },
+      },
     })
     testOrganizationId = organization.id
     const user = await prismaTest.user.create({
@@ -68,7 +82,7 @@ describe("Product DB integration", () => {
       hash: "test-hash",
       gtins: ["3234567891000"],
       internalReference: "REF-124",
-      brand: "TestBrand2",
+      brand: { connect: { id: "656fcd2e-4a9c-4313-bc8b-71e6e4fe91df" } },
       declaredScore: 3000.5,
       informations: {
         create: {
@@ -129,7 +143,8 @@ describe("Product DB integration", () => {
           status: Status.Pending,
           gtins: ["2234567891001"],
           internalReference: "REF-123",
-          brand: "TestBrand",
+          brandName: null,
+          brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
           declaredScore: 2222.63,
           score: null,
           standardized: null,
@@ -140,6 +155,7 @@ describe("Product DB integration", () => {
           id: "info-1",
           productId,
           ...encrypted.product,
+          emptyTrims: false,
         },
       ],
       materials: encrypted.materials.map((material) => ({
@@ -195,7 +211,8 @@ describe("Product DB integration", () => {
           status: Status.Pending,
           gtins: ["2234567891001"],
           internalReference: "REF-123",
-          brand: "TestBrand",
+          brandName: null,
+          brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
           declaredScore: 2222.63,
           score: null,
           standardized: null,
@@ -206,6 +223,7 @@ describe("Product DB integration", () => {
           id: "info-1",
           productId,
           ...encrypted.product,
+          emptyTrims: false,
         },
       ],
       materials: [],
@@ -243,7 +261,7 @@ describe("Product DB integration", () => {
         data: {
           ...baseProduct,
           id: uuid(),
-          brand: "TestBrand3",
+          brand: { connect: { id: "68cac5fc-a25e-4b37-96c6-bac1a421934b" } },
           internalReference: "REF-126",
         },
       }),
@@ -262,7 +280,10 @@ describe("Product DB integration", () => {
         },
       }),
     ])
-    const countBrand2 = await getOrganizationProductsCountByUserIdAndBrand(testUserId, "TestBrand2")
+    const countBrand2 = await getOrganizationProductsCountByUserIdAndBrand(
+      testUserId,
+      "656fcd2e-4a9c-4313-bc8b-71e6e4fe91df",
+    )
     expect(countBrand2).toBe(1)
 
     const countAll = await getOrganizationProductsCountByUserIdAndBrand(testUserId)
@@ -322,7 +343,8 @@ describe("Product DB integration", () => {
           status: Status.Done,
           createdAt: new Date(Date.now() + i * 1000),
           hash: "test-hash",
-          brand: "TestBrand",
+          brandName: null,
+          brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
           informations: { create: { ...encrypted.product } },
         },
       })
@@ -374,7 +396,8 @@ describe("Product DB integration", () => {
         status: Status.Done,
         createdAt: new Date(Date.now() - 1000),
         hash: "test-hash",
-        brand: "TestBrand",
+        brandName: null,
+        brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
         score: 100,
         informations: { create: { id: productId1, ...encrypted.product } },
       },
@@ -389,7 +412,8 @@ describe("Product DB integration", () => {
         status: Status.Done,
         createdAt: new Date(),
         hash: "test-hash",
-        brand: "TestBrand",
+        brandName: null,
+        brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
         score: 200,
         informations: { create: { id: productId2, ...encrypted.product } },
       },
@@ -513,7 +537,8 @@ describe("Product DB integration", () => {
             status: Status.Pending,
             gtins: ["9999999999999"],
             internalReference: "NEW-REF-001",
-            brand: "NewBrand",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
             declaredScore: 1500.0,
             score: null,
             standardized: null,
@@ -524,6 +549,7 @@ describe("Product DB integration", () => {
             id: "info-2",
             productId: newProductId,
             ...encrypted.product,
+            emptyTrims: false,
           },
         ],
         materials: encrypted.materials.map((material) => ({
@@ -594,7 +620,8 @@ describe("Product DB integration", () => {
             status: Status.Pending,
             gtins: [existingGtin],
             internalReference: "NEW-REF-002",
-            brand: "TestBrand",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
             declaredScore: 2000.0,
             score: null,
             standardized: null,
@@ -605,6 +632,7 @@ describe("Product DB integration", () => {
             id: "info-1",
             productId,
             ...encrypted.product,
+            emptyTrims: false,
           },
         ],
         materials: encrypted.materials.map((material) => ({
@@ -679,7 +707,8 @@ describe("Product DB integration", () => {
             status: Status.Pending,
             gtins: [sameGtin],
             internalReference: "UPDATED-REF",
-            brand: "TestBrand",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
             declaredScore: 2500.0,
             score: null,
             standardized: null,
@@ -690,6 +719,7 @@ describe("Product DB integration", () => {
             id: "info-2",
             productId: newProductId,
             ...encrypted.product,
+            emptyTrims: false,
           },
         ],
         materials: encrypted.materials.map((material) => ({
@@ -782,7 +812,8 @@ describe("Product DB integration", () => {
             status: Status.Pending,
             gtins: [gtin],
             internalReference: "NEW-WITH-OLD-HASH",
-            brand: "TestBrand",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
             declaredScore: 2800.0,
             score: null,
             standardized: null,
@@ -793,6 +824,7 @@ describe("Product DB integration", () => {
             id: "info-1",
             productId,
             ...encrypted.product,
+            emptyTrims: false,
           },
         ],
         materials: encrypted.materials.map((material) => ({

@@ -14,7 +14,7 @@ import { hashParsedProduct } from "../../encryption/hash"
 import { checkHeaders, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
 
-export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
+export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>) => {
   const products: Product[] = []
   const informations: (ProductInformation & { materials: undefined; accessories: undefined })[] = []
   const materials: Material[] = []
@@ -56,7 +56,11 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
 
     const gtins = (row[headerMapping["gtinseans"]] || "").split(/[,;\n]/).map((gtin) => gtin.trim())
     const internalReference = row[headerMapping["referenceinterne"]] || ""
-    const brand = (row[headerMapping["marque"]] || upload?.createdBy.organization?.name || "").trim()
+    const brand = (
+      row[headerMapping["marqueid"]] ||
+      upload.createdBy.organization?.brands.find((brand) => brand.default)?.id ||
+      ""
+    ).trim()
     const declaredScore = getNumberValue(row[headerMapping["score"]] || "", 1, -1) as number | undefined
 
     const rawProduct = {
@@ -110,7 +114,7 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
     encrypted.materials.forEach((material) => {
       materials.push({
         id: uuid(),
-        productId,
+        productId: id,
         ...material,
       })
     })
@@ -118,10 +122,14 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
     encrypted.accessories?.forEach((accessory) => {
       accessories.push({
         id: uuid(),
-        productId,
+        productId: id,
         ...accessory,
       })
     })
+
+    const authorizedBrands = upload.createdBy.organization
+      ? getAuthorizedBrands(upload.createdBy.organization)
+      : ([] as string[])
 
     products.push({
       error: null,
@@ -132,11 +140,11 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
         {
           gtins: gtins,
           internalReference: internalReference,
-          brand: brand,
+          brandId: brand,
           declaredScore: declaredScore,
         },
         rawProduct,
-        upload?.createdBy.organization ? getAuthorizedBrands(upload.createdBy.organization) : [],
+        authorizedBrands,
       ),
       createdAt: now,
       uploadId: upload ? upload.id : "",
@@ -144,13 +152,14 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
       status: Status.Pending,
       gtins: gtins,
       internalReference: internalReference,
-      brand: brand,
+      brandName: brand,
+      brandId: authorizedBrands.includes(brand) ? brand : null,
       declaredScore: declaredScore || null,
     })
 
     informations.push({
-      id: productId,
-      productId: id,
+      id,
+      productId,
       emptyTrims: !hasAccessoire1 && rawProduct.trims.length === 0,
       ...encrypted.product,
     })

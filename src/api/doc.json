@@ -48,13 +48,13 @@
             "example": 10
           },
           {
-            "name": "brand",
+            "name": "brandId",
             "in": "query",
             "required": false,
             "schema": {
               "type": "string"
             },
-            "description": "Filtre par marque (optionnel)",
+            "description": "Filtre par marque id (optionnel)",
             "example": "Ecopass"
           }
         ],
@@ -458,7 +458,10 @@
                 },
                 "example": {
                   "name": "Ma Société",
-                  "brands": ["Ma Marque Premium", "Ma Marque Eco"],
+                  "brands": [
+                    { "id": "8fb367e1-42d9-4665-9d79-9395428a83a8", "name": "Ma Marque Premium" },
+                    { "id": "c18138f6-b445-49b1-83fc-7594d301e845", "name": "Ma Marque Eco" }
+                  ],
                   "authorizedOrganizations": [
                     {
                       "createdAt": "2025-10-03T10:30:00Z",
@@ -474,7 +477,7 @@
                       "from": {
                         "name": "Société Mère",
                         "siret": "11223344556677",
-                        "brands": ["Marque A"]
+                        "brands": [{ "name": "Marque A", "id": "a1b2c3d4-e5f6-7890-ab12-cd34ef56gh78" }]
                       }
                     }
                   ]
@@ -537,7 +540,7 @@
         "value": {
           "gtins": ["1234567890123", "1234567890124"],
           "internalReference": "REF-123",
-          "brand": "Ma Marque",
+          "brandId": "ca209b2c-ae68-4d93-b665-be7c77380f71",
           "mass": 0.17,
           "materials": [
             {
@@ -559,7 +562,7 @@
         "value": {
           "gtins": ["1234567890128"],
           "internalReference": "LOT-456",
-          "brand": "Ma Marque",
+          "brandId": "74a1ce48-56e1-452e-ba9b-0c55fae4ed85",
           "products": [
             {
               "mass": 0.17,
@@ -631,7 +634,21 @@
               "brands": {
                 "type": "array",
                 "description": "Marques de l'organisation",
-                "items": { "type": "string" }
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID de la marque",
+                      "example": "b1a2c3d4-e5f6-7890-ab12-cd34ef56gh78"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nom de la marque",
+                      "example": "Ma Marque Premium"
+                    }
+                  }
+                }
               }
             }
           }
@@ -730,9 +747,9 @@
             "description": "Référence interne du produit",
             "example": "REF-123"
           },
-          "brand": {
+          "brandId": {
             "type": "string",
-            "description": "Marque du produit"
+            "description": "Marque id du produit"
           },
           "declaredScore": {
             "type": "number",
@@ -903,9 +920,9 @@
             "description": "Référence interne du lot de produits",
             "example": "LOT-123"
           },
-          "brand": {
+          "brandId": {
             "type": "string",
-            "description": "Marque commune du lot de produits"
+            "description": "Marque id commune du lot de produits"
           },
           "declaredScore": {
             "type": "number",
@@ -1066,8 +1083,13 @@
             "description": "Référence interne du produit"
           },
           "brand": {
-            "type": "string",
-            "description": "Marque du produit"
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Marque du produit"
+              }
+            }
           },
           "createdAt": {
             "type": "string",

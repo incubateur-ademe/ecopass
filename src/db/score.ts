@@ -30,7 +30,7 @@ export const createScore = async (
         data: {
           status: Status.Done,
           hash,
-          brand: product.brand || user.organization.name,
+          brand: { connect: { id: product.brandId } },
           gtins: product.gtins,
           declaredScore: product.declaredScore || null,
           internalReference: product.internalReference,

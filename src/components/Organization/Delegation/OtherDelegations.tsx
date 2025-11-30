@@ -1,12 +1,12 @@
-import { UserOrganization } from "../../db/user"
+import Alert from "@codegouvfr/react-dsfr/Alert"
+import { UserOrganization } from "../../../db/user"
 import Delegations from "./Delegations"
 
 const OtherDelegations = ({ organization }: { organization: UserOrganization }) => {
   return (
     <>
-      <h3>Organisations qui m'ont délégué des droits de déclaration</h3>
       {organization.authorizedBy.length === 0 ? (
-        <p className='fr-mt-2w fr-mb-5w'>Vous n'avez pas reçu de délégations de droits de déclaration.</p>
+        <Alert severity='info' small description='Aucune entreprise ne vous a délégué de droits pour le moment.' />
       ) : (
         <Delegations organizations={organization.authorizedBy} type='from' />
       )}

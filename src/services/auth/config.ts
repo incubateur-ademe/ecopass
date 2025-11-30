@@ -2,8 +2,8 @@ import { v4 as uuid } from "uuid"
 import { AuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prismaClient } from "../../db/prismaClient"
-import { getSiretInfo } from "../../serverFunctions/siret"
 import { UserRole } from "../../../prisma/src/prisma"
+import { createOrganization } from "../../db/organization"
 
 export const authOptions = {
   adapter: PrismaAdapter(prismaClient),
@@ -17,19 +17,7 @@ export const authOptions = {
           })
 
           if (!organization) {
-            const result = await getSiretInfo(siret)
-            if (!result) {
-              throw new Error("Failed to fetch SIRET information from API")
-            }
-
-            organization = await prismaClient.organization.create({
-              data: {
-                siret: siret,
-                name: result.etablissement.uniteLegale.denominationUniteLegale,
-                effectif: result.etablissement.uniteLegale.trancheEffectifsUniteLegale,
-                naf: result.etablissement.uniteLegale.activitePrincipaleUniteLegale,
-              },
-            })
+            organization = await createOrganization(siret)
           }
           await prismaClient.user.update({
             where: { id: user.id },

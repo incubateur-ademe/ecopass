@@ -23,11 +23,14 @@ describe("parseCSV", () => {
           {
             from: {
               name: "OtherOrg",
-              brands: [{ name: "otherBrand" }],
+              brands: [{ name: "otherBrand", id: "e9ce5247-4d31-4cba-a32b-4288a645e90a", active: true }],
             },
           },
         ],
-        brands: [{ name: "TestBrand" }],
+        brands: [
+          { name: "TestBrand", id: "781c0fcd-372e-4032-8088-d83e103726f2", active: true, default: false },
+          { name: "DefaultBrand", id: "7a96793c-6017-42df-812a-6e2422fc215a", active: true, default: true },
+        ],
       },
     },
     reUploadProducts: [],
@@ -43,7 +46,8 @@ describe("parseCSV", () => {
     expect(products[0].status).toBe(Status.Pending)
     expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
     expect(products[0].internalReference).toBe("REF-123")
-    expect(products[0].brand).toBe("Marque")
+    expect(products[0].brandName).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
+    expect(products[0].brandId).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
     expect(products[0].declaredScore).toBe(2222.63)
 
     const fullProducts = informations.map((information) => {
@@ -84,7 +88,7 @@ describe("parseCSV", () => {
   })
 
   it("parse a valid CSV with ecobalyse values", async () => {
-    const product = `"2234567891001;3234567891000","REF-123",Marque,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",1,,,`
+    const product = `"2234567891001;3234567891000","REF-123",781c0fcd-372e-4032-8088-d83e103726f2,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",1,,,`
 
     const csv = Buffer.from(`${header}\n${product}`)
     const { products, informations, materials, accessories } = await parseCSV(csv, null, upload)
@@ -95,7 +99,8 @@ describe("parseCSV", () => {
     expect(products[0].status).toBe(Status.Pending)
     expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
     expect(products[0].internalReference).toBe("REF-123")
-    expect(products[0].brand).toBe("Marque")
+    expect(products[0].brandName).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
+    expect(products[0].brandId).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
     expect(products[0].declaredScore).toBe(2222.63)
 
     const fullProducts = informations.map((information) => {
@@ -151,7 +156,8 @@ describe("parseCSV", () => {
     expect(products[0].status).toBe(Status.Pending)
     expect(products[0].gtins).toEqual(["Test"])
     expect(products[0].internalReference).toBe("Test")
-    expect(products[0].brand).toBe("Test")
+    expect(products[0].brandName).toBe("Test")
+    expect(products[0].brandId).toBe(null)
     expect(products[0].declaredScore).toBe(-1)
 
     const fullProducts = informations.map((information) => {
@@ -192,7 +198,7 @@ describe("parseCSV", () => {
 
   it("parses a valid CSV with Accessoires", async () => {
     const accessoiresHeader =
-      "GTINs/EANS;Référence interne;Marque;Score;Catégorie;Masse (en kg);Remanufacturé;Nombre de références;Prix (en euros, TTC);Taille de l'entreprise;Matière 1;Matière 1 pourcentage;Matière 1 origine;Matière 2;Matière 2 pourcentage;Matière 2 origine;Matière 3;Matière 3 pourcentage;Matière 3 origine;Matière 4;Matière 4 pourcentage;Matière 4 origine;Matière 5;Matière 5 pourcentage;Matière 5 origine;Matière 6;Matière 6 pourcentage;Matière 6 origine;Matière 7;Matière 7 pourcentage;Matière 7 origine;Matière 8;Matière 8 pourcentage;Matière 8 origine;Matière 9;Matière 9 pourcentage;Matière 9 origine;Matière 10;Matière 10 pourcentage;Matière 10 origine;Matière 11;Matière 11 pourcentage;Matière 11 origine;Matière 12;Matière 12 pourcentage;Matière 12 origine;Matière 13;Matière 13 pourcentage;Matière 13 origine;Matière 14;Matière 14 pourcentage;Matière 14 origine;Matière 15;Matière 15 pourcentage;Matière 15 origine;Matière 16;Matière 16 pourcentage;Matière 16 origine;Origine de filature;Origine de tissage/tricotage;Origine de l'ennoblissement/impression;Type d'impression;Pourcentage d'impression;Origine de confection;Délavage;Part du transport aérien;Accessoire 1;Accessoire 1 quantité;Accessoire 2;Accessoire 2 quantité;Accessoire 3;Accessoire 3 quantité;Accessoire 4;Accessoire 4 quantité"
+      "GTINs/EANS;Référence interne;Marque ID;Score;Catégorie;Masse (en kg);Remanufacturé;Nombre de références;Prix (en euros, TTC);Taille de l'entreprise;Matière 1;Matière 1 pourcentage;Matière 1 origine;Matière 2;Matière 2 pourcentage;Matière 2 origine;Matière 3;Matière 3 pourcentage;Matière 3 origine;Matière 4;Matière 4 pourcentage;Matière 4 origine;Matière 5;Matière 5 pourcentage;Matière 5 origine;Matière 6;Matière 6 pourcentage;Matière 6 origine;Matière 7;Matière 7 pourcentage;Matière 7 origine;Matière 8;Matière 8 pourcentage;Matière 8 origine;Matière 9;Matière 9 pourcentage;Matière 9 origine;Matière 10;Matière 10 pourcentage;Matière 10 origine;Matière 11;Matière 11 pourcentage;Matière 11 origine;Matière 12;Matière 12 pourcentage;Matière 12 origine;Matière 13;Matière 13 pourcentage;Matière 13 origine;Matière 14;Matière 14 pourcentage;Matière 14 origine;Matière 15;Matière 15 pourcentage;Matière 15 origine;Matière 16;Matière 16 pourcentage;Matière 16 origine;Origine de filature;Origine de tissage/tricotage;Origine de l'ennoblissement/impression;Type d'impression;Pourcentage d'impression;Origine de confection;Délavage;Part du transport aérien;Accessoire 1;Accessoire 1 quantité;Accessoire 2;Accessoire 2 quantité;Accessoire 3;Accessoire 3 quantité;Accessoire 4;Accessoire 4 quantité"
     const product = `"2234567891001;3234567891000";"REF-123";"";"2222;63";Pull;"0;55";Non;9000;100;Grande entreprise sans service de réparation;Viscose;"90,00 %";Chine;Jute;"10,00 %";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Chine;Chine;Chine;Pigmentaire;"20,00 %";Chine;Non;"75,00%";Bouton en métal;1;;;;;;`
     const csv = Buffer.from(`${accessoiresHeader}\n${product}`)
     const { products, informations, materials, accessories } = await parseCSV(csv, null, upload)
@@ -216,7 +222,7 @@ describe("parseCSV", () => {
   })
 
   it("parses a valid CSV with empty trims", async () => {
-    const product = `"2234567891001;3234567891000","REF-123",Marque,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",0,,,`
+    const product = `"2234567891001;3234567891000","REF-123",Marque ID,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",0,,,`
     const csv = Buffer.from(`${header}\n${product}`)
     const { products, informations, materials, accessories } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
@@ -227,7 +233,7 @@ describe("parseCSV", () => {
   })
 
   it("parses a valid CSV with default trims", async () => {
-    const product = `"2234567891001;3234567891000","REF-123",Marque,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",,,,`
+    const product = `"2234567891001;3234567891000","REF-123",Marque ID,"2222,63",chemise,"0,55",false,9000,100,large-business-with-services,ei-pp,"90,00 %",BD,ei-acrylique,"10,00 %",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BD,BD,BD,substantive,"20,00 %",BD,false,"75,00%",,,,`
     const csv = Buffer.from(`${header}\n${product}`)
     const { products, informations, materials, accessories } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
@@ -310,10 +316,11 @@ describe("parseCSV", () => {
   })
 
   it("default brand to user brand", async () => {
-    const csv = Buffer.from(`${header}\n${defaultProducts.replace("Marque", "")}`)
+    const csv = Buffer.from(`${header}\n${defaultProducts.replace("781c0fcd-372e-4032-8088-d83e103726f2", "")}`)
     const { products } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
-    expect(products[0].brand).toEqual("TestOrg")
+    expect(products[0].brandName).toEqual("7a96793c-6017-42df-812a-6e2422fc215a")
+    expect(products[0].brandId).toEqual("7a96793c-6017-42df-812a-6e2422fc215a")
   })
 
   const trueValues = ["yes", "oui", "true"]

@@ -163,8 +163,11 @@ model Product {
 
   gtins             String[] @map("gtins")
   internalReference String   @map("internal_reference")
-  brand             String
   declaredScore     Float?   @map("declared_score")
+
+  brandName String? @map("brand_name")
+  brandId   String? @map("brand_id")
+  brand     Brand?  @relation(fields: [brandId], references: [id])
 
   informations ProductInformation[]
 
@@ -176,7 +179,7 @@ model Product {
 
   @@index([gtins], map: "idx_product_gtins", type: Gin)
   @@index([internalReference, status], map: "idx_product_internal_ref_status")
-  @@index([brand], map: "idx_product_brand")
+  @@index([brandId], map: "idx_product_brand")
   @@map("products")
 }
 
@@ -247,10 +250,20 @@ model Accessory {
   @@map("accessories")
 }
 
+enum OrganizationType {
+  Brand
+  Distributor
+  BrandAndDistributor
+  Consultancy
+  Other
+}
+
 model Organization {
   id    String @id @default(uuid())
   name  String
   siret String @unique
+
+  type OrganizationType?
 
   effectif String?
   naf      String?
@@ -287,8 +300,12 @@ model Brand {
   id   String @id @default(uuid())
   name String
 
+  default Boolean @default(false)
+  active  Boolean @default(true)
+
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String       @map("organization_id")
+  Product        Product[]
 
   @@map("brands")
 }

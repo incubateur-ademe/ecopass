@@ -6,12 +6,20 @@ import * as XLSX from "xlsx"
 import { getUploadById } from "../db/upload"
 import { auth } from "../services/auth/auth"
 import { createExport } from "../db/export"
+import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
+import { getUserOrganizationType } from "../db/user"
 
 export const exportScores = async (brand?: string) => {
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
   }
+
+  const organizationType = await getUserOrganizationType(session.user.id)
+  if (!organizationTypesAllowedToDeclare.includes(organizationType!)) {
+    return "Vous n'êtes pas autorisé à exporter ces scores"
+  }
+
   const products = await getOrganizationProductsByUserIdAndBrand(session.user.id, 0, undefined, brand)
 
   const data = products.map((product) => [product.internalReference, product.score ? Math.round(product.score) : ""])
@@ -29,6 +37,10 @@ export const exportUpload = async (uploadId: string) => {
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
   }
+  const organizationType = await getUserOrganizationType(session.user.id)
+  if (!organizationTypesAllowedToDeclare.includes(organizationType!)) {
+    return "Vous n'êtes pas autorisé à uploader des fichiers"
+  }
 
   const upload = await getUploadById(uploadId)
   if (!upload) {
@@ -36,7 +48,7 @@ export const exportUpload = async (uploadId: string) => {
   }
 
   if (upload.createdById !== session.user.id) {
-    return "Vous n'êtes pas autorisé à accéder à ce fichier"
+    return "Vous n'êtes pas autorisé à télécharger ce fichier"
   }
 
   if (upload.status !== Status.Done && upload.status !== Status.Error) {
@@ -75,6 +87,11 @@ export const exportProducts = async (brand?: string) => {
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
+  }
+
+  const organizationType = await getUserOrganizationType(session.user.id)
+  if (!organizationTypesAllowedToDeclare.includes(organizationType!)) {
+    return "Vous n'êtes pas autorisé à exporter ces produits"
   }
 
   return createExport(session.user.id, brand)

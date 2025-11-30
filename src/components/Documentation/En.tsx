@@ -1,5 +1,6 @@
 import Button from "@codegouvfr/react-dsfr/Button"
 import { ecobalyseVersion } from "../../utils/ecobalyse/config"
+import Link from "next/link"
 
 const En = () => {
   return (
@@ -19,7 +20,8 @@ const En = () => {
           main GTIN (or EAN).
         </li>
         <li>
-          <b>Marque</b> (optional): product brand.
+          <b>Marque ID</b> (optional): product brand id, you can find it on your{" "}
+          <Link href='/organisation'>organization page</Link> .
         </li>
         <li>
           <b>Score</b> (optional): Ecobalyse score (version {ecobalyseVersion}), if you have calculated it. Warning: if

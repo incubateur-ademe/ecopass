@@ -24,12 +24,21 @@ describe("User DB integration", () => {
       },
     })
 
-    testBrand = await prismaTest.brand.create({
-      data: {
-        name: "TestBrand",
-        organizationId: testOrganization.id,
-      },
+    const brands = await prismaTest.brand.createManyAndReturn({
+      data: [
+        {
+          name: "TestBrand",
+          organizationId: testOrganization.id,
+        },
+        {
+          name: "BrandOut",
+          organizationId: testOrganization.id,
+          active: false,
+        },
+      ],
     })
+
+    testBrand = brands[0]
 
     testUser = await prismaTest.user.create({
       data: {
@@ -81,30 +90,56 @@ describe("User DB integration", () => {
     })
 
     it("should include authorized organizations", async () => {
-      const authorizedOrg = await prismaTest.organization.create({
-        data: {
-          name: "AuthorizedOrg",
-          siret: "98765432109876",
-        },
+      const orgs = await prismaTest.organization.createManyAndReturn({
+        data: [
+          {
+            name: "AuthorizedOrg1",
+            siret: "98765432109876",
+          },
+          {
+            name: "AuthorizedOrg2",
+            siret: "98765432109877",
+          },
+          {
+            name: "AuthorizedOrg3",
+            siret: "98765432109878",
+          },
+        ],
       })
 
-      await prismaTest.brand.create({
-        data: {
-          name: "AuthorizedBrand",
-          organizationId: authorizedOrg.id,
-        },
+      await prismaTest.brand.createMany({
+        data: [
+          {
+            name: "AuthorizedBrand1",
+            organizationId: orgs[0].id,
+          },
+          {
+            name: "AuthorizedBrand2",
+            organizationId: orgs[1].id,
+          },
+          {
+            name: "AuthorizedBrand3",
+            organizationId: orgs[1].id,
+            active: false,
+          },
+        ],
       })
 
       await prismaTest.authorizedOrganization.createMany({
         data: [
           {
-            fromId: authorizedOrg.id,
+            fromId: orgs[0].id,
             toId: testOrganization.id,
             createdById: testUser.id,
             active: true,
           },
           {
-            fromId: authorizedOrg.id,
+            fromId: orgs[1].id,
+            toId: testOrganization.id,
+            createdById: testUser.id,
+          },
+          {
+            fromId: orgs[2].id,
             toId: testOrganization.id,
             createdById: testUser.id,
             active: false,
@@ -114,11 +149,16 @@ describe("User DB integration", () => {
 
       const result = await getUserByApiKey(testAPIKey.key)
 
-      expect(result?.user.organization?.authorizedBy).toHaveLength(1)
-      expect(result?.user.organization?.authorizedBy[0].from.name).toBe("AuthorizedOrg")
+      expect(result?.user.organization?.brands).toHaveLength(1)
+      expect(result?.user.organization?.authorizedBy).toHaveLength(2)
+      expect(result?.user.organization?.authorizedBy[0].from.name).toBe("AuthorizedOrg1")
       expect(result?.user.organization?.authorizedBy[0].from.siret).toBe("98765432109876")
       expect(result?.user.organization?.authorizedBy[0].from.brands).toHaveLength(1)
-      expect(result?.user.organization?.authorizedBy[0].from.brands[0].name).toBe("AuthorizedBrand")
+      expect(result?.user.organization?.authorizedBy[0].from.brands[0].name).toBe("AuthorizedBrand1")
+      expect(result?.user.organization?.authorizedBy[1].from.name).toBe("AuthorizedOrg2")
+      expect(result?.user.organization?.authorizedBy[1].from.siret).toBe("98765432109877")
+      expect(result?.user.organization?.authorizedBy[1].from.brands).toHaveLength(1)
+      expect(result?.user.organization?.authorizedBy[1].from.brands[0].name).toBe("AuthorizedBrand2")
     })
   })
 
@@ -199,6 +239,7 @@ describe("User DB integration", () => {
 
   describe("getUserOrganization", () => {
     it("should return user organization with brands and authorized organizations", async () => {
+      await prismaTest.authorizedOrganization.deleteMany({})
       const [authorizedOrg, authorizingOrg] = await prismaTest.organization.createManyAndReturn({
         data: [
           {
@@ -247,23 +288,21 @@ describe("User DB integration", () => {
       expect(result).toBeDefined()
       expect(result?.id).toBe(testOrganization.id)
       expect(result?.name).toBe(testOrganization.name)
-      expect(result?.brands).toHaveLength(1)
+      expect(result?.brands).toHaveLength(2)
       expect(result?.brands[0].name).toBe(testBrand.name)
+      expect(result?.brands[0].active).toBe(true)
+      expect(result?.brands[1].name).toBe("BrandOut")
+      expect(result?.brands[1].active).toBe(false)
 
       expect(result?.authorizedOrganizations).toHaveLength(1)
       expect(result?.authorizedOrganizations[0].to.name).toBe("AuthorizedCompany")
       expect(result?.authorizedOrganizations[0].to.siret).toBe("11111111111111")
 
-      expect(result?.authorizedBy).toHaveLength(2)
+      expect(result?.authorizedBy).toHaveLength(1)
       expect(result?.authorizedBy[0].from.name).toBe("AuthorizingCompany")
       expect(result?.authorizedBy[0].from.siret).toBe("99999999999999")
       expect(result?.authorizedBy[0].from.brands).toHaveLength(1)
       expect(result?.authorizedBy[0].from.brands[0].name).toBe("AuthorizingBrand")
-
-      expect(result?.authorizedBy[1].from.name).toBe("AuthorizedOrg")
-      expect(result?.authorizedBy[1].from.siret).toBe("98765432109876")
-      expect(result?.authorizedBy[1].from.brands).toHaveLength(1)
-      expect(result?.authorizedBy[1].from.brands[0].name).toBe("AuthorizedBrand")
 
       await prismaTest.authorizedOrganization.deleteMany({
         where: {
@@ -301,30 +340,29 @@ describe("User DB integration", () => {
     })
 
     it("should only return active authorized organizations", async () => {
-      const activeOrg = await prismaTest.organization.create({
-        data: { name: "ActiveOrg", siret: "22222222222222" },
+      await prismaTest.authorizedOrganization.deleteMany({})
+      const [activeOrg, inactiveOrg] = await prismaTest.organization.createManyAndReturn({
+        data: [
+          { name: "ActiveOrg", siret: "22222222222222" },
+          { name: "InactiveOrg", siret: "33333333333333" },
+        ],
       })
 
-      const inactiveOrg = await prismaTest.organization.create({
-        data: { name: "InactiveOrg", siret: "33333333333333" },
-      })
-
-      const activeAuth = await prismaTest.authorizedOrganization.create({
-        data: {
-          fromId: testOrganization.id,
-          toId: activeOrg.id,
-          createdById: testUser.id,
-          active: true,
-        },
-      })
-
-      const inactiveAuth = await prismaTest.authorizedOrganization.create({
-        data: {
-          fromId: testOrganization.id,
-          toId: inactiveOrg.id,
-          createdById: testUser.id,
-          active: false,
-        },
+      const [activeAuth, inactiveAuth] = await prismaTest.authorizedOrganization.createManyAndReturn({
+        data: [
+          {
+            fromId: testOrganization.id,
+            toId: activeOrg.id,
+            createdById: testUser.id,
+            active: true,
+          },
+          {
+            fromId: testOrganization.id,
+            toId: inactiveOrg.id,
+            createdById: testUser.id,
+            active: false,
+          },
+        ],
       })
 
       const result = await getUserOrganization(testUser.id)
