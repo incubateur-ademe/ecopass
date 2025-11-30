@@ -15,7 +15,6 @@ type Props = {
 const ProductPage = async (props: Props) => {
   const params = await props.params
   const product = await getProductWithScore(params.gtin)
-
   return (
     <>
       <StartDsfrOnHydration />

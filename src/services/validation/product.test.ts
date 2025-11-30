@@ -7,10 +7,10 @@ describe("productValidation", () => {
   const productValidation = getUserProductValidation(["Test Brand", "Test Brand 2"])
   const validProduct = {
     id: "12345",
+    productId: "54321",
     uploadId: "upload-123",
     status: Status.Pending,
     createdAt: new Date("2023-01-01"),
-    updatedAt: new Date("2023-01-02"),
     error: null,
     brand: "Test Brand",
     gtins: ["1234567890128"],
