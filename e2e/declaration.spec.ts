@@ -40,7 +40,7 @@ test("declare my products", async ({ page }) => {
         "À corriger",
       )
       await expect(page.getByTestId("uploads-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
-        "3/13",
+        "4/15",
       )
       await expect(
         page.getByTestId("uploads-table").locator("table tbody tr").nth(0).locator("td").nth(4).getByRole("button"),
@@ -67,15 +67,15 @@ test("declare my products", async ({ page }) => {
   const csvContent = fs.readFileSync(downloadPath!, "utf-8")
 
   expect(csvContent).toEqual(
-    `Référence interne,Score,Erreur\n2234567891001,,"Marque invalide. Voici la liste de vos marques : ""Emmaus"", ""Emmaus Solidarité"", ""Emmaus Connect"""\n2234567891001,,"Catégorie de produit invalide, Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide, Origine de filature invalide, Type d'impression invalide, Type de matière invalide, Type de matière invalide, Type d'accessoire invalide"\nREF-123,2318,\n3234567891000,,"Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide"\nREF-124,6712,\n4234567891009,,"Le score doit être un nombre positif, La part de transport aérien doit être un pourcentage, Le poids est obligatoire, Le nombre de références doit être un nombre, Le prix doit être un nombre, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être un pourcentage, La part de la matière doit être un pourcentage, La quantité de l'accessoire doit être un nombre"\n5234567891008,,"Remanufacturé doit valoir 'Oui' ou 'Non', Délavage doit valoir 'Oui' ou 'Non'"\n7234567891006,,"Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide, La somme des parts de matières doit être égale à 100%"\n6234567891007,,"Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide"\n8234567891005,,Le score déclaré (2221) ne correspond pas au score calculé (2318.326247789541)\nREF-125,1265,\n9234567891004,,"La masse doit être supérieure à 0,01 kg, Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide"\n1134567891005,,"La part de transport aérien doit être inférieure à 100%, Le nombre de références doit être inférieur à 999 999, Le prix doit être inférieur à 1000 €, Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être inférieure à 100%, La somme des parts de matières doit être égale à 100%"\n`,
+    `Référence interne,Score,Erreur\n2234567891001,,"Marque invalide. Voici la liste de vos marques : ""Emmaus"", ""Emmaus Solidarité"", ""Emmaus Connect"""\n2234567891001,,"Catégorie de produit invalide, Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide, Origine de filature invalide, Type d'impression invalide, Type de matière invalide, Type de matière invalide, Type d'accessoire invalide"\nREF-123,2318,\n3234567891000,,Origine de confection invalide\nREF-124,6712,\n4234567891009,,"Le score doit être un nombre positif, La part de transport aérien doit être un pourcentage, Le poids est obligatoire, Le nombre de références doit être un nombre, Le prix doit être un nombre, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être un pourcentage, La part de la matière doit être un pourcentage, La quantité de l'accessoire doit être un nombre"\n5234567891008,,"Remanufacturé doit valoir 'Oui' ou 'Non', Délavage doit valoir 'Oui' ou 'Non'"\n7234567891006,,"Origine de confection invalide, La somme des parts de matières doit être égale à 100%"\n6234567891007,,Origine de confection invalide\n8234567891005,,Le score déclaré (2221) ne correspond pas au score calculé (2318.326247789541)\nREF-125,1265,\n9234567891004,,"La masse doit être supérieure à 0,01 kg, Origine de confection invalide"\n1134567891005,,"La part de transport aérien doit être inférieure à 100%, Le nombre de références doit être inférieur à 999 999, Le prix doit être inférieur à 1000 €, Origine de confection invalide, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être inférieure à 100%, La somme des parts de matières doit être égale à 100%"\nREF-126,2760,\n3134567891003,,L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé\n`,
   )
 
   await page.getByRole("link", { name: "Produits déclarés" }).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(3)
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(4)
   await expect(page.locator("#contenu")).toContainText("Vous avez déclaré des produits sur 2 marques différentes.")
-  await expect(page.locator("#contenu")).toContainText("Vous avez 3 produits déclarés.")
+  await expect(page.locator("#contenu")).toContainText("Vous avez 4 produits déclarés.")
 
   await page.getByLabel("Choisir une marque").selectOption({ value: "Emmaus Solidarité" })
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)

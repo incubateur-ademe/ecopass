@@ -14,8 +14,8 @@ const hashProduct = (
     mass: string | number | undefined
     numberOfReferences?: string | number | undefined
     price?: string | number | undefined
-    countryDyeing: string
-    countryFabric: string
+    countryDyeing?: string
+    countryFabric?: string
     countryMaking: string
     countrySpinning?: string
     upcycled?: string | boolean | undefined
