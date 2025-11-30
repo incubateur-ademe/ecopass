@@ -31,7 +31,7 @@ const Upload = () => {
         router.refresh()
       })
     }
-  }, [file])
+  }, [file, router])
 
   const sizeError = file ? file.size > 1 * 1024 * 1024 : false
   return (

@@ -17,7 +17,7 @@ const NewExport = ({ brand }: { brand?: string }) => {
       setSuccess(true)
       router.refresh()
     })
-  }, [brand])
+  }, [router, brand])
 
   return success ? (
     <Alert
