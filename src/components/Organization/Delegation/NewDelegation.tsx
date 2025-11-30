@@ -1,13 +1,13 @@
 "use client"
 import Input from "@codegouvfr/react-dsfr/Input"
 import Link from "next/link"
-import { useCallback, useEffect, useState } from "react"
-import { getSiretInfo } from "../../../serverFunctions/siret"
+import { useCallback, useState } from "react"
 import { SiretAPI } from "../../../types/Siret"
 import Card from "@codegouvfr/react-dsfr/Card"
 import LoadingButton from "../../Button/LoadingButton"
 import { authorizeOrganization } from "../../../serverFunctions/organization"
 import { useRouter } from "next/navigation"
+import { getSiretInfo } from "../../../serverFunctions/siret"
 
 const siretRegex = /^\d{14}$/
 const NewDelegation = () => {
@@ -17,7 +17,20 @@ const NewDelegation = () => {
   const [loading, setLoading] = useState(false)
   const [organization, setOrganization] = useState<SiretAPI["etablissement"]>()
 
-  useEffect(() => {
+  const delegateOrganization = useCallback(() => {
+    if (organization) {
+      setLoading(true)
+      authorizeOrganization(organization.siret).then(() => {
+        setLoading(false)
+        setSiret("")
+        setOrganization(undefined)
+        router.refresh()
+      })
+    }
+  }, [router, organization])
+
+  const onSiretChange = useCallback((siret: string) => {
+    setSiret(siret)
     setSearching(false)
     setOrganization(undefined)
     const trimmedSiret = siret.replace(/\s+/g, "")
@@ -33,19 +46,7 @@ const NewDelegation = () => {
           setSearching(false)
         })
     }
-  }, [siret])
-
-  const delegateOrganization = useCallback(() => {
-    if (organization) {
-      setLoading(true)
-      authorizeOrganization(organization.siret).then(() => {
-        setLoading(false)
-        setSiret("")
-        setOrganization(undefined)
-        router.refresh()
-      })
-    }
-  }, [organization])
+  }, [])
 
   return (
     <>
@@ -53,7 +54,15 @@ const NewDelegation = () => {
       <Input
         label="Veuillez entrer le SIRET de l'entreprise à laquelle vous souhaitez déléguer vos droits."
         hintText='Le SIRET doit être composé de 14 chiffres.'
-        nativeInputProps={{ required: true, name: "name", value: siret, onChange: (e) => setSiret(e.target.value) }}
+        nativeInputProps={{
+          required: true,
+          name: "name",
+          value: siret,
+          onChange: (e) => {
+            const newSiret = e.target.value
+            onSiretChange(newSiret)
+          },
+        }}
         state='info'
         stateRelatedMessage={
           <span>
