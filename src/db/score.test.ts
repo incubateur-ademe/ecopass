@@ -19,7 +19,18 @@ describe("Score DB integration", () => {
     await cleanDB()
 
     const organization = await prismaTest.organization.create({
-      data: { name: "TestOrg", siret: "12345678901234" },
+      data: {
+        name: "TestOrg",
+        siret: "12345678901234",
+        brands: {
+          createMany: {
+            data: [
+              { name: "TestOrg", id: "69147ca8-09c6-4ae6-b731-d5344f080491", default: true },
+              { name: "TestBrand", id: "abf5acc4-fabc-4082-b49a-61b00b5cfcad" },
+            ],
+          },
+        },
+      },
     })
     testOrganizationId = organization.id
     user = await prismaTest.user.create({
@@ -31,6 +42,7 @@ describe("Score DB integration", () => {
           select: {
             id: true,
             name: true,
+            type: true,
             authorizedBy: {
               select: {
                 from: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
@@ -58,7 +70,7 @@ describe("Score DB integration", () => {
       hash: "test-hash",
       gtins: ["3234567891000"],
       internalReference: "REF-124",
-      brand: "TestBrand2",
+      brand: { connect: { id: "abf5acc4-fabc-4082-b49a-61b00b5cfcad" } },
       declaredScore: 3000.5,
       upload: { connect: { id: upload.id } },
       status: Status.Done,
@@ -225,7 +237,7 @@ describe("Score DB integration", () => {
     const product = {
       gtins: ["2234567891001"],
       internalReference: "REF-123",
-      brand: "TestBrand",
+      brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
     }
 
     const informations = {

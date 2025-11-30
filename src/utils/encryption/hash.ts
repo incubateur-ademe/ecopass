@@ -5,7 +5,7 @@ import { Prisma } from "../../../prisma/src/prisma"
 import { ParsedProduct } from "../../types/Product"
 
 const hashProduct = (
-  product: Omit<Prisma.ProductCreateInput, "hash" | "upload">,
+  product: Omit<Prisma.ProductCreateInput, "hash" | "upload" | "brand"> & { brandId: string },
   informations: {
     product: string
     airTransportRatio?: string | number | undefined
@@ -44,7 +44,7 @@ const hashProduct = (
       gtins: product.gtins,
       internalReference: product.internalReference,
       declaredScore: product.declaredScore,
-      brand: product.brand,
+      brand: product.brandId,
       informations: informations?.map((informations) => ({
         product: informations.product,
         airTransportRatio: informations.airTransportRatio,
@@ -72,7 +72,7 @@ const hashProduct = (
         })),
       })),
       ecobalyseVersion,
-      brandIncluded: brands.includes(product.brand),
+      brandIncluded: brands.includes(product.brandId),
     },
     { unorderedArrays: true },
   )

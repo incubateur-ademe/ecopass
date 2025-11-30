@@ -86,7 +86,7 @@ const productValidation = z.object({
 export const getUserProductValidation = (brands: [string, ...string[]]) =>
   productValidation
     .extend({
-      brand: z.enum(brands, {
+      brandId: z.enum(brands, {
         message: `Marque invalide. Voici la liste de vos marques : ${brands.map((brand) => `"${brand}"`).join(", ")}`,
       }),
     })

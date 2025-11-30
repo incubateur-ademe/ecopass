@@ -71,7 +71,7 @@ const recalculateHashes = async () => {
         gtins: product.gtins,
         internalReference: product.internalReference,
         declaredScore: product.declaredScore || undefined,
-        brand: product.brand,
+        brandId: product.brandId || "",
       }
       const information = decryptedInformations[0]
       const newHash = hashParsedProduct(

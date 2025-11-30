@@ -118,10 +118,12 @@ export const getProductsToProcess = async (take: number) => {
                 select: {
                   name: true,
                   authorizedBy: {
-                    select: { from: { select: { name: true, brands: { select: { name: true } } } } },
+                    select: {
+                      from: { select: { name: true, brands: { select: { name: true, id: true, active: true } } } },
+                    },
                     where: { active: true },
                   },
-                  brands: { select: { name: true } },
+                  brands: { select: { name: true, id: true, active: true } },
                 },
               },
             },
@@ -145,7 +147,7 @@ const productWithScoreSelect = {
   id: true,
   gtins: true,
   internalReference: true,
-  brand: true,
+  brand: { select: { name: true } },
   createdAt: true,
   score: true,
   standardized: true,
@@ -203,7 +205,7 @@ export const getOldProductWithScore = async (gtin: string, version: string) =>
   })
 
 const getProducts = async (
-  where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId" | "createdAt" | "brand">,
+  where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId" | "createdAt" | "brandId" | "OR">,
   skip?: number,
   take?: number,
 ) => {
@@ -237,7 +239,12 @@ export const getOrganizationProductsCountByUserIdAndBrand = async (userId: strin
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
     select: {
-      organization: true,
+      organization: {
+        select: {
+          id: true,
+          brands: true,
+        },
+      },
     },
   })
 
@@ -248,9 +255,17 @@ export const getOrganizationProductsCountByUserIdAndBrand = async (userId: strin
   const products = await prismaClient.product.groupBy({
     by: ["internalReference"],
     where: {
-      upload: { organizationId: user.organization.id },
-      status: Status.Done,
-      brand: brand,
+      OR: [
+        {
+          brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
+          status: Status.Done,
+        },
+        {
+          upload: { organizationId: user.organization.id },
+          status: Status.Done,
+          brandId: brand,
+        },
+      ],
     },
     _count: { internalReference: true },
   })
@@ -266,7 +281,12 @@ export const getOrganizationProductsByUserIdAndBrand = async (
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
     select: {
-      organization: true,
+      organization: {
+        select: {
+          id: true,
+          brands: true,
+        },
+      },
     },
   })
 
@@ -274,8 +294,36 @@ export const getOrganizationProductsByUserIdAndBrand = async (
     return []
   }
   return size
-    ? getProducts({ upload: { organizationId: user.organization.id }, brand }, (page || 0) * size, size)
-    : getProducts({ upload: { organizationId: user.organization.id }, brand })
+    ? getProducts(
+        {
+          OR: [
+            {
+              brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
+              status: Status.Done,
+            },
+            {
+              upload: { organizationId: user.organization.id },
+              status: Status.Done,
+              brandId: brand,
+            },
+          ],
+        },
+        (page || 0) * size,
+        size,
+      )
+    : getProducts({
+        OR: [
+          {
+            brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
+            status: Status.Done,
+          },
+          {
+            upload: { organizationId: user.organization.id },
+            status: Status.Done,
+            brandId: brand,
+          },
+        ],
+      })
 }
 export const getProductsByUploadId = async (uploadId: string) => {
   const upload = await prismaClient.upload.findFirst({
@@ -362,32 +410,47 @@ export const getProductsByOrganizationIdAndBrandBefore = async (
   organizationId: string,
   before: Date,
   brand: string | null,
-) => getProducts({ upload: { organizationId }, createdAt: { lt: before }, brand: brand || undefined })
+) => getProducts({ upload: { organizationId }, createdAt: { lt: before }, brandId: brand || undefined })
 
 export const getOrganizationProductsByUserId = async (userId: string) => {
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
     select: {
-      organization: true,
+      organization: {
+        select: {
+          id: true,
+          brands: true,
+        },
+      },
     },
   })
 
   if (!user || !user.organization) {
     return []
   }
-
   const products = await prismaClient.product.findMany({
     where: {
-      upload: { organizationId: user.organization.id },
-      status: Status.Done,
+      OR: [
+        {
+          brandId: { in: user.organization.brands.map((brand) => brand.id) },
+          status: Status.Done,
+        },
+        {
+          upload: { organizationId: user.organization.id },
+          status: Status.Done,
+        },
+      ],
     },
     select: {
-      brand: true,
+      brand: { select: { id: true, name: true } },
     },
-    distinct: ["brand"],
+    distinct: ["brandId"],
   })
 
-  return products.map((product) => product.brand).sort((a, b) => a.localeCompare(b))
+  return products
+    .map((product) => product.brand)
+    .filter((brand) => brand !== null)
+    .sort((a, b) => a.name.localeCompare(b.name))
 }
 
 export const getLastProductByGtin = async (gtin: string) =>
@@ -445,7 +508,7 @@ export const getProductCountByCategory = async () => {
 
 export const getDistinctBrandCount = async () => {
   const result = await prismaClient.product.groupBy({
-    by: ["brand"],
+    by: ["brandId"],
     where: {
       status: Status.Done,
     },
@@ -473,13 +536,20 @@ export const getBrandsInformations = async () => {
               status: Status.Done,
             },
             select: {
-              brand: true,
+              brandId: true,
               internalReference: true,
               createdAt: true,
             },
           },
         },
       },
+    },
+  })
+
+  const brandsNames = await prismaClient.brand.findMany({
+    select: {
+      id: true,
+      name: true,
     },
   })
 
@@ -492,27 +562,29 @@ export const getBrandsInformations = async () => {
       .flatMap((upload) => upload.products)
       .reduce(
         (acc, product) => {
-          const brand = acc[product.brand]
-          if (!brand) {
-            acc[product.brand] = {
-              references: new Set<string>([product.internalReference]),
-              firstDepositDate: product.createdAt,
-              lastDepositDate: product.createdAt,
-            }
-          } else {
-            brand.references.add(product.internalReference)
-            if (product.createdAt < brand.firstDepositDate) {
-              brand.firstDepositDate = product.createdAt
-            }
-            if (product.createdAt > brand.lastDepositDate) {
-              brand.lastDepositDate = product.createdAt
+          if (product.brandId !== null) {
+            const brand = acc[product.brandId]
+            if (!brand) {
+              acc[product.brandId] = {
+                references: new Set<string>([product.internalReference]),
+                firstDepositDate: product.createdAt,
+                lastDepositDate: product.createdAt,
+              }
+            } else {
+              brand.references.add(product.internalReference)
+              if (product.createdAt < brand.firstDepositDate) {
+                brand.firstDepositDate = product.createdAt
+              }
+              if (product.createdAt > brand.lastDepositDate) {
+                brand.lastDepositDate = product.createdAt
+              }
             }
           }
-
           return acc
         },
         {} as Record<string, { references: Set<string>; firstDepositDate: Date; lastDepositDate: Date }>,
       )
+
     return {
       name: organization.name,
       siret: organization.siret,
@@ -525,7 +597,7 @@ export const getBrandsInformations = async () => {
         fileDone: fileUploads.filter((upload) => upload.status === Status.Done).length,
       },
       brands: Object.entries(brands).map(([brandName, brand]) => ({
-        name: brandName,
+        name: brandsNames.find((brand) => brand.id === brandName)?.name || brandName,
         organization: organization.name,
         totalProducts: brand.references.size,
         firstDepositDate: brand.firstDepositDate,

@@ -14,7 +14,7 @@ test.beforeEach(async () => {
 const product = {
   gtins: ["1234567890128"],
   internalReference: "REF-100",
-  brand: "Emmaus",
+  brandId: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
   mass: 0.17,
   countryDyeing: "IN",
   countryFabric: "CN",
@@ -32,7 +32,7 @@ const product = {
 const batch = {
   gtins: ["1234567891125"],
   internalReference: "BATCH-100",
-  brand: "Emmaus",
+  brandId: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
   products: [
     {
       mass: 0.2,

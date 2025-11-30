@@ -24,11 +24,11 @@ describe("parseExcel", () => {
           {
             from: {
               name: "OtherOrg",
-              brands: [{ name: "otherBrand" }],
+              brands: [{ name: "otherBrand", id: "e9ce5247-4d31-4cba-a32b-4288a645e90a", active: true }],
             },
           },
         ],
-        brands: [{ name: "TestBrand" }],
+        brands: [{ name: "TestBrand", id: "781c0fcd-372e-4032-8088-d83e103726f2", active: true, default: true }],
       },
     },
     reUploadProducts: [],
@@ -61,7 +61,8 @@ describe("parseExcel", () => {
     expect(products[0].status).toBe(Status.Pending)
     expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
     expect(products[0].internalReference).toBe("REF-123")
-    expect(products[0].brand).toBe("Marque")
+    expect(products[0].brandName).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
+    expect(products[0].brandId).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
     expect(products[0].declaredScore).toBe(2222.63)
 
     const fullProducts = informations.map((information) => {
@@ -170,7 +171,8 @@ describe("parseExcel", () => {
     expect(products[0].status).toBe(Status.Pending)
     expect(products[0].gtins).toEqual(["Test"])
     expect(products[0].internalReference).toBe("Test")
-    expect(products[0].brand).toBe("Test")
+    expect(products[0].brandName).toBe("Test")
+    expect(products[0].brandId).toBe(null)
     expect(products[0].declaredScore).toBe(-1)
 
     const fullProducts = informations.map((information) => {
@@ -251,7 +253,8 @@ describe("parseExcel", () => {
     expect(materials).toHaveLength(2)
     expect(accessories).toHaveLength(1)
     expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
-    expect(products[0].brand).toBe("Marque")
+    expect(products[0].brandName).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
+    expect(products[0].brandId).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
   })
 
   it("uses first sheet when 'Produits' sheet does not exist", async () => {
@@ -263,7 +266,8 @@ describe("parseExcel", () => {
     expect(materials).toHaveLength(2)
     expect(accessories).toHaveLength(1)
     expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
-    expect(products[0].brand).toBe("Marque")
+    expect(products[0].brandName).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
+    expect(products[0].brandId).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
   })
 
   it("ignores materials with empty or whitespace-only values", async () => {

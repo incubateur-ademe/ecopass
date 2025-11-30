@@ -13,7 +13,7 @@ export type ColumnType = [
 
   "gtinseans",
   "referenceinterne",
-  "marque",
+  "marqueid",
   "score",
   "categorie",
   "masse",

@@ -13,11 +13,18 @@ import { getLastProductByGtin } from "../../db/product"
 import { hashProductAPI } from "../encryption/hash"
 import { getAuthorizedBrands } from "../organization/brands"
 import { scoreIsValid } from "../validation/score"
+import { organizationTypesAllowedToDeclare } from "../organization/canDeclare"
 
 export async function handleProductPOST(req: Request, batch?: boolean) {
   try {
     const api = await getApiUser(req.headers)
-    if (!api || !api.user || !api.user.organization) {
+    if (
+      !api ||
+      !api.user ||
+      !api.user.organization ||
+      !api.user.organization.type ||
+      !organizationTypesAllowedToDeclare.includes(api.user.organization.type)
+    ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -32,13 +39,19 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
       )
     }
 
+    if (body.brand) {
+      return NextResponse.json(
+        "Attention, le champ 'brand' a été remplacé par 'brandId'. Veuillez mettre à jour votre requête.",
+      )
+    }
+
     let product: ProductMetadataAPI
     let informations: ProductInformationAPI[]
 
     if (batch) {
       const productValidation = getUserProductsAPIValidation(brands).safeParse({
         ...body,
-        brand: (body.brand || api.user.organization.name || "").trim(),
+        brandId: (body.brandId || api.user.organization.brands.find((b) => b.default)?.id || "").trim(),
       })
 
       if (!productValidation.success) {
@@ -48,13 +61,13 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
         gtins: productValidation.data.gtins,
         internalReference: productValidation.data.internalReference,
         declaredScore: productValidation.data.declaredScore,
-        brand: productValidation.data.brand,
+        brandId: productValidation.data.brandId,
       }
       informations = productValidation.data.products
     } else {
       const productValidation = getUserProductAPIValidation(brands).safeParse({
         ...body,
-        brand: (body.brand || api.user.organization.name || "").trim(),
+        brandId: (body.brandId || api.user.organization.brands.find((b) => b.default)?.id || "").trim(),
       })
 
       if (!productValidation.success) {
@@ -65,7 +78,7 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
         gtins: productValidation.data.gtins,
         internalReference: productValidation.data.internalReference,
         declaredScore: productValidation.data.declaredScore,
-        brand: productValidation.data.brand,
+        brandId: productValidation.data.brandId,
       }
       informations = [productValidation.data]
     }

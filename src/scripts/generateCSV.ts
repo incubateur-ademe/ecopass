@@ -101,7 +101,7 @@ const generate = (name: string, length?: string) => {
       columns: [
         "GTINs/EANs",
         "Référence interne",
-        "Marque",
+        "Marque ID",
         "Score",
         "Catégorie",
         "Masse",

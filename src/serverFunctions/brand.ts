@@ -37,7 +37,7 @@ export const addNewBrand = async (brand: string) => {
   })
 }
 
-export const deleteBrand = async (id: string) => {
+export const updateBrand = async (id: string, data: { name: string; active: boolean }) => {
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -54,10 +54,15 @@ export const deleteBrand = async (id: string) => {
     return "Vous n'êtes pas membre d'une organisation"
   }
 
-  return prismaClient.brand.delete({
+  return prismaClient.brand.update({
     where: {
       id: id,
       organizationId: user.organization.id,
+      default: false,
+    },
+    data: {
+      name: data.name.trim(),
+      active: data.active,
     },
   })
 }

@@ -4,7 +4,10 @@ import { getUserProductValidation } from "./product"
 import { expectZodValidationToFail } from "./zodValidationTest"
 
 describe("productValidation", () => {
-  const productValidation = getUserProductValidation(["Test Brand", "Test Brand 2"])
+  const productValidation = getUserProductValidation([
+    "58ca7f37-0c8d-4463-ba40-c244c130192b",
+    "cb7fc710-408e-47d1-9655-7c7b57a85118",
+  ])
   const validProduct = {
     id: "12345",
     productId: "54321",
@@ -12,7 +15,7 @@ describe("productValidation", () => {
     status: Status.Pending,
     createdAt: new Date("2023-01-01"),
     error: null,
-    brand: "Test Brand",
+    brandId: "58ca7f37-0c8d-4463-ba40-c244c130192b",
     gtins: ["1234567890128"],
     internalReference: "TestRef",
     declaredScore: null,
@@ -95,12 +98,13 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        brand: "Nop",
+        brandId: "Nop",
       },
       [
         {
-          path: ["brand"],
-          message: 'Marque invalide. Voici la liste de vos marques : "Test Brand", "Test Brand 2"',
+          path: ["brandId"],
+          message:
+            'Marque invalide. Voici la liste de vos marques : "58ca7f37-0c8d-4463-ba40-c244c130192b", "cb7fc710-408e-47d1-9655-7c7b57a85118"',
         },
       ],
     )
@@ -111,12 +115,13 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        brand: "",
+        brandId: "",
       },
       [
         {
-          path: ["brand"],
-          message: 'Marque invalide. Voici la liste de vos marques : "Test Brand", "Test Brand 2"',
+          path: ["brandId"],
+          message:
+            'Marque invalide. Voici la liste de vos marques : "58ca7f37-0c8d-4463-ba40-c244c130192b", "cb7fc710-408e-47d1-9655-7c7b57a85118"',
         },
       ],
     )

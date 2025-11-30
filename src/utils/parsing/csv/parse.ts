@@ -109,7 +109,11 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
 
       const gtins = (row.record["gtinseans"] || "").split(";").map((gtin) => gtin.trim())
       const internalReference = row.record["referenceinterne"] || ""
-      const brand = (row.record["marque"] || upload.createdBy.organization?.name || "").trim()
+      const brand = (
+        row.record["marqueid"] ||
+        upload.createdBy.organization?.brands.find((brand) => brand.default)?.id ||
+        ""
+      ).trim()
       const declaredScore = getNumberValue(row.record["score"], 1, -1) as number | undefined
 
       const rawProduct = {
@@ -168,7 +172,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       encrypted.materials.forEach((material) => {
         materials.push({
           id: uuid(),
-          productId,
+          productId: id,
           ...material,
         })
       })
@@ -176,25 +180,29 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       encrypted.accessories?.forEach((accessory) => {
         accessories.push({
           id: uuid(),
-          productId,
+          productId: id,
           ...accessory,
         })
       })
 
+      const authorizedBrands = upload.createdBy.organization
+        ? getAuthorizedBrands(upload.createdBy.organization)
+        : ([] as string[])
+
       products.push({
         error: null,
-        id: id,
+        id: productId,
         score: null,
         standardized: null,
         hash: hashParsedProduct(
           {
             gtins: gtins,
             internalReference: internalReference,
-            brand: brand,
+            brandId: brand,
             declaredScore: declaredScore,
           },
           rawProduct,
-          upload.createdBy.organization ? getAuthorizedBrands(upload.createdBy.organization) : [],
+          authorizedBrands,
         ),
         createdAt: now,
         uploadId: upload.id,
@@ -202,13 +210,14 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         status: Status.Pending,
         gtins: gtins,
         internalReference: internalReference,
-        brand: brand,
+        brandName: brand,
+        brandId: authorizedBrands.includes(brand) ? brand : null,
         declaredScore: declaredScore || null,
       })
 
       informations.push({
-        id: productId,
-        productId: id,
+        id,
+        productId,
         emptyTrims: !hasAccessoire1 && rawProduct.trims.length === 0,
         ...encrypted.product,
       })

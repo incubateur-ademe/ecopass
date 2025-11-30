@@ -4,6 +4,7 @@ import Exports from "../components/Product/Exports"
 import NewExport from "../components/Product/NewExport"
 import Products from "../components/Product/Products"
 import BrandSelection from "../components/Product/BrandSelection"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 
 const ProductsPage = ({
   page,
@@ -13,7 +14,7 @@ const ProductsPage = ({
 }: {
   page: number
   productsCount: number
-  brands: string[]
+  brands: { name: string; id: string }[]
   brand?: string
 }) => {
   return (
@@ -22,7 +23,7 @@ const ProductsPage = ({
         <h1>Mes produits</h1>
         {brands.length > 1 && <BrandSelection brands={brands} brand={brand} />}
         {productsCount === 0 ? (
-          <p>Vous n'avez pas encore déclaré de produits.</p>
+          <Alert severity='info' small description="Vous n'avez pas encore déclaré de produits." />
         ) : (
           <p>
             Vous avez <b>{productsCount}</b>{" "}
@@ -30,7 +31,7 @@ const ProductsPage = ({
             {brand && (
               <span>
                 {" "}
-                pour la marque <b>{brand}</b>
+                pour la marque <b>{brands.find((b) => b.id === brand)?.name}</b>
               </span>
             )}
             .

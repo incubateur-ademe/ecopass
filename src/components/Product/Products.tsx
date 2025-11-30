@@ -11,6 +11,7 @@ import Link from "next/link"
 import DownloadScores from "./DownloadScores"
 import { BATCH_CATEGORY, productCategories } from "../../utils/types/productCategory"
 import { simplifyValue } from "../../utils/parsing/parsing"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
@@ -21,13 +22,19 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
   const products = await getOrganizationProductsByUserIdAndBrand(session.user.id, page - 1, 10, brand)
 
   return products.length === 0 ? (
-    <p>
-      Rendez-vous sur la page{" "}
-      <Link className='fr-link' href='/declarations'>
-        Mes déclarations
-      </Link>{" "}
-      pour enregistrer un produit.
-    </p>
+    <Alert
+      severity='info'
+      small
+      description={
+        <>
+          Rendez-vous sur la page{" "}
+          <Link className='fr-link' href='/declarations'>
+            Mes déclarations
+          </Link>{" "}
+          pour enregistrer un produit.
+        </>
+      }
+    />
   ) : (
     <>
       <DownloadScores brand={brand} />

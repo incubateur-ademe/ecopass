@@ -7,6 +7,8 @@ import { auth } from "../services/auth/auth"
 import { uploadFileToS3 } from "../utils/s3/bucket"
 import { encryptAndZipFile } from "../utils/encryption/encryption"
 import path from "path"
+import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
+import { getUserOrganizationType } from "../db/user"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -54,6 +56,11 @@ export const uploadFile = async (file: File) => {
   const session = await auth()
   if (!session || !session.user) {
     return "Veuillez vous reconnecter et réessayer"
+  }
+
+  const organizationType = await getUserOrganizationType(session.user.id)
+  if (!organizationTypesAllowedToDeclare.includes(organizationType!)) {
+    return "Vous n'êtes pas autorisé à uploader des fichiers"
   }
 
   try {
