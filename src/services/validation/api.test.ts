@@ -486,14 +486,14 @@ describe("productsAPIValidation", () => {
     const result = productsAPIValidation.safeParse({
       ...validProducts,
       declaredScore: 85,
+      numberOfReferences: 10,
+      price: 100,
       products: validProducts.products.map((p) => ({
         ...p,
         airTransportRatio: 0.5,
         upcycled: false,
         business: "small-business",
         fading: true,
-        numberOfReferences: 10,
-        price: 100,
         countryDyeing: "CN",
         countryFabric: "CN",
         countryMaking: "CN",
@@ -751,5 +751,41 @@ describe("productsAPIValidation", () => {
       })),
     })
     expect(result.success).toEqual(true)
+  })
+
+  it("does not allow product with invalid numberOfReferences", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { numberOfReferences: "Un paquet" }, [
+      { path: ["numberOfReferences"], message: "Invalid input: expected number, received string" },
+    ])
+  })
+
+  it("does not allow product with too low numberOfReferences", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { numberOfReferences: 0 }, [
+      { path: ["numberOfReferences"], message: "Too small: expected number to be >=1" },
+    ])
+  })
+
+  it("does not allow product with too high numberOfReferences", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { numberOfReferences: 1000000 }, [
+      { path: ["numberOfReferences"], message: "Too big: expected number to be <=999999" },
+    ])
+  })
+
+  it("does not allow product with invalid price", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { price: "Cher" }, [
+      { path: ["price"], message: "Invalid input: expected number, received string" },
+    ])
+  })
+
+  it("does not allow product with too low price", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { price: 0 }, [
+      { path: ["price"], message: "Too small: expected number to be >=1" },
+    ])
+  })
+
+  it("does not allow product with too high price", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { price: 1001 }, [
+      { path: ["price"], message: "Too big: expected number to be <=1000" },
+    ])
   })
 })

@@ -1,3 +1,4 @@
+import { computeBatchInformations } from "./api"
 import { saveEcobalyseResults, computeEcobalyseScore } from "./api"
 import { createProductScore, failProducts } from "../../db/product"
 import { prismaClient } from "../../db/prismaClient"
@@ -6,6 +7,65 @@ import { Status } from "../../../prisma/src/prisma"
 import { Business, Country, MaterialType, AccessoryType, Impression, ProductCategory } from "../../types/Product"
 import { EcobalyseResponse } from "../../types/Ecobalyse"
 import { ParsedProductValidation } from "../../services/validation/product"
+import { ProductInformationAPI } from "../../services/validation/api"
+
+describe("computeBatchInformations", () => {
+  const information = {
+    product: "pull",
+    business: Business.Small,
+    mass: 1,
+    materials: [{ id: MaterialType.Viscose, share: 0.9 }],
+    trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
+    countryDyeing: "FR",
+    countryFabric: "FR",
+    countryMaking: "FR",
+  } satisfies ProductInformationAPI
+
+  test("should set numberOfReferences when price is undefined", () => {
+    const products = [
+      { ...information, product: "chemise" },
+      { ...information, product: "jean" },
+    ]
+
+    const results = computeBatchInformations(undefined, 3, products)
+
+    expect(results).toHaveLength(2)
+    expect(results[0].numberOfReferences).toBe(3)
+    expect(results[1].numberOfReferences).toBe(3)
+    expect(results[0].price).toBeUndefined()
+    expect(results[1].price).toBeUndefined()
+  })
+
+  test("should set price proportionally according to category ratios", () => {
+    const products = [
+      { ...information, product: "chemise" },
+      { ...information, product: "jean" },
+    ]
+
+    const results = computeBatchInformations(99, 5, products)
+
+    expect(results).toHaveLength(2)
+    expect(results[0].numberOfReferences).toBe(5)
+    expect(results[1].numberOfReferences).toBe(5)
+    expect(results[0].price).toBe((15 / 35) * 99)
+    expect(results[1].price).toBe((20 / 35) * 99)
+  })
+
+  test("should work if a product is not recognized", () => {
+    const products = [
+      { ...information, product: "nimps" },
+      { ...information, product: "jean" },
+    ]
+
+    const results = computeBatchInformations(99, 5, products)
+
+    expect(results).toHaveLength(2)
+    expect(results[0].numberOfReferences).toBe(5)
+    expect(results[1].numberOfReferences).toBe(5)
+    expect(results[0].price).toBe((1 / 21) * 99)
+    expect(results[1].price).toBe((20 / 21) * 99)
+  })
+})
 
 jest.mock("../../db/product")
 jest.mock("./elm")
