@@ -13,13 +13,24 @@ import { cleanDB } from "./testUtils"
 describe("Score DB integration", () => {
   let user: NonNullable<APIUser>["user"]
   let testOrganizationId: string
-  let baseProduct: Prisma.ProductCreateManyInput
+  let baseProduct: Prisma.ProductCreateInput
 
   beforeAll(async () => {
     await cleanDB()
 
     const organization = await prismaTest.organization.create({
-      data: { name: "TestOrg", siret: "12345678901234" },
+      data: {
+        name: "TestOrg",
+        siret: "12345678901234",
+        brands: {
+          createMany: {
+            data: [
+              { name: "TestOrg", id: "69147ca8-09c6-4ae6-b731-d5344f080491", default: true },
+              { name: "TestBrand", id: "abf5acc4-fabc-4082-b49a-61b00b5cfcad" },
+            ],
+          },
+        },
+      },
     })
     testOrganizationId = organization.id
     user = await prismaTest.user.create({
@@ -31,6 +42,7 @@ describe("Score DB integration", () => {
           select: {
             id: true,
             name: true,
+            type: true,
             authorizedBy: {
               select: {
                 from: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
@@ -58,24 +70,29 @@ describe("Score DB integration", () => {
       hash: "test-hash",
       gtins: ["3234567891000"],
       internalReference: "REF-124",
-      brand: "TestBrand2",
-      category: "pull",
+      brand: { connect: { id: "abf5acc4-fabc-4082-b49a-61b00b5cfcad" } },
       declaredScore: 3000.5,
-      business: "business",
-      mass: "0.5",
-      numberOfReferences: "1000",
-      price: "50",
-      countryDyeing: "France",
-      countryFabric: "France",
-      countryMaking: "France",
-      countrySpinning: "France",
-      airTransportRatio: "0.1",
-      upcycled: "false",
-      impression: "none",
-      impressionPercentage: "0.0",
-      fading: "true",
-      uploadId: upload.id,
+      upload: { connect: { id: upload.id } },
       status: Status.Done,
+      informations: {
+        create: {
+          id: "info-1",
+          category: "pull",
+          business: "business",
+          mass: "0.5",
+          numberOfReferences: "1000",
+          price: "50",
+          countryDyeing: "France",
+          countryFabric: "France",
+          countryMaking: "France",
+          countrySpinning: "France",
+          airTransportRatio: "0.1",
+          upcycled: "false",
+          impression: "none",
+          impressionPercentage: "0.0",
+          fading: "true",
+        },
+      },
     }
   })
 
@@ -144,12 +161,32 @@ describe("Score DB integration", () => {
       },
     ]
 
-    await prismaTest.product.createMany({
-      data: [
-        { ...baseProduct, id: id1 },
-        { ...baseProduct, id: id2 },
-      ],
-    })
+    await Promise.all([
+      prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: "id-1",
+          informations: {
+            create: {
+              ...(baseProduct.informations?.create as Prisma.ProductInformationCreateWithoutProductInput),
+              id: id1,
+            },
+          },
+        },
+      }),
+      prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: "id-2",
+          informations: {
+            create: {
+              ...(baseProduct.informations?.create as Prisma.ProductInformationCreateWithoutProductInput),
+              id: id2,
+            },
+          },
+        },
+      }),
+    ])
 
     const result = await createScores(scores)
 
@@ -196,10 +233,14 @@ describe("Score DB integration", () => {
       microfibers: 12.3,
       outOfEuropeEOL: 1.2,
     }
+
     const product = {
       gtins: ["2234567891001"],
       internalReference: "REF-123",
-      brand: "TestBrand",
+      brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+    }
+
+    const informations = {
       product: ProductCategory.Pull,
       declaredScore: 2222.63,
       business: Business.Small,
@@ -212,18 +253,17 @@ describe("Score DB integration", () => {
       materials: [{ id: MaterialType.Viscose, share: 0.9 }],
       trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
     }
-    const result = await createScore(user, product, score, "test-hash")
-    expect(result).toBeDefined()
+    await createScore(user, product, [informations], [score], "test-hash")
 
     const createdScore = await prismaTest.score.findFirst({
       where: { score: 85.5 },
-      include: { product: { include: { upload: true } } },
+      include: { product: { include: { product: { include: { upload: true } } } } },
     })
     expect(createdScore).toBeDefined()
     expect(createdScore?.product).toBeDefined()
-    expect(createdScore?.product.upload).toBeDefined()
-    expect(createdScore?.product.upload.type).toBe(UploadType.API)
-    expect(createdScore?.product.status).toBe(Status.Done)
-    expect(createdScore?.product.internalReference).toBe("REF-123")
+    expect(createdScore?.product?.product?.upload).toBeDefined()
+    expect(createdScore?.product?.product?.upload.type).toBe(UploadType.API)
+    expect(createdScore?.product?.product?.status).toBe(Status.Done)
+    expect(createdScore?.product?.product?.internalReference).toBe("REF-123")
   })
 })

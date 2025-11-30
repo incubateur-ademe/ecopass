@@ -1,7 +1,19 @@
+export const trimsColumnValues = [
+  "quantitedeboutonenmetal",
+  "quantitedeboutonenplastique",
+  "quantitedeziplong",
+  "quantitedezipcourt",
+] as const
+
 export type ColumnType = [
+  "quantitedeboutonenmetal",
+  "quantitedeboutonenplastique",
+  "quantitedeziplong",
+  "quantitedezipcourt",
+
   "gtinseans",
   "referenceinterne",
-  "marque",
+  "marqueid",
   "score",
   "categorie",
   "masse",
@@ -95,8 +107,13 @@ const columns: Partial<Record<ColumnType[number], string>> = {
   originedeconfection: "Origine de confection",
   delavage: "Délavage",
   partdutransportaerien: "Part du transport aérien",
-  accessoire1: "Accessoire 1",
-  accessoire1quantite: "Accessoire 1 quantité",
+}
+
+const trimsColumn: Partial<Record<ColumnType[number], string>> = {
+  quantitedeboutonenmetal: "Quantité de bouton en métal",
+  quantitedeboutonenplastique: "Quantité de bouton en plastique",
+  quantitedeziplong: "Quantité de zip long",
+  quantitedezipcourt: "Quantité de zip court",
 }
 
 const columnsValues = Object.keys(columns)
@@ -114,11 +131,14 @@ export const simplifyValue = (value: string | null) =>
 
 export const checkHeaders = (headers: string[]) => {
   const formattedHeaders = headers.map((header) => simplifyValue(header))
+  let missingHeaders = columnsValues.filter((header) => !formattedHeaders.includes(header))
+  if (!formattedHeaders.includes("accessoire1")) {
+    missingHeaders = missingHeaders.concat(trimsColumnValues.filter((header) => !formattedHeaders.includes(header)))
+  }
 
-  const missingHeaders = columnsValues.filter((header) => !formattedHeaders.includes(header))
   if (missingHeaders.length > 0) {
     throw new Error(
-      `Colonne(s) manquante(s): ${missingHeaders.map((header) => columns[header as keyof typeof columns]).join(", ")}`,
+      `Colonne(s) manquante(s): ${missingHeaders.map((header) => columns[header as keyof typeof columns] || trimsColumn[header as keyof typeof trimsColumn]).join(", ")}`,
     )
   }
 

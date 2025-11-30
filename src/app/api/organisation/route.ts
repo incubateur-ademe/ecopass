@@ -17,12 +17,12 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       name: organization.name,
-      brands: organization.brands.map((brand) => brand.name),
+      brands: organization.brands,
       authorizedBy: organization.authorizedBy.map((auth) => ({
         createdAt: auth.createdAt,
         name: auth.from.name,
         siret: auth.from.siret,
-        brands: auth.from.brands.map((brand) => brand.name),
+        brands: auth.from.brands.filter((brand) => brand.active).map((brand) => ({ id: brand.id, name: brand.name })),
       })),
       authorizeOrganization: organization.authorizedOrganizations.map((auth) => ({
         createdAt: auth.createdAt,

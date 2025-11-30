@@ -4,15 +4,18 @@ import { getUserProductValidation } from "./product"
 import { expectZodValidationToFail } from "./zodValidationTest"
 
 describe("productValidation", () => {
-  const productValidation = getUserProductValidation(["Test Brand", "Test Brand 2"])
+  const productValidation = getUserProductValidation([
+    "58ca7f37-0c8d-4463-ba40-c244c130192b",
+    "cb7fc710-408e-47d1-9655-7c7b57a85118",
+  ])
   const validProduct = {
     id: "12345",
+    productId: "54321",
     uploadId: "upload-123",
     status: Status.Pending,
     createdAt: new Date("2023-01-01"),
-    updatedAt: new Date("2023-01-02"),
     error: null,
-    brand: "Test Brand",
+    brandId: "58ca7f37-0c8d-4463-ba40-c244c130192b",
     gtins: ["1234567890128"],
     internalReference: "TestRef",
     declaredScore: null,
@@ -95,12 +98,13 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        brand: "Nop",
+        brandId: "Nop",
       },
       [
         {
-          path: ["brand"],
-          message: 'Marque invalide. Voici la liste de vos marques : "Test Brand", "Test Brand 2"',
+          path: ["brandId"],
+          message:
+            'Marque invalide. Voici la liste de vos marques : "58ca7f37-0c8d-4463-ba40-c244c130192b", "cb7fc710-408e-47d1-9655-7c7b57a85118"',
         },
       ],
     )
@@ -111,12 +115,13 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        brand: "",
+        brandId: "",
       },
       [
         {
-          path: ["brand"],
-          message: 'Marque invalide. Voici la liste de vos marques : "Test Brand", "Test Brand 2"',
+          path: ["brandId"],
+          message:
+            'Marque invalide. Voici la liste de vos marques : "58ca7f37-0c8d-4463-ba40-c244c130192b", "cb7fc710-408e-47d1-9655-7c7b57a85118"',
         },
       ],
     )
@@ -268,10 +273,10 @@ describe("productValidation", () => {
       validProduct,
       {
         accessories: [
-          { ...validProduct.materials[0], id: "accessory-1", slug: AccessoryType.BoutonEnMétal, quantity: 0 },
+          { ...validProduct.materials[0], id: "accessory-1", slug: AccessoryType.BoutonEnMétal, quantity: -1 },
         ],
       },
-      [{ path: ["accessories", "0", "quantity"], message: "La quantité de l'accessoire doit être supérieure à 1" }],
+      [{ path: ["accessories", "0", "quantity"], message: "La quantité de l'accessoire doit être supérieure à 0" }],
     )
   })
 
@@ -541,8 +546,8 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { accessories: [{ ...validProduct.accessories[0], quantity: 0 }] },
-      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être supérieure à 1" }],
+      { accessories: [{ ...validProduct.accessories[0], quantity: -1 }] },
+      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être supérieure à 0" }],
     )
   })
 
@@ -557,13 +562,21 @@ describe("productValidation", () => {
 
   it("does not allow product without countryDyeing", () => {
     expectZodValidationToFail(productValidation, validProduct, { countryDyeing: undefined }, [
-      { path: ["countryDyeing"], message: "Origine de l'ennoblissement/impression invalide" },
+      {
+        path: [""],
+        message:
+          "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé",
+      },
     ])
   })
 
   it("does not allow product without countryFabric", () => {
     expectZodValidationToFail(productValidation, validProduct, { countryFabric: undefined }, [
-      { path: ["countryFabric"], message: "Origine de tissage/tricotage invalide" },
+      {
+        path: [""],
+        message:
+          "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé",
+      },
     ])
   })
 
@@ -571,5 +584,15 @@ describe("productValidation", () => {
     expectZodValidationToFail(productValidation, validProduct, { countryMaking: undefined }, [
       { path: ["countryMaking"], message: "Origine de confection invalide" },
     ])
+  })
+
+  it("allows upcycled product without countryDyeing and countryFabric", () => {
+    const result = productValidation.safeParse({
+      ...validProduct,
+      upcycled: true,
+      countryDyeing: undefined,
+      countryFabric: undefined,
+    })
+    expect(result.success).toEqual(true)
   })
 })

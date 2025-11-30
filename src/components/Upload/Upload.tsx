@@ -31,13 +31,13 @@ const Upload = () => {
         router.refresh()
       })
     }
-  }, [file])
+  }, [file, router])
 
   const sizeError = file ? file.size > 1 * 1024 * 1024 : false
   return (
     <div className={success || error ? "" : styles.container}>
       <Alert
-        className={styles.help}
+        className={success || error ? "" : styles.help}
         title='Aide'
         severity='info'
         description={

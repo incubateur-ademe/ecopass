@@ -1,4 +1,4 @@
-import { getUserProductAPIValidation } from "./api"
+import { getUserProductAPIValidation, getUserProductsAPIValidation } from "./api"
 import { expectZodValidationToFail } from "./zodValidationTest"
 
 describe("productAPIValidation", () => {
@@ -6,7 +6,7 @@ describe("productAPIValidation", () => {
   const validProduct = {
     gtins: ["12345670"],
     internalReference: "TestRef",
-    brand: "Test Brand",
+    brandId: "Test Brand",
     product: "jean",
     mass: 1.23,
     materials: [
@@ -36,7 +36,7 @@ describe("productAPIValidation", () => {
       ...validProduct,
       declaredScore: 85,
       airTransportRatio: 0.5,
-      upcycled: true,
+      upcycled: false,
       business: "small-business",
       fading: true,
       numberOfReferences: 10,
@@ -59,11 +59,11 @@ describe("productAPIValidation", () => {
       productAPIValidation,
       validProduct,
       {
-        brand: "Nop",
+        brandId: "Nop",
       },
       [
         {
-          path: ["brand"],
+          path: ["brandId"],
           message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
         },
       ],
@@ -75,11 +75,11 @@ describe("productAPIValidation", () => {
       productAPIValidation,
       validProduct,
       {
-        brand: "",
+        brandId: "",
       },
       [
         {
-          path: ["brand"],
+          path: ["brandId"],
           message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
         },
       ],
@@ -117,8 +117,8 @@ describe("productAPIValidation", () => {
   })
 
   it("does not allow product without brand", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { brand: undefined }, [
-      { path: ["brand"], message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"' },
+    expectZodValidationToFail(productAPIValidation, validProduct, { brandId: undefined }, [
+      { path: ["brandId"], message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"' },
     ])
   })
 
@@ -409,9 +409,8 @@ describe("productAPIValidation", () => {
   it("does not allow product without countryDyeing", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { countryDyeing: undefined }, [
       {
-        path: ["countryDyeing"],
-        message:
-          'Invalid option: expected one of "REO"|"REE"|"RAS"|"RAF"|"RME"|"RLA"|"RNA"|"ROC"|"MM"|"BD"|"CN"|"FR"|"IN"|"KH"|"MA"|"PK"|"TN"|"TR"|"VN"',
+        path: [""],
+        message: "countryDyeing et countryFabric sont requis quand upcycled n'est pas true",
       },
     ])
   })
@@ -419,9 +418,8 @@ describe("productAPIValidation", () => {
   it("does not allow product without countryFabric", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { countryFabric: undefined }, [
       {
-        path: ["countryFabric"],
-        message:
-          'Invalid option: expected one of "REO"|"REE"|"RAS"|"RAF"|"RME"|"RLA"|"RNA"|"ROC"|"MM"|"BD"|"CN"|"FR"|"IN"|"KH"|"MA"|"PK"|"TN"|"TR"|"VN"',
+        path: [""],
+        message: "countryDyeing et countryFabric sont requis quand upcycled n'est pas true",
       },
     ])
   })
@@ -433,6 +431,361 @@ describe("productAPIValidation", () => {
         message:
           'Invalid option: expected one of "REO"|"REE"|"RAS"|"RAF"|"RME"|"RLA"|"RNA"|"ROC"|"MM"|"BD"|"CN"|"FR"|"IN"|"KH"|"MA"|"PK"|"TN"|"TR"|"VN"',
       },
+    ])
+  })
+
+  it("allows upcycled product without countryDyeing and countryFabric", () => {
+    const result = productAPIValidation.safeParse({
+      ...validProduct,
+      upcycled: true,
+      countryDyeing: undefined,
+      countryFabric: undefined,
+    })
+    expect(result.success).toEqual(true)
+  })
+})
+
+describe("productsAPIValidation", () => {
+  const productsAPIValidation = getUserProductsAPIValidation(["Test Brand", "Test Brand 2"])
+  const validProductBase = {
+    product: "jean",
+    mass: 1.23,
+    materials: [
+      {
+        id: "ei-coton",
+        share: 1,
+      },
+    ],
+    countryDyeing: "CN",
+    countryFabric: "FR",
+    countryMaking: "ROC",
+    trims: [{ id: "86b877ff-0d59-482f-bb34-3ff306b07496", quantity: 2 }],
+  }
+
+  const validProducts = {
+    gtins: ["12345670"],
+    internalReference: "TestRef",
+    brandId: "Test Brand",
+    products: [validProductBase, { ...validProductBase, mass: 2.45 }],
+  }
+
+  it("allows valid products", () => {
+    const result = productsAPIValidation.safeParse(validProducts)
+    expect(result.success).toEqual(true)
+  })
+
+  it("allows valid products without trims", () => {
+    const result = productsAPIValidation.safeParse({
+      ...validProducts,
+      products: validProducts.products.map((p) => ({ ...p, trims: undefined })),
+    })
+    expect(result.success).toEqual(true)
+  })
+
+  it("allows valid full products", () => {
+    const result = productsAPIValidation.safeParse({
+      ...validProducts,
+      declaredScore: 85,
+      numberOfReferences: 10,
+      price: 100,
+      products: validProducts.products.map((p) => ({
+        ...p,
+        airTransportRatio: 0.5,
+        upcycled: false,
+        business: "small-business",
+        fading: true,
+        countryDyeing: "CN",
+        countryFabric: "CN",
+        countryMaking: "CN",
+        countrySpinning: "CN",
+        printing: {
+          kind: "pigment",
+          ratio: 0.8,
+        },
+        materials: [{ ...validProductBase.materials[0], country: "FR" }],
+      })),
+    })
+    expect(result.success).toEqual(true)
+  })
+
+  it("does not allow valid products with invalid brand", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      {
+        brandId: "Nop",
+      },
+      [
+        {
+          path: ["brandId"],
+          message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
+        },
+      ],
+    )
+  })
+
+  it("does not allow valid products with empty brand", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      {
+        brandId: "",
+      },
+      [
+        {
+          path: ["brandId"],
+          message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
+        },
+      ],
+    )
+  })
+
+  it("does not allow products without GTINs", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { gtins: undefined }, [
+      { path: ["gtins"], message: "Invalid input: expected array, received undefined" },
+    ])
+  })
+
+  it("does not allow products with invalid GTINs", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { gtins: ["123"] }, [
+      { path: ["gtins", "0"], message: "Le code GTIN doit contenir 8 ou 13 chiffres" },
+    ])
+  })
+
+  it("does not allow products with empty GTINs", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { gtins: [] }, [
+      { path: ["gtins"], message: "Too small: expected array to have >=1 items" },
+    ])
+  })
+
+  it("does not allow products with invalid gtin code control", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { gtins: ["12345671"] }, [
+      { path: ["gtins", "0"], message: "Le code GTIN n'est pas valide (somme de contrôle incorrecte)" },
+    ])
+  })
+
+  it("does not allow products without internal reference", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { internalReference: undefined }, [
+      { path: ["internalReference"], message: "Invalid input: expected string, received undefined" },
+    ])
+  })
+
+  it("does not allow products without brand", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { brandId: undefined }, [
+      { path: ["brandId"], message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"' },
+    ])
+  })
+
+  it("does not allow products with invalid declaredScore", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { declaredScore: "invalid" }, [
+      { path: ["declaredScore"], message: "Invalid input: expected number, received string" },
+    ])
+  })
+
+  it("does not allow products without product category", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, product: undefined }] },
+      [
+        {
+          path: ["products", "1", "product"],
+          message:
+            'Invalid option: expected one of "chemise"|"jean"|"jupe"|"manteau"|"pantalon"|"pull"|"tshirt"|"chaussettes"|"calecon"|"slip"|"maillot-de-bain"',
+        },
+      ],
+    )
+  })
+
+  it("does not allow products with invalid product category", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, product: "invalid" }] },
+      [
+        {
+          path: ["products", "1", "product"],
+          message:
+            'Invalid option: expected one of "chemise"|"jean"|"jupe"|"manteau"|"pantalon"|"pull"|"tshirt"|"chaussettes"|"calecon"|"slip"|"maillot-de-bain"',
+        },
+      ],
+    )
+  })
+
+  it("does not allow products with invalid airTransportRatio", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, airTransportRatio: "invalid" }] },
+      [{ path: ["products", "1", "airTransportRatio"], message: "Invalid input: expected number, received string" }],
+    )
+  })
+
+  it("does not allow products with too low airTransportRatio", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, airTransportRatio: -0.1 }] },
+      [{ path: ["products", "1", "airTransportRatio"], message: "Too small: expected number to be >=0" }],
+    )
+  })
+
+  it("does not allow products with too high airTransportRatio", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, airTransportRatio: 1.1 }] },
+      [{ path: ["products", "1", "airTransportRatio"], message: "Too big: expected number to be <=1" }],
+    )
+  })
+
+  it("does not allow products with mass < 0.01", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, mass: 0.001 }] },
+      [{ path: ["products", "1", "mass"], message: "Too small: expected number to be >=0.01" }],
+    )
+  })
+
+  it("does not allow products with invalid upcycled", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, upcycled: "invalid" }] },
+      [
+        {
+          path: ["products", "1", "upcycled"],
+          message: "Invalid input: expected boolean, received string",
+        },
+      ],
+    )
+  })
+
+  it("does not allow products with invalid business", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, business: "invalid" }] },
+      [
+        {
+          path: ["products", "1", "business"],
+          message:
+            'Invalid option: expected one of "small-business"|"large-business-with-services"|"large-business-without-services"',
+        },
+      ],
+    )
+  })
+
+  it("does not allow products with invalid fading", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, fading: "invalid" }] },
+      [
+        {
+          path: ["products", "1", "fading"],
+          message: "Invalid input: expected boolean, received string",
+        },
+      ],
+    )
+  })
+
+  it("does not allow products with less than 2 products", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { products: [validProductBase] }, [
+      { path: ["products"], message: "Il faut au moins 2 produits dans le lot." },
+    ])
+  })
+
+  it("does not allow products without countryDyeing", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [{ ...validProductBase, countryDyeing: undefined }, validProductBase] },
+      [
+        {
+          path: ["products"],
+          message: "countryDyeing et countryFabric sont requis pour chaque produit quand upcycled n'est pas true",
+        },
+      ],
+    )
+  })
+
+  it("does not allow products without countryFabric", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [{ ...validProductBase, countryFabric: undefined }, validProductBase] },
+      [
+        {
+          path: ["products"],
+          message: "countryDyeing et countryFabric sont requis pour chaque produit quand upcycled n'est pas true",
+        },
+      ],
+    )
+  })
+
+  it("does not allow products without countryMaking", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, countryMaking: undefined }] },
+      [
+        {
+          path: ["products", "1", "countryMaking"],
+          message:
+            'Invalid option: expected one of "REO"|"REE"|"RAS"|"RAF"|"RME"|"RLA"|"RNA"|"ROC"|"MM"|"BD"|"CN"|"FR"|"IN"|"KH"|"MA"|"PK"|"TN"|"TR"|"VN"',
+        },
+      ],
+    )
+  })
+
+  it("allows upcycled products without countryDyeing and countryFabric", () => {
+    const result = productsAPIValidation.safeParse({
+      ...validProducts,
+      products: validProducts.products.map((p) => ({
+        ...p,
+        upcycled: true,
+        countryDyeing: undefined,
+        countryFabric: undefined,
+      })),
+    })
+    expect(result.success).toEqual(true)
+  })
+
+  it("does not allow product with invalid numberOfReferences", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { numberOfReferences: "Un paquet" }, [
+      { path: ["numberOfReferences"], message: "Invalid input: expected number, received string" },
+    ])
+  })
+
+  it("does not allow product with too low numberOfReferences", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { numberOfReferences: 0 }, [
+      { path: ["numberOfReferences"], message: "Too small: expected number to be >=1" },
+    ])
+  })
+
+  it("does not allow product with too high numberOfReferences", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { numberOfReferences: 1000000 }, [
+      { path: ["numberOfReferences"], message: "Too big: expected number to be <=999999" },
+    ])
+  })
+
+  it("does not allow product with invalid price", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { price: "Cher" }, [
+      { path: ["price"], message: "Invalid input: expected number, received string" },
+    ])
+  })
+
+  it("does not allow product with too low price", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { price: 0 }, [
+      { path: ["price"], message: "Too small: expected number to be >=1" },
+    ])
+  })
+
+  it("does not allow product with too high price", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { price: 1001 }, [
+      { path: ["price"], message: "Too big: expected number to be <=1000" },
     ])
   })
 })

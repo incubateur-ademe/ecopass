@@ -3,6 +3,7 @@ import { AccessoryType, Business, Country, Impression, MaterialType, ProductCate
 import { Status } from "../../../prisma/src/prisma"
 import { PrintingRatio } from "./printing"
 import { isValidGtin } from "../../utils/validation/gtin"
+import { Return } from "@prisma/client/runtime/library"
 
 const epsilon = 1e-10
 
@@ -23,16 +24,17 @@ const accessoryValidation = z.object({
   slug: z.enum(AccessoryType, { message: "Type d'accessoire invalide" }),
   quantity: z
     .number({ message: "La quantité de l'accessoire doit être un nombre" })
-    .min(1, "La quantité de l'accessoire doit être supérieure à 1"),
+    .min(0, "La quantité de l'accessoire doit être supérieure à 0"),
 })
 
 const productValidation = z.object({
   id: z.string(),
+  productId: z.string(),
   uploadId: z.string(),
   status: z.enum(Status, { message: "Statut invalide" }),
   createdAt: z.date(),
-  updatedAt: z.date(),
   error: z.string().nullable(),
+  emptyTrims: z.boolean().optional(),
   gtins: z
     .array(
       z
@@ -66,8 +68,8 @@ const productValidation = z.object({
     .min(1, "Le prix doit être supérieur à 1 €")
     .max(1000, "Le prix doit être inférieur à 1000 €")
     .optional(),
-  countryDyeing: z.enum(Country, { message: "Origine de l'ennoblissement/impression invalide" }),
-  countryFabric: z.enum(Country, { message: "Origine de tissage/tricotage invalide" }),
+  countryDyeing: z.enum(Country, { message: "Origine de l'ennoblissement/impression invalide" }).optional(),
+  countryFabric: z.enum(Country, { message: "Origine de tissage/tricotage invalide" }).optional(),
   countryMaking: z.enum(Country, { message: "Origine de confection invalide" }),
   countrySpinning: z.enum(Country, { message: "Origine de filature invalide" }).optional(),
   impression: z.enum(Impression, { message: "Type d'impression invalide" }).optional(),
@@ -84,7 +86,7 @@ const productValidation = z.object({
 export const getUserProductValidation = (brands: [string, ...string[]]) =>
   productValidation
     .extend({
-      brand: z.enum(brands, {
+      brandId: z.enum(brands, {
         message: `Marque invalide. Voici la liste de vos marques : ${brands.map((brand) => `"${brand}"`).join(", ")}`,
       }),
     })
@@ -98,3 +100,11 @@ export const getUserProductValidation = (brands: [string, ...string[]]) =>
 
       return true
     }, "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié")
+    .refine((data) => {
+      if (!data.upcycled) {
+        return data.countryDyeing !== undefined && data.countryFabric !== undefined
+      }
+      return true
+    }, "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé")
+
+export type ParsedProductValidation = z.infer<Return<typeof getUserProductValidation>>

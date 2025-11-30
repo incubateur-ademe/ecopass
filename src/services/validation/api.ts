@@ -31,17 +31,7 @@ const accessoryValidation = z.object({
   quantity: z.number().min(1),
 })
 
-const productAPIValidation = z.object({
-  gtins: z
-    .array(
-      z
-        .string()
-        .regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")
-        .refine(isValidGtin, "Le code GTIN n'est pas valide (somme de contrôle incorrecte)"),
-    )
-    .min(1),
-  internalReference: z.string(),
-  declaredScore: z.number().optional(),
+const product = z.object({
   product: z.enum(productValues),
   airTransportRatio: z.number().min(0).max(1).optional(),
   upcycled: z.boolean().optional(),
@@ -50,8 +40,8 @@ const productAPIValidation = z.object({
   mass: z.number().min(0.01),
   numberOfReferences: z.number().min(1).max(999999).optional(),
   price: z.number().min(1).max(1000).optional(),
-  countryDyeing: z.enum(countryValues),
-  countryFabric: z.enum(countryValues),
+  countryDyeing: z.enum(countryValues).optional(),
+  countryFabric: z.enum(countryValues).optional(),
   countryMaking: z.enum(countryValues),
   countrySpinning: z.enum(countryValues).optional(),
   printing: z
@@ -67,12 +57,78 @@ const productAPIValidation = z.object({
   trims: z.array(accessoryValidation).optional(),
 })
 
+export type ProductInformationAPI = z.infer<typeof product>
+
+const metaData = z.object({
+  gtins: z
+    .array(
+      z
+        .string()
+        .regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")
+        .refine(isValidGtin, "Le code GTIN n'est pas valide (somme de contrôle incorrecte)"),
+    )
+    .min(1),
+  internalReference: z.string(),
+  declaredScore: z.number().optional(),
+})
+
+export type ProductMetadataAPI = z.infer<typeof metaData> & { brandId: string }
+
+const productAPIValidation = z.object({
+  ...metaData.shape,
+  ...product.shape,
+})
+
 export const getUserProductAPIValidation = (brands: [string, ...string[]]) =>
-  productAPIValidation.extend({
-    brand: z.enum(brands),
-  })
+  productAPIValidation
+    .extend({
+      brandId: z.enum(brands),
+    })
+    .refine(
+      (data) => {
+        if (!data.upcycled) {
+          return data.countryDyeing !== undefined && data.countryFabric !== undefined
+        }
+        return true
+      },
+      {
+        message: "countryDyeing et countryFabric sont requis quand upcycled n'est pas true",
+        path: [""],
+      },
+    )
 
 export type ProductAPIValidation = z.infer<Return<typeof getUserProductAPIValidation>>
+
+const productsAPIValidation = z.object({
+  ...metaData.shape,
+  price: product.shape.price,
+  numberOfReferences: product.shape.numberOfReferences,
+  products: z
+    .array(product.omit({ price: true, numberOfReferences: true }))
+    .min(2, { message: "Il faut au moins 2 produits dans le lot." }),
+})
+
+export const getUserProductsAPIValidation = (brands: [string, ...string[]]) =>
+  productsAPIValidation
+    .extend({
+      brandId: z.enum(brands),
+    })
+    .refine(
+      (data) => {
+        return data.products.every((product) => {
+          if (!product.upcycled) {
+            return product.countryDyeing !== undefined && product.countryFabric !== undefined
+          }
+          return true
+        })
+      },
+      {
+        message: "countryDyeing et countryFabric sont requis pour chaque produit quand upcycled n'est pas true",
+        path: ["products"],
+      },
+    )
+
+export type ProductsAPIValidation = z.infer<Return<typeof getUserProductsAPIValidation>>
 
 export const paginationValidation = z.object({
   page: z.number().min(0),

@@ -6,16 +6,17 @@ import { productCategories } from "../../types/productCategory"
 import { businesses } from "../../types/business"
 import { materials as allMaterials } from "../../types/material"
 import { accessories as allAccessories } from "../../types/accessory"
-import { Accessory, Material, Product, Status } from "../../../../prisma/src/prisma"
+import { Accessory, Material, Product, ProductInformation, Status } from "../../../../prisma/src/prisma"
 import { impressions } from "../../types/impression"
 import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
-import { hashProduct } from "../../encryption/hash"
-import { checkHeaders, getBooleanValue, getNumberValue, getValue } from "../parsing"
+import { hashParsedProduct } from "../../encryption/hash"
+import { checkHeaders, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
 
-export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
-  const products: (Product & { materials: undefined; accessories: undefined })[] = []
+export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>) => {
+  const products: Product[] = []
+  const informations: (ProductInformation & { materials: undefined; accessories: undefined })[] = []
   const materials: Material[] = []
   const accessories: Accessory[] = []
 
@@ -35,6 +36,7 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
 
   const headers = data[0]
   const formattedHeaders = checkHeaders(headers)
+  const hasAccessoire1 = formattedHeaders.includes("accessoire1")
 
   const headerMapping: Record<string, number> = {}
   formattedHeaders.forEach((header, index) => {
@@ -49,13 +51,19 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
     if (!row || row.every((cell) => !cell)) {
       continue
     }
+    const id = uuid()
     const productId = uuid()
 
+    const gtins = (row[headerMapping["gtinseans"]] || "").split(/[,;\n]/).map((gtin) => gtin.trim())
+    const internalReference = row[headerMapping["referenceinterne"]] || ""
+    const brand = (
+      row[headerMapping["marqueid"]] ||
+      upload.createdBy.organization?.brands.find((brand) => brand.default)?.id ||
+      ""
+    ).trim()
+    const declaredScore = getNumberValue(row[headerMapping["score"]] || "", 1, -1) as number | undefined
+
     const rawProduct = {
-      gtins: (row[headerMapping["gtinseans"]] || "").split(/[,;\n]/).map((gtin) => gtin.trim()),
-      internalReference: row[headerMapping["referenceinterne"]] || "",
-      brand: (row[headerMapping["marque"]] || upload?.createdBy.organization?.name || "").trim(),
-      declaredScore: getNumberValue(row[headerMapping["score"]] || "", 1, -1) as number | undefined,
       product: getValue<ProductCategory>(productCategories, row[headerMapping["categorie"]]),
       airTransportRatio: getNumberValue(row[headerMapping["partdutransportaerien"]] || ""),
       business: getValue<Business>(businesses, row[headerMapping["tailledelentreprise"]]),
@@ -85,21 +93,28 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
         })
         .filter((material) => material !== null)
         .filter((material) => material.id),
-      trims: Array.from({ length: 4 })
-        .map((_, index) => {
-          const id = getValue<AccessoryType>(allAccessories, row[headerMapping[`accessoire${index + 1}`]])
-          const quantity = getNumberValue(row[headerMapping[`accessoire${index + 1}quantite`]])
-          return id ? { id, quantity } : null
-        })
-        .filter((accessory) => accessory !== null)
-        .filter((accessory) => accessory.id),
+      trims: hasAccessoire1
+        ? Array.from({ length: 4 })
+            .map((_, index) => {
+              const id = getValue<AccessoryType>(allAccessories, row[headerMapping[`accessoire${index + 1}`]])
+              const quantity = getNumberValue(row[headerMapping[`accessoire${index + 1}quantite`]])
+              return id ? { id, quantity } : null
+            })
+            .filter((accessory) => accessory !== null)
+            .filter((accessory) => accessory.id)
+        : trimsColumnValues
+            .map((key) => ({
+              id: getValue<AccessoryType>(allAccessories, key.replace("quantitede", "")),
+              quantity: getNumberValue(row[headerMapping[key]]),
+            }))
+            .filter((trim) => trim.quantity !== undefined),
     }
 
     const encrypted = encryptProductFields(rawProduct)
     encrypted.materials.forEach((material) => {
       materials.push({
         id: uuid(),
-        productId,
+        productId: id,
         ...material,
       })
     })
@@ -107,26 +122,48 @@ export const parseExcel = async (buffer: Buffer, upload: FileUpload) => {
     encrypted.accessories?.forEach((accessory) => {
       accessories.push({
         id: uuid(),
-        productId,
+        productId: id,
         ...accessory,
       })
     })
 
+    const authorizedBrands = upload.createdBy.organization
+      ? getAuthorizedBrands(upload.createdBy.organization)
+      : ([] as string[])
+
     products.push({
       error: null,
       id: productId,
-      hash: hashProduct(
+      score: null,
+      standardized: null,
+      hash: hashParsedProduct(
+        {
+          gtins: gtins,
+          internalReference: internalReference,
+          brandId: brand,
+          declaredScore: declaredScore,
+        },
         rawProduct,
-        upload && upload.createdBy.organization ? getAuthorizedBrands(upload.createdBy.organization) : [],
+        authorizedBrands,
       ),
       createdAt: now,
-      updatedAt: now,
       uploadId: upload ? upload.id : "",
       uploadOrder: rowIndex,
       status: Status.Pending,
+      gtins: gtins,
+      internalReference: internalReference,
+      brandName: brand,
+      brandId: authorizedBrands.includes(brand) ? brand : null,
+      declaredScore: declaredScore || null,
+    })
+
+    informations.push({
+      id,
+      productId,
+      emptyTrims: !hasAccessoire1 && rawProduct.trims.length === 0,
       ...encrypted.product,
     })
   }
 
-  return { products, materials, accessories }
+  return { products, informations, materials, accessories }
 }

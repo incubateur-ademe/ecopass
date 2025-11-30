@@ -1,5 +1,6 @@
 import Button from "@codegouvfr/react-dsfr/Button"
 import { ecobalyseVersion } from "../../utils/ecobalyse/config"
+import Link from "next/link"
 
 const En = () => {
   return (
@@ -19,7 +20,8 @@ const En = () => {
           main GTIN (or EAN).
         </li>
         <li>
-          <b>Marque</b> (optional): product brand.
+          <b>Marque ID</b> (optional): product brand id, you can find it on your{" "}
+          <Link href='/organisation'>organization page</Link> .
         </li>
         <li>
           <b>Score</b> (optional): Ecobalyse score (version {ecobalyseVersion}), if you have calculated it. Warning: if
@@ -56,7 +58,6 @@ const En = () => {
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optional): type of company and service offer:
-          <p className='fr-hint-text'>If not defined, "Large company without repair service" will be used.</p>
           <ul>
             <li>Small company</li>
             <li>Large company with repair service</li>
@@ -70,10 +71,12 @@ const En = () => {
           </p>
         </li>
         <li>
-          <b>Origine de tissage/tricotage</b>: country for the weaving/knitting stage.
+          <b>Origine de tissage/tricotage</b> (optional): country for the weaving/knitting stage. Mandatory if the
+          product is not upcycled.
         </li>
         <li>
-          <b>Origine de l'ennoblissement/impression</b>: country for the finishing/printing stage.
+          <b>Origine de l'ennoblissement/impression</b> (optional): country for the finishing/printing stage. Mandatory
+          if the product is not upcycled.
         </li>
         <li>
           <b>Origine de confection</b>: country for the manufacturing stage.
@@ -134,24 +137,25 @@ const En = () => {
       </p>
       <br />
       <h3>Accessory information</h3>
-      <p>For each accessory, add the following columns (up to 4 accessories):</p>
+      <p>
+        <b>Warning</b>: if you don't have any accessories, you must fill these fields with the value 0.
+        <br />
+        Otherwise, default accessories will be applied.
+      </p>
       <ul>
         <li>
-          <b>Accessoire X</b>: type of accessory to choose from the following list:
-          <ul>
-            <li>Long zip</li>
-            <li>Short zip</li>
-            <li>Plastic button</li>
-            <li>Metal button</li>
-          </ul>
+          <b>Quantité de zip long</b>: Long zipper quantity
         </li>
         <li>
-          <b>Accessoire X quantité</b>: quantity of the accessory in the product (min: 1).
+          <b>Quantité de zip court</b>: Short zipper quantity
+        </li>
+        <li>
+          <b>Quantité de bouton en plastique</b>: Plastic button quantity
+        </li>
+        <li>
+          <b>Quantité de bouton en métal</b>: Metal button quantity
         </li>
       </ul>
-      <p>
-        Replace <b>X</b> with a number from 1 to 4 (e.g., Accessoire 1, Accessoire 1 quantité, Accessoire 2…).
-      </p>
       <br />
       <h3>Countries</h3>
       <p>The list of available countries is as follows:</p>

@@ -9,13 +9,8 @@ import {
   decryptNumber,
   decryptBoolean,
 } from "./encryption"
-import { Status } from "../../../prisma/src/prisma"
 
 const product = {
-  gtins: ["12345678", "87654321"],
-  internalReference: "TestRef",
-  brand: "TestBrand",
-  declaredScore: 99,
   product: "Jean",
   airTransportRatio: 0.1,
   business: "TPE/PME",
@@ -96,20 +91,11 @@ describe("encryption utils", () => {
   it("encryptProductFields returns encrypted fields and decrypts it", () => {
     const encrypted = encryptProductFields(product)
     const decrypted = decryptProductFields({
-      status: Status.Pending,
-      id: uuid(),
-      hash: "test-hash",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      error: null,
-      uploadId: uuid(),
-      uploadOrder: 0,
+      id: "id-1",
+      productId: "product-id-1",
       ...encrypted.product,
       materials: encrypted.materials.map((material) => ({ ...material, id: uuid(), productId: uuid() })),
       accessories: encrypted.accessories?.map((accessory) => ({ ...accessory, id: uuid(), productId: uuid() })) || [],
-      upload: {
-        createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
-      },
     })
     checkDecryption(product, encrypted, decrypted)
   })
