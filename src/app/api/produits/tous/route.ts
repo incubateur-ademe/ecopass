@@ -83,8 +83,7 @@ export async function GET(req: Request) {
       }
     }
   }
-
-  const data = gtinToProduct.entries().map(([gtin, product]) => {
+  const data = Array.from(gtinToProduct.entries()).map(([gtin, product]) => {
     const totalScore = computeBatchScore(product)
     return {
       gtin,
