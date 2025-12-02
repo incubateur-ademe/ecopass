@@ -67,7 +67,7 @@ jobs:
       - name: Install Playwright deps
         run: pnpm playwright install-deps
       - name: Run e2e tests
-        run: pnpm playwright test
+        run: pnpx playwright test
       - name: Create artifacts directory
         run: mkdir -p ${{ github.workspace }}/tmp/artifacts
       - name: Lighthouse Check
