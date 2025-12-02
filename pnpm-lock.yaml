@@ -102,6 +102,9 @@ importers:
         specifier: ^4.1.12
         version: 4.1.13
     devDependencies:
+      '@eslint/eslintrc':
+        specifier: ^3.3.3
+        version: 3.3.3
       '@faker-js/faker':
         specifier: ^10.1.0
         version: 10.1.0

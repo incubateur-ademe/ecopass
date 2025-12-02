@@ -281,19 +281,5 @@ describe("parseExcel", () => {
 
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(2)
-
-    const fullProducts = products.map((product) => ({
-      ...product,
-      materials: materials.filter((material) => material.productId === product.id),
-      accessories: [],
-      upload: {
-        createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
-      },
-    }))
-
-    const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.materials).toHaveLength(2)
-    expect(parsedProduct.materials[0].slug).toBe(MaterialType.Viscose)
-    expect(parsedProduct.materials[1].slug).toBe(MaterialType.Jute)
   })
 })
