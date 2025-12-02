@@ -1,3 +1,6 @@
+permissions:
+  contents: read
+  pull-requests: read
 name: Build
 on:
   push:
@@ -50,7 +53,7 @@ jobs:
       - name: Seed db
         run: pnpm prisma db seed
       - name: Run unit tests
-        run: npx jest --runInBand
+        run: pnpm jest --runInBand
       - name: Seed db
         run: pnpm prisma db seed
       - name: Decrypt Ecobalyse data
@@ -60,11 +63,11 @@ jobs:
       - name: Start queue
         run: pnpm queue > queue.txt &
       - name: Install Playwright browsers
-        run: npx playwright install chromium
+        run: pnpm playwright install chromium
       - name: Install Playwright deps
-        run: npx playwright install-deps
+        run: pnpm playwright install-deps
       - name: Run e2e tests
-        run: npx playwright test
+        run: pnpx playwright test
       - name: Create artifacts directory
         run: mkdir -p ${{ github.workspace }}/tmp/artifacts
       - name: Lighthouse Check

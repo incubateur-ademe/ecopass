@@ -9,13 +9,13 @@
     "lint": "eslint .",
     "predev": "react-dsfr update-icons",
     "prebuild": "pnpm prisma:generate && react-dsfr update-icons && pnpm ecobalyse:data",
+    "prisma:generate": "prisma generate",
     "queue:watch": "tsx watch queue.ts",
     "queue": "tsx queue.ts",
     "test": "jest && playwright test",
     "ecobalyse:data": "tsx src/scripts/decryptEcobalyseData.ts",
-    "reset:test": "DATABASE_URL=postgresql://ecopass_test:ecopass_test@localhost:5433/ecopass_test npx prisma migrate reset --force --skip-seed",
-    "preinstall": "npx only-allow pnpm",
-    "prisma:generate": "npx prisma generate"
+    "reset:test": "DATABASE_URL=postgresql://ecopass_test:ecopass_test@localhost:5433/ecopass_test pnpm prisma migrate reset --force --skip-seed",
+    "preinstall": "npx -y only-allow@1.2.2 pnpm"
   },
   "prisma": {
     "seed": "tsx prisma/seed/index.ts"
