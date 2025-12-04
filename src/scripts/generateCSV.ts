@@ -7,6 +7,24 @@ import { countries } from "../utils/types/country"
 import { materials } from "../utils/types/material"
 import { accessories } from "../utils/types/accessory"
 import { impressionMapping } from "../utils/ecobalyse/mappings"
+import { prismaClient } from "../db/prismaClient"
+import { PrintingRatio } from "../services/validation/printing"
+
+const generateValidGtin = (length: 8 | 13): string => {
+  const digits = Array.from({ length: length - 1 }, () => faker.number.int({ min: 0, max: 9 }))
+
+  let sum = 0
+  let multiplier = 3
+  for (let i = digits.length - 1; i >= 0; i--) {
+    sum += digits[i] * multiplier
+    multiplier = multiplier === 3 ? 1 : 3
+  }
+
+  const checkDigit = (10 - (sum % 10)) % 10
+  digits.push(checkDigit)
+
+  return digits.join("")
+}
 
 const generateShares = () => {
   const n = Math.floor(Math.random() * 15) + 1
@@ -30,13 +48,26 @@ const generateShares = () => {
   return extra.map((val) => val + 1)
 }
 
-const generate = (name: string, length?: string) => {
+const generate = async (name: string, length?: string, organizationId?: string) => {
+  const brands = organizationId
+    ? await prismaClient.brand.createManyAndReturn({
+        data: Array.from({ length: Math.random() * 10 + 1 }).map(() => ({
+          name: faker.company.name(),
+          organizationId,
+          active: true,
+        })),
+      })
+    : []
+
   const numberOfRows = length ? parseInt(length) : 10000
   const products = Array.from({ length: numberOfRows }, () => {
     const materialsShare = generateShares()
     return {
-      gtins: Array.from({ length: faker.number.int({ min: 1, max: 3 }) }).map(() => faker.string.numeric(13)),
+      gtins: Array.from({ length: faker.number.int({ min: 1, max: 3 }) }).map(() =>
+        generateValidGtin(faker.helpers.arrayElement([8, 13])),
+      ),
       internalReference: faker.string.alphanumeric(10),
+      brandId: brands.length > 0 ? faker.helpers.arrayElement(brands).id : "",
       category: faker.helpers.arrayElement(Object.keys(productCategories)),
       business: faker.helpers.arrayElement(["", ...Object.keys(businesses)]),
       countryDyeing: faker.helpers.arrayElement(Object.keys(countries)),
@@ -44,7 +75,7 @@ const generate = (name: string, length?: string) => {
       countryMaking: faker.helpers.arrayElement(Object.keys(countries)),
       countrySpinning: faker.helpers.arrayElement(Object.keys(countries)),
       impressionMapping: faker.helpers.arrayElement(["", ...Object.keys(impressionMapping)]),
-      impressionPercentage: faker.number.float({ min: 0, max: 0.8 }),
+      impressionPercentage: faker.helpers.arrayElement(Object.values(PrintingRatio)) as number,
       mass: faker.number.float({ min: 0.01 }),
       price: faker.number.float({ min: 1, max: 1000 }),
       airTransportRatio: faker.number.float({ min: 0, max: 1 }),
@@ -71,7 +102,7 @@ const generate = (name: string, length?: string) => {
     products.map((product) => [
       product.gtins.join(";"),
       product.internalReference,
-      "",
+      product.brandId,
       "",
       product.category,
       product.mass,
@@ -179,4 +210,4 @@ const generate = (name: string, length?: string) => {
   fs.writeFileSync(name, csv, "utf8")
 }
 
-generate(process.argv[2], process.argv[3])
+generate(process.argv[2], process.argv[3], process.argv[4])

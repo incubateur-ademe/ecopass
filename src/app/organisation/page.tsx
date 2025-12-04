@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 const OrganizationPage = async () => {
   const session = await tryAndGetSession(true, true)
   const organization = await getUserOrganization(session.user.id)
+
   if (!organization) {
     return <p>Vous ne faites parti d'aucune organisation</p>
   }
