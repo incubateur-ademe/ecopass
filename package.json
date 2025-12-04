@@ -8,19 +8,21 @@
     "start": "next start",
     "lint": "eslint .",
     "predev": "react-dsfr update-icons",
-    "prebuild": "react-dsfr update-icons & yarn ecobalyse:data",
+    "prebuild": "pnpm prisma:generate && react-dsfr update-icons && pnpm ecobalyse:data",
+    "prisma:generate": "prisma generate",
     "queue:watch": "tsx watch queue.ts",
     "queue": "tsx queue.ts",
     "test": "jest && playwright test",
     "ecobalyse:data": "tsx src/scripts/decryptEcobalyseData.ts",
-    "reset:test": "DATABASE_URL=postgresql://ecopass_test:ecopass_test@localhost:5433/ecopass_test npx prisma migrate reset --force --skip-seed"
+    "reset:test": "DATABASE_URL=postgresql://ecopass_test:ecopass_test@localhost:5433/ecopass_test pnpm prisma migrate reset --force --skip-seed",
+    "preinstall": "npx -y only-allow@1.2.2 pnpm"
   },
   "prisma": {
     "seed": "tsx prisma/seed/index.ts"
   },
   "engines": {
-    "node": ">22.0.0",
-    "yarn": "1.22"
+    "node": "^22.0.0",
+    "pnpm": "10.x"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -41,19 +43,22 @@
     "jsdom": "^27.1.0",
     "jsonwebtoken": "^9.0.2",
     "jszip": "^3.10.1",
-    "next": "^16.0.1",
+    "next": "^16.0.7",
     "next-auth": "^4.24.13",
     "nodemailer": "^7.0.10",
     "object-hash": "^3.0.0",
+    "prisma": "^6.19.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "swagger-ui-react": "^5.30.2",
     "tsx": "^4.20.6",
+    "typescript": "^5",
     "uuid": "^11.1.0",
     "xlsx": "^0.18.5",
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
     "@faker-js/faker": "^10.1.0",
     "@playwright/test": "^1.56.1",
     "@types/bcrypt": "^6.0.0",
@@ -68,14 +73,12 @@
     "@types/swagger-ui-react": "^5.18.0",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.1",
-    "eslint-config-next": "^16.0.1",
+    "eslint-config-next": "^16.0.7",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "jest": "^30",
     "prettier": "^3.6.2",
-    "prisma": "^6.19.0",
     "sass": "^1.94.0",
-    "ts-jest": "^29",
-    "typescript": "^5"
+    "ts-jest": "^29"
   }
 }

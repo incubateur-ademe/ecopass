@@ -47,8 +47,8 @@ describe("computeBatchInformations", () => {
     expect(results).toHaveLength(2)
     expect(results[0].numberOfReferences).toBe(5)
     expect(results[1].numberOfReferences).toBe(5)
-    expect(results[0].price).toBe((15 / 35) * 99)
-    expect(results[1].price).toBe((20 / 35) * 99)
+    expect(results[0].price).toBe((10 / 24) * 99)
+    expect(results[1].price).toBe((14 / 24) * 99)
   })
 
   test("should work if a product is not recognized", () => {
@@ -62,8 +62,8 @@ describe("computeBatchInformations", () => {
     expect(results).toHaveLength(2)
     expect(results[0].numberOfReferences).toBe(5)
     expect(results[1].numberOfReferences).toBe(5)
-    expect(results[0].price).toBe((1 / 21) * 99)
-    expect(results[1].price).toBe((20 / 21) * 99)
+    expect(results[0].price).toBe((1 / 15) * 99)
+    expect(results[1].price).toBe((14 / 15) * 99)
   })
 })
 

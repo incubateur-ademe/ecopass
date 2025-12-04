@@ -37,7 +37,7 @@ const users = async () => {
       },
     },
   })
-  await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       email: "ecopass-admin-dev@yopmail.com",
       role: UserRole.ADMIN,
@@ -46,6 +46,14 @@ const users = async () => {
       organization: {
         connect: { siret: "31723624800017" },
       },
+    },
+  })
+
+  await prisma.aPIKey.create({
+    data: {
+      key: "ce4a461a-ae00-49a9-8fbc-d342dc635da6",
+      userId: user.id,
+      name: "API Key for development",
     },
   })
 }

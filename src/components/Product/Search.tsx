@@ -21,7 +21,7 @@ const Search = ({ withAlert }: { withAlert?: boolean }) => {
         )}
       </div>
       <p>Saisissez le code-barres du produit recherché (8 ou 13 chiffres)</p>
-      <div className='fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle'>
+      <div className='fr-grid-row fr-grid-row--gutters'>
         <Input
           className='fr-col-12 fr-col-sm-9 fr-mb-0'
           label='Code-barres'
@@ -37,9 +37,14 @@ const Search = ({ withAlert }: { withAlert?: boolean }) => {
             },
           }}
         />
-        <div className='fr-col-12 fr-col-sm-3 fr-mt-1w'>
-          <Button linkProps={{ href: `/produits/${gtin}`, prefetch: false }}>Rechercher</Button>
-        </div>
+      </div>
+      <div className='fr-btns-group--inline fr-mt-2w'>
+        <Button linkProps={{ href: `/produits/${gtin}`, prefetch: false }} iconId='ri-search-line'>
+          Rechercher
+        </Button>
+        <Button linkProps={{ href: `/recherche?search=${gtin}` }} priority='secondary' iconId='ri-settings-line'>
+          Recherche avancée
+        </Button>
       </div>
     </>
   )

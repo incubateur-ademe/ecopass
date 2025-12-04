@@ -18,6 +18,11 @@ const PlanDuSite = () => {
           </Link>
         </li>
         <li>
+          <Link className='fr-link' prefetch={false} href='/recherche'>
+            Recherche de produits
+          </Link>
+        </li>
+        <li>
           <Link className='fr-link' prefetch={false} href='/declarations'>
             Déclarations
           </Link>
