@@ -44,6 +44,7 @@ describe("organization", () => {
       data: {
         siret: "11111111111111",
         name: "Test Org",
+        displayName: "Test Org",
         type: OrganizationType.Brand,
         naf: "14.13Z",
       },
@@ -138,6 +139,7 @@ describe("organization", () => {
         data: {
           siret: "22222222222222",
           name: "Org with Null Type",
+          displayName: "Org with Null Type",
           type: null,
         },
       })

@@ -33,14 +33,14 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
             Référence interne : <b>{product.internalReference}</b>
           </p>
           <p>
-            Code barre{product.gtins.length > 1 ? "s" : ""} : <b>{product.gtins.join(", ")}</b>
+            Code-barres{product.gtins.length > 1 ? "s" : ""} : <b>{product.gtins.join(", ")}</b>
           </p>
           <p>
             Déposé le : <b>{formatDate(product.createdAt)}</b>
           </p>
           {product.upload.createdBy.organization && (
             <p>
-              Par : <b>{product.upload.createdBy.organization.name}</b>
+              Par : <b>{product.upload.createdBy.organization.displayName}</b>
             </p>
           )}
           <p>

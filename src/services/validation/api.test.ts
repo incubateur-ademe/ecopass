@@ -691,9 +691,14 @@ describe("productsAPIValidation", () => {
     )
   })
 
-  it("does not allow products with less than 2 products", () => {
-    expectZodValidationToFail(productsAPIValidation, validProducts, { products: [validProductBase] }, [
-      { path: ["products"], message: "Il faut au moins 2 produits dans le lot." },
+  it("does allow products with only one product", () => {
+    const result = productsAPIValidation.safeParse({ ...validProducts, products: [validProductBase] })
+    expect(result.success).toEqual(true)
+  })
+
+  it("does not allow products without any product", () => {
+    expectZodValidationToFail(productsAPIValidation, validProducts, { products: [] }, [
+      { path: ["products"], message: "Veuillez remplir au moins un produit." },
     ])
   })
 

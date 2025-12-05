@@ -13,7 +13,6 @@ import {
   getProductWithScoreHistory,
   getProductWithScoreHistoryCount,
   getOldProductWithScore,
-  getProductsToProcess,
 } from "./product"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { ProductInformationAPI } from "../services/validation/api"
@@ -33,6 +32,7 @@ describe("Product DB integration", () => {
     const organization = await prismaTest.organization.create({
       data: {
         name: "TestOrg",
+        displayName: "TestOrg",
         siret: "12345678901234",
         brands: {
           createMany: {
@@ -64,7 +64,7 @@ describe("Product DB integration", () => {
     testUploadId = upload.id
 
     const otherOrganisation = await prismaTest.organization.create({
-      data: { name: "Other org", siret: "12345678901235" },
+      data: { name: "Other org", displayName: "Orther org", siret: "12345678901235" },
     })
     await prismaTest.authorizedOrganization.createMany({
       data: [

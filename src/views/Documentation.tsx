@@ -6,7 +6,7 @@ import Default from "../components/Documentation/Default"
 const Documentation = () => (
   <>
     <Block>
-      <h1>Documentation de la déclaration de l'affichage environnemental</h1>
+      <h1>Documentation de la déclaration de du coût environnemental</h1>
       <p>
         Pour importer vos produits sur le portail de l'Affichage environnemental, vous devez fournir un fichier CSV ou
         Excel.

@@ -79,6 +79,7 @@ export const getUserOrganization = async (userId: string) => {
         select: {
           id: true,
           name: true,
+          displayName: true,
           type: true,
           naf: true,
           brands: { select: { id: true, name: true, default: true, active: true } },
