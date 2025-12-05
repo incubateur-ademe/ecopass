@@ -27,7 +27,7 @@ const NewExport = ({ brand }: { brand?: string }) => {
     />
   ) : (
     <LoadingButton loading={isLoading} onClick={onClick}>
-      Télécharger l'affichage environnemental de mes produits
+      Télécharger le coût environnemental de mes produits
     </LoadingButton>
   )
 }
