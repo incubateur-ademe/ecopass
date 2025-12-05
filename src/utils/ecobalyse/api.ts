@@ -181,14 +181,17 @@ export const computeBatchInformations = (
   numberOfReferences: number | undefined,
   products: ProductInformationAPI[],
 ) => {
+  const allProducts = products.flatMap((produit) =>
+    produit.numberOfItem === undefined ? produit : Array.from({ length: produit.numberOfItem }).map(() => produit),
+  )
   if (price === undefined) {
-    return products.map((product) => ({
+    return allProducts.map((product) => ({
       ...product,
       numberOfReferences,
     }))
   }
 
-  const ratios = products.map((p) => {
+  const ratios = allProducts.map((p) => {
     const ratio = reparationCosts[p.product] ?? 1
     return ratio
   })
@@ -196,5 +199,5 @@ export const computeBatchInformations = (
   const totalRatio = ratios.reduce((acc, value) => acc + value, 0)
   const productsPrice = ratios.map((ratio) => (ratio / totalRatio) * price)
 
-  return products.map((product, i) => ({ ...product, price: productsPrice[i], numberOfReferences }))
+  return allProducts.map((product, i) => ({ ...product, price: productsPrice[i], numberOfReferences }))
 }

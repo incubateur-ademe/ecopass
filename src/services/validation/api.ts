@@ -57,7 +57,7 @@ const product = z.object({
   trims: z.array(accessoryValidation).optional(),
 })
 
-export type ProductInformationAPI = z.infer<typeof product>
+export type ProductInformationAPI = z.infer<typeof product> & { numberOfItem?: number }
 
 const metaData = z.object({
   gtins: z
@@ -104,8 +104,12 @@ const productsAPIValidation = z.object({
   price: product.shape.price,
   numberOfReferences: product.shape.numberOfReferences,
   products: z
-    .array(product.omit({ price: true, numberOfReferences: true }))
-    .min(2, { message: "Il faut au moins 2 produits dans le lot." }),
+    .array(
+      product
+        .omit({ price: true, numberOfReferences: true })
+        .extend({ numberOfItem: z.number().min(1).max(99).optional() }),
+    )
+    .min(1, { message: "Veuillez remplir au moins un produit." }),
 })
 
 export const getUserProductsAPIValidation = (brands: [string, ...string[]]) =>

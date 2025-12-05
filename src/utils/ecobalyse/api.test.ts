@@ -51,6 +51,37 @@ describe("computeBatchInformations", () => {
     expect(results[1].price).toBe((14 / 24) * 99)
   })
 
+  test("should duplicate products", () => {
+    const products = [
+      { ...information, mass: 2, product: "chemise", numberOfItem: 3 },
+      { ...information, product: "jean", numberOfItem: 2 },
+    ]
+
+    const results = computeBatchInformations(99, 5, products)
+
+    expect(results).toHaveLength(5)
+    expect(results[0].numberOfReferences).toBe(5)
+    expect(results[0].product).toBe("chemise")
+    expect(results[0].price).toBe((10 / 58) * 99)
+    expect(results[0].mass).toBe(2)
+    expect(results[1].numberOfReferences).toBe(5)
+    expect(results[1].product).toBe("chemise")
+    expect(results[1].price).toBe((10 / 58) * 99)
+    expect(results[1].mass).toBe(2)
+    expect(results[2].numberOfReferences).toBe(5)
+    expect(results[2].product).toBe("chemise")
+    expect(results[2].price).toBe((10 / 58) * 99)
+    expect(results[2].mass).toBe(2)
+    expect(results[3].numberOfReferences).toBe(5)
+    expect(results[3].product).toBe("jean")
+    expect(results[3].price).toBe((14 / 58) * 99)
+    expect(results[3].mass).toBe(1)
+    expect(results[4].numberOfReferences).toBe(5)
+    expect(results[4].product).toBe("jean")
+    expect(results[4].price).toBe((14 / 58) * 99)
+    expect(results[4].mass).toBe(1)
+  })
+
   test("should work if a product is not recognized", () => {
     const products = [
       { ...information, product: "nimps" },
