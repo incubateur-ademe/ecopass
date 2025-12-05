@@ -19,7 +19,7 @@ test("connection with proconnect and existing organization", async ({ page }) =>
   await login(page)
 
   await page.getByRole("link", { name: "Organisation" }).click()
-  await expect(page.getByTestId("organization-name")).toHaveText("Emmaus")
+  await expect(page.getByTestId("organization-name")).toHaveText("EMMAUS")
 })
 
 test("connection with proconnect and new organization", async ({ page }) => {

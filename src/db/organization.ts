@@ -13,6 +13,7 @@ export const createOrganization = async (siret: string) => {
     data: {
       siret: siret,
       name: result.etablissement.uniteLegale.denominationUniteLegale,
+      displayName: result.etablissement.uniteLegale.denominationUniteLegale,
       effectif: result.etablissement.uniteLegale.trancheEffectifsUniteLegale,
       naf: result.etablissement.uniteLegale.activitePrincipaleUniteLegale,
       type,

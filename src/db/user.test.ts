@@ -20,6 +20,7 @@ describe("User DB integration", () => {
     testOrganization = await prismaTest.organization.create({
       data: {
         name: "TestOrg",
+        displayName: "TestOrg",
         siret: "12345678901234",
       },
     })
@@ -94,14 +95,17 @@ describe("User DB integration", () => {
         data: [
           {
             name: "AuthorizedOrg1",
+            displayName: "AuthorizedOrg1",
             siret: "98765432109876",
           },
           {
             name: "AuthorizedOrg2",
+            displayName: "AuthorizedOrg2",
             siret: "98765432109877",
           },
           {
             name: "AuthorizedOrg3",
+            displayName: "AuthorizedOrg3",
             siret: "98765432109878",
           },
         ],
@@ -244,10 +248,12 @@ describe("User DB integration", () => {
         data: [
           {
             name: "AuthorizedCompany",
+            displayName: "AuthorizedCompany",
             siret: "11111111111111",
           },
           {
             name: "AuthorizingCompany",
+            displayName: "AuthorizingCompany",
             siret: "99999999999999",
           },
         ],
@@ -343,8 +349,8 @@ describe("User DB integration", () => {
       await prismaTest.authorizedOrganization.deleteMany({})
       const [activeOrg, inactiveOrg] = await prismaTest.organization.createManyAndReturn({
         data: [
-          { name: "ActiveOrg", siret: "22222222222222" },
-          { name: "InactiveOrg", siret: "33333333333333" },
+          { name: "ActiveOrg", displayName: "ActiveOrg", siret: "22222222222222" },
+          { name: "InactiveOrg", displayName: "InactiveOrg", siret: "33333333333333" },
         ],
       })
 
@@ -380,11 +386,11 @@ describe("User DB integration", () => {
 
     it("should order authorized organizations by creation date desc", async () => {
       const firstOrg = await prismaTest.organization.create({
-        data: { name: "FirstOrg", siret: "44444444444444" },
+        data: { name: "FirstOrg", displayName: "FirstOrg", siret: "44444444444444" },
       })
 
       const secondOrg = await prismaTest.organization.create({
-        data: { name: "SecondOrg", siret: "55555555555555" },
+        data: { name: "SecondOrg", displayName: "SecondOrg", siret: "55555555555555" },
       })
 
       const firstAuth = await prismaTest.authorizedOrganization.create({
