@@ -55,8 +55,8 @@ test("manage brands", async ({ page }) => {
   await expect(page.getByTestId("brand-row-name").last()).toHaveText("Emmaus Connect")
 
   await page.getByTestId("brand-row-action").nth(1).getByRole("button").click()
-  await expect(page.getByRole("textbox", { name: "Nom" })).toHaveValue("Emmaus Solidarité")
-  await page.getByRole("textbox", { name: "Nom" }).fill("Emmaus Solidarité Bis")
+  await expect(page.getByRole("textbox", { name: "Nom" }).nth(1)).toHaveValue("Emmaus Solidarité")
+  await page.getByRole("textbox", { name: "Nom" }).nth(1).fill("Emmaus Solidarité Bis")
   await page.getByRole("button", { name: "Enregistrer" }).click()
   await expect(page.getByTestId("brand-row-name")).toHaveCount(4)
   await expect(page.getByTestId("brand-row-name").nth(1)).toHaveText("Emmaus Solidarité Bis")
@@ -133,11 +133,12 @@ test("manage delegation", async ({ page }) => {
     expect(response.status()).toBe(200)
     expect(await response.json()).toEqual({
       name: "WARO",
+      displayName: "WARO",
       brands: [{ name: "WARO", id: expect.any(String), active: true, default: true }],
       authorizedBy: [
         {
           createdAt: expect.any(String),
-          name: "Emmaus",
+          name: "EMMAUS",
           siret: "31723624800017",
           brands: [
             {
@@ -202,6 +203,7 @@ test("manage delegation", async ({ page }) => {
     expect(response.status()).toBe(200)
     expect(await response.json()).toEqual({
       name: "WARO",
+      displayName: "WARO",
       brands: [{ name: "WARO", id: expect.any(String), active: true, default: true }],
       authorizedBy: [],
       authorizeOrganization: [],

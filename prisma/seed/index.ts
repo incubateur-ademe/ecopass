@@ -22,7 +22,8 @@ const users = async () => {
   await prisma.organization.create({
     data: {
       siret: "31723624800017",
-      name: "Emmaus",
+      name: "EMMAUS",
+      displayName: "Emmaus",
       effectif: "41",
       naf: "87.90B",
       type: OrganizationType.Brand,

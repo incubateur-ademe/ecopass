@@ -4,6 +4,8 @@ import styles from "./Informations.module.css"
 import { organizationTypeByNaf } from "../../utils/admin/nafs"
 import Link from "next/link"
 import { OrganizationType } from "../../../prisma/src/prisma"
+import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
+import OrganizationName from "./OrganizationName"
 
 const types: Record<OrganizationType, string> = {
   [OrganizationType.Brand]: "Marque",
@@ -22,6 +24,9 @@ const Informations = ({ organization }: { organization: UserOrganization }) => {
         <Badge className={styles.badge} severity='success'>
           En activité
         </Badge>
+        {organization.type && organizationTypesAllowedToDeclare.includes(organization.type) && (
+          <OrganizationName organization={organization} />
+        )}
       </div>
       {organization.type && (
         <div>

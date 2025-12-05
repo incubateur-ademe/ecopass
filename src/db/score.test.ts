@@ -21,6 +21,7 @@ describe("Score DB integration", () => {
     const organization = await prismaTest.organization.create({
       data: {
         name: "TestOrg",
+        displayName: "TestOrg",
         siret: "12345678901234",
         brands: {
           createMany: {

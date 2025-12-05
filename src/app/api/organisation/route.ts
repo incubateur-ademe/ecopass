@@ -17,6 +17,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       name: organization.name,
+      displayName: organization.displayName,
       brands: organization.brands,
       authorizedBy: organization.authorizedBy.map((auth) => ({
         createdAt: auth.createdAt,

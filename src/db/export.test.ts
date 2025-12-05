@@ -16,6 +16,7 @@ describe("Export DB", () => {
     const organization = await prismaTest.organization.create({
       data: {
         name: "Test Organization",
+        displayName: "Test Organization",
         siret: "12345678901234",
       },
     })

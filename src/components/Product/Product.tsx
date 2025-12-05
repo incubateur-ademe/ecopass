@@ -40,7 +40,7 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
           </p>
           {product.upload.createdBy.organization && (
             <p>
-              Par : <b>{product.upload.createdBy.organization.name}</b>
+              Par : <b>{product.upload.createdBy.organization.displayName}</b>
             </p>
           )}
           <p>

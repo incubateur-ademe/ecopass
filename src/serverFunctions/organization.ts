@@ -121,3 +121,24 @@ export const updateOrganizationType = async (type: OrganizationType) => {
     data: { type },
   })
 }
+
+export const updateDisplayName = async (displayName: string) => {
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+  const user = await prismaClient.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      organization: true,
+    },
+  })
+
+  if (!user || !user.organization) {
+    return "Aucune organisation trouvée pour l'utilisateur"
+  }
+  await prismaClient.organization.update({
+    where: { id: user.organization.id },
+    data: { displayName },
+  })
+}

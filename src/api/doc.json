@@ -655,6 +655,7 @@
                 },
                 "example": {
                   "name": "Ma Société",
+                  "disaplayName": "Société A",
                   "brands": [
                     { "id": "8fb367e1-42d9-4665-9d79-9395428a83a8", "name": "Ma Marque Premium" },
                     { "id": "c18138f6-b445-49b1-83fc-7594d301e845", "name": "Ma Marque Eco" }
@@ -904,6 +905,11 @@
             "type": "string",
             "description": "Nom de l'organisation",
             "example": "Ma Société"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Nom d'usage de l'organisation",
+            "example": "Société A"
           },
           "brands": {
             "type": "array",
