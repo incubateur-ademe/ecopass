@@ -3,17 +3,9 @@ import { UserOrganization } from "../../db/user"
 import styles from "./Informations.module.css"
 import { organizationTypeByNaf } from "../../utils/admin/nafs"
 import Link from "next/link"
-import { OrganizationType } from "../../../prisma/src/prisma"
 import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
 import OrganizationName from "./OrganizationName"
-
-const types: Record<OrganizationType, string> = {
-  [OrganizationType.Brand]: "Marque",
-  [OrganizationType.Distributor]: "Distributeur",
-  [OrganizationType.BrandAndDistributor]: "Marque et distributeur",
-  [OrganizationType.Consultancy]: "Bureau d'études",
-  [OrganizationType.Other]: "Autre",
-}
+import { organizationTypes } from "../../utils/organization/types"
 
 const Informations = ({ organization }: { organization: UserOrganization }) => {
   return (
@@ -31,7 +23,7 @@ const Informations = ({ organization }: { organization: UserOrganization }) => {
       {organization.type && (
         <div>
           <b>Type</b>
-          <p data-testid='organization-type'>{types[organization.type]}</p>
+          <p data-testid='organization-type'>{organizationTypes[organization.type]}</p>
           {(!organization.naf || !organizationTypeByNaf[organization.naf]) && (
             <p className={styles.hint}>
               Ce n'est pas le bon type d'organisation ? Veuillez{" "}
