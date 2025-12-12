@@ -14,18 +14,24 @@ import { hashProductAPI } from "../encryption/hash"
 import { getAuthorizedBrands } from "../organization/brands"
 import { scoreIsValid } from "../validation/score"
 import { organizationTypesAllowedToDeclare } from "../organization/canDeclare"
+import { organizationTypes } from "../organization/types"
 
 export async function handleProductPOST(req: Request, batch?: boolean) {
   try {
     const api = await getApiUser(req.headers)
-    if (
-      !api ||
-      !api.user ||
-      !api.user.organization ||
-      !api.user.organization.type ||
-      !organizationTypesAllowedToDeclare.includes(api.user.organization.type)
-    ) {
+    if (!api || !api.user || !api.user.organization) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    if (!api.user.organization.type || !organizationTypesAllowedToDeclare.includes(api.user.organization.type)) {
+      return NextResponse.json(
+        {
+          error:
+            "Votre organisation n'est pas autorisée à déclarer des produits. Si vous pensez que c'est une erreur, veuillez contacter le support.",
+          organizationType: api.user.organization.type ? organizationTypes[api.user.organization.type] : "Non défini",
+        },
+        { status: 403 },
+      )
     }
 
     await updateAPIUse(api.key)
