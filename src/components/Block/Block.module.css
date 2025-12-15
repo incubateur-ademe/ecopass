@@ -11,6 +11,10 @@
   background-color: var(--background-default-grey-hover);
 }
 
+.home {
+  background: var(--background-alt-brown-cafe-creme);
+}
+
 .large {
   padding-top: 4rem;
   padding-bottom: 5rem;

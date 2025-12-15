@@ -14,7 +14,7 @@ export default async function HomePage() {
   return (
     <>
       <StartDsfrOnHydration />
-      <Home connected={!!session} type={type} />
+      <Home connected={!!session} type={type} isPro={!!session} />
     </>
   )
 }

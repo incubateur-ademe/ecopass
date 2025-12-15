@@ -1,20 +1,22 @@
 import { Tile } from "@codegouvfr/react-dsfr/Tile"
 import Block from "../components/Block/Block"
 import HomeBanner from "../components/Home/HomeBanner"
-import InformationBanner from "../components/Home/InformationBanner"
+import KeyResults from "../components/Home/KeyResults"
 import SearchBanner from "../components/Home/SearchBanner"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import { isTestEnvironment } from "../utils/test"
 import { OrganizationType } from "../../prisma/src/prisma"
 import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
+import InformationBanner from "../components/Home/InformationBanner"
+import InformationProBanner from "../components/Home/InformationProBanner"
 
-const Home = ({ connected, type }: { connected?: boolean; type: OrganizationType | null }) => {
+const Home = ({ connected, type, isPro }: { connected?: boolean; type: OrganizationType | null; isPro?: boolean }) => {
   const isAllowedToDeclare = !type || organizationTypesAllowedToDeclare.includes(type)
   return (
     <>
       {isAllowedToDeclare && (
-        <Block large secondary>
-          <HomeBanner withConnection={!connected} />
+        <Block large home>
+          <HomeBanner withConnection={!connected} isPro={isPro} />
           {connected && (
             <div className='fr-grid-row fr-grid-row--gutters fr-mt-3w'>
               <div className='fr-col-12 fr-col-lg-4'>
@@ -61,11 +63,22 @@ const Home = ({ connected, type }: { connected?: boolean; type: OrganizationType
       {(connected || !isTestEnvironment()) && (
         <>
           <Block large>
-            <SearchBanner />
+            <SearchBanner withLastBrands={!isPro} />
           </Block>
-          <Block large secondary>
-            <InformationBanner />
-          </Block>
+          {isPro ? (
+            <Block large secondary>
+              <InformationProBanner />
+            </Block>
+          ) : (
+            <>
+              <Block large secondary>
+                <InformationBanner />
+              </Block>
+              <Block>
+                <KeyResults />
+              </Block>
+            </>
+          )}
         </>
       )}
     </>

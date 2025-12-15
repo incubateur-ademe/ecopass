@@ -52,7 +52,33 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
                 ? { linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }
                 : null,
             ].filter((link) => link !== null)
-          : []
+          : [
+              {
+                linkProps: { href: "/" },
+                text: "Vous êtes consommateurs",
+                isActive: pathname === "/",
+              },
+              {
+                linkProps: { href: "/professionnels" },
+                text: "Vous êtes professionnels",
+                isActive: pathname === "/professionnels",
+              },
+              {
+                linkProps: { href: "/informations" },
+                text: "Informez-vous",
+                isActive: pathname === "/informations",
+              },
+              {
+                linkProps: { href: "/marques" },
+                text: "Consultez la liste des marques",
+                isActive: pathname === "/marques",
+              },
+              {
+                linkProps: { href: "/recherche" },
+                text: "Recherchez un produit",
+                isActive: pathname === "/recherche",
+              },
+            ]
       }
       quickAccessItems={
         session && session.user

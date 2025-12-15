@@ -13,11 +13,11 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
   const totalScore = computeBatchScore(product)
   return (
     <>
-      <Block>
-        <h1>Coût environnemental</h1>
+      <Block home>
         <Badge severity={isOld ? "warning" : "success"} className='fr-mb-4w'>
           {isOld ? "Déclaration obsolète" : "Déclaration validée"}
         </Badge>
+        <h1>Coût environnemental de ce produit</h1>
         <div data-testid='product-details'>
           <p className='fr-text--xl fr-mb-1w'>
             <b>

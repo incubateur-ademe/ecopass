@@ -1,0 +1,11 @@
+.filter {
+  display: flex;
+  gap: 4rem;
+  align-items: center;
+
+  @media screen and (max-width: 50rem) {
+    img {
+      display: none;
+    }
+  }
+}

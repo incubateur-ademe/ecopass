@@ -705,3 +705,21 @@ export const getBrandsInformations = async () => {
     }
   })
 }
+
+export const getLastBrands = async () => {
+  const brands = await prismaClient.product.groupBy({
+    by: ["brandId"],
+    where: {
+      status: Status.Done,
+      brandId: { not: null },
+    },
+    _max: { createdAt: true },
+    orderBy: { _max: { createdAt: "desc" } },
+    take: 5,
+  })
+
+  return prismaClient.brand.findMany({
+    where: { id: { in: brands.map((b) => b.brandId).filter((brand) => brand !== null) } },
+    select: { id: true, name: true },
+  })
+}

@@ -3,7 +3,7 @@
   flex-direction: row-reverse;
   gap: 1rem 2rem;
 
-  @media screen and (max-width: 767px) {
+  @media screen and (max-width: 50rem) {
     flex-direction: column;
   }
 }
@@ -11,7 +11,7 @@
 .upload {
   width: 40%;
 
-  @media screen and (max-width: 767px) {
+  @media screen and (max-width: 50rem) {
     width: 100%;
   }
 }
@@ -20,7 +20,7 @@
   width: 60%;
   margin: 0;
 
-  @media screen and (max-width: 767px) {
+  @media screen and (max-width: 50rem) {
     width: 100%;
   }
 }
