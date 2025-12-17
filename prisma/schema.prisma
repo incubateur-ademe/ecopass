@@ -184,9 +184,10 @@ model Product {
 }
 
 model ProductInformation {
-  id         String   @id @default(uuid())
-  category   String
-  emptyTrims Boolean? @map("empty_trims")
+  id           String   @id @default(uuid())
+  category     String
+  categorySlug String?  @map("category_slug")
+  emptyTrims   Boolean? @map("empty_trims")
 
   // Encrypted string
   business        String

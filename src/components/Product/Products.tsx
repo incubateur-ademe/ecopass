@@ -1,5 +1,4 @@
 "use server"
-
 import { getOrganizationProductsByUserIdAndBrand } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
@@ -9,8 +8,7 @@ import Table from "../Table/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Link from "next/link"
 import DownloadScores from "./DownloadScores"
-import { BATCH_CATEGORY, productCategories } from "../../utils/types/productCategory"
-import { simplifyValue } from "../../utils/parsing/parsing"
+import { BATCH_CATEGORY } from "../../utils/types/productCategory"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
@@ -47,9 +45,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
           headers={["Date de dépot", "Catégorie", "Référence interne", "Score", ""]}
           data={products.map((product) => [
             formatDate(product.createdAt),
-            product.informations.length === 1
-              ? productCategories[simplifyValue(product.informations[0].category)] || product.informations[0].category
-              : BATCH_CATEGORY,
+            product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY,
             product.internalReference,
             product.score ? formatNumber(product.score) : "",
             <Button linkProps={{ href: `/produits/${product.gtins[0]}` }} key={product.gtins[0]}>
