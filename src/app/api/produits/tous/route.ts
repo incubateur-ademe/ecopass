@@ -48,7 +48,7 @@ export async function GET(req: Request) {
     },
     include: {
       brand: { select: { name: true } },
-      informations: { select: { category: true, score: true } },
+      informations: { select: { categorySlug: true, score: true } },
       upload: {
         include: {
           createdBy: {
@@ -90,7 +90,7 @@ export async function GET(req: Request) {
       internalReference: product.internalReference,
       brand: product.brand,
       createdAt: product.createdAt,
-      category: product.informations.length === 1 ? product.informations[0].category : BATCH_CATEGORY,
+      category: product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY,
       score: totalScore,
       upload: {
         version: product.upload.version,

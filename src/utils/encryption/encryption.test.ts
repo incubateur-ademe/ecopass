@@ -96,8 +96,26 @@ describe("encryption utils", () => {
       ...encrypted.product,
       materials: encrypted.materials.map((material) => ({ ...material, id: uuid(), productId: uuid() })),
       accessories: encrypted.accessories?.map((accessory) => ({ ...accessory, id: uuid(), productId: uuid() })) || [],
+      emptyTrims: false,
     })
     checkDecryption(product, encrypted, decrypted)
+  })
+
+  it("encryptProductFields sets categorySlug for valid category", () => {
+    const encrypted = encryptProductFields(product)
+    expect(encrypted.product.categorySlug).toBe("Jean")
+  })
+
+  it("encryptProductFields sets categorySlug to undefined for invalid category", () => {
+    const invalidProduct = { ...product, product: "InvalidCategoryName" }
+    const encrypted = encryptProductFields(invalidProduct)
+    expect(encrypted.product.categorySlug).toBeUndefined()
+  })
+
+  it("encryptProductFields handles all values", () => {
+    const tshirtProduct = { ...product, product: "T-Shirt / Polo" }
+    const encrypted = encryptProductFields(tshirtProduct)
+    expect(encrypted.product.categorySlug).toBe("T-shirt / Polo")
   })
 
   it("encryptAndZipFile / decryptAndDezipFile roundtrip", async () => {

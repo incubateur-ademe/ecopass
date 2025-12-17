@@ -15,7 +15,7 @@ const getDataGouvCSV = async () => {
     },
     include: {
       brand: { select: { name: true } },
-      informations: { select: { category: true }, include: { score: true } },
+      informations: { select: { categorySlug: true }, include: { score: true } },
       upload: {
         include: {
           createdBy: {
@@ -58,7 +58,7 @@ const getDataGouvCSV = async () => {
     const totalScore = computeBatchScore(product)
     return [
       product.brand,
-      product.informations.length === 1 ? product.informations[0].category : BATCH_CATEGORY,
+      product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY,
       gtin,
       product.internalReference,
       totalScore.score ?? "",

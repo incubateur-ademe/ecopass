@@ -2,7 +2,6 @@ import { Accessory, Material, Prisma, Product, ProductInformation, Status, Uploa
 import { ParsedProductValidation } from "../services/validation/product"
 import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"
-import { simplifyValue } from "../utils/parsing/parsing"
 import { BATCH_CATEGORY, productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
 
@@ -151,7 +150,7 @@ const productWithScoreSelect = {
   createdAt: true,
   score: true,
   standardized: true,
-  informations: { select: { category: true, score: true } },
+  informations: { select: { categorySlug: true, score: true } },
   upload: {
     select: {
       version: true,
@@ -442,7 +441,7 @@ export const searchProducts = async (options: {
     ...(options.category && {
       informations: {
         some: {
-          category: options.category,
+          categorySlug: productCategories[options.category],
         },
       },
     }),
@@ -530,7 +529,7 @@ export const getProductCountByCategory = async () => {
       createdAt: true,
       informations: {
         select: {
-          category: true,
+          categorySlug: true,
         },
       },
     },
@@ -549,9 +548,10 @@ export const getProductCountByCategory = async () => {
 
   const categoryCount = uniqueProducts.reduce(
     (acc, product) => {
-      const categoryValue = product.informations.length == 1 ? product.informations[0].category : BATCH_CATEGORY
-      const category = productCategories[simplifyValue(categoryValue)] || categoryValue
-
+      const category = product.informations.length == 1 ? product.informations[0].categorySlug : BATCH_CATEGORY
+      if (!category) {
+        return acc
+      }
       if (!acc[category]) {
         acc[category] = 0
       }

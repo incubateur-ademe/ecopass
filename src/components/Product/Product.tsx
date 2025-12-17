@@ -5,8 +5,7 @@ import Block from "../Block/Block"
 import ProductScore from "./ProductScore"
 import ProductHistory from "./ProductHistory"
 import ProductScoreImpacts from "./ProductScoreImpacts"
-import { BATCH_CATEGORY, productCategories } from "../../utils/types/productCategory"
-import { simplifyValue } from "../../utils/parsing/parsing"
+import { BATCH_CATEGORY } from "../../utils/types/productCategory"
 import { computeBatchScore } from "../../utils/ecobalyse/batches"
 
 const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: string; isOld?: boolean }) => {
@@ -22,10 +21,7 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
         <div data-testid='product-details'>
           <p className='fr-text--xl fr-mb-1w'>
             <b>
-              {isBatch
-                ? BATCH_CATEGORY
-                : productCategories[simplifyValue(product.informations[0].category)] ||
-                  product.informations[0].category}
+              {isBatch ? BATCH_CATEGORY : product.informations[0].categorySlug}
               {product.brand && <span> - {product.brand.name}</span>}
             </b>
           </p>
