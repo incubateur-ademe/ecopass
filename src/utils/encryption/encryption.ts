@@ -3,6 +3,8 @@ import { ProductInformationAPI } from "../../services/validation/api"
 import { ParsedProduct } from "../../types/Product"
 import JSZip from "jszip"
 import { Accessory, Material, ProductInformation } from "../../../prisma/src/prisma"
+import { simplifyValue } from "../parsing/parsing"
+import { productCategories } from "../types/productCategory"
 
 const ALGO = "aes-256-gcm"
 const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, "hex")
@@ -67,7 +69,6 @@ export const decryptProductFields = (
   },
 ) => ({
   ...product,
-  category: product.category,
   business: decryptString(product.business),
   countryDyeing: decryptString(product.countryDyeing),
   countryFabric: decryptString(product.countryFabric),
@@ -94,10 +95,16 @@ export const decryptProductFields = (
   })),
 })
 
+const computeCategorySlug = (category: string) => {
+  const value = simplifyValue(category)
+  return productCategories[value]
+}
+
 export function encryptProductFields(product: ProductInformationAPI | ParsedProduct) {
   return {
     product: {
       category: product.product,
+      categorySlug: computeCategorySlug(product.product),
       airTransportRatio: encrypt(product.airTransportRatio),
       business: encrypt(product.business),
       fading: encrypt(product.fading),

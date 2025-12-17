@@ -5,9 +5,8 @@ import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import classNames from "classnames"
 import { Products } from "../../../db/product"
 import { formatDateTime } from "../../../services/format"
-import { BATCH_CATEGORY, productCategories } from "../../../utils/types/productCategory"
+import { BATCH_CATEGORY } from "../../../utils/types/productCategory"
 import styles from "./SearchResults.module.css"
-import { simplifyValue } from "../../../utils/parsing/parsing"
 
 const SearchResults = ({
   products,
@@ -38,9 +37,7 @@ const SearchResults = ({
             product.gtins.join(", "),
             product.internalReference,
             product.brand?.name || "-",
-            product.informations.length === 1
-              ? productCategories[simplifyValue(product.informations[0].category)] || product.informations[0].category
-              : BATCH_CATEGORY,
+            product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY,
             product.score ? Math.round(product.score) : "-",
             formatDateTime(product.createdAt),
             <Button
