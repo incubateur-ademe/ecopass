@@ -97,6 +97,7 @@ export const getEcobalyseIds = async (type: "materials" | "products" | "trims") 
 export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
   const productData = {
     ...product,
+    price: product.price === undefined ? undefined : Math.min(product.price, 1000),
     brandId: undefined,
     gtins: undefined,
     internalReference: undefined,

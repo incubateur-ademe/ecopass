@@ -55,7 +55,7 @@ const Ecobalyse = () => {
           999999).
         </li>
         <li>
-          <b>Prix (en euros, TTC)</b> (optionnel) : prix du produit, en Euros (€), TTC (min : 1, max : 1000).
+          <b>Prix (en euros, TTC)</b> (optionnel) : prix du produit, en Euros (€), TTC (min : 1).
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optionnel) : type d'entreprise et d'offre de services :

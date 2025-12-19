@@ -229,11 +229,6 @@ describe("productValidation", () => {
     ])
   })
 
-  it("does not allow product with price too high", () => {
-    expectZodValidationToFail(productValidation, validProduct, { price: 10001 }, [
-      { path: ["price"], message: "Le prix doit être inférieur à 1000 €" },
-    ])
-  })
   it("does not allow product with invalid price", () => {
     expectZodValidationToFail(productValidation, validProduct, { price: "Une bonne affaire" }, [
       { path: ["price"], message: "Le prix doit être un nombre" },
