@@ -230,12 +230,6 @@ describe("productAPIValidation", () => {
     ])
   })
 
-  it("does not allow product with too high price", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { price: 1001 }, [
-      { path: ["price"], message: "Too big: expected number to be <=1000" },
-    ])
-  })
-
   it("does not allow product with invalid countryDyeing", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { countryDyeing: "Ici" }, [
       {
@@ -785,12 +779,6 @@ describe("productsAPIValidation", () => {
   it("does not allow product with too low price", () => {
     expectZodValidationToFail(productsAPIValidation, validProducts, { price: 0 }, [
       { path: ["price"], message: "Too small: expected number to be >=1" },
-    ])
-  })
-
-  it("does not allow product with too high price", () => {
-    expectZodValidationToFail(productsAPIValidation, validProducts, { price: 1001 }, [
-      { path: ["price"], message: "Too big: expected number to be <=1000" },
     ])
   })
 })

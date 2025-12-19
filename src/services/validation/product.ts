@@ -63,11 +63,7 @@ const productValidation = z.object({
     .min(1, "Le nombre de références doit être supérieur à 1")
     .max(999999, "Le nombre de références doit être inférieur à 999 999")
     .optional(),
-  price: z
-    .number({ message: "Le prix doit être un nombre" })
-    .min(1, "Le prix doit être supérieur à 1 €")
-    .max(1000, "Le prix doit être inférieur à 1000 €")
-    .optional(),
+  price: z.number({ message: "Le prix doit être un nombre" }).min(1, "Le prix doit être supérieur à 1 €").optional(),
   countryDyeing: z.enum(Country, { message: "Origine de l'ennoblissement/impression invalide" }).optional(),
   countryFabric: z.enum(Country, { message: "Origine de tissage/tricotage invalide" }).optional(),
   countryMaking: z.enum(Country, { message: "Origine de confection invalide" }),

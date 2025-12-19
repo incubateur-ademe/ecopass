@@ -54,7 +54,7 @@ const En = () => {
           <b>Nombre de références</b> (optional): number of references in the brand's catalog (min: 1, max: 999999).
         </li>
         <li>
-          <b>Prix (en euros, TTC)</b> (optional): product price, in Euros (€), VAT included(min: 1, max: 1000).
+          <b>Prix (en euros, TTC)</b> (optional): product price, in Euros (€), VAT included (min: 1).
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optional): type of company and service offer:
