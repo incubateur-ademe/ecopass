@@ -3,8 +3,8 @@
 import { prismaClient } from "../db/prismaClient"
 import { getUserOrganizationType as getUserOrganizationTypeDB } from "../db/user"
 import { auth } from "../services/auth/auth"
-import { generateResetToken, signPassword } from "../services/auth/user"
 import jwt from "jsonwebtoken"
+import { generateResetToken, signPassword } from "../services/auth/user"
 
 export const resetPassword = async (email: string) => {
   try {
