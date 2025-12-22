@@ -1,6 +1,7 @@
 import classNames from "classnames"
 import { ReactNode } from "react"
 import styles from "./Block.module.css"
+import Link from "next/link"
 
 const Block = ({
   children,
@@ -9,6 +10,7 @@ const Block = ({
   noMargin,
   large,
   home,
+  backLink,
 }: {
   children: ReactNode
   className?: string
@@ -16,6 +18,7 @@ const Block = ({
   noMargin?: boolean
   large?: boolean
   home?: boolean
+  backLink?: { url: string; label: string }
 }) => {
   return (
     <div
@@ -28,6 +31,11 @@ const Block = ({
           [styles.noMargin]: noMargin,
           [styles.large]: large,
         })}>
+        {backLink && (
+          <Link href={backLink.url} className={styles.backLink}>
+            <span className='fr-icon-arrow-left-line' aria-hidden='true'></span> {backLink.label}
+          </Link>
+        )}
         {children}
       </div>
     </div>

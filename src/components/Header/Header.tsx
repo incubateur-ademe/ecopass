@@ -71,7 +71,7 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
               {
                 linkProps: { href: "/marques" },
                 text: "Consultez la liste des marques",
-                isActive: pathname === "/marques",
+                isActive: pathname.startsWith("/marques"),
               },
               {
                 linkProps: { href: "/recherche" },

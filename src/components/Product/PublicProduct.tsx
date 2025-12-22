@@ -17,7 +17,7 @@ const PublicProduct = ({ product, gtin }: { product: ProductWithScore; gtin: str
   const totalScore = computeBatchScore(product)
   return (
     <>
-      <Block home>
+      <Block home backLink={{ url: "/recherche", label: "Consulter une autre fiche produit" }}>
         <h1>Coût environnemental de ce produit</h1>
         <div className={styles.productBanner}>
           <div className={styles.productLine}>

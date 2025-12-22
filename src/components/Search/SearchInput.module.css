@@ -1,0 +1,21 @@
+.box {
+  border: 1px solid var(--brown-cafe-creme-sun-383-moon-885);
+  background-color: white;
+  padding: 1.875rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  height: fit-content;
+  width: 100%;
+}
+
+.input {
+  flex: 1;
+  min-width: 15rem;
+}
