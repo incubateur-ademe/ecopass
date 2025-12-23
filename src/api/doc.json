@@ -1039,8 +1039,7 @@
           "price": {
             "description": "Prix du produit, en Euros (€).",
             "type": "number",
-            "minimum": 1,
-            "maximum": 1000
+            "minimum": 1
           },
           "printing": {
             "type": "object",

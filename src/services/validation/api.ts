@@ -39,7 +39,7 @@ const product = z.object({
   fading: z.boolean().optional(),
   mass: z.number().min(0.01),
   numberOfReferences: z.number().min(1).max(999999).optional(),
-  price: z.number().min(1).max(1000).optional(),
+  price: z.number().min(1).optional(),
   countryDyeing: z.enum(countryValues).optional(),
   countryFabric: z.enum(countryValues).optional(),
   countryMaking: z.enum(countryValues),

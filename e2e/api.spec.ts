@@ -68,7 +68,7 @@ const batch = {
   ],
 }
 
-test.skip("declare my products by API", async ({ page }) => {
+test("declare my products by API", async ({ page }) => {
   await login(page)
 
   await page.getByRole("link", { name: "API", exact: true }).click()
@@ -84,14 +84,6 @@ test.skip("declare my products by API", async ({ page }) => {
 
   let response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
-    headers: {
-      Authorization: "Bearer nimps",
-    },
-  })
-  expect(response.status()).toBe(401)
-
-  response = await page.request.post("http://localhost:3000/api/produits/lot", {
-    data: batch,
     headers: {
       Authorization: "Bearer nimps",
     },
@@ -116,23 +108,13 @@ test.skip("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(208)
 
-  // A first batch upload should succeed
   response = await page.request.post("http://localhost:3000/api/produits/lot", {
     data: batch,
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
   })
-  expect(response.status()).toBe(201)
-
-  // The  same batch should return 208 (Already Reported) and not create a duplicate
-  response = await page.request.post("http://localhost:3000/api/produits/lot", {
-    data: batch,
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  })
-  expect(response.status()).toBe(208)
+  expect(response.status()).toBe(404)
 
   // An update should succeed
   response = await page.request.post("http://localhost:3000/api/produits", {
@@ -143,27 +125,9 @@ test.skip("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(201)
 
-  // An batch update should succeed
-  response = await page.request.post("http://localhost:3000/api/produits/lot", {
-    data: { ...batch, products: [{ ...batch.products[0], mass: 0.18 }, batch.products[1]] },
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  })
-  expect(response.status()).toBe(201)
-
   // Back to the first version should also succeed (3 versions created in total)
   response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  })
-  expect(response.status()).toBe(201)
-
-  // Back to the first version should also succeed (3 versions created in total)
-  response = await page.request.post("http://localhost:3000/api/produits/lot", {
-    data: batch,
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
@@ -181,17 +145,6 @@ test.skip("declare my products by API", async ({ page }) => {
     '[{"code":"invalid_value","path":["declaredScore"],"message":"Le score déclaré (100.25) ne correspond pas au score calculé (1754.6384371121455)"}]',
   )
 
-  response = await page.request.post("http://localhost:3000/api/produits/lot", {
-    data: { ...batch, internalReference: "BATCH-101", declaredScore: 1000.25 },
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  })
-  expect(response.status()).toBe(400)
-  expect(await response.text()).toEqual(
-    '[{"code":"invalid_value","path":["declaredScore"],"message":"Le score déclaré (1000.25) ne correspond pas au score calculé (4595.399267216788)"}]',
-  )
-
   response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, internalReference: "REF-102", mass: undefined },
     headers: {
@@ -203,67 +156,21 @@ test.skip("declare my products by API", async ({ page }) => {
     '[{"expected":"number","code":"invalid_type","path":["mass"],"message":"Invalid input: expected number, received undefined"}]',
   )
 
-  response = await page.request.post("http://localhost:3000/api/produits/lot", {
-    data: {
-      ...batch,
-      internalReference: "BATCH-102",
-      products: [{ ...batch.products[0], mass: undefined }, batch.products[1]],
-    },
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  })
-  expect(response.status()).toBe(400)
-  expect(await response.text()).toEqual(
-    '[{"expected":"number","code":"invalid_type","path":["products",0,"mass"],"message":"Invalid input: expected number, received undefined"}]',
-  )
-
   await page.getByRole("link", { name: "Produits déclarés" }).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(1)).toHaveText(
-    "Lot de produits",
-  )
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
-    "BATCH-100",
-  )
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
-    "4 595",
-  )
-  await page.getByTestId("products-table").locator("table tbody tr").nth(0).getByRole("link").click()
-  await expect(page.getByTestId("product-details")).toHaveText(
-    `Lot de produits - EmmausRéférence interne : BATCH-100Code-barres : 1234567891125Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
-  )
-  await expect(page.getByTestId("product-score")).toHaveText(
-    `Coût environnemental : 4595 pointsCoût environnemental pour 100g : 511 pointsCoefficient de durabilité : 1.12Coût environnemental : 4595 points d'impact, 511 pour 100g511 pts/100g4 595Télécharger le .svg`,
-  )
-
-  await page.getByRole("button", { name: "Voir l'historique du produit" }).click()
-
-  await expect(page.getByTestId("history-table").locator("table tbody tr")).toHaveCount(3)
-  await expect(page.getByTestId("history-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
-    "4595",
-  )
-  await expect(page.getByTestId("history-table").locator("table tbody tr").nth(1).locator("td").nth(3)).toHaveText(
-    "4349",
-  )
-  await expect(page.getByTestId("history-table").locator("table tbody tr").nth(2).locator("td").nth(3)).toHaveText(
-    "4595",
-  )
-
-  await page.getByRole("link", { name: "Produits" }).click()
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
     "T-shirt / Polo",
   )
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
     "REF-100",
   )
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(3)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
     "1 755",
   )
-  await page.getByTestId("products-table").locator("table tbody tr").nth(1).getByRole("link").click()
+  await page.getByTestId("products-table").locator("table tbody tr").nth(0).getByRole("link").click()
   await expect(page.getByTestId("product-details")).toHaveText(
     `T-shirt / Polo - EmmausRéférence interne : REF-100Code-barres : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
   )

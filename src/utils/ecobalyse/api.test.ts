@@ -717,5 +717,47 @@ describe("API Ecobalyse", () => {
         wtu: 763.4,
       })
     })
+
+    it("should cap price at 1000 when price is above 1000", async () => {
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+
+      await computeEcobalyseScore({ ...mockAPIProduct, price: 1500 })
+
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: expect.objectContaining({
+          price: 1000,
+        }),
+      })
+    })
+
+    it("should keep price as is when price is below 1000", async () => {
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+
+      await computeEcobalyseScore({ ...mockAPIProduct, price: 50 })
+
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: expect.objectContaining({
+          price: 50,
+        }),
+      })
+    })
+
+    it("should not include price in body when price is undefined", async () => {
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+
+      await computeEcobalyseScore({ ...mockAPIProduct, price: undefined })
+
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: expect.not.objectContaining({
+          price: expect.anything(),
+        }),
+      })
+    })
   })
 })
