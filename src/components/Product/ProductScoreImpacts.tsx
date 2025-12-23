@@ -1,9 +1,8 @@
 import { ProductWithScore } from "../../db/product"
 import Table from "../Table/Table"
 import styles from "./ProductScore.module.css"
-import Link from "next/link"
-import Block from "../Block/Block"
 import { ponderations } from "../../utils/product/impacts"
+import Link from "next/link"
 
 type ScoreKey = keyof typeof ponderations
 
@@ -17,21 +16,20 @@ const ProductScoreImpacts = ({
   }
 
   return (
-    <Block>
+    <>
+      <h2>Détails des impacts environnementaux</h2>
+      <div>
+        <Link
+          href='https://ecobalyse.beta.gouv.fr/versions/v7.0.0/#/explore/textile/impacts'
+          target='_blank'
+          rel='noreferrer noopener'>
+          Vous pouvez consulter un tableau plus complet du calcul sur Ecobalyse
+        </Link>
+      </div>
       <Table
-        className='fr-mb-0'
-        caption={
-          <>
-            Détails des impacts environnementaux{" "}
-            <Link
-              className={styles.link}
-              href='https://ecobalyse.beta.gouv.fr/versions/v7.0.0/#/explore/textile/impacts'
-              target='_blank'
-              rel='noreferrer noopener'>
-              <span className='fr-icon-questionnaire-line' />
-            </Link>
-          </>
-        }
+        className='fr-mb-0 fr-mt-4w'
+        noCaption
+        caption='Détails des impacts environnementaux'
         fixed
         headers={["Nom", "Valeur", "Pourcentage", ""]}
         data={Object.entries(ponderations)
@@ -48,7 +46,7 @@ const ProductScoreImpacts = ({
             (Math.round((value / score.score) * 10_000) / 100).toFixed(2) + "%",
           ])}
       />
-    </Block>
+    </>
   )
 }
 

@@ -37,7 +37,7 @@ const OtherOrganization = () => {
         Vous pouvez également rechercher un produit par son code-barres pour avoir plus d'informations sur son coût
         environnemental.
       </p>
-      <Search withAlert />
+      <Search />
     </div>
   )
 }

@@ -38,7 +38,7 @@ const ProductHistory = ({ gtin }: { gtin: string }) => {
   }
 
   return (
-    <div data-testid='history-table'>
+    <div data-testid='history-table' className='fr-mt-8w'>
       <Table
         caption='Historique des versions'
         fixed

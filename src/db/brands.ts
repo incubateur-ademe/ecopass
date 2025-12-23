@@ -1,6 +1,6 @@
 import { Status } from "../../prisma/src/prisma"
 import { prismaClient } from "./prismaClient"
-import { getPublicProductsByBrandId, Products } from "./product"
+import { getPublicProductsByBrandId } from "./product"
 
 export const getAllBrandsWithStats = async () => {
   const allProducts = await prismaClient.product.findMany({
@@ -75,9 +75,7 @@ export const getBrandById = async (id: string) =>
     select: { id: true, name: true },
   })
 
-export const getBrandWithProducts = async (
-  id: string,
-): Promise<{ brand: NonNullable<Awaited<ReturnType<typeof getBrandById>>>; products: Products } | null> => {
+export const getBrandWithProducts = async (id: string) => {
   const brand = await getBrandById(id)
   if (!brand) {
     return null

@@ -24,25 +24,21 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
       }}
       serviceTitle='Affichage environnemental'
       serviceTagline={isTestEnvironment() ? "Serveur de test" : undefined}
-      navigation={
-        session && session.user
+      navigation={(session && session.user
+        ? canDeclare
           ? [
               { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
-              canDeclare
-                ? {
-                    linkProps: { href: "/declarations" },
-                    text: "Déclarations",
-                    isActive: pathname.startsWith("/declarations"),
-                  }
-                : null,
-              canDeclare
-                ? {
-                    linkProps: { href: "/produits" },
-                    text: "Produits déclarés",
-                    isActive: pathname.startsWith("/produits"),
-                  }
-                : null,
-              canDeclare ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") } : null,
+              {
+                linkProps: { href: "/declarations" },
+                text: "Déclarations",
+                isActive: pathname.startsWith("/declarations"),
+              },
+              {
+                linkProps: { href: "/produits" },
+                text: "Produits déclarés",
+                isActive: pathname.startsWith("/produits"),
+              },
+              { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") },
               {
                 linkProps: { href: "/organisation" },
                 text: "Organisation",
@@ -51,17 +47,13 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
               session.user.role === UserRole.ADMIN
                 ? { linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }
                 : null,
-            ].filter((link) => link !== null)
+            ]
           : [
+              { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
               {
-                linkProps: { href: "/" },
-                text: "Vous êtes consommateurs",
-                isActive: pathname === "/",
-              },
-              {
-                linkProps: { href: "/professionnels" },
-                text: "Vous êtes professionnels",
-                isActive: pathname === "/professionnels",
+                linkProps: { href: "/organisation" },
+                text: "Organisation",
+                isActive: pathname.startsWith("/organisation"),
               },
               {
                 linkProps: { href: "/informations" },
@@ -70,16 +62,49 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
               },
               {
                 linkProps: { href: "/marques" },
-                text: "Consultez la liste des marques",
+                text: "Les marques déclarantes",
                 isActive: pathname.startsWith("/marques"),
               },
               {
                 linkProps: { href: "/recherche" },
                 text: "Recherchez un produit",
-                isActive: pathname === "/recherche",
+                isActive: pathname === "/recherche" || pathname.startsWith("/produits/"),
               },
+              type === OrganizationType.Distributor
+                ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") }
+                : null,
+              session.user.role === UserRole.ADMIN
+                ? { linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }
+                : null,
             ]
-      }
+        : [
+            {
+              linkProps: { href: "/" },
+              text: "Vous êtes consommateurs",
+              isActive: pathname === "/",
+            },
+            {
+              linkProps: { href: "/professionnels" },
+              text: "Vous êtes professionnels",
+              isActive: pathname === "/professionnels",
+            },
+            {
+              linkProps: { href: "/informations" },
+              text: "Informez-vous",
+              isActive: pathname === "/informations",
+            },
+            {
+              linkProps: { href: "/marques" },
+              text: "Les marques déclarantes",
+              isActive: pathname.startsWith("/marques"),
+            },
+            {
+              linkProps: { href: "/recherche" },
+              text: "Recherchez un produit",
+              isActive: pathname === "/recherche" || pathname.startsWith("/produits/"),
+            },
+          ]
+      ).filter((item) => item !== null)}
       quickAccessItems={
         session && session.user
           ? [
@@ -91,7 +116,15 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
                 text: "Se déconnecter",
               },
             ]
-          : []
+          : [
+              {
+                linkProps: {
+                  href: "/login",
+                },
+                iconId: "ri-account-circle-line",
+                text: "Se connecter",
+              },
+            ]
       }
     />
   )

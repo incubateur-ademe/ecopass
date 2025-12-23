@@ -31,7 +31,7 @@ const BrandDetail = ({ brand, products }: { brand: { id: string; name: string };
       </Block>
 
       <Block>
-        <BrandProductsTable products={products} productCount={productCount} />
+        <BrandProductsTable products={products} />
       </Block>
     </>
   )

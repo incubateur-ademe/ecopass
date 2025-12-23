@@ -1,3 +1,4 @@
+import { createOrganization } from "../db/organization"
 import { prismaClient } from "../db/prismaClient"
 
 const email = "todo"
@@ -23,13 +24,7 @@ export const createMail = async () => {
   })
 
   if (!organization) {
-    console.log("Organization not found, creating it...")
-    organization = await prismaClient.organization.create({
-      data: {
-        name: organizationName,
-        siret: siret,
-      },
-    })
+    organization = await createOrganization(siret)
   }
 
   await prismaClient.account.create({

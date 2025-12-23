@@ -7,7 +7,7 @@ const SearchBanner = ({ withLastBrands }: { withLastBrands: boolean }) => {
     <div className={styles.container}>
       <div className={styles.box}>
         <h2>Recherchez le coût environnemental d'un vêtement</h2>
-        <Search withAlert />
+        <Search />
       </div>
       {withLastBrands && (
         <div className={styles.tile}>

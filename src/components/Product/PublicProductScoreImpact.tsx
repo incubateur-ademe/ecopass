@@ -1,6 +1,5 @@
 import Highlight from "@codegouvfr/react-dsfr/Highlight"
 import { ProductWithScore } from "../../db/product"
-import Block from "../Block/Block"
 import styles from "./PublicProductScoreImpact.module.css"
 import Table from "../Table/Table"
 import Badge from "@codegouvfr/react-dsfr/Badge"
@@ -20,7 +19,7 @@ const PublicProductScoreImpact = ({
   }
 
   return (
-    <Block>
+    <>
       <h2>Quels sont les impacts de ce produit sur l’environnement ?</h2>
       <Highlight className='fr-mb-4w'>
         La conception d’un vêtement a des impacts sur l’environnement, tels que le changement climatique, la
@@ -38,6 +37,7 @@ const PublicProductScoreImpact = ({
             return {
               key: impact.key,
               label: impactData.label,
+              definition: impact.definition,
               base: impactData.base,
               ponderation: impactData.ponderation,
               value: calculateImpactValue(impact.key, impactData.base, impactData.ponderation),
@@ -72,13 +72,13 @@ const PublicProductScoreImpact = ({
                 <Badge key={impact.label} severity='info' noIcon>
                   {((impact.value / score.score) * 100).toFixed(2)}%
                 </Badge>,
-                impact.label,
+                impact.definition,
               ])}
             />
           </div>
         )
       })}
-    </Block>
+    </>
   )
 }
 

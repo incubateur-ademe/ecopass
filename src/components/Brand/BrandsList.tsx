@@ -11,15 +11,9 @@ import Image from "next/image"
 import styles from "./BrandsList.module.css"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import Link from "next/link"
+import { BrandWithStats } from "../../db/brands"
 
-type Brand = {
-  id: string
-  name: string
-  productCount: number
-  lastDeclarationDate: Date
-}
-
-const BrandsList = ({ brands }: { brands: Brand[] }) => {
+const BrandsList = ({ brands }: { brands: BrandWithStats[] }) => {
   const [search, setSearch] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 20
@@ -65,48 +59,59 @@ const BrandsList = ({ brands }: { brands: Brand[] }) => {
               severity='info'
               small
               description={
-                <>
-                  <b>{brands.length}</b> marques ont déclaré{" "}
-                  <b>{brands.reduce((acc, brand) => acc + brand.productCount, 0).toLocaleString("fr-FR")}</b> produits.
-                </>
+                <p data-testid='search-results-count'>
+                  {filteredBrands.length > 0 ? (
+                    <>
+                      <b>{brands.length}</b> marques ont déclaré{" "}
+                      <b>{brands.reduce((acc, brand) => acc + brand.productCount, 0).toLocaleString("fr-FR")}</b>{" "}
+                      produits.
+                    </>
+                  ) : (
+                    <>Aucun résultat pour votre recherche</>
+                  )}
+                </p>
               }
             />
           </div>
           <Image src='/images/information.png' alt='Information' width={200} height={200} className={styles.image} />
         </div>
       </Block>
-      <Block>
-        <Table
-          fixed
-          caption='Liste des marques'
-          noCaption
-          headers={["Marques", "Nombre de produits déclarés", "Date de la dernière déclaration"]}
-          data={paginatedBrands.map((brand) => [
-            <Link className={styles.link} href={`/marques/${brand.id}`} key={brand.id}>
-              {brand.name} <span className='fr-icon-arrow-right-line' aria-hidden='true'></span>
-            </Link>,
-            <Badge key={brand.id} severity='info' noIcon>
-              {brand.productCount.toString()}
-            </Badge>,
-            formatDate(brand.lastDeclarationDate),
-          ])}
-        />
+      {filteredBrands.length > 0 && (
+        <Block>
+          <div data-testid='search-results-table'>
+            <Table
+              fixed
+              caption='Liste des marques'
+              noCaption
+              headers={["Marques", "Nombre de produits déclarés", "Date de la dernière déclaration"]}
+              data={paginatedBrands.map((brand) => [
+                <Link className={styles.link} href={`/marques/${brand.id}`} key={brand.id}>
+                  {brand.name} <span className='fr-icon-arrow-right-line' aria-hidden='true'></span>
+                </Link>,
+                <Badge key={brand.id} severity='info' noIcon>
+                  {brand.productCount.toString()}
+                </Badge>,
+                formatDate(brand.lastDeclarationDate),
+              ])}
+            />
+          </div>
 
-        {totalPages > 1 && (
-          <Pagination
-            count={totalPages}
-            defaultPage={currentPage}
-            getPageLinkProps={(page) => ({
-              onClick: (e) => {
-                e.preventDefault()
-                setCurrentPage(page)
-              },
-              href: "#",
-            })}
-            showFirstLast
-          />
-        )}
-      </Block>
+          {totalPages > 1 && (
+            <Pagination
+              count={totalPages}
+              defaultPage={currentPage}
+              getPageLinkProps={(page) => ({
+                onClick: (e) => {
+                  e.preventDefault()
+                  setCurrentPage(page)
+                },
+                href: "#",
+              })}
+              showFirstLast
+            />
+          )}
+        </Block>
+      )}
     </>
   )
 }

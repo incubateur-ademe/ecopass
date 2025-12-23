@@ -16,35 +16,38 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
 
   const router = useRouter()
 
-  const submit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setError("")
-    setWeakPassword(false)
-    setPasswordDoesNotMatch(false)
+  const submit = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      setError("")
+      setWeakPassword(false)
+      setPasswordDoesNotMatch(false)
 
-    const formData = new FormData(event.currentTarget)
-    const password = formData.get("password")
-    const confirmPassword = formData.get("confirmPassword")
-    if (confirmPassword && password) {
-      const validation = validatePassword(password.toString())
-      if (Object.values(validation).some((value) => value !== true)) {
-        setWeakPassword(true)
-        return
-      }
+      const formData = new FormData(event.currentTarget)
+      const password = formData.get("password")
+      const confirmPassword = formData.get("confirmPassword")
+      if (confirmPassword && password) {
+        const validation = validatePassword(password.toString())
+        if (Object.values(validation).some((value) => value !== true)) {
+          setWeakPassword(true)
+          return
+        }
 
-      if (password.toString() !== confirmPassword.toString()) {
-        setPasswordDoesNotMatch(true)
-        return
-      }
+        if (password.toString() !== confirmPassword.toString()) {
+          setPasswordDoesNotMatch(true)
+          return
+        }
 
-      const result = await changePassword(token, password.toString())
-      if (result) {
-        setError(result)
-      } else {
-        router.push("/")
+        const result = await changePassword(token, password.toString())
+        if (result) {
+          setError(result)
+        } else {
+          router.push("/login")
+        }
       }
-    }
-  }, [])
+    },
+    [router, token],
+  )
 
   return (
     <Block className='fr-grid-row fr-grid-row--center'>

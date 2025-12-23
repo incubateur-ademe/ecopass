@@ -15,26 +15,29 @@ const Login = () => {
 
   const [error, setError] = useState(false)
 
-  const submit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    const email = formData.get("email")
-    const password = formData.get("password")
-    if (email && password) {
-      setError(false)
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      })
+  const submit = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      const formData = new FormData(event.currentTarget)
+      const email = formData.get("email")
+      const password = formData.get("password")
+      if (email && password) {
+        setError(false)
+        const result = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        })
 
-      if (!result?.error) {
-        router.refresh()
-      } else {
-        setError(true)
+        if (!result?.error) {
+          router.refresh()
+        } else {
+          setError(true)
+        }
       }
-    }
-  }, [])
+    },
+    [router],
+  )
 
   return (
     <Block className='fr-grid-row fr-grid-row--center'>
@@ -42,20 +45,26 @@ const Login = () => {
         <div className='fr-grid-row fr-grid-row-gutters fr-grid-row--center'>
           <div className='fr-col-12 fr-col-md-9 fr-col-lg-8'>
             <h1>Connexion</h1>
-            <p className='fr-mb-4w'>
-              Le portail de déclaration de l’affichage environnemental est actuellement en beta privé. Si vous
-              rencontrez des difficultés à vous connecter, veuillez contacter l’équipe de l’affichage environnemental à
-              cette adresse{" "}
+            <p className='fr-mb-2w'>
+              La connexion au portail de déclaration de l’affichage environnemental est actuellement réservée aux
+              professionnels. Si vous rencontrez des difficultés à vous connecter, veuillez contacter l’équipe de
+              l’affichage environnemental à cette adresse{" "}
               <Link href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}`} className='fr-link' prefetch={false}>
                 {process.env.NEXT_PUBLIC_SUPPORT_MAIL}
               </Link>
             </p>
+            <Alert
+              severity='info'
+              small
+              className='fr-mb-2w'
+              description='Vous n’avez pas de SIRET ? Nous vous invitons à remplir ce questionnaire pour valider votre inscription.'
+            />
             <div className='fr-mb-6v'>
               <h2>Se connecter avec ProConnect</h2>
               <ProConnectButton onClick={() => signIn("proconnect", { callbackUrl: "/" })} />
             </div>
             <p className='fr-hr-or'>ou</p>
-            <div>
+            <div className='fr-mt-2w'>
               <form id='login-1760' onSubmit={submit}>
                 <fieldset
                   className='fr-fieldset'

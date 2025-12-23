@@ -3,13 +3,18 @@ import { getOrganizationProductsByUserIdAndBrand } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
-import { formatDate, formatNumber } from "../../services/format"
-import Table from "../Table/Table"
+import Table from "@codegouvfr/react-dsfr/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Link from "next/link"
 import DownloadScores from "./DownloadScores"
 import { BATCH_CATEGORY } from "../../utils/types/productCategory"
 import Alert from "@codegouvfr/react-dsfr/Alert"
+import Badge from "@codegouvfr/react-dsfr/Badge"
+import Image from "next/image"
+import { productMapping } from "../../utils/ecobalyse/mappings"
+import { ProductCategory } from "../../types/Product"
+import styles from "./Search/SearchResults.module.css"
+import { formatDate } from "../../services/format"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
@@ -36,20 +41,35 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
   ) : (
     <>
       <DownloadScores brand={brand} />
-      <Search withAlert />
+      <Search withoutHint />
       <div data-testid='products-table'>
         <Table
-          fixed
-          caption='Mes produits'
-          noCaption
-          headers={["Date de dépot", "Catégorie", "Référence interne", "Score", ""]}
+          headers={["Référence interne", "Catégorie", "Score", "Date de dépot", "Détails"]}
           data={products.map((product) => [
+            <b key={`${product.id}-reference`}>{product.internalReference}</b>,
+            <div className={styles.category} key={`cat-${product.id}`}>
+              {product.informations.length === 1 && product.informations[0].categorySlug !== null && (
+                <Image
+                  src={`/icons/${productMapping[product.informations[0].categorySlug as ProductCategory]}.svg`}
+                  alt=''
+                  width={32}
+                  height={32}
+                />
+              )}
+              {product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY}
+            </div>,
+            <Badge severity='info' noIcon key={`score-${product.id}`}>
+              {product.score ? Math.round(product.score) : "-"}
+            </Badge>,
             formatDate(product.createdAt),
-            product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY,
-            product.internalReference,
-            product.score ? formatNumber(product.score) : "",
-            <Button linkProps={{ href: `/produits/${product.gtins[0]}` }} key={product.gtins[0]}>
-              Voir le produit
+            <Button
+              priority='secondary'
+              size='small'
+              iconId='fr-icon-arrow-right-line'
+              linkProps={{ href: `/produits/${product.gtins[0]}` }}
+              key={`btn-${product.id}`}
+              className={styles.displayButton}>
+              Voir le détail
             </Button>,
           ])}
         />

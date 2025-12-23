@@ -30,7 +30,8 @@
 }
 
 .image {
-  max-width: 400px;
+  width: 100%;
+  max-width: 350px;
   height: auto;
 
   @media screen and (max-width: 50rem) {

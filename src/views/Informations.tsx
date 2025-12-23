@@ -141,7 +141,11 @@ const Informations = () => {
           desc='Industrie textile, matières premières, fabrication, nous avons le pouvoir de changer les choses.'
           enlargeLink
           footer="Consulter l'infographie de l'ADEME sur l'industrie textile"
-          linkProps={{ href: "/organisation" }}
+          linkProps={{
+            href: "https://agirpourlatransition.ademe.fr/acteurs-education/enseigner/catalogue/revers-mon-look-impacts-vetements-planete",
+            target: "_blank",
+            rel: "noopener noreferrer",
+          }}
         />
       </Block>
       <Block secondary>

@@ -27,40 +27,108 @@ export const impactCategories = {
   climat: {
     icon: "climat",
     label: "Climat",
-    impacts: [{ key: "cch" as const }],
+    impacts: [
+      {
+        key: "cch" as const,
+        definition: "Indicateur le plus connu, correspond à la modification du climat, affectant l'écosystème global.",
+      },
+    ],
   },
   qualiteAir: {
     icon: "quality",
     label: "Qualité de l'air",
-    impacts: [{ key: "pma" as const }],
+    impacts: [
+      {
+        key: "pma" as const,
+        definition:
+          "Indicateur correspondant aux effets négatifs sur la santé humaine causés par les émissions de particules (PM) et de leurs précurseurs (NOx, SOx, NH3).",
+      },
+    ],
   },
   biodiversite: {
     icon: "biodiversity",
     label: "Biodiversité",
     impacts: [
-      { key: "etf" as const },
-      { key: "ior" as const },
-      { key: "acd" as const },
-      { key: "tre" as const },
-      { key: "fwe" as const },
-      { key: "pco" as const },
-      { key: "swe" as const },
-      { key: "ozd" as const },
+      {
+        key: "etf" as const,
+        definition:
+          "Indicateur d'écotoxicité  pour écosystèmes aquatiques d'eau douce. Cet indicateur se mesure en  Comparative Toxic Unit for ecosystems (CTUe)",
+      },
+      {
+        key: "ior" as const,
+        definition:
+          "Indicateur correspondant aux dommages pour la santé humaine et les écosystèmes liés aux émissions de radionucléides.",
+      },
+      {
+        key: "acd" as const,
+        definition:
+          "Indicateur de l'acidification potentielle des sols et des eaux due à la libération de gaz tels que les oxydes d'azote et les oxydes de soufre.",
+      },
+      {
+        key: "tre" as const,
+        definition:
+          "Comme dans l'eau, l'eutrophisation terrestre correspond à un enrichissement excessif du milieu, en azote en particulier, conduisant a un déséquilibre et un  appauvrissement de l'écosystème. Ceci concerne principalement les sols  agricoles.",
+      },
+      {
+        key: "fwe" as const,
+        definition:
+          "Indicateur correspondant à un enrichissement excessif des milieux naturels en nutriments, ce qui conduit à une prolifération et une asphyxie (zone morte). C'est  ce phénomène qui est à l'origine des algues vertes. On peut le retrouver en rivière et en lac également.",
+      },
+      {
+        key: "pco" as const,
+        definition:
+          "Indicateur correspondant à la dégradation de la qualité de l'air, principalement via la formation de brouillard de basse altitude nommé smog. Il a des conséquences néfastes sur la santé.",
+      },
+      {
+        key: "swe" as const,
+        definition:
+          "Indicateur correspondant à un enrichissement excessif des milieux naturels en nutriments, ce qui conduit à une prolifération et une asphyxie (zone morte). C'est ce phénomène qui est à l'origine des algues vertes.",
+      },
+      {
+        key: "ozd" as const,
+        definition:
+          "La couche d'ozone est située en haute altitude dans l'atmosphère,  elle protège des rayons ultra-violets solaires. Son appauvrissement  augmente l'exposition de l'ensemble des êtres vivants à ces radiations négatives (cancérigènes en particulier).",
+      },
     ],
   },
   ressources: {
     icon: "ressources",
     label: "Ressources",
-    impacts: [{ key: "ldu" as const }, { key: "fru" as const }, { key: "mru" as const }, { key: "wtu" as const }],
+    impacts: [
+      {
+        key: "ldu" as const,
+        definition:
+          "Mesure de l'évolution de la qualité des sols (production biotique, résistance à l'érosion, filtration mécanique).",
+      },
+      {
+        key: "fru" as const,
+        definition:
+          "Indicateur de l'épuisement des ressources naturelles en combustibles fossiles (gaz, charbon, pétrole).",
+      },
+      { key: "mru" as const, definition: "Indicateur de l'épuisement des ressources naturelles non fossiles." },
+      {
+        key: "wtu" as const,
+        definition:
+          "Indicateur de la consommation d'eau et son épuisement dans certaines régions. À ce stade, elle n'est prise en compte que pour l'étape “Matière & Filature”.",
+      },
+    ],
   },
   autres: {
     icon: "other",
     label: "Autres",
     impacts: [
-      { key: "microfibers" as const },
-      { key: "outOfEuropeEOL" as const },
-      { key: "htc" as const },
-      { key: "htn" as const },
+      { key: "microfibers" as const, definition: "" },
+      { key: "outOfEuropeEOL" as const, definition: "" },
+      {
+        key: "htc" as const,
+        definition:
+          "Indicateur de toxicité  cancérigène pour l'homme. Cet indicateur se mesure en Comparative Toxic  Unit for humans (CTUh). Cet indicateur est corrigé.",
+      },
+      {
+        key: "htn" as const,
+        definition:
+          "Indicateur de toxicité non  cancérigène pour l'homme. Cet indicateur se mesure en Comparative Toxic  Unit for humans (CTUh). Cet indicateur est corrigé.",
+      },
     ],
   },
 }

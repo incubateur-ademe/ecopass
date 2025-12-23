@@ -7,15 +7,9 @@ import { formatNumber } from "../../services/format"
 import { ProductCategory } from "../../types/Product"
 import { productMapping } from "../../utils/ecobalyse/mappings"
 import styles from "./BrandProductsTable.module.css"
+import { BATCH_CATEGORY } from "../../utils/types/productCategory"
 
-const BRAND_BATCH_LABEL = "Lot de produits"
-
-type BrandProductsTableProps = {
-  products: Products
-  productCount: number
-}
-
-const BrandProductsTable = ({ products, productCount }: BrandProductsTableProps) => {
+const BrandProductsTable = ({ products }: { products: Products }) => {
   const tableRows = products.map((product) => {
     const isBatch = product.informations.length !== 1
     const categorySlug = !isBatch ? product.informations[0].categorySlug : undefined
@@ -27,7 +21,7 @@ const BrandProductsTable = ({ products, productCount }: BrandProductsTableProps)
       </span>,
       <div className={styles.categoryCell} key={`${product.id}-category`}>
         {icon && <Image src={`/icons/${icon}.svg`} alt='' width={32} height={32} className={styles.categoryIcon} />}
-        <span>{isBatch ? BRAND_BATCH_LABEL : categorySlug || "Non renseignée"}</span>
+        <span>{isBatch ? BATCH_CATEGORY : categorySlug || "Non renseignée"}</span>
       </div>,
       product.gtins.join(", "),
       product.score !== null && product.score !== undefined ? (
