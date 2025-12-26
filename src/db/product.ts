@@ -234,6 +234,8 @@ const getProducts = async (
 
 export type Products = Awaited<ReturnType<typeof getProducts>>
 
+export const getPublicProductsByBrandId = async (brandId: string) => getProducts({ brandId })
+
 export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brand?: string) => {
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
@@ -703,5 +705,23 @@ export const getBrandsInformations = async () => {
         lastDepositDate: brand.lastDepositDate,
       })),
     }
+  })
+}
+
+export const getLastBrands = async () => {
+  const brands = await prismaClient.product.groupBy({
+    by: ["brandId"],
+    where: {
+      status: Status.Done,
+      brandId: { not: null },
+    },
+    _max: { createdAt: true },
+    orderBy: { _max: { createdAt: "desc" } },
+    take: 5,
+  })
+
+  return prismaClient.brand.findMany({
+    where: { id: { in: brands.map((b) => b.brandId).filter((brand) => brand !== null) } },
+    select: { id: true, name: true },
   })
 }

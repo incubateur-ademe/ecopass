@@ -1,0 +1,27 @@
+.tableHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.tableHeader h2 {
+  margin: 0;
+}
+
+.categoryCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.categoryIcon {
+  width: 32px;
+  height: 32px;
+}
+
+.productRef {
+  font-weight: 700;
+}

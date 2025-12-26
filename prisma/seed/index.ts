@@ -1,3 +1,4 @@
+import { signPassword } from "../../src/services/auth/user"
 import { OrganizationType, PrismaClient, UserRole } from "../src/prisma"
 
 const prisma = new PrismaClient()
@@ -38,6 +39,26 @@ const users = async () => {
       },
     },
   })
+
+  await prisma.user.create({
+    data: {
+      email: "ecopass-password@yopmail.com",
+      nom: "Ecopass",
+      prenom: "Password",
+      organization: {
+        connect: { siret: "31723624800017" },
+      },
+      accounts: {
+        create: {
+          provider: "credentials",
+          providerAccountId: "ecopass-password@yopmail.com",
+          type: "credentials",
+          password: await signPassword("ecopasscestsupercool"),
+        },
+      },
+    },
+  })
+
   const user = await prisma.user.create({
     data: {
       email: "ecopass-admin-dev@yopmail.com",

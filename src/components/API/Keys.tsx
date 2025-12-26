@@ -45,6 +45,7 @@ const Keys = ({ keys }: { keys: APIKey[] }) => {
                 <Button
                   className='fr-ml-2w'
                   size='small'
+                  priority='secondary'
                   title='Copier la clé'
                   onClick={() => {
                     navigator.clipboard.writeText(generatedKey)
@@ -96,6 +97,8 @@ const Keys = ({ keys }: { keys: APIKey[] }) => {
               key.lastUsed ? formatDateTime(key.lastUsed) : "",
               `${key.key}*********`,
               <Button
+                size='small'
+                priority='secondary'
                 iconId='fr-icon-delete-bin-fill'
                 key={key.id}
                 onClick={() => deleteAPIKey(key.id).then(() => router.refresh())}>

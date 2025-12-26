@@ -1,37 +1,46 @@
-"use client"
 import Image from "next/image"
 import styles from "./HomeBanner.module.css"
 import classNames from "classnames"
-import ProConnectButton from "@codegouvfr/react-dsfr/ProConnectButton"
-import { signIn } from "next-auth/react"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { isTestEnvironment } from "../../utils/test"
+import ProConnect from "../Button/ProConnect"
 
-type HomeBannerProps = {
-  withConnection?: boolean
-}
-
-const HomeBanner = ({ withConnection = true }: HomeBannerProps) => {
+const HomeBanner = ({ withConnection = true, isPro }: { withConnection?: boolean; isPro?: boolean }) => {
   return (
     <div className={classNames(styles.banner, { [styles.bannerTest]: isTestEnvironment() })}>
       <div>
-        <h1 className={styles.title}>
+        <h1>
           {isTestEnvironment()
             ? "Serveur de test pour la déclaration du coût environnemental de vos produits textiles"
-            : "Déclarez le coût environnemental de vos produits textiles"}
+            : isPro
+              ? "Déclarez le coût environnemental de vos produits textiles"
+              : "Affichage environnemental"}
         </h1>
-        {withConnection && (
-          <>
-            {!isTestEnvironment() && (
-              <p className={styles.description}>
-                Vous êtes une marque ou un bureau d'études ?
-                <br />
-                Connectez-vous avec ProConnect pour déclarer le coût environnemental de vos produits.
-              </p>
-            )}
-            <ProConnectButton onClick={() => signIn("proconnect", { callbackUrl: "/" })} />
-          </>
-        )}
+        {!isTestEnvironment() &&
+          (isPro ? (
+            withConnection && (
+              <>
+                <p className={styles.description}>
+                  Vous êtes une marque ou un bureau d'études ?
+                  <br />
+                  Connectez-vous avec ProConnect pour déclarer le coût environnemental de vos produits.
+                </p>
+                <div className={styles.connection}>
+                  <ProConnect />
+                  <Alert
+                    small
+                    severity='info'
+                    description='Vous n’avez pas de SIRET ? Nous vous invitons à remplir ce questionnaire pour valider votre inscription.'
+                  />
+                </div>
+              </>
+            )
+          ) : (
+            <p className={styles.description}>
+              Une mesure d'impact portée par le gouvernement, simple et comparable pour comprendre l'impact
+              environnemental de vos vêtements.
+            </p>
+          ))}
       </div>
       {isTestEnvironment() ? (
         <Alert
@@ -65,11 +74,11 @@ const HomeBanner = ({ withConnection = true }: HomeBannerProps) => {
         />
       ) : (
         <Image
-          className={classNames(styles.image, { [styles.small]: !withConnection })}
-          src='/images/tshirt.jpg'
+          className={classNames(styles.image, { [styles.small]: !withConnection, [styles.round]: isPro })}
+          src={isPro ? "/images/tshirt.jpg" : "/images/score.png"}
           alt=''
-          width={384}
-          height={386}
+          width={378}
+          height={188}
         />
       )}
     </div>
