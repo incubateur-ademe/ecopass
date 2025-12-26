@@ -42,7 +42,7 @@ const ProductScore = ({
         <div className='fr-mb-2w'>
           <Label product={{ score, standardized }} />
         </div>
-        <Button onClick={download}>Télécharger le .svg</Button>
+        <Button onClick={download}>Télécharger le SVG</Button>
       </div>
     </>
   )

@@ -14,7 +14,7 @@ import Image from "next/image"
 import { productMapping } from "../../utils/ecobalyse/mappings"
 import { ProductCategory } from "../../types/Product"
 import styles from "./Search/SearchResults.module.css"
-import { formatDate } from "../../services/format"
+import { formatDate, formatNumber } from "../../services/format"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
@@ -59,7 +59,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
               {product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY}
             </div>,
             <Badge severity='info' noIcon key={`score-${product.id}`}>
-              {product.score ? Math.round(product.score) : "-"}
+              {product.score ? formatNumber(product.score) : "-"}
             </Badge>,
             formatDate(product.createdAt),
             <Button

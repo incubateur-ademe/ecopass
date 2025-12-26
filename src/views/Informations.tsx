@@ -130,24 +130,6 @@ const Informations = () => {
           </div>
         </div>
       </Block>
-      <Block>
-        <Card
-          horizontal
-          start={<Badge>Le revers de mon look</Badge>}
-          title='Quels impacts ont mes vêtements sur la planète ?'
-          imageUrl='/images/impactmode.png'
-          imageAlt=''
-          titleAs='h3'
-          desc='Industrie textile, matières premières, fabrication, nous avons le pouvoir de changer les choses.'
-          enlargeLink
-          footer="Consulter l'infographie de l'ADEME sur l'industrie textile"
-          linkProps={{
-            href: "https://agirpourlatransition.ademe.fr/acteurs-education/enseigner/catalogue/revers-mon-look-impacts-vetements-planete",
-            target: "_blank",
-            rel: "noopener noreferrer",
-          }}
-        />
-      </Block>
       <Block secondary>
         <h2>Qu&apos;est-ce qui est pris en compte dans le calcul ?</h2>
         <p>
@@ -175,7 +157,24 @@ const Informations = () => {
           transport à chaque étape et son utilisation/lavage.
         </p>
       </Block>
-
+      <Block>
+        <Card
+          horizontal
+          start={<Badge>Le revers de mon look</Badge>}
+          title='Quels impacts ont mes vêtements sur la planète ?'
+          imageUrl='/images/impactmode.png'
+          imageAlt=''
+          titleAs='h3'
+          desc='Industrie textile, matières premières, fabrication, nous avons le pouvoir de changer les choses.'
+          enlargeLink
+          footer="Consulter l'infographie de l'ADEME sur l'industrie textile"
+          linkProps={{
+            href: "https://agirpourlatransition.ademe.fr/acteurs-education/enseigner/catalogue/revers-mon-look-impacts-vetements-planete",
+            target: "_blank",
+            rel: "noopener noreferrer",
+          }}
+        />
+      </Block>
       <Block>
         <h2>Quelles sont les marques qui affichent et quels sont les vêtements considérés ?</h2>
         <p>

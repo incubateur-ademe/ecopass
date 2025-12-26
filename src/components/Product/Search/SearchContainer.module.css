@@ -1,11 +1,17 @@
 .filter {
   display: flex;
   gap: 4rem;
-  align-items: center;
+  align-items: flex-start;
 
   @media screen and (max-width: 50rem) {
     img {
       display: none;
     }
   }
+}
+
+.box {
+  background-color: white;
+  padding: 1.25rem 1.875rem;
+  border: 1px solid var(--brown-cafe-creme-sun-383-moon-885);
 }

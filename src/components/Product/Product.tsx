@@ -52,7 +52,7 @@ const Product = ({
               />
             )}
           </div>
-          <div className={styles.productLine}>
+          <div className={styles.productLine} data-testid='product-score'>
             <div className={styles.badges}>
               <Label product={{ score: totalScore.score, standardized: totalScore.standardized }} />
               {isPro && <DownloadScore score={totalScore} internalReference={product.internalReference} />}
@@ -68,26 +68,24 @@ const Product = ({
           </div>
         </div>
       </Block>
-      {!isPro && (
-        <Block>
-          <div data-testid='product-details'>
+      <Block>
+        <div data-testid='product-details'>
+          <p>
+            Code-barres{product.gtins.length > 1 ? "s" : ""} : <b>{product.gtins.join(", ")}</b>
+          </p>
+          <p>
+            Déposé le : <b>{formatDate(product.createdAt)}</b>
+          </p>
+          {product.upload.createdBy.organization && (
             <p>
-              Code-barres{product.gtins.length > 1 ? "s" : ""} : <b>{product.gtins.join(", ")}</b>
+              Par : <b>{product.upload.createdBy.organization.displayName}</b>
             </p>
-            <p>
-              Déposé le : <b>{formatDate(product.createdAt)}</b>
-            </p>
-            {product.upload.createdBy.organization && (
-              <p>
-                Par : <b>{product.upload.createdBy.organization.displayName}</b>
-              </p>
-            )}
-            <p>
-              Version Ecobalyse : <b>{product.upload.version}</b>
-            </p>
-          </div>
-        </Block>
-      )}
+          )}
+          <p>
+            Version Ecobalyse : <b>{product.upload.version}</b>
+          </p>
+        </div>
+      </Block>
       <Block>
         {isPro ? <ProductScoreImpacts score={totalScore} /> : <PublicProductScoreImpact score={totalScore} />}
         <ProductHistory gtin={gtin} />

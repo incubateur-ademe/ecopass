@@ -1,12 +1,13 @@
 "use client"
 import { useCallback, useState } from "react"
 import { ProductWithScore } from "../../db/product"
-import { formatDate } from "../../services/format"
+import { formatDate, formatNumber } from "../../services/format"
 import Table from "../Table/Table"
 import { getProductHistory } from "../../serverFunctions/product"
 import LoadingButton from "../Button/LoadingButton"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
 import Button from "@codegouvfr/react-dsfr/Button"
+import Badge from "@codegouvfr/react-dsfr/Badge"
 
 const ProductHistory = ({ gtin }: { gtin: string }) => {
   const [history, setHistory] = useState<ProductWithScore[] | null>(null)
@@ -47,8 +48,14 @@ const ProductHistory = ({ gtin }: { gtin: string }) => {
           formatDate(version.createdAt),
           version.upload.createdBy.organization?.displayName,
           version.upload.version,
-          version.score === null ? "" : Math.round(version.score),
-          <Button linkProps={{ href: `/produits/${version.gtins[0]}/${version.id}` }} key={version.id}>
+          <Badge severity='info' noIcon key={version.id}>
+            {version.score ? formatNumber(version.score) : "-"}
+          </Badge>,
+          <Button
+            linkProps={{ href: `/produits/${version.gtins[0]}/${version.id}` }}
+            key={version.id}
+            size='small'
+            priority='secondary'>
             Voir le détail
           </Button>,
         ])}

@@ -80,7 +80,7 @@ test("Connection with a distributor user", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarer vos produits", exact: true })).not.toBeVisible()
-  await expect(page.getByRole("link", { name: "API" })).toHaveCount(2)
+  await expect(page.getByRole("link", { name: "API" })).toHaveCount(1)
 
   await page.goto("http://localhost:3000/produits")
   await expect(page).toHaveURL(/.*\//)

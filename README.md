@@ -25,7 +25,7 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    cp .env.dist .env
    ```
 
-   Pour correctement faire fonctionner le projet en local vous aurez besoin de specifier les secrets ProConnect (`PROCONNECT_CLIENT_ID`, `PROCONNECT_CLIENT_SECRET` et `PROCONNECT_DOMAIN`, à recuperer depuis l'env preprod scalingo ou demander à un dev), la clé d'encryption Ecobalyse (`ECOBALYSE_ENCRYPTION_KEY`) et une clé INSEE (`INSEE_API_KEY`, disponible sur https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3.11&provider=insee). Vous pourrez enfin generer `ENCRYPTION_KEY`et `STORAGE_ENCRYPTION_KEY`avec la commande `openssl rand -hex 32`
+   Pour correctement faire fonctionner le projet en local vous aurez besoin de specifier les secrets ProConnect (`PROCONNECT_CLIENT_ID`, `PROCONNECT_CLIENT_SECRET` et `NEXT_PUBLIC_PROCONNECT_DOMAIN`, à recuperer depuis l'env preprod scalingo ou demander à un dev), la clé d'encryption Ecobalyse (`ECOBALYSE_ENCRYPTION_KEY`) et une clé INSEE (`INSEE_API_KEY`, disponible sur https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3.11&provider=insee). Vous pourrez enfin generer `ENCRYPTION_KEY`et `STORAGE_ENCRYPTION_KEY`avec la commande `openssl rand -hex 32`
 
 3. **Lancer les services Docker**
 
@@ -34,7 +34,6 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    ```
 
    Cela démarre :
-
    - PostgreSQL (bases de données, une pour le dev, port 5432 et une pour les tests unitaires, port 5433)
    - Maildev (serveur mail pour tests)
 
@@ -57,6 +56,7 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
 6. **Lancer le site**
 
    Pour lancer le site web vous pouvez utilisez :
+
    ```sh
    yarn dev
    ```
@@ -71,8 +71,8 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
 
 8. **Lancer la queue**
 
-
    Pour processer les téléchargements de zip et les produits déposés sur la plateforme vous devez lancer la queue :
+
    ```sh
    yarn queue:watch
    ```
@@ -87,16 +87,16 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
 
 10. **Tests e2e**
 
-   Les tests e2e sont lancés avec playwright, attention de bien lancé au préalable le serveur web et la queue.
+Les tests e2e sont lancés avec playwright, attention de bien lancé au préalable le serveur web et la queue.
 
-   ```sh
-   npx playwright test
-   ```
+```sh
+npx playwright test
+```
 
 11. **S3**
 
-   En production et preprod, les fichiers CSV envoyés sont encryptés puis stocké sur un S3 scaleway (variables d'environnement `S3_ACCESS_KEY` et `S3_SECRET_KEY`). En local il est recommandé de stocker les fichiers en local (variable d'environnement `LOCAL_STORAGE=true`, par defaut dans le `.env.dist`)
-   
+En production et preprod, les fichiers CSV envoyés sont encryptés puis stocké sur un S3 scaleway (variables d'environnement `S3_ACCESS_KEY` et `S3_SECRET_KEY`). En local il est recommandé de stocker les fichiers en local (variable d'environnement `LOCAL_STORAGE=true`, par defaut dans le `.env.dist`)
+
 ## Accès
 
 - Application : [http://localhost:3000](http://localhost:3000)

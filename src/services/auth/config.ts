@@ -77,7 +77,7 @@ export const authOptions = {
       idToken: true,
       clientId: process.env.PROCONNECT_CLIENT_ID,
       clientSecret: process.env.PROCONNECT_CLIENT_SECRET,
-      wellKnown: `${process.env.PROCONNECT_DOMAIN}/api/v2/.well-known/openid-configuration`,
+      wellKnown: `${process.env.NEXT_PUBLIC_PROCONNECT_DOMAIN}/api/v2/.well-known/openid-configuration`,
       allowDangerousEmailAccountLinking: true,
       checks: ["nonce", "state"],
       authorization: {
@@ -98,7 +98,7 @@ export const authOptions = {
       },
       userinfo: {
         async request(context) {
-          const userInfo = await fetch(`${process.env.PROCONNECT_DOMAIN}/api/v2/userinfo`, {
+          const userInfo = await fetch(`${process.env.NEXT_PUBLIC_PROCONNECT_DOMAIN}/api/v2/userinfo`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${context.tokens.access_token}`,

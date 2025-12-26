@@ -11,6 +11,7 @@ const LastBrands = async () => {
       orientation='horizontal'
       title='Les 5 dernières marques qui ont déclaré des produits'
       imageUrl='/icons/coat.svg'
+      imageAlt=''
       desc={
         <ul>
           {brands.map((brand) => (

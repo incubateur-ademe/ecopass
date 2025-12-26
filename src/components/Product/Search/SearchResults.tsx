@@ -10,6 +10,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge"
 import Image from "next/image"
 import { productMapping } from "../../../utils/ecobalyse/mappings"
 import { ProductCategory } from "../../../types/Product"
+import { formatNumber } from "../../../services/format"
 
 const SearchResults = ({
   products,
@@ -52,10 +53,11 @@ const SearchResults = ({
               {product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY}
             </div>,
             <Badge severity='info' noIcon key={product.id}>
-              {product.score ? Math.round(product.score) : "-"}
+              {product.score ? formatNumber(product.score) : "-"}
             </Badge>,
             <Button
               priority='secondary'
+              size='small'
               linkProps={{ href: `/produits/${product.gtins[0]}` }}
               key={product.id}
               className={styles.displayButton}>

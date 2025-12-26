@@ -34,7 +34,6 @@ const BrandProductsTable = ({ products }: { products: Products }) => {
       <Button
         key={`${product.id}-cta`}
         size='small'
-        iconId='fr-icon-arrow-right-line'
         priority='secondary'
         linkProps={{ href: `/produits/${product.gtins[0]}` }}>
         Voir le détail

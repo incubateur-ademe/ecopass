@@ -61,22 +61,24 @@ test("Search", async ({ page }) => {
   await page.goto("http://localhost:3000/recherche")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(0)
 
-  await expect(page.getByLabel("Marque").locator("option")).toHaveCount(3)
-  await page.getByLabel("Marque").selectOption("6abd8a2b-8fee-4c54-8d23-17e1f8c27b56")
+  await expect(page.getByLabel("Sélectionner une marque").locator("option")).toHaveCount(3)
+  await page.getByLabel("Sélectionner une marque").selectOption("6abd8a2b-8fee-4c54-8d23-17e1f8c27b56")
   await page.getByRole("button", { name: "Rechercher" }).click()
   await expect(page.getByTestId("search-results-count")).toContainText("2 produits trouvés")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(2)
   await expect(page).toHaveURL("http://localhost:3000/recherche?brandId=6abd8a2b-8fee-4c54-8d23-17e1f8c27b56&page=1")
   await page.getByRole("button", { name: "Réinitialiser" }).click()
 
-  await page.getByLabel("Catégorie").selectOption("T-shirt / Polo")
+  await page.getByLabel("Sélectionner une catégorie").selectOption("T-shirt / Polo")
   await page.getByRole("button", { name: "Rechercher" }).click()
   await expect(page.getByTestId("search-results-count")).toContainText("1 produit trouvé")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(1)
   await expect(page).toHaveURL("http://localhost:3000/recherche?category=tshirt&page=1")
   await page.getByRole("button", { name: "Réinitialiser" }).click()
 
-  await page.getByRole("textbox", { name: "Recherche Recherchez par code" }).fill("ref-101")
+  await page
+    .getByRole("textbox", { name: "Saisir un code-barres (8 ou 13 chiffres) ou une référence produit" })
+    .fill("ref-101")
   await page.getByRole("button", { name: "Rechercher" }).click()
   await expect(page.getByTestId("search-results-count")).toContainText("1 produit trouvé")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(1)

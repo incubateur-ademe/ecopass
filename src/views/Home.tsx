@@ -63,7 +63,7 @@ const Home = ({ connected, type, isPro }: { connected?: boolean; type: Organizat
           <Block large>
             <SearchBanner withLastBrands={!isPro && !isAllowedToDeclare} />
           </Block>
-          {isPro ? (
+          {isPro || isAllowedToDeclare ? (
             <Block large secondary>
               <InformationProBanner />
             </Block>

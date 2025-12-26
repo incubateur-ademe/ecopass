@@ -60,10 +60,9 @@ const SearchContainer = ({
   return (
     <>
       <Block home>
-        <h1>Recherche de produits</h1>
-        <p>Recherchez vos produits déclarés par marque, code-barres ou référence interne.</p>
+        <h1>Recherchez un produit par marque, code-barres ou catégorie</h1>
         <div className={styles.filter}>
-          <div>
+          <div className={styles.box}>
             <SearchFilters
               brandId={brandId}
               category={category}

@@ -27,7 +27,7 @@ const ProductScoreImpacts = ({
         </Link>
       </div>
       <Table
-        className='fr-mb-0 fr-mt-4w'
+        className='fr-mt-4w'
         noCaption
         caption='Détails des impacts environnementaux'
         fixed
