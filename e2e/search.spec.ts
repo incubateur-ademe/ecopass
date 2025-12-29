@@ -61,7 +61,7 @@ test("Search", async ({ page }) => {
   await page.goto("http://localhost:3000/recherche")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(0)
 
-  await expect(page.getByLabel("Sélectionner une marque").locator("option")).toHaveCount(3)
+  await expect(page.getByLabel("Sélectionner une marque").locator("option")).toHaveCount(4)
   await page.getByLabel("Sélectionner une marque").selectOption("6abd8a2b-8fee-4c54-8d23-17e1f8c27b56")
   await page.getByRole("button", { name: "Rechercher" }).click()
   await expect(page.getByTestId("search-results-count")).toContainText("2 produits trouvés")
@@ -89,8 +89,8 @@ test("Search", async ({ page }) => {
     page.getByRole("heading", { name: "Liste des marques ayant déclaré au moins un produit", exact: true }),
   ).toBeVisible()
 
-  await expect(page.getByTestId("search-results-count")).toContainText("2 marques ont déclaré 3 produits.")
-  await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(2)
+  await expect(page.getByTestId("search-results-count")).toContainText("3 marques ont déclaré 4 produits.")
+  await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(3)
 
   await page.getByRole("textbox", { name: "Rechercher une marque" }).fill("sol")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(1)

@@ -76,7 +76,7 @@ jobs:
         id: lighthouseCheck
         with:
           device: all
-          urls: "http://localhost:3000"
+          urls: "http://localhost:3000,http://localhost:3000/professionnels,http://localhost:3000/informations,http://localhost:3000/marques,http://localhost:3000/marques/a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d,http://localhost:3000/recherche,http://localhost:3000/produits/0000000000000"
           outputDirectory: ${{ github.workspace }}/tmp/artifacts
       - name: Verify Lighthouse Check results
         uses: foo-software/lighthouse-check-status-action@master
