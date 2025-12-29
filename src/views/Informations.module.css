@@ -1,6 +1,7 @@
 .mainImage {
   margin: auto;
   display: block;
+  width: auto;
 }
 
 .sectionReversed {

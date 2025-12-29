@@ -1,10 +1,9 @@
-import Block from "../components/Block/Block"
+import LegalContainer from "../components/Mentions/LegalContainer"
 import Table from "../components/Table/Table"
-import styles from "./MentionsLegales.module.css"
 
 const PolitiqueDeConfidentialite = () => {
   return (
-    <Block className={styles.container}>
+    <LegalContainer>
       <h1>Politique de confidentialité</h1>
       <p>Mis à jour le 18/11/2025</p>
       <h2>Qui est responsable de la plateforme ?</h2>
@@ -136,7 +135,7 @@ const PolitiqueDeConfidentialite = () => {
         Nous rappelons également que toute personne qui le souhaite peut déclarer une faille de sécurité ou un
         dysfonctionnement du site.
       </p>
-    </Block>
+    </LegalContainer>
   )
 }
 
