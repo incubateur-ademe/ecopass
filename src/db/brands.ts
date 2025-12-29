@@ -8,6 +8,7 @@ export const getAllBrandsWithStats = async () => {
       status: Status.Done,
       brandId: { not: null },
     },
+    orderBy: { createdAt: "desc" },
     select: {
       internalReference: true,
       createdAt: true,
@@ -19,16 +20,16 @@ export const getAllBrandsWithStats = async () => {
         },
       },
     },
-    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
   })
 
-  const uniqueProducts = []
-  let lastInternalReference = null
+  const uniqueProducts = [] as typeof allProducts
+  const seen = new Set<string>()
 
   for (const product of allProducts) {
-    if (product.internalReference !== lastInternalReference) {
+    const key = `${product.brandId}:${product.internalReference}`
+    if (!seen.has(key)) {
       uniqueProducts.push(product)
-      lastInternalReference = product.internalReference
+      seen.add(key)
     }
   }
 
@@ -49,7 +50,6 @@ export const getAllBrandsWithStats = async () => {
       }
 
       acc[brandId].productCount += 1
-
       if (product.createdAt > acc[brandId].lastDeclarationDate) {
         acc[brandId].lastDeclarationDate = product.createdAt
       }
@@ -71,7 +71,7 @@ export type BrandWithStats = {
 
 export const getBrandById = async (id: string) =>
   prismaClient.brand.findFirst({
-    where: { id, active: true },
+    where: { id },
     select: { id: true, name: true },
   })
 

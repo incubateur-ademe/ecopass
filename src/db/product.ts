@@ -720,8 +720,10 @@ export const getLastBrands = async () => {
     take: 5,
   })
 
-  return prismaClient.brand.findMany({
+  const brandsDetails = await prismaClient.brand.findMany({
     where: { id: { in: brands.map((b) => b.brandId).filter((brand) => brand !== null) } },
     select: { id: true, name: true },
   })
+
+  return brands.map((brand) => brandsDetails.find((b) => b.id === brand.brandId)).filter((brand) => brand !== undefined)
 }
