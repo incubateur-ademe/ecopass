@@ -1,4 +1,5 @@
-import { Prisma, Status, UploadType } from "../../prisma/src/prisma"
+import { Prisma } from "@prisma/client"
+import { Status, UploadType } from "@prisma/enums"
 import { APIUser } from "../services/auth/auth"
 import { ProductInformationAPI, ProductMetadataAPI } from "../services/validation/api"
 import { ecobalyseVersion } from "../utils/ecobalyse/config"

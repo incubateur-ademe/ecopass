@@ -1,26 +1,25 @@
+import { OrganizationType, UserRole } from "@prisma/enums"
+import { prismaClient } from "../../src/db/prismaClient"
 import { signPassword } from "../../src/services/auth/user"
-import { OrganizationType, PrismaClient, UserRole } from "../src/prisma"
-
-const prisma = new PrismaClient()
 
 const products = async () => {
-  await prisma.score.deleteMany()
-  await prisma.material.deleteMany()
-  await prisma.accessory.deleteMany()
-  await prisma.uploadProduct.deleteMany()
-  await prisma.product.deleteMany()
-  await prisma.upload.deleteMany()
+  await prismaClient.score.deleteMany()
+  await prismaClient.material.deleteMany()
+  await prismaClient.accessory.deleteMany()
+  await prismaClient.uploadProduct.deleteMany()
+  await prismaClient.product.deleteMany()
+  await prismaClient.upload.deleteMany()
 }
 
 const users = async () => {
-  await prisma.brand.deleteMany({})
-  await prisma.authorizedOrganization.deleteMany({})
-  await prisma.organization.deleteMany({})
-  await prisma.aPIKey.deleteMany({})
-  await prisma.export.deleteMany({})
-  await prisma.user.deleteMany({})
+  await prismaClient.brand.deleteMany({})
+  await prismaClient.authorizedOrganization.deleteMany({})
+  await prismaClient.organization.deleteMany({})
+  await prismaClient.aPIKey.deleteMany({})
+  await prismaClient.export.deleteMany({})
+  await prismaClient.user.deleteMany({})
 
-  await prisma.organization.create({
+  await prismaClient.organization.create({
     data: {
       siret: "31723624800017",
       name: "EMMAUS",
@@ -40,7 +39,7 @@ const users = async () => {
     },
   })
 
-  await prisma.user.create({
+  await prismaClient.user.create({
     data: {
       email: "ecopass-password@yopmail.com",
       nom: "Ecopass",
@@ -59,7 +58,7 @@ const users = async () => {
     },
   })
 
-  const user = await prisma.user.create({
+  const user = await prismaClient.user.create({
     data: {
       email: "ecopass-admin-dev@yopmail.com",
       role: UserRole.ADMIN,
@@ -71,7 +70,7 @@ const users = async () => {
     },
   })
 
-  await prisma.aPIKey.create({
+  await prismaClient.aPIKey.create({
     data: {
       key: "ce4a461a-ae00-49a9-8fbc-d342dc635da6",
       userId: user.id,
@@ -87,10 +86,10 @@ const seeds = async () => {
 
 seeds()
   .then(async () => {
-    await prisma.$disconnect()
+    await prismaClient.$disconnect()
   })
   .catch(async (e) => {
     console.error(e)
-    await prisma.$disconnect()
+    await prismaClient.$disconnect()
     process.exit(1)
   })

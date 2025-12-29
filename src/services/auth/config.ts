@@ -4,7 +4,7 @@ import bcrypt from "bcrypt"
 import { AuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prismaClient } from "../../db/prismaClient"
-import { UserRole } from "../../../prisma/src/prisma"
+import { UserRole } from "@prisma/enums"
 import { createOrganization } from "../../db/organization"
 
 export const authOptions = {

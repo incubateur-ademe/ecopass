@@ -1,4 +1,4 @@
-import { Status } from "../../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 import { getUserProductValidation } from "./product"
 import { expectZodValidationToFail } from "./zodValidationTest"

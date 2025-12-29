@@ -1,4 +1,5 @@
-import { Accessory, Material, Prisma, Product, ProductInformation, Status, UploadType } from "../../prisma/src/prisma"
+import { Accessory, Material, Prisma, Product, ProductInformation } from "@prisma/client"
+import { Status, UploadType } from "@prisma/enums"
 import { ParsedProductValidation } from "../services/validation/product"
 import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"

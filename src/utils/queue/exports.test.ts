@@ -3,7 +3,7 @@ import { completeExport, getFirstExport } from "../../db/export"
 import { getProductsByOrganizationIdAndBrandBefore } from "../../db/product"
 import { getSVG } from "../label/svg"
 import { uploadFileToS3 } from "../s3/bucket"
-import { Status } from "../../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import JSZip from "jszip"
 
 jest.mock("../../db/export")
