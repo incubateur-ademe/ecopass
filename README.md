@@ -6,7 +6,7 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
 
 - Node.js (>= 22)
 - Docker (pour PostgreSQL et Maildev)
-- Yarn
+- PNPM
 
 ## Installation
 
@@ -40,7 +40,7 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
 4. **Installer les dépendances**
 
    ```sh
-   yarn install
+   pnpm install
    ```
 
 5. **Initialiser Prisma**
@@ -58,7 +58,7 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    Pour lancer le site web vous pouvez utilisez :
 
    ```sh
-   yarn dev
+   pnpm dev
    ```
 
 7. **Générer les données ecobalyse**
@@ -66,7 +66,7 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    Pour calculer le coût environnemental des produits, on utilise une version en local d'Ecobalyse avec le `server-app.js` ce dernier à besoin des `processes_impacts.json` pour fonctionner. Ils sont décryptés à partir de `processes_impacts.json.enc` et de la variable d'environnement `ECOBALYSE_ENCRYPTION_KEY` :
 
    ```sh
-   yarn ecobalyse:data
+   pnpm ecobalyse:data
    ```
 
 8. **Lancer la queue**
@@ -74,7 +74,7 @@ Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration
    Pour processer les téléchargements de zip et les produits déposés sur la plateforme vous devez lancer la queue :
 
    ```sh
-   yarn queue:watch
+   pnpm queue:watch
    ```
 
 9. **Tests unitaires**

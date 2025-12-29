@@ -1,3 +1,3 @@
-postdeploy: yarn prisma migrate deploy 
-web: yarn start
-queue: yarn queue 
+postdeploy: pnpm prisma migrate deploy 
+web: pnpm start
+queue: pnpm queue 
