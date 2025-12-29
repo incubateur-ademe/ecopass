@@ -2,7 +2,7 @@
 
 import Button from "@codegouvfr/react-dsfr/Button"
 import { getSVG } from "../../utils/label/svg"
-import { Score } from "../../../prisma/src/prisma"
+import { Score } from "@prisma/client"
 
 const DownloadScore = ({
   score: { score, standardized },

@@ -1,4 +1,4 @@
-import { Status } from "../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { prismaClient } from "./prismaClient"
 import { getPublicProductsByBrandId } from "./product"
 

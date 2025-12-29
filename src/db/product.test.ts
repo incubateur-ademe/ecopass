@@ -1,5 +1,6 @@
 import { v4 as uuid } from "uuid"
-import { Prisma, Status } from "../../prisma/src/prisma"
+import { Prisma } from "@prisma/client"
+import { Status } from "@prisma/enums"
 import { prismaTest } from "../../jest.setup"
 jest.mock("./prismaClient", () => ({
   prismaClient: prismaTest,

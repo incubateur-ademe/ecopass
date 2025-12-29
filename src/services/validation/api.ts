@@ -7,7 +7,6 @@ import {
   materialMapping,
   productMapping,
 } from "../../utils/ecobalyse/mappings"
-import { Return } from "@prisma/client/runtime/library"
 import { PrintingRatio } from "./printing"
 import { isValidGtin } from "../../utils/validation/gtin"
 
@@ -97,7 +96,7 @@ export const getUserProductAPIValidation = (brands: [string, ...string[]]) =>
       },
     )
 
-export type ProductAPIValidation = z.infer<Return<typeof getUserProductAPIValidation>>
+export type ProductAPIValidation = z.infer<ReturnType<typeof getUserProductAPIValidation>>
 
 const productsAPIValidation = z.object({
   ...metaData.shape,
@@ -132,7 +131,7 @@ export const getUserProductsAPIValidation = (brands: [string, ...string[]]) =>
       },
     )
 
-export type ProductsAPIValidation = z.infer<Return<typeof getUserProductsAPIValidation>>
+export type ProductsAPIValidation = z.infer<ReturnType<typeof getUserProductsAPIValidation>>
 
 export const paginationValidation = z.object({
   page: z.number().min(0),

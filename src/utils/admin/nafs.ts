@@ -1,4 +1,4 @@
-import { OrganizationType } from "../../../prisma/src/prisma"
+import { OrganizationType } from "@prisma/enums"
 
 export const nafs: Record<string, string> = {
   "01.11Z": "Culture de céréales (à l’exception du riz), de légumineuses et de graines oléagineuses",

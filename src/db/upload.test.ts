@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid"
-import { Status, UploadType } from "../../prisma/src/prisma"
+import { Status, UploadType } from "@prisma/enums"
 import { prismaTest } from "../../jest.setup"
 
 jest.mock("./prismaClient", () => ({

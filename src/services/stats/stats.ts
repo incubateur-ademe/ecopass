@@ -3,7 +3,7 @@ import axios from "axios"
 import { getProductCountByCategory, getDistinctBrandCount, getBrandsInformations } from "../../db/product"
 import { getDoneAPIUploadCount, getDoneFileUploadCount } from "../../db/upload"
 import { auth } from "../auth/auth"
-import { UserRole } from "../../../prisma/src/prisma"
+import { UserRole } from "@prisma/enums"
 
 const getVisits = async () => {
   const token = process.env.MATOMO_API_TOKEN as string

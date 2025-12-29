@@ -1,5 +1,5 @@
 "use server"
-import { OrganizationType } from "../../prisma/src/prisma"
+import { OrganizationType } from "@prisma/client"
 import { createOrganization } from "../db/organization"
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"

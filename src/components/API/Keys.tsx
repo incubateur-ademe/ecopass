@@ -1,5 +1,4 @@
 "use client"
-import { APIKey } from "../../../prisma/src/prisma"
 import Table from "../Table/Table"
 import { formatDateTime } from "../../services/format"
 import Button from "@codegouvfr/react-dsfr/Button"
@@ -10,6 +9,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert"
 import styles from "./Keys.module.css"
 import { useRouter } from "next/navigation"
 import LoadingButton from "../Button/LoadingButton"
+import { APIKey } from "@prisma/client"
 
 const Keys = ({ keys }: { keys: APIKey[] }) => {
   const router = useRouter()

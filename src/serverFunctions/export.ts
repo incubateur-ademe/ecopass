@@ -1,5 +1,5 @@
 "use server"
-import { Status } from "../../prisma/src/prisma"
+import { Status } from "@prisma/client"
 import { getOrganizationProductsByUserIdAndBrand, getProductsByUploadId } from "../db/product"
 import { stringify } from "csv-stringify/sync"
 import * as XLSX from "xlsx"

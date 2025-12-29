@@ -7,7 +7,7 @@ import { failUpload, completeUpload } from "../../services/upload"
 import { checkUploadsStatus, getFirstFileUpload, updateUploadToPending } from "../../db/upload"
 import { downloadFileFromS3 } from "../s3/bucket"
 import { FileUpload } from "../../db/upload"
-import { Status } from "../../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { decryptAndDezipFile } from "../encryption/encryption"
 
 jest.mock("chardet")

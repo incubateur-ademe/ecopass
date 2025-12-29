@@ -1,4 +1,4 @@
-import { Product, Upload, User } from "../../prisma/src/prisma"
+import { Product, Upload, User } from "@prisma/client"
 import { updateUploadToDone, updateUploadToError } from "../db/upload"
 import { sendUploadErrorEmail, sendUploadSuccessEmail } from "./emails/email"
 

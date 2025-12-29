@@ -1,4 +1,4 @@
-import { Status } from "../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { prismaTest } from "../../jest.setup"
 jest.mock("./prismaClient", () => ({
   prismaClient: prismaTest,

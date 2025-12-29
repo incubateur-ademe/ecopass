@@ -2,9 +2,9 @@
 import { Header as HeaderDSFR } from "@codegouvfr/react-dsfr/Header"
 import { Session } from "next-auth"
 import { usePathname } from "next/navigation"
-import { OrganizationType, UserRole } from "../../../prisma/src/prisma"
 import { isTestEnvironment } from "../../utils/test"
 import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
+import { OrganizationType, UserRole } from "@prisma/enums"
 
 const Header = ({ session, type }: { session: Session | null; type: OrganizationType | null }) => {
   const canDeclare = type ? organizationTypesAllowedToDeclare.includes(type) : false

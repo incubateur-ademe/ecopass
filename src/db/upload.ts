@@ -1,4 +1,4 @@
-import { Status, UploadType } from "../../prisma/src/prisma"
+import { Status, UploadType } from "@prisma/enums"
 import { completeUpload, failUpload } from "../services/upload"
 import { ecobalyseVersion } from "../utils/ecobalyse/config"
 import { prismaClient } from "./prismaClient"

@@ -1,4 +1,4 @@
-import { Brand } from "../../../prisma/src/prisma"
+import { Brand } from "@prisma/client"
 
 export const getAuthorizedBrands = (organization: {
   brands: Pick<Brand, "id" | "active">[]

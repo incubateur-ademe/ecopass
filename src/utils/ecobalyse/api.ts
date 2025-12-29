@@ -9,7 +9,7 @@ import {
 } from "./mappings"
 import { createProductScore, failProducts } from "../../db/product"
 import { prismaClient } from "../../db/prismaClient"
-import { Status } from "../../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { ProductAPIValidation, ProductInformationAPI } from "../../services/validation/api"
 import { runElmFunction } from "./elm"
 import { scoreIsValid } from "../validation/score"
