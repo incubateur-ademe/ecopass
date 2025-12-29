@@ -15,7 +15,7 @@ import {
   getOldProductWithScore,
 } from "./product"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
-import { ProductAPIValidation } from "../services/validation/api"
+import { ProductInformationAPI } from "../services/validation/api"
 import { cleanDB } from "./testUtils"
 import { encryptProductFields } from "../utils/encryption/encryption"
 
@@ -24,13 +24,27 @@ describe("Product DB integration", () => {
   let testOrganizationId: string
   let testUploadId: string
   let productId: string
-  let baseProduct: Prisma.ProductCreateManyInput
+  let baseProduct: Prisma.ProductCreateInput
 
   beforeAll(async () => {
     await cleanDB()
 
     const organization = await prismaTest.organization.create({
-      data: { name: "TestOrg", siret: "12345678901234" },
+      data: {
+        name: "TestOrg",
+        displayName: "TestOrg",
+        siret: "12345678901234",
+        brands: {
+          createMany: {
+            data: [
+              { name: "TestOrg", id: "69147ca8-09c6-4ae6-b731-d5344f080491", default: true },
+              { name: "TestBrand", id: "abf5acc4-fabc-4082-b49a-61b00b5cfcad" },
+              { name: "TestBrand2", id: "656fcd2e-4a9c-4313-bc8b-71e6e4fe91df" },
+              { name: "TestBrand3", id: "68cac5fc-a25e-4b37-96c6-bac1a421934b" },
+            ],
+          },
+        },
+      },
     })
     testOrganizationId = organization.id
     const user = await prismaTest.user.create({
@@ -50,7 +64,7 @@ describe("Product DB integration", () => {
     testUploadId = upload.id
 
     const otherOrganisation = await prismaTest.organization.create({
-      data: { name: "Other org", siret: "12345678901235" },
+      data: { name: "Other org", displayName: "Orther org", siret: "12345678901235" },
     })
     await prismaTest.authorizedOrganization.createMany({
       data: [
@@ -63,27 +77,31 @@ describe("Product DB integration", () => {
 
     baseProduct = {
       id: uuid(),
+      upload: { connect: { id: testUploadId } },
+      status: Status.Done,
       hash: "test-hash",
       gtins: ["3234567891000"],
       internalReference: "REF-124",
-      brand: "TestBrand2",
-      category: "pull",
+      brand: { connect: { id: "656fcd2e-4a9c-4313-bc8b-71e6e4fe91df" } },
       declaredScore: 3000.5,
-      business: "business",
-      mass: "0.5",
-      numberOfReferences: "1000",
-      price: "50",
-      countryDyeing: "France",
-      countryFabric: "France",
-      countryMaking: "France",
-      countrySpinning: "France",
-      airTransportRatio: "0.1",
-      upcycled: "false",
-      impression: "none",
-      impressionPercentage: "0.0",
-      fading: "true",
-      uploadId: testUploadId,
-      status: Status.Done,
+      informations: {
+        create: {
+          category: "pull",
+          business: "business",
+          mass: "0.5",
+          numberOfReferences: "1000",
+          price: "50",
+          countryDyeing: "France",
+          countryFabric: "France",
+          countryMaking: "France",
+          countrySpinning: "France",
+          airTransportRatio: "0.1",
+          upcycled: "false",
+          impression: "none",
+          impressionPercentage: "0.0",
+          fading: "true",
+        },
+      },
     }
   })
 
@@ -95,16 +113,13 @@ describe("Product DB integration", () => {
     await prismaTest.accessory.deleteMany()
     await prismaTest.material.deleteMany()
     await prismaTest.score.deleteMany()
+    await prismaTest.productInformation.deleteMany()
     await prismaTest.uploadProduct.deleteMany()
     await prismaTest.product.deleteMany()
 
     productId = uuid()
     const encrypted = encryptProductFields({
-      gtins: ["2234567891001"],
-      internalReference: "REF-123",
-      brand: "TestBrand",
       product: ProductCategory.Pull,
-      declaredScore: 2222.63,
       business: Business.Small,
       numberOfReferences: 9000,
       mass: 1,
@@ -114,32 +129,45 @@ describe("Product DB integration", () => {
       countryDyeing: "FR",
       countryFabric: "FR",
       countryMaking: "FR",
-    } satisfies ProductAPIValidation)
+    } satisfies ProductInformationAPI)
 
     await createProducts({
       products: [
         {
-          ...encrypted.product,
           error: null,
           hash: "test-hash",
           id: productId,
           createdAt: new Date(),
-          updatedAt: new Date(),
           uploadId: testUploadId,
           uploadOrder: 5,
           status: Status.Pending,
+          gtins: ["2234567891001"],
+          internalReference: "REF-123",
+          brandName: null,
+          brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+          declaredScore: 2222.63,
+          score: null,
+          standardized: null,
+        },
+      ],
+      informations: [
+        {
+          id: "info-1",
+          productId,
+          ...encrypted.product,
+          emptyTrims: false,
         },
       ],
       materials: encrypted.materials.map((material) => ({
         ...material,
         id: uuid(),
-        productId,
+        productId: "info-1",
       })),
       accessories: encrypted.accessories
         ? encrypted.accessories.map((accessory) => ({
             ...accessory,
             id: uuid(),
-            productId,
+            productId: "info-1",
           }))
         : [],
     })
@@ -149,19 +177,16 @@ describe("Product DB integration", () => {
     const found = await getProductsByUploadId(testUploadId)
 
     expect(found).toHaveLength(1)
+    expect(found[0].informations).toHaveLength(1)
     expect(found[0].id).toBe(productId)
-    expect(found[0].materials).toHaveLength(1)
-    expect(found[0].accessories).toHaveLength(1)
+    expect(found[0].informations[0].materials).toHaveLength(1)
+    expect(found[0].informations[0].accessories).toHaveLength(1)
     expect(found[0].upload.createdBy.organization?.authorizedBy).toHaveLength(1)
   })
 
   it("getProductsByUploadId and order them", async () => {
     const encrypted = encryptProductFields({
-      gtins: ["2234567891001"],
-      internalReference: "REF-123",
-      brand: "TestBrand",
       product: ProductCategory.Pull,
-      declaredScore: 2222.63,
       business: Business.Small,
       numberOfReferences: 9000,
       mass: 1,
@@ -171,21 +196,34 @@ describe("Product DB integration", () => {
       countryDyeing: "FR",
       countryFabric: "FR",
       countryMaking: "FR",
-    } satisfies ProductAPIValidation)
+    } satisfies ProductInformationAPI)
 
     let newId = uuid()
     await createProducts({
       products: [
         {
-          ...encrypted.product,
           error: null,
           hash: "new-hash",
           id: newId,
           createdAt: new Date(),
-          updatedAt: new Date(),
           uploadId: testUploadId,
           uploadOrder: 2,
           status: Status.Pending,
+          gtins: ["2234567891001"],
+          internalReference: "REF-123",
+          brandName: null,
+          brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+          declaredScore: 2222.63,
+          score: null,
+          standardized: null,
+        },
+      ],
+      informations: [
+        {
+          id: "info-1",
+          productId,
+          ...encrypted.product,
+          emptyTrims: false,
         },
       ],
       materials: [],
@@ -199,7 +237,7 @@ describe("Product DB integration", () => {
   })
 
   it("failProducts sets status to Error", async () => {
-    await failProducts([{ id: productId, error: "Test error" }])
+    await failProducts([{ productId, error: "Test error" }])
 
     const updated = await prismaTest.product.findUnique({ where: { id: productId } })
     expect(updated?.status).toBe(Status.Error)
@@ -207,34 +245,45 @@ describe("Product DB integration", () => {
   })
 
   it("getOrganizationProductsCountByUserIdAndBrand returns correct count", async () => {
-    await prismaTest.product.createMany({
-      data: [
-        baseProduct,
-        {
+    await Promise.all([
+      prismaTest.product.create({
+        data: baseProduct,
+      }),
+      prismaTest.product.create({
+        data: {
           ...baseProduct,
           id: uuid(),
           internalReference: "REF-125",
           status: Status.Pending,
         },
-        {
+      }),
+      prismaTest.product.create({
+        data: {
           ...baseProduct,
           id: uuid(),
-          brand: "TestBrand3",
+          brand: { connect: { id: "68cac5fc-a25e-4b37-96c6-bac1a421934b" } },
           internalReference: "REF-126",
         },
-        {
+      }),
+      prismaTest.product.create({
+        data: {
           ...baseProduct,
           id: uuid(),
           status: Status.Pending,
         },
-        {
+      }),
+      prismaTest.product.create({
+        data: {
           ...baseProduct,
           id: uuid(),
           status: Status.Done,
         },
-      ],
-    })
-    const countBrand2 = await getOrganizationProductsCountByUserIdAndBrand(testUserId, "TestBrand2")
+      }),
+    ])
+    const countBrand2 = await getOrganizationProductsCountByUserIdAndBrand(
+      testUserId,
+      "656fcd2e-4a9c-4313-bc8b-71e6e4fe91df",
+    )
     expect(countBrand2).toBe(1)
 
     const countAll = await getOrganizationProductsCountByUserIdAndBrand(testUserId)
@@ -269,11 +318,7 @@ describe("Product DB integration", () => {
     const productIds = []
 
     const encrypted = encryptProductFields({
-      gtins: ["2234567891001"],
-      internalReference: "REF-123",
-      brand: "TestBrand",
       product: ProductCategory.Pull,
-      declaredScore: 2222.63,
       business: Business.Small,
       numberOfReferences: 9000,
       mass: 1,
@@ -283,7 +328,7 @@ describe("Product DB integration", () => {
       countryDyeing: "FR",
       countryFabric: "FR",
       countryMaking: "FR",
-    } satisfies ProductAPIValidation)
+    } satisfies ProductInformationAPI)
 
     for (let i = 0; i < 5; i++) {
       const productId = uuid()
@@ -291,7 +336,6 @@ describe("Product DB integration", () => {
 
       await prismaTest.product.create({
         data: {
-          ...encrypted.product,
           uploadId: testUploadId,
           id: productId,
           gtins: [gtin],
@@ -299,6 +343,9 @@ describe("Product DB integration", () => {
           status: Status.Done,
           createdAt: new Date(Date.now() + i * 1000),
           hash: "test-hash",
+          brandName: null,
+          brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+          informations: { create: { ...encrypted.product } },
         },
       })
     }
@@ -328,11 +375,7 @@ describe("Product DB integration", () => {
     const productId2 = uuid()
 
     const encrypted = encryptProductFields({
-      gtins: ["2234567891001"],
-      internalReference: "REF-123",
-      brand: "TestBrand",
       product: ProductCategory.Pull,
-      declaredScore: 2222.63,
       business: Business.Small,
       numberOfReferences: 9000,
       mass: 1,
@@ -342,31 +385,37 @@ describe("Product DB integration", () => {
       countryDyeing: "FR",
       countryFabric: "FR",
       countryMaking: "FR",
-    } satisfies ProductAPIValidation)
+    } satisfies ProductInformationAPI)
 
     await prismaTest.product.create({
       data: {
-        ...encrypted.product,
         uploadId: testUploadId,
-        id: productId1,
+        id: "productId1",
         gtins: [gtin],
         internalReference: "REF-500",
         status: Status.Done,
         createdAt: new Date(Date.now() - 1000),
         hash: "test-hash",
+        brandName: null,
+        brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+        score: 100,
+        informations: { create: { id: productId1, ...encrypted.product } },
       },
     })
 
     await prismaTest.product.create({
       data: {
-        ...encrypted.product,
         uploadId: testUploadId,
-        id: productId2,
+        id: "productId2",
         gtins: [gtin],
         internalReference: "REF-501",
         status: Status.Done,
         createdAt: new Date(),
         hash: "test-hash",
+        brandName: null,
+        brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+        score: 200,
+        informations: { create: { id: productId2, ...encrypted.product } },
       },
     })
 
@@ -426,15 +475,17 @@ describe("Product DB integration", () => {
       },
     })
 
-    const oldProduct = await getOldProductWithScore(gtin, productId1)
+    const oldProduct = await getOldProductWithScore(gtin, "productId1")
     expect(oldProduct).not.toBeNull()
     expect(oldProduct?.internalReference).toBe("REF-500")
-    expect(oldProduct?.score?.score).toBe(100)
+    expect(oldProduct?.score).toBe(100)
+    expect(oldProduct?.informations[0].score?.score).toBe(100)
 
-    const newerProduct = await getOldProductWithScore(gtin, productId2)
+    const newerProduct = await getOldProductWithScore(gtin, "productId2")
     expect(newerProduct).not.toBeNull()
     expect(newerProduct?.internalReference).toBe("REF-501")
-    expect(newerProduct?.score?.score).toBe(200)
+    expect(newerProduct?.score).toBe(200)
+    expect(newerProduct?.informations[0].score?.score).toBe(200)
 
     const nonExistent = await getOldProductWithScore(gtin, uuid())
     expect(nonExistent).toBeNull()
@@ -462,11 +513,7 @@ describe("Product DB integration", () => {
     it("creates products when no existing products with same hash", async () => {
       const newProductId = uuid()
       const encrypted = encryptProductFields({
-        gtins: ["9999999999999"],
-        internalReference: "NEW-REF-001",
-        brand: "NewBrand",
         product: ProductCategory.TShirtPolo,
-        declaredScore: 1500.0,
         business: Business.Small,
         numberOfReferences: 5000,
         mass: 0.3,
@@ -476,32 +523,45 @@ describe("Product DB integration", () => {
         countryDyeing: "FR",
         countryFabric: "FR",
         countryMaking: "FR",
-      } satisfies ProductAPIValidation)
+      } satisfies ProductInformationAPI)
 
       const numberOfCreatedProducts = await createProducts({
         products: [
           {
-            ...encrypted.product,
             error: null,
             hash: "unique-hash-001",
             id: newProductId,
             createdAt: new Date(),
-            updatedAt: new Date(),
             uploadId: testUploadId,
             uploadOrder: 1,
             status: Status.Pending,
+            gtins: ["9999999999999"],
+            internalReference: "NEW-REF-001",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 1500.0,
+            score: null,
+            standardized: null,
+          },
+        ],
+        informations: [
+          {
+            id: "info-2",
+            productId: newProductId,
+            ...encrypted.product,
+            emptyTrims: false,
           },
         ],
         materials: encrypted.materials.map((material) => ({
           ...material,
           id: uuid(),
-          productId: newProductId,
+          productId: "info-2",
         })),
         accessories:
           encrypted.accessories?.map((accessory) => ({
             ...accessory,
             id: uuid(),
-            productId: newProductId,
+            productId: "info-2",
           })) || [],
       })
 
@@ -509,13 +569,14 @@ describe("Product DB integration", () => {
 
       const createdProduct = await prismaTest.product.findUnique({
         where: { id: newProductId },
-        include: { materials: true, accessories: true },
+        include: { informations: { include: { materials: true, accessories: true } } },
       })
 
       expect(createdProduct).not.toBeNull()
       expect(createdProduct?.hash).toBe("unique-hash-001")
-      expect(createdProduct?.materials).toHaveLength(1)
-      expect(createdProduct?.accessories).toHaveLength(1)
+      expect(createdProduct?.informations).toHaveLength(1)
+      expect(createdProduct?.informations[0].materials).toHaveLength(1)
+      expect(createdProduct?.informations[0].accessories).toHaveLength(1)
     })
 
     it("creates uploadProduct relation when product with same hash exists", async () => {
@@ -535,11 +596,7 @@ describe("Product DB integration", () => {
 
       const newProductId = uuid()
       const encrypted = encryptProductFields({
-        gtins: [existingGtin],
-        internalReference: "NEW-REF-002",
-        brand: "TestBrand",
         product: ProductCategory.Pull,
-        declaredScore: 2000.0,
         business: Business.Small,
         numberOfReferences: 3000,
         mass: 0.4,
@@ -549,20 +606,33 @@ describe("Product DB integration", () => {
         countryDyeing: "FR",
         countryFabric: "FR",
         countryMaking: "FR",
-      } satisfies ProductAPIValidation)
+      } satisfies ProductInformationAPI)
 
       const numberOfCreatedProducts = await createProducts({
         products: [
           {
-            ...encrypted.product,
             error: null,
             hash: existingHash,
             id: newProductId,
             createdAt: new Date(),
-            updatedAt: new Date(),
             uploadId: testUploadId,
             uploadOrder: 1,
             status: Status.Pending,
+            gtins: [existingGtin],
+            internalReference: "NEW-REF-002",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 2000.0,
+            score: null,
+            standardized: null,
+          },
+        ],
+        informations: [
+          {
+            id: "info-1",
+            productId,
+            ...encrypted.product,
+            emptyTrims: false,
           },
         ],
         materials: encrypted.materials.map((material) => ({
@@ -613,11 +683,7 @@ describe("Product DB integration", () => {
 
       const newProductId = uuid()
       const encrypted = encryptProductFields({
-        gtins: [sameGtin],
-        internalReference: "UPDATED-REF",
-        brand: "TestBrand",
         product: ProductCategory.Pull,
-        declaredScore: 2500.0,
         business: Business.Small,
         numberOfReferences: 4000,
         mass: 0.6,
@@ -627,32 +693,45 @@ describe("Product DB integration", () => {
         countryDyeing: "FR",
         countryFabric: "FR",
         countryMaking: "FR",
-      } satisfies ProductAPIValidation)
+      } satisfies ProductInformationAPI)
 
       const numberOfCreatedProducts = await createProducts({
         products: [
           {
-            ...encrypted.product,
             error: null,
             hash: newHash,
             id: newProductId,
             createdAt: new Date(),
-            updatedAt: new Date(),
             uploadId: testUploadId,
             uploadOrder: 1,
             status: Status.Pending,
+            gtins: [sameGtin],
+            internalReference: "UPDATED-REF",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 2500.0,
+            score: null,
+            standardized: null,
+          },
+        ],
+        informations: [
+          {
+            id: "info-2",
+            productId: newProductId,
+            ...encrypted.product,
+            emptyTrims: false,
           },
         ],
         materials: encrypted.materials.map((material) => ({
           ...material,
           id: uuid(),
-          productId: newProductId,
+          productId: "info-2",
         })),
         accessories:
           encrypted.accessories?.map((accessory) => ({
             ...accessory,
             id: uuid(),
-            productId: newProductId,
+            productId: "info-2",
           })) || [],
       })
 
@@ -660,12 +739,14 @@ describe("Product DB integration", () => {
 
       const newProduct = await prismaTest.product.findUnique({
         where: { id: newProductId },
-        include: { materials: true, accessories: true },
+        include: { informations: { include: { materials: true, accessories: true } } },
       })
+
       expect(newProduct).not.toBeNull()
       expect(newProduct?.hash).toBe(newHash)
-      expect(newProduct?.materials).toHaveLength(1)
-      expect(newProduct?.accessories).toHaveLength(1)
+      expect(newProduct?.informations).toHaveLength(1)
+      expect(newProduct?.informations[0].materials).toHaveLength(1)
+      expect(newProduct?.informations[0].accessories).toHaveLength(1)
 
       const uploadProducts = await prismaTest.uploadProduct.findMany({
         where: {
@@ -707,11 +788,7 @@ describe("Product DB integration", () => {
 
       const newProductId = uuid()
       const encrypted = encryptProductFields({
-        gtins: [gtin],
-        internalReference: "NEW-WITH-OLD-HASH",
-        brand: "TestBrand",
         product: ProductCategory.Pull,
-        declaredScore: 2800.0,
         business: Business.Small,
         numberOfReferences: 1200,
         mass: 0.7,
@@ -721,20 +798,33 @@ describe("Product DB integration", () => {
         countryDyeing: "FR",
         countryFabric: "FR",
         countryMaking: "FR",
-      } satisfies ProductAPIValidation)
+      } satisfies ProductInformationAPI)
 
       const numberOfCreatedProducts = await createProducts({
         products: [
           {
-            ...encrypted.product,
             error: null,
             hash: oldHash,
             id: newProductId,
             createdAt: new Date(),
-            updatedAt: new Date(),
             uploadId: testUploadId,
             uploadOrder: 1,
             status: Status.Pending,
+            gtins: [gtin],
+            internalReference: "NEW-WITH-OLD-HASH",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 2800.0,
+            score: null,
+            standardized: null,
+          },
+        ],
+        informations: [
+          {
+            id: "info-1",
+            productId,
+            ...encrypted.product,
+            emptyTrims: false,
           },
         ],
         materials: encrypted.materials.map((material) => ({

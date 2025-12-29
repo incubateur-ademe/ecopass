@@ -31,7 +31,11 @@ const ponderations = {
 
 type ScoreKey = keyof typeof ponderations
 
-const ProductScoreImpacts = ({ score }: { score: NonNullable<ProductWithScore["score"]> }) => {
+const ProductScoreImpacts = ({
+  score,
+}: {
+  score: Omit<NonNullable<ProductWithScore["informations"][number]["score"]>, "id" | "productId">
+}) => {
   if (!Object.keys(ponderations).some((key) => score[key as ScoreKey] > 0)) {
     return null
   }
@@ -45,7 +49,7 @@ const ProductScoreImpacts = ({ score }: { score: NonNullable<ProductWithScore["s
             Détails des impacts environnementaux{" "}
             <Link
               className={styles.link}
-              href='https://ecobalyse.beta.gouv.fr/#/explore/textile/impacts'
+              href='https://ecobalyse.beta.gouv.fr/versions/v7.0.0/#/explore/textile/impacts'
               target='_blank'
               rel='noreferrer noopener'>
               <span className='fr-icon-questionnaire-line' />

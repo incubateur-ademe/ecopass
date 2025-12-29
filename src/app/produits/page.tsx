@@ -1,27 +1,26 @@
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import Products from "../../views/Products"
-import { PageProps } from "../../../.next/types/app/page"
+import { PageProps } from "../../types/Next"
 import { Metadata } from "next"
-import { auth } from "../../services/auth/auth"
 import { getOrganizationProductsByUserId, getOrganizationProductsCountByUserIdAndBrand } from "../../db/product"
-import { redirect } from "next/navigation"
+import { tryAndGetSession } from "../../services/auth/redirect"
+import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
 
 export const metadata: Metadata = {
   title: "Mes produits - Affichage environnemental",
 }
 
 const ProductsPage = async ({ searchParams }: PageProps) => {
-  const session = await auth()
-  if (!session || !session.user) {
-    redirect("/")
-  }
+  const session = await tryAndGetSession(true, true, organizationTypesAllowedToDeclare)
 
   const params = await searchParams
   const page = params.page ? parseInt(params.page as string, 10) : 1
   const brand = params.brand ? (params.brand as string) : undefined
 
-  const brands = await getOrganizationProductsByUserId(session.user.id)
-  const productsCount = await getOrganizationProductsCountByUserIdAndBrand(session.user.id, brand)
+  const [brands, productsCount] = await Promise.all([
+    getOrganizationProductsByUserId(session.user.id),
+    getOrganizationProductsCountByUserIdAndBrand(session.user.id, brand),
+  ])
 
   return (
     <>

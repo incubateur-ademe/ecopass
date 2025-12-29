@@ -7,6 +7,8 @@ import { auth } from "../services/auth/auth"
 import { uploadFileToS3 } from "../utils/s3/bucket"
 import { encryptAndZipFile } from "../utils/encryption/encryption"
 import path from "path"
+import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
+import { getUserOrganizationType } from "../db/user"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -56,6 +58,11 @@ export const uploadFile = async (file: File) => {
     return "Veuillez vous reconnecter et réessayer"
   }
 
+  const organizationType = await getUserOrganizationType(session.user.id)
+  if (!organizationTypesAllowedToDeclare.includes(organizationType!)) {
+    return "Vous n'êtes pas autorisé à uploader des fichiers"
+  }
+
   try {
     if (file.size > MAX_FILE_SIZE) {
       return "Le fichier est trop volumineux. Taille maximale autorisée : 1MB"
@@ -85,7 +92,7 @@ export const uploadFile = async (file: File) => {
     await uploadFileToS3(id, zip, "upload")
     await createUpload(session.user.id, UploadType.FILE, sanitizedFileName, id)
 
-    return null // Succès
+    return null
   } catch (error) {
     console.error("Error during upload:", error)
     return "Erreur inconnue lors du traitement du fichier"

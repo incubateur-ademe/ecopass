@@ -2,11 +2,13 @@
 import { Header as HeaderDSFR } from "@codegouvfr/react-dsfr/Header"
 import { Session } from "next-auth"
 import { usePathname } from "next/navigation"
-import { UserRole } from "../../../prisma/src/prisma"
+import { OrganizationType, UserRole } from "../../../prisma/src/prisma"
+import { isTestEnvironment } from "../../utils/test"
+import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
 
-const Header = ({ session }: { session: Session | null }) => {
+const Header = ({ session, type }: { session: Session | null; type: OrganizationType | null }) => {
+  const canDeclare = type ? organizationTypesAllowedToDeclare.includes(type) : false
   const pathname = usePathname()
-
   return (
     <HeaderDSFR
       brandTop={
@@ -20,27 +22,36 @@ const Header = ({ session }: { session: Session | null }) => {
         href: "/",
         title: "Accueil - Affichage environnemental",
       }}
-      serviceTitle={<>Affichage environnemental</>}
+      serviceTitle='Affichage environnemental'
+      serviceTagline={isTestEnvironment() ? "Serveur de test" : undefined}
       navigation={
         session && session.user
           ? [
               { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
-              {
-                linkProps: { href: "/declarations" },
-                text: "Mes déclarations",
-                isActive: pathname.startsWith("/declarations"),
-              },
-              { linkProps: { href: "/produits" }, text: "Mes produits", isActive: pathname.startsWith("/produits") },
-              { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") },
+              canDeclare
+                ? {
+                    linkProps: { href: "/declarations" },
+                    text: "Déclarations",
+                    isActive: pathname.startsWith("/declarations"),
+                  }
+                : null,
+              canDeclare
+                ? {
+                    linkProps: { href: "/produits" },
+                    text: "Produits déclarés",
+                    isActive: pathname.startsWith("/produits"),
+                  }
+                : null,
+              canDeclare ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") } : null,
               {
                 linkProps: { href: "/organisation" },
-                text: "Mon organisation",
+                text: "Organisation",
                 isActive: pathname.startsWith("/organisation"),
               },
-              ...(session.user.role === UserRole.ADMIN
-                ? [{ linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }]
-                : []),
-            ]
+              session.user.role === UserRole.ADMIN
+                ? { linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }
+                : null,
+            ].filter((link) => link !== null)
           : []
       }
       quickAccessItems={

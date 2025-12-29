@@ -1,18 +1,18 @@
 "use client"
-import { ProductWithScore } from "../../db/product"
+import { Score } from "../../../prisma/src/prisma"
 import { getSVG } from "../../utils/label/svg"
 import Label from "../Label/Label"
 import Button from "@codegouvfr/react-dsfr/Button"
 
 const ProductScore = ({
-  score,
+  score: { score, standardized, durability },
   internalReference,
 }: {
-  score: NonNullable<ProductWithScore["score"]>
+  score: Pick<Score, "score" | "standardized" | "durability">
   internalReference: string
 }) => {
   const download = () => {
-    const blob = new Blob([getSVG(score?.score, score?.standardized)], {
+    const blob = new Blob([getSVG(score, standardized)], {
       type: "image/svg+xml;charset=utf-8",
     })
     const url = URL.createObjectURL(blob)
@@ -28,19 +28,19 @@ const ProductScore = ({
   return (
     <>
       <p>
-        Coût environnemental : <b>{Math.round(score!.score)} points</b>
+        Coût environnemental : <b>{Math.round(score)} points</b>
       </p>
       <p>
-        Coût environnemental pour 100g : <b>{Math.round(score!.standardized)} points</b>
+        Coût environnemental pour 100g : <b>{Math.round(standardized)} points</b>
       </p>
-      {score.durability > 0 && (
+      {durability > 0 && (
         <p>
-          Coefficient de durabilité : <b>{score.durability}</b>
+          Coefficient de durabilité : <b>{Math.round(durability * 100) / 100}</b>
         </p>
       )}
       <div className='fr-mt-4w'>
         <div className='fr-mb-2w'>
-          <Label product={score} />
+          <Label product={{ score, standardized }} />
         </div>
         <Button onClick={download}>Télécharger le .svg</Button>
       </div>

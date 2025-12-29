@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole } from "../src/prisma"
+import { OrganizationType, PrismaClient, UserRole } from "../src/prisma"
 
 const prisma = new PrismaClient()
 
@@ -22,17 +22,23 @@ const users = async () => {
   await prisma.organization.create({
     data: {
       siret: "31723624800017",
-      name: "Emmaus",
+      name: "EMMAUS",
+      displayName: "Emmaus",
       effectif: "41",
       naf: "87.90B",
+      type: OrganizationType.Brand,
       brands: {
         createMany: {
-          data: [{ name: "Emmaus Solidarité" }, { name: "Emmaus Connect" }],
+          data: [
+            { name: "Emmaus Solidarité", id: "26ed7820-ebca-4235-b1d3-dbeab02b1768" },
+            { name: "Emmaus Connect", id: "175570b3-59e4-40b4-89be-08a185685f78" },
+            { name: "Emmaus", default: true, id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56" },
+          ],
         },
       },
     },
   })
-  await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       email: "ecopass-admin-dev@yopmail.com",
       role: UserRole.ADMIN,
@@ -41,6 +47,14 @@ const users = async () => {
       organization: {
         connect: { siret: "31723624800017" },
       },
+    },
+  })
+
+  await prisma.aPIKey.create({
+    data: {
+      key: "ce4a461a-ae00-49a9-8fbc-d342dc635da6",
+      userId: user.id,
+      name: "API Key for development",
     },
   })
 }

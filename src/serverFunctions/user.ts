@@ -1,5 +1,6 @@
 "use server"
 import { prismaClient } from "../db/prismaClient"
+import { getUserOrganizationType as getUserOrganizationTypeDB } from "../db/user"
 import { auth } from "../services/auth/auth"
 
 export const generateAPIKey = async (name: string) => {
@@ -26,3 +27,11 @@ export const deleteAPIKey = async (id: string) =>
   prismaClient.aPIKey.delete({
     where: { id },
   })
+
+export const getUserOrganizationType = async (id?: string) => {
+  if (!id) {
+    return null
+  }
+
+  return getUserOrganizationTypeDB(id)
+}

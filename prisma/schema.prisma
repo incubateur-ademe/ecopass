@@ -145,23 +145,49 @@ model Score {
   microfibers    Float
   outOfEuropeEOL Float
 
-  product   Product @relation(fields: [productId], references: [id])
-  productId String  @unique @map("product_id")
+  product   ProductInformation? @relation(fields: [productId], references: [id])
+  productId String?             @unique @map("product_id")
 
   @@map("scores")
 }
 
 model Product {
-  id     String  @id @default(uuid())
-  status Status  @default(Pending)
-  error  String?
-  hash   String
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  status    Status   @default(Pending)
+  error     String?
+  hash      String
+
+  score        Float?
+  standardized Float?
 
   gtins             String[] @map("gtins")
   internalReference String   @map("internal_reference")
-  brand             String
   declaredScore     Float?   @map("declared_score")
-  category          String
+
+  brandName String? @map("brand_name")
+  brandId   String? @map("brand_id")
+  brand     Brand?  @relation(fields: [brandId], references: [id])
+
+  informations ProductInformation[]
+
+  upload      Upload @relation(fields: [uploadId], references: [id])
+  uploadId    String @map("upload_id")
+  uploadOrder Int?   @map("upload_order")
+
+  reUploads UploadProduct[]
+
+  @@index([gtins], map: "idx_product_gtins", type: Gin)
+  @@index([internalReference, status], map: "idx_product_internal_ref_status")
+  @@index([brandId], map: "idx_product_brand")
+  @@map("products")
+}
+
+model ProductInformation {
+  id           String   @id @default(uuid())
+  category     String
+  categorySlug String?  @map("category_slug")
+  emptyTrims   Boolean? @map("empty_trims")
 
   // Encrypted string
   business        String
@@ -185,21 +211,12 @@ model Product {
   materials   Material[]
   accessories Accessory[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
-
-  upload      Upload @relation(fields: [uploadId], references: [id])
-  uploadId    String @map("upload_id")
-  uploadOrder Int?   @map("upload_order")
-
-  reUploads UploadProduct[]
-
   score Score?
 
-  @@index([gtins], map: "idx_product_gtins", type: Gin)
-  @@index([internalReference, status], map: "idx_product_internal_ref_status")
-  @@index([brand], map: "idx_product_brand")
-  @@map("products")
+  product   Product? @relation(fields: [productId], references: [id])
+  productId String?  @map("product_id")
+
+  @@map("product_informations")
 }
 
 model Material {
@@ -211,8 +228,8 @@ model Material {
   // Encrypted number
   share String
 
-  product   Product @relation(fields: [productId], references: [id])
-  productId String  @map("product_id")
+  product   ProductInformation? @relation(fields: [productId], references: [id])
+  productId String?             @map("product_id")
 
   @@index([productId], map: "idx_material_product_id")
   @@map("materials")
@@ -227,17 +244,28 @@ model Accessory {
   // Encrypted number
   quantity String
 
-  product   Product @relation(fields: [productId], references: [id])
-  productId String  @map("product_id")
+  product   ProductInformation? @relation(fields: [productId], references: [id])
+  productId String?             @map("product_id")
 
   @@index([productId], map: "idx_accessory_product_id")
   @@map("accessories")
 }
 
+enum OrganizationType {
+  Brand
+  Distributor
+  BrandAndDistributor
+  Consultancy
+  Other
+}
+
 model Organization {
-  id    String @id @default(uuid())
-  name  String
-  siret String @unique
+  id          String @id @default(uuid())
+  name        String
+  displayName String
+  siret       String @unique
+
+  type OrganizationType?
 
   effectif String?
   naf      String?
@@ -274,8 +302,12 @@ model Brand {
   id   String @id @default(uuid())
   name String
 
+  default Boolean @default(false)
+  active  Boolean @default(true)
+
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String       @map("organization_id")
+  Product        Product[]
 
   @@map("brands")
 }

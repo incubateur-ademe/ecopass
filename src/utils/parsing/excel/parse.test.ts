@@ -24,11 +24,11 @@ describe("parseExcel", () => {
           {
             from: {
               name: "OtherOrg",
-              brands: [{ name: "otherBrand" }],
+              brands: [{ name: "otherBrand", id: "e9ce5247-4d31-4cba-a32b-4288a645e90a", active: true }],
             },
           },
         ],
-        brands: [{ name: "TestBrand" }],
+        brands: [{ name: "TestBrand", id: "781c0fcd-372e-4032-8088-d83e103726f2", active: true, default: true }],
       },
     },
     reUploadProducts: [],
@@ -52,7 +52,7 @@ describe("parseExcel", () => {
 
   it("parses a valid Excel file", async () => {
     const excelBuffer = createExcelBuffer([defaultHeaders, defaultProducts])
-    const { products, materials, accessories } = await parseExcel(excelBuffer, upload)
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
 
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(2)
@@ -61,26 +61,21 @@ describe("parseExcel", () => {
     expect(products[0].status).toBe(Status.Pending)
     expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
     expect(products[0].internalReference).toBe("REF-123")
-    expect(products[0].brand).toBe("Marque")
+    expect(products[0].brandName).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
+    expect(products[0].brandId).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
     expect(products[0].declaredScore).toBe(2222.63)
 
-    const fullProducts = products.map((product) => {
+    const fullProducts = informations.map((information) => {
       return {
-        ...product,
-        materials: materials.filter((material) => material.productId === product.id),
-        accessories: accessories.filter((accessory) => accessory.productId === product.id),
+        ...information,
+        materials: materials.filter((material) => material.productId === information.id),
+        accessories: accessories.filter((accessory) => accessory.productId === information.id),
         upload: {
           createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
         },
       }
     })
-
     const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["2234567891001", "3234567891000"])
-    expect(parsedProduct.internalReference).toBe("REF-123")
-    expect(parsedProduct.brand).toBe("Marque")
-    expect(parsedProduct.declaredScore).toBe(2222.63)
     expect(parsedProduct.category).toBe(ProductCategory.Pull)
     expect(parsedProduct.airTransportRatio).toBe(0.75)
     expect(parsedProduct.business).toBe(Business.WithoutServices)
@@ -107,11 +102,67 @@ describe("parseExcel", () => {
     expect(parsedProduct.accessories[0].quantity).toBe(1)
   })
 
+  it("parses a valid Excel with Accessoires", async () => {
+    const excelBuffer = createExcelBuffer([
+      [
+        ...defaultHeaders.slice(0, -4),
+        "Accessoire 1",
+        "Accessoire 1 quantité",
+        "Accessoire 2",
+        "Accessoire 2 quantité",
+        "Accessoire 3",
+        "Accessoire 3 quantité",
+        "Accessoire 4",
+        "Accessoire 4 quantité",
+      ],
+      [...defaultProducts.slice(0, -4), "Bouton en métal", 1, "", "", "", "", "", ""],
+    ])
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(materials).toHaveLength(2)
+    expect(accessories).toHaveLength(1)
+
+    const fullProducts = informations.map((information) => {
+      return {
+        ...information,
+        materials: materials.filter((material) => material.productId === information.id),
+        accessories: accessories.filter((accessory) => accessory.productId === information.id),
+        upload: {
+          createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
+        },
+      }
+    })
+    const parsedProduct = decryptProductFields(fullProducts[0])
+    expect(parsedProduct.accessories[0].slug).toBe(AccessoryType.BoutonEnMétal)
+    expect(parsedProduct.accessories[0].quantity).toBe(1)
+  })
+
+  it("parses a valid CSV with empty trims", async () => {
+    const excelBuffer = createExcelBuffer([defaultHeaders, [...defaultProducts.slice(0, -4), "0", "", "", ""]])
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(1)
+    expect(informations[0].emptyTrims).toBe(false)
+    expect(materials).toHaveLength(2)
+    expect(accessories).toHaveLength(1)
+  })
+
+  it("parses a valid CSV with default trims", async () => {
+    const excelBuffer = createExcelBuffer([defaultHeaders, [...defaultProducts.slice(0, -4), "", "", "", ""]])
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(1)
+    expect(informations[0].emptyTrims).toBe(true)
+    expect(materials).toHaveLength(2)
+    expect(accessories).toHaveLength(0)
+  })
+
   it("parses all invalid values", async () => {
     const invalidRow = defaultHeaders.map(() => "Test")
 
     const excelBuffer = createExcelBuffer([defaultHeaders, invalidRow])
-    const { products, materials, accessories } = await parseExcel(excelBuffer, upload)
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
 
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(16)
@@ -120,26 +171,21 @@ describe("parseExcel", () => {
     expect(products[0].status).toBe(Status.Pending)
     expect(products[0].gtins).toEqual(["Test"])
     expect(products[0].internalReference).toBe("Test")
-    expect(products[0].brand).toBe("Test")
+    expect(products[0].brandName).toBe("Test")
+    expect(products[0].brandId).toBe(null)
     expect(products[0].declaredScore).toBe(-1)
 
-    const fullProducts = products.map((product) => {
+    const fullProducts = informations.map((information) => {
       return {
-        ...product,
-        materials: materials.filter((material) => material.productId === product.id),
-        accessories: accessories.filter((accessory) => accessory.productId === product.id),
+        ...information,
+        materials: materials.filter((material) => material.productId === information.id),
+        accessories: accessories.filter((accessory) => accessory.productId === information.id),
         upload: {
           createdBy: { organization: { name: "TestOrg", authorizedBy: [], brands: [] } },
         },
       }
     })
-
     const parsedProduct = decryptProductFields(fullProducts[0])
-    expect(parsedProduct.status).toBe(Status.Pending)
-    expect(parsedProduct.gtins).toEqual(["Test"])
-    expect(parsedProduct.internalReference).toBe("Test")
-    expect(parsedProduct.brand).toBe("Test")
-    expect(parsedProduct.declaredScore).toBe(-1)
     expect(parsedProduct.category).toBe("Test")
     expect(parsedProduct.airTransportRatio).toBe("Test")
     expect(parsedProduct.business).toBe("Test")
@@ -159,7 +205,6 @@ describe("parseExcel", () => {
     expect(parsedProduct.materials[0].country).toBe("Test")
     expect(parsedProduct.materials[0].share).toBe("Test")
     expect(parsedProduct.accessories).toHaveLength(4)
-    expect(parsedProduct.accessories[0].slug).toBe("Test")
     expect(parsedProduct.accessories[0].quantity).toBe("Test")
   })
 
@@ -175,7 +220,7 @@ describe("parseExcel", () => {
     const excelBuffer = createExcelBuffer([incompleteHeaders, incompleteRow])
 
     await expect(parseExcel(excelBuffer, upload)).rejects.toThrow(
-      "Colonne(s) manquante(s): GTINs/Eans, Référence interne, Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Accessoire 1, Accessoire 1 quantité",
+      "Colonne(s) manquante(s): GTINs/Eans, Référence interne, Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Quantité de bouton en métal, Quantité de bouton en plastique, Quantité de zip long, Quantité de zip court",
     )
   })
 
@@ -208,7 +253,8 @@ describe("parseExcel", () => {
     expect(materials).toHaveLength(2)
     expect(accessories).toHaveLength(1)
     expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
-    expect(products[0].brand).toBe("Marque")
+    expect(products[0].brandName).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
+    expect(products[0].brandId).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
   })
 
   it("uses first sheet when 'Produits' sheet does not exist", async () => {
@@ -220,6 +266,20 @@ describe("parseExcel", () => {
     expect(materials).toHaveLength(2)
     expect(accessories).toHaveLength(1)
     expect(products[0].gtins).toEqual(["2234567891001", "3234567891000"])
-    expect(products[0].brand).toBe("Marque")
+    expect(products[0].brandName).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
+    expect(products[0].brandId).toBe("781c0fcd-372e-4032-8088-d83e103726f2")
+  })
+
+  it("ignores materials with empty or whitespace-only values", async () => {
+    const row = [...defaultProducts]
+    const matiere3Index = defaultHeaders.indexOf("Matière 3")
+    row[matiere3Index] = " "
+    row[matiere3Index + 1] = "0.5"
+
+    const excelBuffer = createExcelBuffer([defaultHeaders, row])
+    const { products, materials } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(materials).toHaveLength(2)
   })
 })

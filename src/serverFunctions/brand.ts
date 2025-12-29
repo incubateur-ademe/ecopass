@@ -20,19 +20,24 @@ export const addNewBrand = async (brand: string) => {
     return "Vous n'êtes pas membre d'une organisation"
   }
 
-  if (user.organization.brands.some(({ name }) => name === brand)) {
+  const trimmedBrand = brand.trim()
+  if (trimmedBrand.length === 0) {
+    return "Le nom de la marque ne peut pas être vide"
+  }
+
+  if (user.organization.brands.some(({ name }) => name === trimmedBrand)) {
     return "Vous avez déjà une marque avec ce nom"
   }
 
   return prismaClient.brand.create({
     data: {
-      name: brand,
+      name: trimmedBrand,
       organization: { connect: { id: user.organization.id } },
     },
   })
 }
 
-export const deleteBrand = async (id: string) => {
+export const updateBrand = async (id: string, data: { name: string; active: boolean }) => {
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -49,10 +54,15 @@ export const deleteBrand = async (id: string) => {
     return "Vous n'êtes pas membre d'une organisation"
   }
 
-  return prismaClient.brand.delete({
+  return prismaClient.brand.update({
     where: {
       id: id,
       organizationId: user.organization.id,
+      default: false,
+    },
+    data: {
+      name: data.name.trim(),
+      active: data.active,
     },
   })
 }

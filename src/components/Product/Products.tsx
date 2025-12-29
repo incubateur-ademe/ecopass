@@ -1,5 +1,4 @@
 "use server"
-
 import { getOrganizationProductsByUserIdAndBrand } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
@@ -9,8 +8,8 @@ import Table from "../Table/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Link from "next/link"
 import DownloadScores from "./DownloadScores"
-import { productCategories } from "../../utils/types/productCategory"
-import { simplifyValue } from "../../utils/parsing/parsing"
+import { BATCH_CATEGORY } from "../../utils/types/productCategory"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
@@ -21,13 +20,19 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
   const products = await getOrganizationProductsByUserIdAndBrand(session.user.id, page - 1, 10, brand)
 
   return products.length === 0 ? (
-    <p>
-      Rendez-vous sur la page{" "}
-      <Link className='fr-link' href='/declarations'>
-        Mes déclarations
-      </Link>{" "}
-      pour enregistrer un produit.
-    </p>
+    <Alert
+      severity='info'
+      small
+      description={
+        <>
+          Rendez-vous sur la page{" "}
+          <Link className='fr-link' href='/declarations'>
+            Mes déclarations
+          </Link>{" "}
+          pour enregistrer un produit.
+        </>
+      }
+    />
   ) : (
     <>
       <DownloadScores brand={brand} />
@@ -40,9 +45,9 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
           headers={["Date de dépot", "Catégorie", "Référence interne", "Score", ""]}
           data={products.map((product) => [
             formatDate(product.createdAt),
-            productCategories[simplifyValue(product.category)] || product.category,
+            product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY,
             product.internalReference,
-            formatNumber(product.score?.score),
+            product.score ? formatNumber(product.score) : "",
             <Button linkProps={{ href: `/produits/${product.gtins[0]}` }} key={product.gtins[0]}>
               Voir le produit
             </Button>,

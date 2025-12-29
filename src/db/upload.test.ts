@@ -32,29 +32,45 @@ describe("Upload DB integration", () => {
 
   const baseProduct = {
     internalReference: "REF-124",
-    brand: "TestBrand2",
-    category: "pull",
+    brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
     declaredScore: 3000.5,
-    business: "business",
-    mass: "0.5",
-    numberOfReferences: "1000",
-    price: "50",
-    countryDyeing: "France",
-    countryFabric: "France",
-    countryMaking: "France",
-    countrySpinning: "France",
-    airTransportRatio: "0.1",
-    upcycled: "false",
-    impression: "none",
-    impressionPercentage: "0.0",
-    fading: "true",
+    informations: {
+      create: {
+        category: "pull",
+        business: "business",
+        mass: "0.5",
+        numberOfReferences: "1000",
+        price: "50",
+        countryDyeing: "France",
+        countryFabric: "France",
+        countryMaking: "France",
+        countrySpinning: "France",
+        airTransportRatio: "0.1",
+        upcycled: "false",
+        impression: "none",
+        impressionPercentage: "0.0",
+        fading: "true",
+      },
+    },
   }
 
   beforeAll(async () => {
     await cleanDB()
 
     const organization = await prismaTest.organization.create({
-      data: { name: "TestOrg", siret: "12345678901234" },
+      data: {
+        name: "TestOrg",
+        displayName: "TestOrg",
+        siret: "12345678901234",
+        brands: {
+          createMany: {
+            data: [
+              { name: "TestOrg", id: "69147ca8-09c6-4ae6-b731-d5344f080491", default: true },
+              { name: "TestBrand", id: "abf5acc4-fabc-4082-b49a-61b00b5cfcad" },
+            ],
+          },
+        },
+      },
     })
     testOrganizationId = organization.id
 
@@ -307,9 +323,10 @@ describe("Upload DB integration", () => {
       const product2Id = uuid()
       const product3Id = uuid()
       const product4Id = uuid()
-      await prismaTest.product.createMany({
-        data: [
-          {
+
+      await Promise.all([
+        prismaTest.product.create({
+          data: {
             id: product1Id,
             hash: "test-hash",
             gtins: ["123"],
@@ -317,7 +334,9 @@ describe("Upload DB integration", () => {
             status: Status.Done,
             ...baseProduct,
           },
-          {
+        }),
+        prismaTest.product.create({
+          data: {
             id: product2Id,
             hash: "test-hash",
             gtins: ["456"],
@@ -325,7 +344,9 @@ describe("Upload DB integration", () => {
             status: Status.Error,
             ...baseProduct,
           },
-          {
+        }),
+        prismaTest.product.create({
+          data: {
             id: product3Id,
             hash: "test-hash",
             gtins: ["789"],
@@ -333,7 +354,9 @@ describe("Upload DB integration", () => {
             status: Status.Done,
             ...baseProduct,
           },
-          {
+        }),
+        prismaTest.product.create({
+          data: {
             id: product4Id,
             hash: "test-hash",
             gtins: ["104"],
@@ -341,7 +364,9 @@ describe("Upload DB integration", () => {
             status: Status.Pending,
             ...baseProduct,
           },
-          {
+        }),
+        prismaTest.product.create({
+          data: {
             id: uuid(),
             hash: "test-hash",
             gtins: ["101"],
@@ -349,7 +374,9 @@ describe("Upload DB integration", () => {
             status: Status.Done,
             ...baseProduct,
           },
-          {
+        }),
+        prismaTest.product.create({
+          data: {
             id: uuid(),
             hash: "test-hash",
             gtins: ["102"],
@@ -357,8 +384,8 @@ describe("Upload DB integration", () => {
             status: Status.Error,
             ...baseProduct,
           },
-        ],
-      })
+        }),
+      ])
 
       await prismaTest.uploadProduct.createMany({
         data: [
@@ -483,9 +510,9 @@ describe("Upload DB integration", () => {
         },
       })
 
-      await prismaTest.product.createMany({
-        data: [
-          {
+      await Promise.all([
+        prismaTest.product.create({
+          data: {
             id: uuid(),
             hash: "test-hash",
             gtins: ["123"],
@@ -493,7 +520,9 @@ describe("Upload DB integration", () => {
             status: Status.Done,
             ...baseProduct,
           },
-          {
+        }),
+        prismaTest.product.create({
+          data: {
             id: uuid(),
             hash: "test-hash",
             gtins: ["456"],
@@ -501,8 +530,8 @@ describe("Upload DB integration", () => {
             status: Status.Error,
             ...baseProduct,
           },
-        ],
-      })
+        }),
+      ])
 
       await checkUploadsStatus([uploadId])
 
@@ -528,9 +557,9 @@ describe("Upload DB integration", () => {
         },
       })
 
-      await prismaTest.product.createMany({
-        data: [
-          {
+      await Promise.all([
+        prismaTest.product.create({
+          data: {
             id: uuid(),
             hash: "test-hash",
             gtins: ["123"],
@@ -538,7 +567,9 @@ describe("Upload DB integration", () => {
             status: Status.Pending,
             ...baseProduct,
           },
-          {
+        }),
+        prismaTest.product.create({
+          data: {
             id: uuid(),
             hash: "test-hash",
             gtins: ["123"],
@@ -546,7 +577,9 @@ describe("Upload DB integration", () => {
             status: Status.Done,
             ...baseProduct,
           },
-          {
+        }),
+        prismaTest.product.create({
+          data: {
             id: uuid(),
             hash: "test-hash",
             gtins: ["456"],
@@ -554,8 +587,8 @@ describe("Upload DB integration", () => {
             status: Status.Error,
             ...baseProduct,
           },
-        ],
-      })
+        }),
+      ])
 
       await checkUploadsStatus([uploadId])
 

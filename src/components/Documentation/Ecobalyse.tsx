@@ -1,5 +1,6 @@
 import Button from "@codegouvfr/react-dsfr/Button"
 import { ecobalyseVersion } from "../../utils/ecobalyse/config"
+import Link from "next/link"
 
 const Ecobalyse = () => {
   return (
@@ -19,7 +20,8 @@ const Ecobalyse = () => {
           utiliser le GTIN (ou l'EAN) principal.
         </li>{" "}
         <li>
-          <b>Marque</b> (optionnel) : marque du produit.
+          <b>Marque ID</b> (optionnel) : id de la marque du produit, à retrouver dans votre page{" "}
+          <Link href='/organisation'>organisation</Link>.
         </li>
         <li>
           <b>Score</b> (optionnel) : score Ecobalyse (version {ecobalyseVersion}), si vous l'avez calculé. Attention, si
@@ -53,13 +55,10 @@ const Ecobalyse = () => {
           999999).
         </li>
         <li>
-          <b>Prix (en euros, TTC)</b> (optionnel) : prix du produit, en Euros (€), TTC (min : 1, max : 1000).
+          <b>Prix (en euros, TTC)</b> (optionnel) : prix du produit, en Euros (€), TTC (min : 1).
         </li>
         <li>
           <b>Taille de l'entreprise</b> (optionnel) : type d'entreprise et d'offre de services :
-          <p className='fr-hint-text'>
-            si pas de valeur définie, on utilise "Grande entreprise sans service de réparation"
-          </p>
           <ul>
             <li>small-business</li>
             <li>large-business-with-services</li>
@@ -73,10 +72,12 @@ const Ecobalyse = () => {
           </p>
         </li>
         <li>
-          <b>Origine de tissage/tricotage</b> : pays pour l'étape de tissage/tricotage.
+          <b>Origine de tissage/tricotage</b> (optionnel) : pays pour l'étape de tissage/tricotage. Requis si le produit
+          n'est pas remanufacturé.
         </li>
         <li>
-          <b>Origine de l'ennoblissement/impression</b> : pays pour l'étape d'ennoblissement/impression.
+          <b>Origine de l'ennoblissement/impression</b> (optionnel) : pays pour l'étape d'ennoblissement/impression.
+          Requis si le produit n'est pas remanufacturé.
         </li>
         <li>
           <b>Origine de confection</b> : pays pour l'étape de confection.
@@ -139,24 +140,25 @@ const Ecobalyse = () => {
       </p>
       <br />
       <h3>Informations sur les accessoires</h3>
-      <p>Pour chaque accessoire, ajoutez les colonnes suivantes (jusqu’à 4 accessoires) :</p>
+      <p>
+        <b>Attention</b>, si vous n'avez pas d'accessoires, vous devez remplir ces champs avec la valeur 0.
+        <br />
+        Dans le cas contraire les accesoires par défaut seront appliqués.
+      </p>
       <ul>
         <li>
-          <b>Accessoire X</b> : type d’accessoire à choisir dans la liste suivante :
-          <ul>
-            <li>86b877ff-0d59-482f-bb34-3ff306b07496 : Zip long</li>
-            <li>0e8ea799-9b06-490c-a925-37564746c454 : Zip court</li>
-            <li>d56bb0d5-7999-4b8b-b076-94d79099b56a : Bouton en plastique</li>
-            <li>0c903fc7-279b-4375-8cfa-ca8133b8e973 : Bouton en métal</li>
-          </ul>
+          <b>Quantité de zip long</b>
         </li>
         <li>
-          <b>Accessoire X quantité</b> : quantité d'accessoire dans le produit (min: 1).
+          <b>Quantité de zip court</b>
+        </li>
+        <li>
+          <b>Quantité de bouton en plastique</b>
+        </li>
+        <li>
+          <b>Quantité de bouton en métal</b>
         </li>
       </ul>
-      <p>
-        Remplacez <b>X</b> par un nombre de 1 à 4 (ex : Accessoire 1, Accessoire 1 quantité, Accessoire 2…).
-      </p>
       <br />
       <h3>Pays</h3>
       <p>La liste des pays disponibles est la suivante :</p>

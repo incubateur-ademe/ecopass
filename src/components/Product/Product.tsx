@@ -5,10 +5,12 @@ import Block from "../Block/Block"
 import ProductScore from "./ProductScore"
 import ProductHistory from "./ProductHistory"
 import ProductScoreImpacts from "./ProductScoreImpacts"
-import { productCategories } from "../../utils/types/productCategory"
-import { simplifyValue } from "../../utils/parsing/parsing"
+import { BATCH_CATEGORY } from "../../utils/types/productCategory"
+import { computeBatchScore } from "../../utils/ecobalyse/batches"
 
 const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: string; isOld?: boolean }) => {
+  const isBatch = product.informations.length > 1
+  const totalScore = computeBatchScore(product)
   return (
     <>
       <Block>
@@ -19,22 +21,22 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
         <div data-testid='product-details'>
           <p className='fr-text--xl fr-mb-1w'>
             <b>
-              {productCategories[simplifyValue(product.category)] || product.category}
-              {product.brand && <span> - {product.brand}</span>}
+              {isBatch ? BATCH_CATEGORY : product.informations[0].categorySlug}
+              {product.brand && <span> - {product.brand.name}</span>}
             </b>
           </p>
           <p>
             Référence interne : <b>{product.internalReference}</b>
           </p>
           <p>
-            Code GTINs : <b>{product.gtins.join(", ")}</b>
+            Code-barres{product.gtins.length > 1 ? "s" : ""} : <b>{product.gtins.join(", ")}</b>
           </p>
           <p>
             Déposé le : <b>{formatDate(product.createdAt)}</b>
           </p>
           {product.upload.createdBy.organization && (
             <p>
-              Par : <b>{product.upload.createdBy.organization.name}</b>
+              Par : <b>{product.upload.createdBy.organization.displayName}</b>
             </p>
           )}
           <p>
@@ -44,14 +46,19 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
       </Block>
       <Block>
         <div data-testid='product-score'>
-          {product.score ? (
-            <ProductScore score={product.score} internalReference={product.internalReference} />
-          ) : (
-            <p>Pas de score</p>
+          {product.score !== null && product.standardized !== null && (
+            <ProductScore
+              score={{
+                score: product.score,
+                standardized: product.standardized,
+                durability: totalScore.durability,
+              }}
+              internalReference={product.internalReference}
+            />
           )}
         </div>
       </Block>
-      {product.score ? <ProductScoreImpacts score={product.score} /> : null}
+      <ProductScoreImpacts score={totalScore} />
       <Block>
         <ProductHistory gtin={gtin} />
       </Block>

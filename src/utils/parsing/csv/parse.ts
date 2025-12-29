@@ -6,14 +6,14 @@ import { productCategories } from "../../types/productCategory"
 import { businesses } from "../../types/business"
 import { materials as allMaterials } from "../../types/material"
 import { accessories as allAccessories } from "../../types/accessory"
-import { Accessory, Material, Product, Status } from "../../../../prisma/src/prisma"
+import { Accessory, Material, Product, ProductInformation, Status } from "../../../../prisma/src/prisma"
 import { impressions } from "../../types/impression"
 import { Readable } from "stream"
 import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
-import { hashProduct } from "../../encryption/hash"
-import { checkHeaders, ColumnType, getBooleanValue, getNumberValue, getValue } from "../parsing"
+import { checkHeaders, ColumnType, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
+import { hashParsedProduct } from "../../encryption/hash"
 
 type CSVRow = {
   info: { records: number }
@@ -78,14 +78,21 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
   }
 
   const stream = Readable.from(buffer)
-  const products: (Product & { materials: undefined; accessories: undefined })[] = []
+  const products: Product[] = []
+  const informations: (ProductInformation & { materials: undefined; accessories: undefined })[] = []
   const materials: Material[] = []
   const accessories: Accessory[] = []
+
+  let hasAccessoire1 = false
 
   const now = new Date()
   await new Promise<void>((resolve, reject) => {
     const parser = parse({
-      columns: (headers: string[]) => checkHeaders(headers),
+      columns: (headers: string[]) => {
+        const availableHeaders = checkHeaders(headers)
+        hasAccessoire1 = availableHeaders.includes("accessoire1")
+        return availableHeaders
+      },
       delimiter: bestDelimiter,
       skip_empty_lines: true,
       trim: true,
@@ -97,13 +104,19 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
     stream.pipe(parser)
 
     parser.on("data", (row: CSVRow) => {
+      const id = uuid()
       const productId = uuid()
 
+      const gtins = (row.record["gtinseans"] || "").split(";").map((gtin) => gtin.trim())
+      const internalReference = row.record["referenceinterne"] || ""
+      const brand = (
+        row.record["marqueid"] ||
+        upload.createdBy.organization?.brands.find((brand) => brand.default)?.id ||
+        ""
+      ).trim()
+      const declaredScore = getNumberValue(row.record["score"], 1, -1) as number | undefined
+
       const rawProduct = {
-        gtins: (row.record["gtinseans"] || "").split(";").map((gtin) => gtin.trim()),
-        internalReference: row.record["referenceinterne"] || "",
-        brand: row.record["marque"] || upload.createdBy.organization?.name || "",
-        declaredScore: getNumberValue(row.record["score"], 1, -1) as number | undefined,
         product: getValue<ProductCategory>(productCategories, row.record["categorie"]),
         airTransportRatio: getNumberValue(row.record["partdutransportaerien"], 0.01),
         business: getValue<Business>(businesses, row.record["tailledelentreprise"]),
@@ -136,23 +149,30 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
           })
           .filter((material) => material !== null)
           .filter((material) => material.id),
-        trims: Array.from({ length: 4 })
-          .map((_, index) => {
-            //@ts-expect-error : managed from 1 to 4
-            const id = getValue<AccessoryType>(allAccessories, row.record[`accessoire${index + 1}`])
-            //@ts-expect-error : managed from 1 to 4
-            const quantity = getNumberValue(row.record[`accessoire${index + 1}quantite`])
-            return id ? { id, quantity } : null
-          })
-          .filter((accessory) => accessory !== null)
-          .filter((accessory) => accessory.id),
+        trims: hasAccessoire1
+          ? Array.from({ length: 4 })
+              .map((_, index) => {
+                //@ts-expect-error : managed from 1 to 4
+                const id = getValue<AccessoryType>(allAccessories, row.record[`accessoire${index + 1}`])
+                //@ts-expect-error : managed from 1 to 4
+                const quantity = getNumberValue(row.record[`accessoire${index + 1}quantite`])
+                return id ? { id, quantity } : null
+              })
+              .filter((accessory) => accessory !== null)
+              .filter((accessory) => accessory.id)
+          : trimsColumnValues
+              .map((key) => ({
+                id: getValue<AccessoryType>(allAccessories, key.replace("quantitede", "")),
+                quantity: getNumberValue(row.record[key]),
+              }))
+              .filter((trim) => trim.quantity !== undefined),
       }
 
       const encrypted = encryptProductFields(rawProduct)
       encrypted.materials.forEach((material) => {
         materials.push({
           id: uuid(),
-          productId,
+          productId: id,
           ...material,
         })
       })
@@ -160,23 +180,45 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       encrypted.accessories?.forEach((accessory) => {
         accessories.push({
           id: uuid(),
-          productId,
+          productId: id,
           ...accessory,
         })
       })
 
+      const authorizedBrands = upload.createdBy.organization
+        ? getAuthorizedBrands(upload.createdBy.organization)
+        : ([] as string[])
+
       products.push({
         error: null,
         id: productId,
-        hash: hashProduct(
+        score: null,
+        standardized: null,
+        hash: hashParsedProduct(
+          {
+            gtins: gtins,
+            internalReference: internalReference,
+            brandId: brand,
+            declaredScore: declaredScore,
+          },
           rawProduct,
-          upload.createdBy.organization ? getAuthorizedBrands(upload.createdBy.organization) : [],
+          authorizedBrands,
         ),
         createdAt: now,
-        updatedAt: now,
         uploadId: upload.id,
         uploadOrder: row.info.records,
         status: Status.Pending,
+        gtins: gtins,
+        internalReference: internalReference,
+        brandName: brand,
+        brandId: authorizedBrands.includes(brand) ? brand : null,
+        declaredScore: declaredScore || null,
+      })
+
+      informations.push({
+        id,
+        productId,
+        emptyTrims: !hasAccessoire1 && rawProduct.trims.length === 0,
         ...encrypted.product,
       })
     })
@@ -186,5 +228,5 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
     stream.on("error", reject)
   })
 
-  return { products, materials, accessories }
+  return { products, informations, materials, accessories }
 }

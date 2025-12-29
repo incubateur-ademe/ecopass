@@ -9,18 +9,21 @@ import "../css/reset.css"
 import "../css/dsfr.css"
 import Matomo from "../components/Matomo/Matomo"
 import { ReactNode } from "react"
+import TestBanner from "../components/Test/TestBanner"
+import { isTestEnvironment } from "../utils/test"
+import { getUserOrganizationType } from "../serverFunctions/user"
 
 export const metadata: Metadata = {
   title: "Affichage environnemental",
   description:
-    "Ce portail a pour objectif de répondre aux articles R 541-246 et R 541-250  du Décret relatif à l'affichage environnemental textile, et de permettre ainsi aux marques de déclarer le coût environnemental de leurs produits, afin de rendre ce résultat accessible au grand public.",
+    "Ce portail a pour objectif de répondre aux articles R 541-246 et R 541-250 du Décret relatif aux modalités de calcul et de communication du coût environnemental des produits textiles, et de permettre ainsi aux marques de déclarer le coût environnemental de leurs produits, afin de rendre ce résultat accessible au grand public.",
 }
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const lang = "fr"
 
   const session = await auth()
-
+  const type = await getUserOrganizationType(session?.user.id)
   return (
     <html lang={lang} {...getHtmlAttributes({ lang })}>
       <head>
@@ -30,8 +33,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <Matomo />
         <DsfrProvider lang={lang}>
           <AuthProvider session={session}>
-            <Header session={session} />
+            <Header session={session} type={type} />
             <main id='contenu' role='main' tabIndex={-1}>
+              {isTestEnvironment() && <TestBanner />}
               {children}
             </main>
             <Footer />

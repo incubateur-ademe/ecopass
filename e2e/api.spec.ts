@@ -14,7 +14,7 @@ test.beforeEach(async () => {
 const product = {
   gtins: ["1234567890128"],
   internalReference: "REF-100",
-  brand: "Emmaus",
+  brandId: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
   mass: 0.17,
   countryDyeing: "IN",
   countryFabric: "CN",
@@ -27,6 +27,45 @@ const product = {
     },
   ],
   product: "tshirt",
+}
+
+const batch = {
+  gtins: ["1234567891125"],
+  internalReference: "BATCH-100",
+  price: 50,
+  numberOfReferences: 1000,
+  brandId: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
+  products: [
+    {
+      numberOfItem: 2,
+      mass: 0.2,
+      countryDyeing: "IN",
+      countryFabric: "CN",
+      countryMaking: "MM",
+      materials: [
+        {
+          id: "ei-coton",
+          share: 1,
+          country: "FR",
+        },
+      ],
+      product: "tshirt",
+    },
+    {
+      mass: 0.5,
+      countryDyeing: "IN",
+      countryFabric: "CN",
+      countryMaking: "MM",
+      materials: [
+        {
+          id: "ei-pet",
+          share: 1,
+          country: "CN",
+        },
+      ],
+      product: "pantalon",
+    },
+  ],
 }
 
 test("declare my products by API", async ({ page }) => {
@@ -51,15 +90,6 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(401)
 
-  // A test upload should succeed but not create a product
-  response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, internalReference: "REF-99", gtins: ["9876543210128"], test: true },
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  })
-  expect(response.status()).toBe(200)
-
   // A first upload should succeed
   response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
@@ -77,6 +107,14 @@ test("declare my products by API", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(208)
+
+  response = await page.request.post("http://localhost:3000/api/produits/lot", {
+    data: batch,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(404)
 
   // An update should succeed
   response = await page.request.post("http://localhost:3000/api/produits", {
@@ -118,10 +156,14 @@ test("declare my products by API", async ({ page }) => {
     '[{"expected":"number","code":"invalid_type","path":["mass"],"message":"Invalid input: expected number, received undefined"}]',
   )
 
-  await page.getByRole("link", { name: "Mes produits" }).click()
+  await page.getByRole("link", { name: "Produits déclarés" }).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
+
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(1)).toHaveText(
+    "T-shirt / Polo",
+  )
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
     "REF-100",
   )
@@ -130,7 +172,7 @@ test("declare my products by API", async ({ page }) => {
   )
   await page.getByTestId("products-table").locator("table tbody tr").nth(0).getByRole("link").click()
   await expect(page.getByTestId("product-details")).toHaveText(
-    `T-shirt / Polo - EmmausRéférence interne : REF-100Code GTINs : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
+    `T-shirt / Polo - EmmausRéférence interne : REF-100Code-barres : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
     `Coût environnemental : 1755 pointsCoût environnemental pour 100g : 1032 pointsCoefficient de durabilité : 0.67Coût environnemental : 1755 points d'impact, 1032 pour 100g1 032 pts/100g1 755Télécharger le .svg`,

@@ -14,17 +14,22 @@ const PlanDuSite = () => {
         </li>
         <li>
           <Link className='fr-link' prefetch={false} href='/produits'>
-            Mes produits
+            Produits déclarés
+          </Link>
+        </li>
+        <li>
+          <Link className='fr-link' prefetch={false} href='/recherche'>
+            Recherche de produits
           </Link>
         </li>
         <li>
           <Link className='fr-link' prefetch={false} href='/declarations'>
-            Mes déclarations
+            Déclarations
           </Link>
         </li>
         <li>
           <Link className='fr-link' prefetch={false} href='/organisation'>
-            Mon organisation
+            Organisation
           </Link>
         </li>
       </ul>
@@ -49,8 +54,13 @@ const PlanDuSite = () => {
           </Link>
         </li>
       </ul>
-      <h2>Informations légales</h2>
+      <h2>Autres</h2>
       <ul className='fr-mb-4w'>
+        <li>
+          <Link className='fr-link' prefetch={false} href='/mentions-legales'>
+            Mentions légales
+          </Link>
+        </li>
         <li>
           <Link className='fr-link' prefetch={false} href='/politique-de-confidentialite'>
             Politique de confidentialité

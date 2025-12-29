@@ -8,14 +8,14 @@ import {
   productMapping,
 } from "./mappings"
 import { createProductScore, failProducts } from "../../db/product"
-import { ProductWithMaterialsAndAccessories } from "../../types/Product"
 import { prismaClient } from "../../db/prismaClient"
 import { Status } from "../../../prisma/src/prisma"
-import { ProductAPIValidation } from "../../services/validation/api"
+import { ProductAPIValidation, ProductInformationAPI } from "../../services/validation/api"
 import { runElmFunction } from "./elm"
 import { scoreIsValid } from "../validation/score"
+import { ParsedProductValidation } from "../../services/validation/product"
 
-type EcobalyseProduct = Omit<ProductAPIValidation, "brand" | "gtins" | "internalReference" | "declaredScore">
+type EcobalyseProduct = Omit<ProductAPIValidation, "brandId" | "gtins" | "internalReference" | "declaredScore">
 
 const removeUndefined = <T>(obj: T): T => {
   if (obj === null || obj === undefined) {
@@ -41,12 +41,12 @@ const removeUndefined = <T>(obj: T): T => {
   return obj
 }
 
-const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories): EcobalyseProduct => {
+const convertProductToEcobalyse = (product: ParsedProductValidation): EcobalyseProduct => {
   const result = {
     airTransportRatio: product.airTransportRatio,
     business: product.business ? businessesMapping[product.business] : undefined,
-    countryDyeing: countryMapping[product.countryDyeing],
-    countryFabric: countryMapping[product.countryFabric],
+    countryDyeing: product.countryDyeing ? countryMapping[product.countryDyeing] : undefined,
+    countryFabric: product.countryFabric ? countryMapping[product.countryFabric] : undefined,
     countryMaking: countryMapping[product.countryMaking],
     countrySpinning: product.countrySpinning ? countryMapping[product.countrySpinning] : undefined,
     printing:
@@ -62,10 +62,14 @@ const convertProductToEcobalyse = (product: ProductWithMaterialsAndAccessories):
     })),
     numberOfReferences: product.numberOfReferences,
     price: product.price,
-    trims: product.accessories.map((accessory) => ({
-      id: accessoryMapping[accessory.slug],
-      quantity: accessory.quantity,
-    })),
+    trims: product.emptyTrims
+      ? undefined
+      : product.accessories
+          .filter((accessory) => accessory.quantity > 0)
+          .map((accessory) => ({
+            id: accessoryMapping[accessory.slug],
+            quantity: accessory.quantity,
+          })),
     upcycled: product.upcycled,
     product: productMapping[product.category],
   }
@@ -93,7 +97,8 @@ export const getEcobalyseIds = async (type: "materials" | "products" | "trims") 
 export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
   const productData = {
     ...product,
-    brand: undefined,
+    price: product.price === undefined ? undefined : Math.min(product.price, 1000),
+    brandId: undefined,
     gtins: undefined,
     internalReference: undefined,
     declaredScore: undefined,
@@ -102,7 +107,7 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
   const result = await runElmFunction<EcobalyseResponse>({
     method: "POST",
     url: "/textile/simulator/detailed",
-    body: productData,
+    body: removeUndefined(productData),
   })
 
   return {
@@ -129,7 +134,7 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
   }
 }
 
-export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAccessories[]) =>
+export const saveEcobalyseResults = async (products: ParsedProductValidation[]) =>
   Promise.all(
     products.map(async (product) => {
       try {
@@ -138,16 +143,12 @@ export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAcce
         if (product.declaredScore && !scoreIsValid(product.declaredScore, result.score)) {
           return failProducts([
             {
-              id: product.id,
+              productId: product.productId,
               error: `Le score déclaré (${product.declaredScore}) ne correspond pas au score calculé (${result.score})`,
             },
           ])
         }
-        await createProductScore({
-          productId: product.id,
-          standardized: (result.score / product.mass) * 0.1,
-          ...result,
-        })
+        await createProductScore(result, product)
 
         return {
           id: product.id,
@@ -162,3 +163,42 @@ export const saveEcobalyseResults = async (products: ProductWithMaterialsAndAcce
       }
     }),
   )
+
+const reparationCosts: Record<string, number> = {
+  chemise: 10,
+  jean: 14,
+  jupe: 19,
+  manteau: 31,
+  pantalon: 14,
+  pull: 15,
+  tshirt: 10,
+  chaussettes: 9,
+  calecon: 9,
+  slip: 9,
+  "maillot-de-bain": 9,
+}
+export const computeBatchInformations = (
+  price: number | undefined,
+  numberOfReferences: number | undefined,
+  products: ProductInformationAPI[],
+) => {
+  const allProducts = products.flatMap((produit) =>
+    produit.numberOfItem === undefined ? produit : Array.from({ length: produit.numberOfItem }).map(() => produit),
+  )
+  if (price === undefined) {
+    return allProducts.map((product) => ({
+      ...product,
+      numberOfReferences,
+    }))
+  }
+
+  const ratios = allProducts.map((p) => {
+    const ratio = reparationCosts[p.product] ?? 1
+    return ratio
+  })
+
+  const totalRatio = ratios.reduce((acc, value) => acc + value, 0)
+  const productsPrice = ratios.map((ratio) => (ratio / totalRatio) * price)
+
+  return allProducts.map((product, i) => ({ ...product, price: productsPrice[i], numberOfReferences }))
+}

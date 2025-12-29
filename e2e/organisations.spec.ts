@@ -7,7 +7,7 @@ import { retry } from "./utils/retry"
 const product = {
   gtins: ["1234567890128"],
   internalReference: "REF-099",
-  brand: "Emmaus Connect",
+  brandId: "175570b3-59e4-40b4-89be-08a185685f78",
   mass: 0.17,
   countryDyeing: "IN",
   countryFabric: "CN",
@@ -31,26 +31,39 @@ test.beforeEach(async () => {
 test("manage brands", async ({ page }) => {
   await login(page)
 
-  await page.getByRole("link", { name: "Mon organisation" }).click()
+  await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
-  await expect(page.getByTestId("brand-row-name")).toHaveCount(2)
-  await expect(page.getByTestId("brand-row-name").first()).toHaveText("Emmaus Solidarité")
-
-  await page.getByRole("textbox", { name: "Nom de la marque" }).fill("Ma nouvelle marque")
-  await page.getByRole("button", { name: "Ajouter une nouvelle marque" }).click()
-
   await expect(page.getByTestId("brand-row-name")).toHaveCount(3)
-  await expect(page.getByTestId("brand-row-name").last()).toHaveText("Ma nouvelle marque")
-  await page.getByRole("row", { name: "Ma nouvelle marque Supprimer" }).getByRole("button").click()
-  await page.getByRole("row", { name: "Emmaus Solidarité Supprimer" }).getByRole("button").click()
-  await page.getByRole("row", { name: "Emmaus Connect" }).getByRole("button").click()
+  await expect(page.getByTestId("brand-row-name").nth(0)).toHaveText("Emmaus")
+  await expect(page.getByTestId("brand-row-action").nth(0)).toHaveText("")
+  await expect(page.getByTestId("brand-row-name").nth(1)).toHaveText("Emmaus Connect")
+  await expect(page.getByTestId("brand-row-action").nth(1).getByRole("button")).toHaveText("Modifier")
+  await expect(page.getByTestId("brand-row-name").nth(2)).toHaveText("Emmaus Solidarité")
+  await expect(page.getByTestId("brand-row-action").nth(2).getByRole("button")).toHaveText("Modifier")
 
-  await expect(page.locator("#contenu")).toContainText("Vous n'avez pas encore déclaré de marques.")
+  await page.getByRole("textbox", { name: "Ajouter une marque" }).fill("Ma nouvelle marque")
+  await page.getByRole("button", { name: "Ajouter" }).click()
+
+  await expect(page.getByTestId("brand-row-name")).toHaveCount(4)
+  await expect(page.getByTestId("brand-row-name").last()).toHaveText("Ma nouvelle marque")
+
+  await page.getByTestId("brand-row-action").nth(1).getByRole("button").click()
+  await expect(page.getByTestId("brand-row-name")).toHaveCount(4)
+  await page.getByRole("radio").nth(1).click({ force: true })
+  await page.getByRole("button", { name: "Enregistrer" }).click()
+  await expect(page.getByTestId("brand-row-name").last()).toHaveText("Emmaus Connect")
+
+  await page.getByTestId("brand-row-action").nth(1).getByRole("button").click()
+  await expect(page.getByRole("textbox", { name: "Nom" }).nth(1)).toHaveValue("Emmaus Solidarité")
+  await page.getByRole("textbox", { name: "Nom" }).nth(1).fill("Emmaus Solidarité Bis")
+  await page.getByRole("button", { name: "Enregistrer" }).click()
+  await expect(page.getByTestId("brand-row-name")).toHaveCount(4)
+  await expect(page.getByTestId("brand-row-name").nth(1)).toHaveText("Emmaus Solidarité Bis")
 })
 
 test("manage delegation", async ({ page }) => {
-  await login(page, "ecopass-no-organization@yopmail.com")
+  await login(page, "ecopass-consultancy@yopmail.com")
 
   await page.getByRole("link", { name: "API", exact: true }).click()
   await expect(page).toHaveURL(/.*\/api/)
@@ -66,25 +79,21 @@ test("manage delegation", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(400)
-  expect(await response.text()).toEqual(
-    '[{"code":"invalid_value","values":["DEPARTEMENT DE SEINE ET MARNE"],"path":["brand"],"message":"Invalid input: expected \\"DEPARTEMENT DE SEINE ET MARNE\\""}]',
-  )
 
   await logout(page)
   await login(page)
 
-  await page.getByRole("link", { name: "Mon organisation" }).click()
+  await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
-  await expect(page.locator("h1").last()).toHaveText("Mon organisation Emmaus")
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
   await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(0)
 
   await expect(page.getByTestId("organization-card")).not.toBeVisible()
-  await page.getByRole("textbox", { name: "SIRET" }).fill("22770001000555")
+  await page.getByRole("textbox", { name: "SIRET" }).fill("89964595600025")
   await expect(page.getByTestId("organization-card")).toBeVisible()
   await expect(page.getByTestId("organization-card")).toHaveText(
-    "DEPARTEMENT DE SEINE ET MARNE25 AVENUE DU GENDARME CASTERMANT, 77500 CHELLESDéléguer mes droits à cette organisation ",
+    "WARO3 RUE JOLIOT-CURIE, 91190 GIF-SUR-YVETTEDéléguer mes droits à cette organisation ",
   )
   await page
     .getByTestId("organization-card")
@@ -92,7 +101,7 @@ test("manage delegation", async ({ page }) => {
     .click()
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(1)
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr").locator("td").nth(1)).toHaveText(
-    "22770001000555",
+    "89964595600025",
   )
   await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(0)
 
@@ -123,14 +132,28 @@ test("manage delegation", async ({ page }) => {
     })
     expect(response.status()).toBe(200)
     expect(await response.json()).toEqual({
-      name: "DEPARTEMENT DE SEINE ET MARNE",
-      brands: [],
+      name: "WARO",
+      displayName: "WARO",
+      brands: [{ name: "WARO", id: expect.any(String), active: true, default: true }],
       authorizedBy: [
         {
           createdAt: expect.any(String),
-          name: "Emmaus",
+          name: "EMMAUS",
           siret: "31723624800017",
-          brands: ["Emmaus Solidarité", "Emmaus Connect"],
+          brands: [
+            {
+              id: "26ed7820-ebca-4235-b1d3-dbeab02b1768",
+              name: "Emmaus Solidarité",
+            },
+            {
+              id: "175570b3-59e4-40b4-89be-08a185685f78",
+              name: "Emmaus Connect",
+            },
+            {
+              id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
+              name: "Emmaus",
+            },
+          ],
         },
       ],
       authorizeOrganization: [],
@@ -138,9 +161,9 @@ test("manage delegation", async ({ page }) => {
   }, 3)
 
   await logout(page)
-  await login(page, "ecopass-no-organization@yopmail.com")
+  await login(page, "ecopass-consultancy@yopmail.com")
 
-  await page.getByRole("link", { name: "Mon organisation" }).click()
+  await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
@@ -152,7 +175,7 @@ test("manage delegation", async ({ page }) => {
   await logout(page)
   await login(page)
 
-  await page.getByRole("link", { name: "Mon organisation" }).click()
+  await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
   await page
@@ -160,6 +183,7 @@ test("manage delegation", async ({ page }) => {
     .locator("table tbody tr")
     .getByRole("button", { name: "Supprimer" })
     .click()
+  await page.getByRole("button", { name: "Confirmer la suppression" }).click()
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
 
   response = await page.request.post("http://localhost:3000/api/produits", {
@@ -169,9 +193,6 @@ test("manage delegation", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(400)
-  expect(await response.text()).toEqual(
-    '[{"code":"invalid_value","values":["DEPARTEMENT DE SEINE ET MARNE"],"path":["brand"],"message":"Invalid input: expected \\"DEPARTEMENT DE SEINE ET MARNE\\""}]',
-  )
 
   await retry(async () => {
     response = await page.request.get("http://localhost:3000/api/organisation", {
@@ -181,17 +202,26 @@ test("manage delegation", async ({ page }) => {
     })
     expect(response.status()).toBe(200)
     expect(await response.json()).toEqual({
-      name: "DEPARTEMENT DE SEINE ET MARNE",
-      brands: [],
+      name: "WARO",
+      displayName: "WARO",
+      brands: [{ name: "WARO", id: expect.any(String), active: true, default: true }],
       authorizedBy: [],
       authorizeOrganization: [],
     })
   }, 3)
 
-  await logout(page)
-  await login(page, "ecopass-no-organization@yopmail.com")
+  await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
+  await expect(page).toHaveURL(/.*\/produits/)
 
-  await page.getByRole("link", { name: "Mes produits" }).nth(0).click()
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
+    "REF-098",
+  )
+
+  await logout(page)
+  await login(page, "ecopass-consultancy@yopmail.com")
+
+  await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)

@@ -105,7 +105,7 @@ const Keys = ({ keys }: { keys: APIKey[] }) => {
           />
         </div>
       ) : (
-        <p>Vous n'avez généré aucune clé pour le moment.</p>
+        <Alert severity='info' small description="Vous n'avez généré aucune clé pour le moment." />
       )}
     </>
   )
