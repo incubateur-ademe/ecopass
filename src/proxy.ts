@@ -4,7 +4,7 @@ export function proxy(request: NextRequest) {
   new Promise<void>(async (resolve, reject) => {
     try {
       const { searchParams } = new URL(request.url)
-      const param = `e_c=API&e_a=${request.nextUrl.pathname}&e_n=${searchParams.toString()}`
+      const param = `e_c=API&e_a=${request.nextUrl.pathname}&e_n=${encodeURIComponent(searchParams.toString())}`
 
       if (process.env.NEXT_PUBLIC_MATOMO !== "true") {
         console.log(`Fake matomo event: ${param}`)
@@ -12,7 +12,7 @@ export function proxy(request: NextRequest) {
       }
 
       await fetch(
-        `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.php?idsite=${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}&rec=1&${encodeURIComponent(param)}`,
+        `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.php?idsite=${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}&rec=1&${param}`,
         {
           method: "POST",
         },
