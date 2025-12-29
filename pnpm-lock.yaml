@@ -50,6 +50,9 @@ importers:
       csv-stringify:
         specifier: ^6.6.0
         version: 6.6.0
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       ejs:
         specifier: ^3.1.10
         version: 3.1.10
@@ -153,9 +156,6 @@ importers:
       '@types/swagger-ui-react':
         specifier: ^5.18.0
         version: 5.18.0
-      dotenv:
-        specifier: ^17.2.3
-        version: 17.2.3
       eslint:
         specifier: ^9.39.2
         version: 9.39.2(jiti@2.6.1)
