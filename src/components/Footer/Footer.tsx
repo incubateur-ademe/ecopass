@@ -46,6 +46,9 @@ const Footer = () => {
         <Link key='politique' className='fr-footer__bottom-link' href='/politique-de-confidentialite'>
           Politique de confidentialité
         </Link>,
+        <Link key='cgu' className='fr-footer__bottom-link' href='/conditions-generales-utilisation'>
+          Conditions générales d’utilisation
+        </Link>,
         <Link key='stats' className='fr-footer__bottom-link' href='/stats'>
           Statistiques
         </Link>,
