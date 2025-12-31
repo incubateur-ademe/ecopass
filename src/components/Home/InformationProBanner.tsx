@@ -1,5 +1,5 @@
 import Card from "@codegouvfr/react-dsfr/Card"
-import styles from "./HomeBanner.module.css"
+import styles from "./InformationProBanner.module.css"
 import Link from "next/link"
 
 const InformationProBanner = () => {
@@ -82,6 +82,29 @@ const InformationProBanner = () => {
               <li>
                 <Link href='/documentation/api' target='_blank' rel='noopener noreferrer' className='fr-link'>
                   Consultez la documentation API pour générer les étiquettes
+                </Link>
+              </li>
+            </ul>
+          }
+          titleAs='h3'
+        />
+      </div>
+      <h2 className='fr-mt-4w'>Allez plus loin </h2>
+      <div className={styles.cards}>
+        <Card
+          background
+          border
+          title='L’info-tri de la filière REP pour orienter le consommateur sur la fin de vie des produits'
+          desc='Que Faire De Mes Objets & Déchets et l’Eco-organisme Refashion ont développé un module interactif gratuit pour vous aider à construire en quelques clics votre info-tri ! Vous pouvez l’intégrer en widget de façon dématérialisée dans vos pages produits sur vos plateformes e-commerce.'
+          footer={
+            <ul className='fr-links-group'>
+              <li>
+                <Link
+                  href='https://quefairedemesdechets.ademe.fr/integrer-info-tri/'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='fr-link'>
+                  Intégrez l’info-tri aux pages produits de vos sites e-commerce
                 </Link>
               </li>
             </ul>
