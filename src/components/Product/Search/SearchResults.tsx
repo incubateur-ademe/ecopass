@@ -1,4 +1,3 @@
-import Table from "@codegouvfr/react-dsfr/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
@@ -11,6 +10,7 @@ import Image from "next/image"
 import { productMapping } from "../../../utils/ecobalyse/mappings"
 import { ProductCategory } from "../../../types/Product"
 import { formatNumber } from "../../../services/format"
+import Table from "../../Table/Table"
 
 const SearchResults = ({
   products,

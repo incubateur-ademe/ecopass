@@ -3,7 +3,6 @@ import { getOrganizationProductsByUserIdAndBrand } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
-import Table from "@codegouvfr/react-dsfr/Table"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Link from "next/link"
 import DownloadScores from "./DownloadScores"
@@ -15,6 +14,7 @@ import { productMapping } from "../../utils/ecobalyse/mappings"
 import { ProductCategory } from "../../types/Product"
 import styles from "./Search/SearchResults.module.css"
 import { formatDate, formatNumber } from "../../services/format"
+import Table from "../Table/Table"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
