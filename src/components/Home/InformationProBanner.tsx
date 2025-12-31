@@ -5,7 +5,7 @@ import Link from "next/link"
 const InformationProBanner = () => {
   return (
     <div>
-      <h2 className={styles.title}>Informez-vous sur l'impact environnemental des produits textiles</h2>
+      <h2 className={styles.title}>Informez-vous sur le coût environnemental des produits textiles</h2>
       <div className={styles.cards}>
         <Card
           background
@@ -35,6 +35,9 @@ const InformationProBanner = () => {
             </Link>
           }
         />
+      </div>
+      <h2 className='fr-mt-4w'>Consultez les informations réglementaires</h2>
+      <div className={styles.cards}>
         <Card
           background
           border
