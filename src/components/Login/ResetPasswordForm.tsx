@@ -65,7 +65,7 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
                 <div className='fr-fieldset__element'>
                   <Input
                     label='Mot de passe'
-                    hintText='Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre'
+                    hintText='Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule et un chiffre'
                     state={weakPassword ? "error" : undefined}
                     stateRelatedMessage={
                       weakPassword ? "Le mot de passe ne respecte pas les conditions de sécurité" : undefined
