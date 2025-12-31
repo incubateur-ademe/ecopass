@@ -4,6 +4,7 @@ import classNames from "classnames"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { isTestEnvironment } from "../../utils/test"
 import ProConnect from "../Button/ProConnect"
+import Link from "next/link"
 
 const HomeBanner = ({ withConnection = true, isPro }: { withConnection?: boolean; isPro?: boolean }) => {
   return (
@@ -30,7 +31,17 @@ const HomeBanner = ({ withConnection = true, isPro }: { withConnection?: boolean
                   <Alert
                     small
                     severity='info'
-                    description='Vous n’avez pas de SIRET ? Nous vous invitons à remplir ce questionnaire pour valider votre inscription.'
+                    description={
+                      <>
+                        Vous n’avez pas de SIRET ? Nous vous invitons à remplir{" "}
+                        <Link
+                          className='fr-link'
+                          href='https://demarche.numerique.gouv.fr/commencer/registration-of-companies-without-a-siret-number-o'>
+                          ce questionnaire
+                        </Link>{" "}
+                        pour valider votre inscription.
+                      </>
+                    }
                   />
                 </div>
               </>

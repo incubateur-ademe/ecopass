@@ -57,7 +57,17 @@ const Login = () => {
               severity='info'
               small
               className='fr-mb-2w'
-              description='Vous n’avez pas de SIRET ? Nous vous invitons à remplir ce questionnaire pour valider votre inscription.'
+              description={
+                <>
+                  Vous n’avez pas de SIRET ? Nous vous invitons à remplir{" "}
+                  <Link
+                    className='fr-link'
+                    href='https://demarche.numerique.gouv.fr/commencer/registration-of-companies-without-a-siret-number-o'>
+                    ce questionnaire
+                  </Link>{" "}
+                  pour valider votre inscription.
+                </>
+              }
             />
             <div className='fr-mb-6v'>
               <h2>Se connecter avec ProConnect</h2>
