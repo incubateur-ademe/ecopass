@@ -86,7 +86,7 @@ const HomeBanner = ({ withConnection = true, isPro }: { withConnection?: boolean
       ) : (
         <Image
           className={classNames(styles.image, { [styles.small]: !withConnection, [styles.round]: isPro })}
-          src={isPro ? "/images/tshirt.jpg" : "/images/score.png"}
+          src={isPro ? "/images/tshirt.jpg" : "/images/etiquette.svg"}
           alt=''
           width={378}
           height={188}

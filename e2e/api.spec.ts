@@ -174,7 +174,7 @@ test("declare my products by API", async ({ page }) => {
     `Code-barres : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : 7.0.0`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
-    "Coût environnemental : 1755 points d'impact, 1032 pour 100g1 032 pts/100g1 755Télécharger le SVGcoût pour 100g : 1 032 pointscoéfficient de durabilité : 0.67 points",
+    "Coût environnemental : 1755 points d'impact, 1032 pour 100g1 032 pts/100g1 755Télécharger le SVGcoût pour 100g : 1 032 pointscoefficient de durabilité : 0.67 points?",
   )
 
   await page.getByRole("button", { name: "Voir l'historique du produit" }).click()

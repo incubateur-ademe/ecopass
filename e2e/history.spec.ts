@@ -60,7 +60,7 @@ test("shows product history", async ({ page }) => {
     `Code-barres : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : 7.0.0`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
-    "Coût environnemental : 5117 points d'impact, 1023 pour 100g1 023 pts/100g5 117Télécharger le SVGcoût pour 100g : 1 023 pointscoéfficient de durabilité : 0.67 points",
+    "Coût environnemental : 5117 points d'impact, 1023 pour 100g1 023 pts/100g5 117Télécharger le SVGcoût pour 100g : 1 023 pointscoefficient de durabilité : 0.67 points?",
   )
 
   await expect(page.getByTestId("history-table")).not.toBeVisible()
@@ -81,6 +81,6 @@ test("shows product history", async ({ page }) => {
     `Code-barres : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : 7.0.0`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
-    "Coût environnemental : 1755 points d'impact, 1032 pour 100g1 032 pts/100g1 755Télécharger le SVGcoût pour 100g : 1 032 pointscoéfficient de durabilité : 0.67 points",
+    "Coût environnemental : 1755 points d'impact, 1032 pour 100g1 032 pts/100g1 755Télécharger le SVGcoût pour 100g : 1 032 pointscoefficient de durabilité : 0.67 points?",
   )
 })

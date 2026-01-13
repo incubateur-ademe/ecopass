@@ -2,16 +2,27 @@
   display: flex;
   align-items: center;
   gap: 2rem;
+
   @media screen and (max-width: 50rem) {
     flex-direction: column;
+  }
+
+  div {
+    &:first-child {
+      flex-grow: 2;
+    }
+
+    &:last-child {
+      flex-grow: 1;
+    }
   }
 }
 
 .productLine {
-  width: 100%;
   display: flex;
   align-items: center;
   gap: 2rem;
+
   @media screen and (max-width: 35.9375rem) {
     justify-content: space-between;
   }
@@ -39,4 +50,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.label {
+  height: 7rem;
+  width: auto;
 }

@@ -1,0 +1,54 @@
+.container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.infoButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--blue-france-sun-113-625);
+  color: var(--blue-france-sun-113-625);
+  font-weight: bold;
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--blue-france-sun-113-625) !important;
+    color: white;
+  }
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: #333;
+  color: #fff;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  max-width: 17rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  text-align: left;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0.5rem;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #333;
+}
