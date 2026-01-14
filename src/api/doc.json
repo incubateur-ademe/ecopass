@@ -1152,6 +1152,13 @@
               "additionalProperties": false,
               "required": ["mass", "materials", "product", "countryMaking"],
               "properties": {
+                "numberOfItem": {
+                  "description": "Nombre d'articles de ce type dans le lot",
+                  "default": 1,
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 999
+                },
                 "mass": {
                   "type": "number",
                   "description": "Masse du produit fini, en kilogrammes",

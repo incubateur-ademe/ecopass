@@ -106,7 +106,7 @@ const productsAPIValidation = z.object({
     .array(
       product
         .omit({ price: true, numberOfReferences: true })
-        .extend({ numberOfItem: z.number().min(1).max(99).optional() }),
+        .extend({ numberOfItem: z.number().min(1).max(999).optional() }),
     )
     .min(1, { message: "Veuillez remplir au moins un produit." }),
 })
