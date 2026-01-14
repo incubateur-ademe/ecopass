@@ -8,18 +8,16 @@ const KeyResults = () => {
       <h2 className={styles.heading}>Chiffres clés</h2>
       <div className={styles.grid}>
         <KeyResult
-          imageSrc='/images/key-results/clothes-pile.png'
+          imageSrc='/images/key-results/sewing-machine.png'
           source="Source : Estimation d'après le baromètre Refashion sur les ventes 2022">
           <p>
             <span>Environ</span>
             <strong>7 MILLIONS DE VÊTEMENTS NEUFS</strong>
-            <span>sont achetés</span>
-            <b>PAR JOUR</b>
-            <span>en France.</span>
+            <span>sont achetés par jour en France.</span>
           </p>
         </KeyResult>
         <KeyResult
-          imageSrc='/images/key-results/sewing-machine.png'
+          imageSrc='/images/key-results/clothes-pile.png'
           source='Source : Volumes and destruction of returned and unsold textiles in Europe‘s circular economy, ETC CE Report 2024/4 Volumes'>
           <p>Plus de</p>
           <p>
@@ -30,9 +28,11 @@ const KeyResults = () => {
         <KeyResult
           imageSrc='/images/key-results/polar-bear.png'
           source='Source : EU Strategy for Sustainable and Circular Textiles'>
-          <p>La consommation européenne de textiles représente</p>
+          <p>La consommation européenne de textiles représente la</p>
           <p>
-            <strong>la 4e SOURCE D&apos;IMPACTS SUR L&apos;ENVIRONNEMENT ET LE CHANGEMENT CLIMATIQUE</strong>
+            <strong>
+              4<sup>e</sup> SOURCE D&apos;IMPACTS SUR L&apos;ENVIRONNEMENT
+            </strong>
           </p>
           <p>de l&apos;UE, après l&apos;alimentation, le logement et les transports.</p>
         </KeyResult>
