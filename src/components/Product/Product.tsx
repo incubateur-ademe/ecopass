@@ -13,6 +13,7 @@ import InformationBanner from "../Home/InformationBanner"
 import { ProductCategory } from "../../types/Product"
 import DownloadScore from "./DownloadScore"
 import ProductScoreImpacts from "./ProductScoreImpacts"
+import DurabilityBadge from "./DurabilityBadge"
 
 const Product = ({
   product,
@@ -47,23 +48,24 @@ const Product = ({
               <Image
                 src={`/icons/${productMapping[product.informations[0].categorySlug as ProductCategory]}.svg`}
                 alt=''
-                width={32}
-                height={32}
+                width={64}
+                height={64}
               />
             )}
           </div>
           <div className={styles.productLine} data-testid='product-score'>
             <div className={styles.badges}>
-              <Label product={{ score: totalScore.score, standardized: totalScore.standardized }} />
+              <Label
+                product={{ score: totalScore.score, standardized: totalScore.standardized }}
+                className={styles.label}
+              />
               {isPro && <DownloadScore score={totalScore} internalReference={product.internalReference} />}
             </div>
             <div className={styles.badges}>
               <Badge severity='info' noIcon>
                 coût pour 100g : {Math.round(totalScore.standardized).toLocaleString("fr-FR")} points
               </Badge>
-              <Badge severity='info' noIcon>
-                coéfficient de durabilité : {Math.round(totalScore.durability * 100) / 100} points
-              </Badge>
+              <DurabilityBadge durability={totalScore.durability} />
             </div>
           </div>
         </div>
@@ -71,7 +73,7 @@ const Product = ({
       <Block>
         <div data-testid='product-details'>
           <p>
-            Code-barres{product.gtins.length > 1 ? "s" : ""} : <b>{product.gtins.join(", ")}</b>
+            Code-barres : <b>{product.gtins.join(", ")}</b>
           </p>
           <p>
             Déposé le : <b>{formatDate(product.createdAt)}</b>

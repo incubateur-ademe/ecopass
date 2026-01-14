@@ -16,7 +16,7 @@ const Informations = () => {
         <h2>Comment lire et interpréter le logo ?</h2>
         <div className={styles.section}>
           <div className={styles.logoExample}>
-            <Image src='/images/score.png' alt='' width={378} height={188} />
+            <Image src='/images/etiquette.svg' alt='' width={378} height={188} />
           </div>
           <div className={styles.content}>
             <p>

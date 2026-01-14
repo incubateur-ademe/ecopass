@@ -20,14 +20,12 @@ const KeyResults = () => {
         </KeyResult>
         <KeyResult
           imageSrc='/images/key-results/sewing-machine.png'
-          source="Source : Ressource du Programme des Nations Unies pour l'Environnement sur le secteur textile">
+          source='Source : Volumes and destruction of returned and unsold textiles in Europe‘s circular economy, ETC CE Report 2024/4 Volumes'>
           <p>Plus de</p>
           <p>
-            <strong>
-              300 MILLIONS DE PERSONNES <b>(en majorité des femmes)</b>
-            </strong>
+            <strong>45 MILLIARDS DE VÊTEMENTS EN EXCÉDENT</strong>
           </p>
-          <p>travaillent dans l&apos;industrie textile à travers le monde.</p>
+          <p>(invendus) chaque année dans le monde.</p>
         </KeyResult>
         <KeyResult
           imageSrc='/images/key-results/polar-bear.png'

@@ -1,6 +1,12 @@
 import { getSize } from "../../utils/label/size"
 
-const Label = ({ product: { score, standardized } }: { product: { score: number; standardized: number } }) => {
+const Label = ({
+  product: { score, standardized },
+  className,
+}: {
+  product: { score: number; standardized: number }
+  className?: string
+}) => {
   const size = getSize(standardized)
   const title = `Coût environnemental : ${Math.round(score)} points d'impact, ${Math.round(standardized)} pour 100g`
 
@@ -12,7 +18,8 @@ const Label = ({ product: { score, standardized } }: { product: { score: number;
       viewBox='0 0 154 77'
       fill='none'
       aria-label={title}
-      role='img'>
+      role='img'
+      className={className}>
       <title>{title}</title>
       <g>
         <path
