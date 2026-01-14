@@ -1,52 +1,23 @@
 "use client"
-import Alert from "@codegouvfr/react-dsfr/Alert"
-import Button from "@codegouvfr/react-dsfr/Button"
-import Input from "@codegouvfr/react-dsfr/Input"
 import { useState } from "react"
+import SearchInput from "../Search/SearchInput"
 
-const Search = ({ withAlert }: { withAlert?: boolean }) => {
+const Search = ({ withoutHint }: { withoutHint?: boolean }) => {
   const [gtin, setGTIN] = useState("")
   return (
-    <>
-      <div className='fr-mt-4w'>
-        {withAlert ? (
-          <Alert
-            severity='info'
-            className='fr-mb-2w'
-            title='Ce site est en construction'
-            description="Le contenu du portail d'affichage environnemental est fourni par les marques de textiles. Comme le service vient tout juste d'être lancé, il se peut que certains produits ne soient pas encore disponibles lors de votre recherche."
-          />
-        ) : (
-          <h2>Cherchez un autre produit</h2>
-        )}
-      </div>
-      <p>Saisissez le code-barres du produit recherché (8 ou 13 chiffres)</p>
-      <div className='fr-grid-row fr-grid-row--gutters'>
-        <Input
-          className='fr-col-12 fr-col-sm-9 fr-mb-0'
-          label='Code-barres'
-          hideLabel
-          nativeInputProps={{
-            value: gtin,
-            onChange: (event) => setGTIN(event.target.value),
-            onKeyDown: (event) => {
-              if (event.key === "Enter") {
-                event.preventDefault()
-                window.location.href = `/produits/${gtin}`
-              }
-            },
-          }}
-        />
-      </div>
-      <div className='fr-btns-group--inline fr-mt-2w'>
-        <Button linkProps={{ href: `/produits/${gtin}`, prefetch: false }} iconId='ri-search-line'>
-          Rechercher
-        </Button>
-        <Button linkProps={{ href: `/recherche?search=${gtin}` }} priority='secondary' iconId='ri-settings-line'>
-          Recherche avancée
-        </Button>
-      </div>
-    </>
+    <SearchInput
+      label='Chercher un produit par code-barres (8 ou 13 chiffres)'
+      stateRelatedMessage={
+        withoutHint
+          ? undefined
+          : "Le contenu du portail est fourni par les  marques textiles. Le service étant récent, tous les produits ne sont pas encore disponibles."
+      }
+      value={gtin}
+      onChange={setGTIN}
+      onSearch={() => (window.location.href = `/produits/${gtin}`)}
+      searchButtonHref={`/produits/${gtin}`}
+      advancedSearchHref={`/recherche?search=${gtin}`}
+    />
   )
 }
 

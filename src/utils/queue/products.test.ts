@@ -2,7 +2,7 @@ import { processProductsQueue } from "./products"
 import { failProducts, getProductsToProcess } from "../../db/product"
 import { checkUploadsStatus } from "../../db/upload"
 import { saveEcobalyseResults } from "../ecobalyse/api"
-import { Status, UploadType } from "../../../prisma/src/prisma"
+import { Status, UploadType } from "@prisma/enums"
 import { Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 
 jest.mock("../../db/product")

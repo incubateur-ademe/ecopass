@@ -9,7 +9,7 @@ import {
 } from "./mappings"
 import { createProductScore, failProducts } from "../../db/product"
 import { prismaClient } from "../../db/prismaClient"
-import { Status } from "../../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { ProductAPIValidation, ProductInformationAPI } from "../../services/validation/api"
 import { runElmFunction } from "./elm"
 import { scoreIsValid } from "../validation/score"
@@ -165,17 +165,17 @@ export const saveEcobalyseResults = async (products: ParsedProductValidation[]) 
   )
 
 const reparationCosts: Record<string, number> = {
-  chemise: 10,
-  jean: 14,
-  jupe: 19,
-  manteau: 31,
-  pantalon: 14,
-  pull: 15,
+  chemise: 15,
+  jean: 20,
+  jupe: 15,
+  manteau: 40,
+  pantalon: 20,
+  pull: 20,
   tshirt: 10,
-  chaussettes: 9,
-  calecon: 9,
-  slip: 9,
-  "maillot-de-bain": 9,
+  chaussettes: 4,
+  calecon: 4,
+  slip: 4,
+  "maillot-de-bain": 15,
 }
 export const computeBatchInformations = (
   price: number | undefined,

@@ -13,6 +13,11 @@ test.beforeEach(async () => {
 test("Connection with a brand user", async ({ page }) => {
   await login(page)
 
+  await expect(page.getByRole("link", { name: "Informez-vous", exact: true })).not.toBeVisible()
+  await expect(page.getByRole("link", { name: "Les marques déclarantes", exact: true })).not.toBeVisible()
+  await expect(page.getByRole("link", { name: "Recherchez un produit", exact: true })).not.toBeVisible()
+
+  await expect(page.getByRole("link", { name: "Accueil", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).toBeVisible()
@@ -37,6 +42,10 @@ test("Connection with a brand user", async ({ page }) => {
 
 test("Connection with a consultancy user", async ({ page }) => {
   await login(page, "ecopass-consultancy@yopmail.com")
+
+  await expect(page.getByRole("link", { name: "Informez-vous", exact: true })).not.toBeVisible()
+  await expect(page.getByRole("link", { name: "Les marques déclarantes", exact: true })).not.toBeVisible()
+  await expect(page.getByRole("link", { name: "Recherchez un produit", exact: true })).not.toBeVisible()
 
   await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).toBeVisible()
@@ -63,6 +72,10 @@ test("Connection with a consultancy user", async ({ page }) => {
 test("Connection with a distributor user", async ({ page }) => {
   await login(page, "ecopass-distributor@yopmail.com")
 
+  await expect(page.getByRole("link", { name: "Informez-vous", exact: true })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Les marques déclarantes", exact: true })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Recherchez un produit", exact: true })).toBeVisible()
+
   await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).not.toBeVisible()
@@ -88,11 +101,15 @@ test("Connection with a distributor user", async ({ page }) => {
 test("Connection with a other user", async ({ page }) => {
   await login(page, "ecopass-no-organization@yopmail.com")
 
+  await expect(page.getByRole("link", { name: "Informez-vous", exact: true })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Les marques déclarantes", exact: true })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Recherchez un produit", exact: true })).toBeVisible()
+
   await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarer vos produits", exact: true })).not.toBeVisible()
-  await expect(page.getByRole("link", { name: "API" })).toHaveCount(1)
+  await expect(page.getByRole("link", { name: "API", exact: true })).not.toBeVisible()
 
   await page.goto("http://localhost:3000/produits")
   await expect(page).toHaveURL(/.*\//)
@@ -128,6 +145,10 @@ test("Connection with an unknown user", async ({ page }) => {
   await page.getByRole("button", { name: "Valider" }).click()
 
   await expect(page).toHaveURL(/.*\//)
+
+  await expect(page.getByRole("link", { name: "Informez-vous", exact: true })).not.toBeVisible()
+  await expect(page.getByRole("link", { name: "Les marques déclarantes", exact: true })).not.toBeVisible()
+  await expect(page.getByRole("link", { name: "Recherchez un produit", exact: true })).not.toBeVisible()
 
   await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).toBeVisible()

@@ -1,6 +1,6 @@
 .tile {
   margin-top: 2rem;
-  @media screen and (max-width: 767px) {
+  @media screen and (max-width: 50rem) {
     :global(.fr-tile__header) {
       display: none;
     }

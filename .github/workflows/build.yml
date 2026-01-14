@@ -39,7 +39,7 @@ jobs:
           echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
           echo "PROCONNECT_CLIENT_ID=${{ secrets.PROCONNECT_CLIENT_ID }}" >> .env
           echo "PROCONNECT_CLIENT_SECRET=${{ secrets.PROCONNECT_CLIENT_SECRET }}" >> .env
-          echo "PROCONNECT_DOMAIN=${{ secrets.PROCONNECT_DOMAIN }}" >> .env
+          echo "NEXT_PUBLIC_PROCONNECT_DOMAIN=${{ secrets.PROCONNECT_DOMAIN }}" >> .env
           echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
           echo "ECOBALYSE_ENCRYPTION_KEY=${{ secrets.ECOBALYSE_ENCRYPTION_KEY }}" >> .env
           echo "CI=true" >> .env
@@ -76,7 +76,7 @@ jobs:
         id: lighthouseCheck
         with:
           device: all
-          urls: "http://localhost:3000"
+          urls: "http://localhost:3000,http://localhost:3000/professionnels,http://localhost:3000/informations,http://localhost:3000/marques,http://localhost:3000/marques/a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d,http://localhost:3000/recherche,http://localhost:3000/produits/0000000000000"
           outputDirectory: ${{ github.workspace }}/tmp/artifacts
       - name: Verify Lighthouse Check results
         uses: foo-software/lighthouse-check-status-action@master

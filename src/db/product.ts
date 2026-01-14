@@ -1,4 +1,5 @@
-import { Accessory, Material, Prisma, Product, ProductInformation, Status, UploadType } from "../../prisma/src/prisma"
+import { Accessory, Material, Prisma, Product, ProductInformation } from "@prisma/client"
+import { Status, UploadType } from "@prisma/enums"
 import { ParsedProductValidation } from "../services/validation/product"
 import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"
@@ -233,6 +234,8 @@ const getProducts = async (
 }
 
 export type Products = Awaited<ReturnType<typeof getProducts>>
+
+export const getPublicProductsByBrandId = async (brandId: string) => getProducts({ brandId })
 
 export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brand?: string) => {
   const user = await prismaClient.user.findUnique({
@@ -704,4 +707,24 @@ export const getBrandsInformations = async () => {
       })),
     }
   })
+}
+
+export const getLastBrands = async () => {
+  const brands = await prismaClient.product.groupBy({
+    by: ["brandId"],
+    where: {
+      status: Status.Done,
+      brandId: { not: null },
+    },
+    _max: { createdAt: true },
+    orderBy: { _max: { createdAt: "desc" } },
+    take: 5,
+  })
+
+  const brandsDetails = await prismaClient.brand.findMany({
+    where: { id: { in: brands.map((b) => b.brandId).filter((brand) => brand !== null) } },
+    select: { id: true, name: true },
+  })
+
+  return brands.map((brand) => brandsDetails.find((b) => b.id === brand.brandId)).filter((brand) => brand !== undefined)
 }

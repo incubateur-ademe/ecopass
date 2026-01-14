@@ -6,6 +6,8 @@ import { Products } from "../../../db/product"
 import SearchFilters from "./SearchFilters"
 import SearchActions from "./SearchActions"
 import SearchResults from "./SearchResults"
+import styles from "./SearchContainer.module.css"
+import Image from "next/image"
 
 const SearchContainer = ({
   page,
@@ -57,34 +59,37 @@ const SearchContainer = ({
 
   return (
     <>
-      <Block>
-        <h1>Recherche de produits</h1>
-        <p>Recherchez vos produits déclarés par marque, code-barres ou référence interne.</p>
-
-        <SearchFilters
-          brandId={brandId}
-          category={category}
-          search={search}
-          brands={brands}
-          onBrandChange={setBrandId}
-          onCategoryChange={setCategory}
-          onSearchChange={setSearch}
-          onSearchSubmit={() => handleSearch()}
-        />
-
-        <SearchActions onSearch={() => handleSearch()} onReset={handleReset} />
+      <Block home>
+        <h1>Recherchez un produit par marque, code-barres ou catégorie</h1>
+        <div className={styles.filter}>
+          <div className={styles.box}>
+            <SearchFilters
+              brandId={brandId}
+              category={category}
+              search={search}
+              brands={brands}
+              onBrandChange={setBrandId}
+              onCategoryChange={setCategory}
+              onSearchChange={setSearch}
+              onSearchSubmit={() => handleSearch()}
+            />
+            <SearchActions onSearch={() => handleSearch()} onReset={handleReset} />
+          </div>
+          <Image src='/images/searchicon.svg' alt='' width={252} height={175} />
+        </div>
       </Block>
-
-      <Block>
-        <h2>Résultats de recherche</h2>
-        <SearchResults
-          products={products}
-          total={total}
-          page={page}
-          totalPages={totalPages}
-          onPageChange={handleSearch}
-        />
-      </Block>
+      {(selectedBrandId || searchQuery || selectedCategory) && (
+        <Block>
+          <h2>Résultats de recherche</h2>
+          <SearchResults
+            products={products}
+            total={total}
+            page={page}
+            totalPages={totalPages}
+            onPageChange={handleSearch}
+          />
+        </Block>
+      )}
     </>
   )
 }

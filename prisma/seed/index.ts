@@ -1,25 +1,26 @@
-import { OrganizationType, PrismaClient, UserRole } from "../src/prisma"
+import { OrganizationType, Status, UploadType, UserRole } from "@prisma/enums"
+import { prismaClient } from "../../src/db/prismaClient"
+import { signPassword } from "../../src/services/auth/user"
+import { encryptProductFields } from "../../src/utils/encryption/encryption"
+import { Business, Country, Impression, ProductCategory } from "../../src/types/Product"
 
-const prisma = new PrismaClient()
-
-const products = async () => {
-  await prisma.score.deleteMany()
-  await prisma.material.deleteMany()
-  await prisma.accessory.deleteMany()
-  await prisma.uploadProduct.deleteMany()
-  await prisma.product.deleteMany()
-  await prisma.upload.deleteMany()
+const clean = async () => {
+  await prismaClient.score.deleteMany()
+  await prismaClient.material.deleteMany()
+  await prismaClient.accessory.deleteMany()
+  await prismaClient.uploadProduct.deleteMany()
+  await prismaClient.product.deleteMany()
+  await prismaClient.upload.deleteMany()
+  await prismaClient.brand.deleteMany({})
+  await prismaClient.authorizedOrganization.deleteMany({})
+  await prismaClient.organization.deleteMany({})
+  await prismaClient.aPIKey.deleteMany({})
+  await prismaClient.export.deleteMany({})
+  await prismaClient.user.deleteMany({})
 }
 
 const users = async () => {
-  await prisma.brand.deleteMany({})
-  await prisma.authorizedOrganization.deleteMany({})
-  await prisma.organization.deleteMany({})
-  await prisma.aPIKey.deleteMany({})
-  await prisma.export.deleteMany({})
-  await prisma.user.deleteMany({})
-
-  await prisma.organization.create({
+  await prismaClient.organization.create({
     data: {
       siret: "31723624800017",
       name: "EMMAUS",
@@ -38,7 +39,27 @@ const users = async () => {
       },
     },
   })
-  const user = await prisma.user.create({
+
+  await prismaClient.user.create({
+    data: {
+      email: "ecopass-password@yopmail.com",
+      nom: "Ecopass",
+      prenom: "Password",
+      organization: {
+        connect: { siret: "31723624800017" },
+      },
+      accounts: {
+        create: {
+          provider: "credentials",
+          providerAccountId: "ecopass-password@yopmail.com",
+          type: "credentials",
+          password: await signPassword("ecopasscestsupercool"),
+        },
+      },
+    },
+  })
+
+  const user = await prismaClient.user.create({
     data: {
       email: "ecopass-admin-dev@yopmail.com",
       role: UserRole.ADMIN,
@@ -50,7 +71,7 @@ const users = async () => {
     },
   })
 
-  await prisma.aPIKey.create({
+  await prismaClient.aPIKey.create({
     data: {
       key: "ce4a461a-ae00-49a9-8fbc-d342dc635da6",
       userId: user.id,
@@ -59,17 +80,141 @@ const users = async () => {
   })
 }
 
+const defaultProduct = async () => {
+  const org = await prismaClient.organization.create({
+    data: {
+      siret: "12345678901234",
+      name: "Textile Premium",
+      displayName: "Textile Premium",
+      effectif: "50",
+      naf: "14.19Z",
+      type: OrganizationType.Brand,
+      brands: {
+        createMany: {
+          data: [{ name: "Premium Wear", id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d", default: true }],
+        },
+      },
+    },
+  })
+
+  const user = await prismaClient.user.create({
+    data: {
+      email: "textile@yopmail.com",
+      nom: "Textile",
+      prenom: "Admin",
+      organization: {
+        connect: { siret: org.siret },
+      },
+      accounts: {
+        create: {
+          provider: "credentials",
+          providerAccountId: "textile@yopmail.com",
+          type: "credentials",
+          password: await signPassword("textilepassword"),
+        },
+      },
+    },
+  })
+
+  const { product, materials, accessories } = encryptProductFields({
+    product: ProductCategory.MaillotDeBain,
+    airTransportRatio: 0,
+    business: Business.Small,
+    fading: true,
+    mass: 150,
+    numberOfReferences: 1,
+    price: 45,
+    countryDyeing: Country.France,
+    countryFabric: Country.Chine,
+    countryMaking: Country.Cambodge,
+    countrySpinning: Country.Myanmar,
+    printing: {
+      kind: Impression.FixéLavé,
+      ratio: 0.2,
+    },
+    upcycled: false,
+    materials: [
+      {
+        id: "polyester",
+        country: Country.France,
+        share: 0.85,
+      },
+      {
+        id: "elastane",
+        country: Country.Maroc,
+        share: 0.15,
+      },
+    ],
+  })
+  await prismaClient.product.create({
+    data: {
+      hash: "default-product-hash",
+      gtins: ["0000000000000"],
+      internalReference: "MAILLOT-001",
+      brandName: "Premium Wear",
+      brand: {
+        connect: { id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d" },
+      },
+      status: Status.Done,
+      upload: {
+        create: {
+          type: UploadType.API,
+          organization: { connect: { id: org.id } },
+          createdBy: { connect: { id: user.id } },
+          version: "7.0.0",
+          status: Status.Done,
+        },
+      },
+      informations: {
+        create: {
+          ...product,
+          materials: { create: materials },
+          accessories: { create: accessories },
+          score: {
+            create: {
+              score: 200,
+              standardized: 20,
+              acd: 3.47,
+              cch: 1834.6,
+              etf: 24567.1,
+              fru: 5892.3,
+              fwe: 0.187,
+              htc: 0.00000189,
+              htn: 0.0000967,
+              ior: 203.4,
+              ldu: 67432.9,
+              mru: 0.00567,
+              ozd: 0.00389,
+              pco: 2.156,
+              pma: 0.0000678,
+              swe: 0.634,
+              tre: 7.823,
+              wtu: 982.4,
+              durability: 0.45,
+              microfibers: 18.2,
+              outOfEuropeEOL: 2.1,
+            },
+          },
+        },
+      },
+      score: 200,
+      standardized: 20,
+    },
+  })
+}
+
 const seeds = async () => {
-  await products()
+  await clean()
   await users()
+  await defaultProduct()
 }
 
 seeds()
   .then(async () => {
-    await prisma.$disconnect()
+    await prismaClient.$disconnect()
   })
   .catch(async (e) => {
     console.error(e)
-    await prisma.$disconnect()
+    await prismaClient.$disconnect()
     process.exit(1)
   })

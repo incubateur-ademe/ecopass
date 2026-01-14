@@ -1,9 +1,8 @@
 import z from "zod"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
-import { Status } from "../../../prisma/src/prisma"
 import { PrintingRatio } from "./printing"
 import { isValidGtin } from "../../utils/validation/gtin"
-import { Return } from "@prisma/client/runtime/library"
+import { Status } from "@prisma/enums"
 
 const epsilon = 1e-10
 
@@ -103,4 +102,4 @@ export const getUserProductValidation = (brands: [string, ...string[]]) =>
       return true
     }, "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé")
 
-export type ParsedProductValidation = z.infer<Return<typeof getUserProductValidation>>
+export type ParsedProductValidation = z.infer<ReturnType<typeof getUserProductValidation>>

@@ -1,6 +1,6 @@
 import Block from "../components/Block/Block"
 import Link from "next/link"
-import { APIKey as APIKeyType } from "../../prisma/src/prisma"
+import { APIKey as APIKeyType } from "@prisma/client"
 import Keys from "../components/API/Keys"
 
 const APIKey = ({ keys }: { keys: APIKeyType[] }) => {

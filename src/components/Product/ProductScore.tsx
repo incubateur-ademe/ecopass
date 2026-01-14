@@ -1,5 +1,5 @@
 "use client"
-import { Score } from "../../../prisma/src/prisma"
+import { Score } from "@prisma/client"
 import { getSVG } from "../../utils/label/svg"
 import Label from "../Label/Label"
 import Button from "@codegouvfr/react-dsfr/Button"
@@ -42,7 +42,7 @@ const ProductScore = ({
         <div className='fr-mb-2w'>
           <Label product={{ score, standardized }} />
         </div>
-        <Button onClick={download}>Télécharger le .svg</Button>
+        <Button onClick={download}>Télécharger le SVG</Button>
       </div>
     </>
   )

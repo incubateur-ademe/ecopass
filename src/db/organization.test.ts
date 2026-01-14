@@ -8,7 +8,7 @@ jest.mock("./prismaClient", () => ({
 import { createOrganization, getUserOrganizationType } from "./organization"
 import { getSiretInfo } from "../serverFunctions/siret"
 import { prismaClient } from "./prismaClient"
-import { OrganizationType } from "../../prisma/src/prisma"
+import { OrganizationType } from "@prisma/enums"
 import { cleanDB } from "./testUtils"
 
 jest.mock("../serverFunctions/siret")

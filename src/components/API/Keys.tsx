@@ -1,5 +1,4 @@
 "use client"
-import { APIKey } from "../../../prisma/src/prisma"
 import Table from "../Table/Table"
 import { formatDateTime } from "../../services/format"
 import Button from "@codegouvfr/react-dsfr/Button"
@@ -10,6 +9,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert"
 import styles from "./Keys.module.css"
 import { useRouter } from "next/navigation"
 import LoadingButton from "../Button/LoadingButton"
+import { APIKey } from "@prisma/client"
 
 const Keys = ({ keys }: { keys: APIKey[] }) => {
   const router = useRouter()
@@ -45,6 +45,7 @@ const Keys = ({ keys }: { keys: APIKey[] }) => {
                 <Button
                   className='fr-ml-2w'
                   size='small'
+                  priority='secondary'
                   title='Copier la clé'
                   onClick={() => {
                     navigator.clipboard.writeText(generatedKey)
@@ -96,6 +97,8 @@ const Keys = ({ keys }: { keys: APIKey[] }) => {
               key.lastUsed ? formatDateTime(key.lastUsed) : "",
               `${key.key}*********`,
               <Button
+                size='small'
+                priority='secondary'
                 iconId='fr-icon-delete-bin-fill'
                 key={key.id}
                 onClick={() => deleteAPIKey(key.id).then(() => router.refresh())}>

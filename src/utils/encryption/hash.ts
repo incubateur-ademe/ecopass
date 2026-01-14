@@ -1,7 +1,7 @@
 import hash from "object-hash"
 import { ProductInformationAPI, ProductMetadataAPI } from "../../services/validation/api"
 import { ecobalyseVersion } from "../ecobalyse/config"
-import { Prisma } from "../../../prisma/src/prisma"
+import { Prisma } from "@prisma/client"
 import { ParsedProduct } from "../../types/Product"
 
 const hashProduct = (

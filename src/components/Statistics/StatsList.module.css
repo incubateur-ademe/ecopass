@@ -1,16 +1,15 @@
-.smallList,
 .list {
   list-style: none;
   font-size: 2rem;
   line-height: 2.5rem;
+}
 
-  li {
-    margin-bottom: 1rem;
-  }
+.list li {
+  margin-bottom: 1rem;
+}
 
-  b {
-    color: var(--blue-france-sun-113-625);
-  }
+.list b {
+  color: var(--blue-france-sun-113-625);
 }
 
 .smallList {

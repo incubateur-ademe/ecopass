@@ -3,7 +3,7 @@ import { saveEcobalyseResults, computeEcobalyseScore } from "./api"
 import { createProductScore, failProducts } from "../../db/product"
 import { prismaClient } from "../../db/prismaClient"
 import { runElmFunction } from "./elm"
-import { Status } from "../../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { Business, Country, MaterialType, AccessoryType, Impression, ProductCategory } from "../../types/Product"
 import { EcobalyseResponse } from "../../types/Ecobalyse"
 import { ParsedProductValidation } from "../../services/validation/product"
@@ -47,8 +47,8 @@ describe("computeBatchInformations", () => {
     expect(results).toHaveLength(2)
     expect(results[0].numberOfReferences).toBe(5)
     expect(results[1].numberOfReferences).toBe(5)
-    expect(results[0].price).toBe((10 / 24) * 99)
-    expect(results[1].price).toBe((14 / 24) * 99)
+    expect(results[0].price).toBe((15 / 35) * 99)
+    expect(results[1].price).toBe((20 / 35) * 99)
   })
 
   test("should duplicate products", () => {
@@ -62,23 +62,23 @@ describe("computeBatchInformations", () => {
     expect(results).toHaveLength(5)
     expect(results[0].numberOfReferences).toBe(5)
     expect(results[0].product).toBe("chemise")
-    expect(results[0].price).toBe((10 / 58) * 99)
+    expect(results[0].price).toBe((15 / 85) * 99)
     expect(results[0].mass).toBe(2)
     expect(results[1].numberOfReferences).toBe(5)
     expect(results[1].product).toBe("chemise")
-    expect(results[1].price).toBe((10 / 58) * 99)
+    expect(results[1].price).toBe((15 / 85) * 99)
     expect(results[1].mass).toBe(2)
     expect(results[2].numberOfReferences).toBe(5)
     expect(results[2].product).toBe("chemise")
-    expect(results[2].price).toBe((10 / 58) * 99)
+    expect(results[2].price).toBe((15 / 85) * 99)
     expect(results[2].mass).toBe(2)
     expect(results[3].numberOfReferences).toBe(5)
     expect(results[3].product).toBe("jean")
-    expect(results[3].price).toBe((14 / 58) * 99)
+    expect(results[3].price).toBe((20 / 85) * 99)
     expect(results[3].mass).toBe(1)
     expect(results[4].numberOfReferences).toBe(5)
     expect(results[4].product).toBe("jean")
-    expect(results[4].price).toBe((14 / 58) * 99)
+    expect(results[4].price).toBe((20 / 85) * 99)
     expect(results[4].mass).toBe(1)
   })
 
@@ -93,8 +93,8 @@ describe("computeBatchInformations", () => {
     expect(results).toHaveLength(2)
     expect(results[0].numberOfReferences).toBe(5)
     expect(results[1].numberOfReferences).toBe(5)
-    expect(results[0].price).toBe((1 / 15) * 99)
-    expect(results[1].price).toBe((14 / 15) * 99)
+    expect(results[0].price).toBe((1 / 21) * 99)
+    expect(results[1].price).toBe((20 / 21) * 99)
   })
 })
 

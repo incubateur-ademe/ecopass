@@ -1,7 +1,7 @@
 import { FileUpload } from "../../../db/upload"
 import { v4 as uuid } from "uuid"
 import { parseCSV } from "./parse"
-import { Status } from "../../../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../../types/Product"
 import { decryptBoolean, decryptNumber, decryptProductFields } from "../../encryption/encryption"
 import { defaultHeaders, defaultProductRow } from "../parsingTest"

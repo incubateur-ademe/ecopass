@@ -1,0 +1,104 @@
+.mainImage {
+  margin: auto;
+  display: block;
+  width: auto;
+}
+
+.sectionReversed {
+  flex-direction: row-reverse;
+
+  @media screen and (max-width: 50rem) {
+    align-items: center;
+  }
+}
+
+.sectionReversed,
+.section {
+  display: flex;
+  gap: 2rem;
+
+  @media screen and (max-width: 50rem) {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+}
+
+.logoExample {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.highlight {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.impactList {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.impactItem {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+
+  @media screen and (max-width: 50rem) {
+    grid-template-columns: 1fr;
+  }
+
+  ul {
+    margin-top: 0.5rem;
+    padding-left: 1.5rem;
+    li {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.impactItem .impactItem .cycleVie {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.cycleVieImage {
+  max-width: 100%;
+  height: auto;
+}
+
+.infoBox {
+  background: #e3e3fd;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+}
+
+.infoBox h3 {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #000091;
+}
+
+.infoBox p {
+  margin-bottom: 1rem;
+}
+
+.link {
+  color: #000091;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: none;
+}

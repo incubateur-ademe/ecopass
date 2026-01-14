@@ -29,6 +29,26 @@ const send = (toEmail: string[], subject: string, html: string) => {
   }
 }
 
+export const sendWelcomeEmail = async (toEmail: string, token: string) => {
+  return send(
+    [toEmail],
+    "Bienvenue sur le portail de déclaration de l'Affichage environnemental",
+    await getHtml("welcome", {
+      resetLink: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
+    }),
+  )
+}
+
+export const sendResetEmail = async (toEmail: string, token: string) => {
+  return send(
+    [toEmail],
+    "Changez votre mot de passe",
+    await getHtml("reset", {
+      resetLink: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
+    }),
+  )
+}
+
 export const sendUploadSuccessEmail = async (toEmail: string, name: string | null, date: Date) => {
   return send(
     [toEmail],

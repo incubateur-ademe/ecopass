@@ -3,6 +3,7 @@ import Product from "../../../../views/Product"
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import EmptyProduct from "../../../../views/EmptyProduct"
 import { Metadata } from "next"
+import { tryAndGetSession } from "../../../../services/auth/redirect"
 
 export const metadata: Metadata = {
   title: "Produit - Affichage environnemental",
@@ -13,6 +14,7 @@ type Props = {
 }
 
 const OldProductPage = async (props: Props) => {
+  const session = await tryAndGetSession(false, false)
   const params = await props.params
   const [product, oldProduct] = await Promise.all([
     getProductWithScore(params.gtin),
@@ -23,7 +25,12 @@ const OldProductPage = async (props: Props) => {
     <>
       <StartDsfrOnHydration />
       {oldProduct ? (
-        <Product product={oldProduct} gtin={params.gtin} isOld={!!product && product.id !== oldProduct.id} />
+        <Product
+          product={oldProduct}
+          gtin={params.gtin}
+          isOld={!!product && product.id !== oldProduct.id}
+          isPro={!!session}
+        />
       ) : (
         <EmptyProduct />
       )}

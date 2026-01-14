@@ -1,0 +1,40 @@
+.headerContainer {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  @media screen and (max-width: 50rem) {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+}
+
+.content {
+  flex: 1;
+  @media screen and (max-width: 50rem) {
+    width: 100%;
+  }
+}
+
+.image {
+  height: 100%;
+  width: auto;
+}
+
+.link {
+  color: var(--blue-france-sun-113-625);
+  margin-right: 0.5rem;
+
+  span {
+    transition: all 300ms ease-in-out;
+    &:before {
+      --icon-size: 1rem;
+    }
+  }
+
+  &:hover {
+    margin-right: 0rem;
+    span {
+      margin-left: 0.5rem;
+    }
+  }
+}

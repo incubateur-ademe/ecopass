@@ -1,7 +1,7 @@
 "use server"
 
 import { v4 as uuid } from "uuid"
-import { UploadType } from "../../prisma/src/prisma"
+import { UploadType } from "@prisma/client"
 import { createUpload } from "../db/upload"
 import { auth } from "../services/auth/auth"
 import { uploadFileToS3 } from "../utils/s3/bucket"

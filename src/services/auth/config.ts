@@ -1,8 +1,10 @@
 import { v4 as uuid } from "uuid"
+import CredentialsProvider from "next-auth/providers/credentials"
+import bcrypt from "bcrypt"
 import { AuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prismaClient } from "../../db/prismaClient"
-import { UserRole } from "../../../prisma/src/prisma"
+import { UserRole } from "@prisma/enums"
 import { createOrganization } from "../../db/organization"
 
 export const authOptions = {
@@ -32,6 +34,42 @@ export const authOptions = {
     },
   },
   providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: {
+          label: "email",
+          type: "text",
+        },
+        password: { label: "password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required")
+        }
+
+        const user = await prismaClient.user.findUnique({
+          include: { accounts: true },
+          where: { email: credentials.email.toLowerCase() },
+        })
+
+        if (!user) {
+          throw new Error("Invalid crendentials")
+        }
+        const account = user.accounts.find((account) => account.provider === "credentials")
+
+        if (!account || !account.password) {
+          throw new Error("Invalid crendentials")
+        }
+
+        const isValidPassword = await bcrypt.compare(credentials.password, account.password)
+        if (!isValidPassword) {
+          throw new Error("Invalid crendentials")
+        }
+
+        return { email: user.email || "", id: user.id }
+      },
+    }),
     {
       id: "proconnect",
       name: "ProConnect",
@@ -39,7 +77,7 @@ export const authOptions = {
       idToken: true,
       clientId: process.env.PROCONNECT_CLIENT_ID,
       clientSecret: process.env.PROCONNECT_CLIENT_SECRET,
-      wellKnown: `${process.env.PROCONNECT_DOMAIN}/api/v2/.well-known/openid-configuration`,
+      wellKnown: `${process.env.NEXT_PUBLIC_PROCONNECT_DOMAIN}/api/v2/.well-known/openid-configuration`,
       allowDangerousEmailAccountLinking: true,
       checks: ["nonce", "state"],
       authorization: {
@@ -60,7 +98,7 @@ export const authOptions = {
       },
       userinfo: {
         async request(context) {
-          const userInfo = await fetch(`${process.env.PROCONNECT_DOMAIN}/api/v2/userinfo`, {
+          const userInfo = await fetch(`${process.env.NEXT_PUBLIC_PROCONNECT_DOMAIN}/api/v2/userinfo`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${context.tokens.access_token}`,

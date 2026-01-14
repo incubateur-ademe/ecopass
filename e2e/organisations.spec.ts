@@ -214,7 +214,7 @@ test("manage delegation", async ({ page }) => {
   await expect(page).toHaveURL(/.*\/produits/)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
     "REF-098",
   )
 
@@ -225,7 +225,7 @@ test("manage delegation", async ({ page }) => {
   await expect(page).toHaveURL(/.*\/produits/)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
     "REF-098",
   )
 })

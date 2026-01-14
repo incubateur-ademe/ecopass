@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" fill="none">
+  <rect width="800" height="400" fill="#F6F6F6"/>
+  
+  <!-- Matières premières -->
+  <circle cx="100" cy="200" r="50" fill="#4CAF50" opacity="0.3"/>
+  <text x="100" y="205" font-family="Arial" font-size="12" fill="#2E7D32" text-anchor="middle" font-weight="bold">Matières</text>
+  <text x="100" y="220" font-family="Arial" font-size="10" fill="#2E7D32" text-anchor="middle">premières</text>
+  
+  <!-- Flèche -->
+  <path d="M 160 200 L 210 200" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  
+  <!-- Production -->
+  <circle cx="270" cy="200" r="50" fill="#2196F3" opacity="0.3"/>
+  <text x="270" y="205" font-family="Arial" font-size="12" fill="#1565C0" text-anchor="middle" font-weight="bold">Production</text>
+  
+  <!-- Flèche -->
+  <path d="M 330 200 L 380 200" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  
+  <!-- Transport -->
+  <circle cx="440" cy="200" r="50" fill="#FF9800" opacity="0.3"/>
+  <text x="440" y="205" font-family="Arial" font-size="12" fill="#E65100" text-anchor="middle" font-weight="bold">Transport</text>
+  
+  <!-- Flèche -->
+  <path d="M 500 200 L 550 200" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  
+  <!-- Utilisation -->
+  <circle cx="610" cy="200" r="50" fill="#9C27B0" opacity="0.3"/>
+  <text x="610" y="205" font-family="Arial" font-size="12" fill="#6A1B9A" text-anchor="middle" font-weight="bold">Utilisation</text>
+  
+  <!-- Flèche -->
+  <path d="M 670 200 L 720 200" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  
+  <!-- Fin de vie -->
+  <circle cx="750" cy="200" r="40" fill="#F44336" opacity="0.3"/>
+  <text x="750" y="205" font-family="Arial" font-size="10" fill="#C62828" text-anchor="middle" font-weight="bold">Fin de vie</text>
+  
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#666" />
+    </marker>
+  </defs>
+  
+  <text x="400" y="350" font-family="Arial" font-size="16" fill="#3A3A3A" text-anchor="middle" font-weight="bold">Cycle de vie du produit textile</text>
+</svg>
