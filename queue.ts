@@ -1,3 +1,4 @@
+import "dotenv/config"
 import { processExportsQueue } from "./src/utils/queue/exports"
 import { processProductsQueue } from "./src/utils/queue/products"
 import { processUploadsToQueue } from "./src/utils/queue/uploads"
