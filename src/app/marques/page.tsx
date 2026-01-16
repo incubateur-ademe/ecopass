@@ -8,14 +8,16 @@ export const metadata: Metadata = {
 }
 
 const BrandsPage = async () => {
+  console.log("[MEMORY][marques/page][start]", process.memoryUsage())
   const brands = await getAllBrandsWithStats()
-
-  return (
+  const result = (
     <>
       <StartDsfrOnHydration />
       <Brands brands={brands} />
     </>
   )
+  console.log("[MEMORY][marques/page][end]", process.memoryUsage())
+  return result
 }
 
 export default BrandsPage

@@ -8,11 +8,14 @@ export const metadata: Metadata = {
 }
 
 export default async function StatsPage() {
+  console.log("[MEMORY][stats/page][start]", process.memoryUsage())
   const stats = await computeStats()
-  return (
+  const result = (
     <>
       <StartDsfrOnHydration />
       <Statistics stats={stats} />
     </>
   )
+  console.log("[MEMORY][stats/page][end]", process.memoryUsage())
+  return result
 }

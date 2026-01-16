@@ -7,12 +7,15 @@ export const metadata: Metadata = {
 }
 
 const CGUPage = () => {
-  return (
+  console.log("[MEMORY][conditions-generales-utilisation/page][start]", process.memoryUsage())
+  const result = (
     <>
       <StartDsfrOnHydration />
       <ConditionsGeneralesUtilisation />
     </>
   )
+  console.log("[MEMORY][conditions-generales-utilisation/page][end]", process.memoryUsage())
+  return result
 }
 
 export default CGUPage

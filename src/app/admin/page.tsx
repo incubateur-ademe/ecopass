@@ -8,15 +8,19 @@ export const metadata: Metadata = {
   title: "Admin - Affichage environnemental",
 }
 const AdminPage = async () => {
+  console.log("[MEMORY][admin/page][start]", process.memoryUsage())
+  console.log("Rendering AdminPage")
   await tryAndGetSession(true, true)
 
   const stats = await computeAdminStats()
-  return (
+  const result = (
     <>
       <StartDsfrOnHydration />
       <Admin stats={stats} />
     </>
   )
+  console.log("[MEMORY][admin/page][end]", process.memoryUsage())
+  return result
 }
 
 export default AdminPage

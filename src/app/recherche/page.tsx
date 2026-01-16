@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 }
 
 const SearchProductsPage = async ({ searchParams }: PageProps) => {
+  console.log("[MEMORY][recherche/page][start]", process.memoryUsage())
   const params = await searchParams
   const page = params.page ? parseInt(params.page as string, 10) : 1
   const brandId = params.brandId ? (params.brandId as string) : undefined
@@ -23,7 +24,7 @@ const SearchProductsPage = async ({ searchParams }: PageProps) => {
       : { products: [], total: 0 },
   ])
 
-  return (
+  const result = (
     <>
       <StartDsfrOnHydration />
       <SearchProducts
@@ -38,6 +39,8 @@ const SearchProductsPage = async ({ searchParams }: PageProps) => {
       />
     </>
   )
+  console.log("[MEMORY][recherche/page][end]", process.memoryUsage())
+  return result
 }
 
 export default SearchProductsPage

@@ -4,6 +4,7 @@ import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
 
 export const addNewBrand = async (brand: string) => {
+  console.log("[MEMORY][serverFunctions/brand/addNewBrand][start]", process.memoryUsage())
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -29,15 +30,18 @@ export const addNewBrand = async (brand: string) => {
     return "Vous avez déjà une marque avec ce nom"
   }
 
-  return prismaClient.brand.create({
+  const result = await prismaClient.brand.create({
     data: {
       name: trimmedBrand,
       organization: { connect: { id: user.organization.id } },
     },
   })
+  console.log("[MEMORY][serverFunctions/brand/addNewBrand][end]", process.memoryUsage())
+  return result
 }
 
 export const updateBrand = async (id: string, data: { name: string; active: boolean }) => {
+  console.log("[MEMORY][serverFunctions/brand/updateBrand][start]", process.memoryUsage())
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -54,7 +58,7 @@ export const updateBrand = async (id: string, data: { name: string; active: bool
     return "Vous n'êtes pas membre d'une organisation"
   }
 
-  return prismaClient.brand.update({
+  const result = await prismaClient.brand.update({
     where: {
       id: id,
       organizationId: user.organization.id,
@@ -65,4 +69,6 @@ export const updateBrand = async (id: string, data: { name: string; active: bool
       active: data.active,
     },
   })
+  console.log("[MEMORY][serverFunctions/brand/updateBrand][end]", process.memoryUsage())
+  return result
 }

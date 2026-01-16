@@ -9,12 +9,16 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
+  console.log("[MEMORY][home/page][start]", process.memoryUsage())
+  console.log("Rendering HomePage")
   const session = await tryAndGetSession(false, true)
   const type = session && session.user ? await getUserOrganizationType(session.user.id) : null
-  return (
+  const result = (
     <>
       <StartDsfrOnHydration />
       <Home connected={!!session} type={type} />
     </>
   )
+  console.log("[MEMORY][home/page][end]", process.memoryUsage())
+  return result
 }

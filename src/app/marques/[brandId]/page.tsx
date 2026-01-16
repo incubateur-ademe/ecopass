@@ -13,19 +13,23 @@ export const metadata: Metadata = {
 }
 
 const BrandPage = async ({ params }: Props) => {
+  console.log("[MEMORY][marques/[brandId]/page][start]", process.memoryUsage())
   const { brandId } = await params
   const brandData = await getBrandWithProducts(brandId)
-
+  let result
   if (!brandData) {
+    console.log("[MEMORY][marques/[brandId]/page][end]", process.memoryUsage())
     notFound()
+  } else {
+    result = (
+      <>
+        <StartDsfrOnHydration />
+        {brandData && <BrandDetail brand={brandData.brand} products={brandData.products} />}
+      </>
+    )
+    console.log("[MEMORY][marques/[brandId]/page][end]", process.memoryUsage())
+    return result
   }
-
-  return (
-    <>
-      <StartDsfrOnHydration />
-      {brandData && <BrandDetail brand={brandData.brand} products={brandData.products} />}
-    </>
-  )
 }
 
 export default BrandPage
