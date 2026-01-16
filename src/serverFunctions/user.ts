@@ -45,7 +45,7 @@ export const changePassword = async (token: string, password: string) => {
 
   const hashedPassword = await signPassword(password)
 
-  const result = await prismaClient.account.update({
+  await prismaClient.account.update({
     where: { id: user.accounts[0].id },
     data: {
       password: hashedPassword,
@@ -53,7 +53,6 @@ export const changePassword = async (token: string, password: string) => {
     },
   })
   console.log("[MEMORY][serverFunctions/user/changePassword][end]", process.memoryUsage())
-  return result
 }
 
 export const generateAPIKey = async (name: string) => {
