@@ -1,5 +1,7 @@
 import Image from "next/image"
 import styles from "./BrandHeader.module.css"
+import { productMapping } from "../../utils/ecobalyse/mappings"
+import { ProductCategory } from "../../types/Product"
 
 const BrandHeader = ({
   name,
@@ -11,9 +13,7 @@ const BrandHeader = ({
   lastDeclarationDate?: Date
   productCount: number
   categories: {
-    slug: string
-    label: string
-    icon: string
+    slug: ProductCategory
     count: number
   }[]
 }) => {
@@ -32,13 +32,13 @@ const BrandHeader = ({
           {categories.map((category) => (
             <div className={styles.categoryPreviewItem} key={category.slug}>
               <Image
-                src={`/icons/${category.icon}.svg`}
+                src={`/icons/${productMapping[category.slug]}.svg`}
                 alt=''
                 width={48}
                 height={48}
                 className={styles.categoryPreviewIcon}
               />
-              <span className={styles.categoryPreviewLabel}>{category.label}</span>
+              <span className={styles.categoryPreviewLabel}>{category.slug}</span>
               <span className={styles.categoryPreviewCount}>{category.count.toLocaleString("fr-FR")}</span>
             </div>
           ))}
