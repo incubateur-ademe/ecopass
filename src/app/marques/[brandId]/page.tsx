@@ -1,6 +1,6 @@
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import { notFound } from "next/navigation"
-import { getBrandWithProducts } from "../../../db/brands"
+import { getBrandWithProducts, getBrandById } from "../../../db/brands"
 import BrandDetail from "../../../views/BrandDetail"
 import { Metadata } from "next"
 import { getPublicProductsByBrandId } from "../../../db/product"
@@ -10,8 +10,19 @@ type Props = {
   searchParams: Promise<{ page?: string }>
 }
 
-export const metadata: Metadata = {
-  title: "Marques - Affichage environnemental",
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { brandId } = await params
+  const brandData = await getBrandById(brandId)
+
+  if (!brandData) {
+    return {
+      title: "Marque - Affichage environnemental",
+    }
+  }
+
+  return {
+    title: `${brandData.name} - Affichage environnemental`,
+  }
 }
 
 const BrandPage = async ({ params, searchParams }: Props) => {
