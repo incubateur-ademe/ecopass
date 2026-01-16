@@ -8,8 +8,19 @@ import { ProductCategory } from "../../types/Product"
 import { productMapping } from "../../utils/ecobalyse/mappings"
 import styles from "./BrandProductsTable.module.css"
 import { BATCH_CATEGORY } from "../../utils/types/productCategory"
+import Pagination from "@codegouvfr/react-dsfr/Pagination"
 
-const BrandProductsTable = ({ products }: { products: Products }) => {
+const BrandProductsTable = ({
+  products,
+  brandId,
+  currentPage,
+  totalPages,
+}: {
+  products: Products
+  brandId: string
+  currentPage: number
+  totalPages: number
+}) => {
   const tableRows = products.map((product) => {
     const isBatch = product.informations.length !== 1
     const categorySlug = !isBatch ? product.informations[0].categorySlug : undefined
@@ -43,7 +54,7 @@ const BrandProductsTable = ({ products }: { products: Products }) => {
 
   return (
     <div>
-      <div className={styles.tableHeader}>
+      <div className={styles.tableHeader} id='produits'>
         <h2>Liste complète des produits déclarés</h2>
       </div>
       <Table
@@ -53,6 +64,16 @@ const BrandProductsTable = ({ products }: { products: Products }) => {
         headers={["Référence marque", "Catégorie", "Code-barres", "Score", "Détails"]}
         data={tableRows}
       />
+      {totalPages > 1 && (
+        <Pagination
+          count={totalPages}
+          defaultPage={currentPage}
+          getPageLinkProps={(page) => ({
+            href: `/marques/${brandId}?page=${page}#produits`,
+          })}
+          showFirstLast
+        />
+      )}
     </div>
   )
 }

@@ -235,7 +235,8 @@ const getProducts = async (
 
 export type Products = Awaited<ReturnType<typeof getProducts>>
 
-export const getPublicProductsByBrandId = async (brandId: string) => getProducts({ brandId })
+export const getPublicProductsByBrandId = async (brandId: string, page: number) =>
+  getProducts({ brandId }, (page - 1) * 10, 10)
 
 export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brand?: string) => {
   const user = await prismaClient.user.findUnique({

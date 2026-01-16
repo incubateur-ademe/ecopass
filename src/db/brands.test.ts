@@ -1,7 +1,6 @@
 import { v4 as uuid } from "uuid"
 import { prismaTest } from "../../jest.setup"
 import { Status } from "@prisma/enums"
-import * as productDb from "./product"
 
 jest.mock("./prismaClient", () => ({
   prismaClient: prismaTest,
@@ -9,6 +8,8 @@ jest.mock("./prismaClient", () => ({
 
 import { getAllBrandsWithStats, getBrandById, getBrandWithProducts } from "./brands"
 import { cleanDB } from "./testUtils"
+import { Business, ProductCategory } from "../types/Product"
+import { encryptProductFields } from "../utils/encryption/encryption"
 
 describe("Brands DB", () => {
   let orgId: string
@@ -146,19 +147,154 @@ describe("Brands DB", () => {
     expect(brand).toEqual({ id: brandA.id, name: brandA.name })
   })
 
-  it("getBrandWithProducts calls getPublicProductsByBrandId with brand id", async () => {
-    const mockedProducts = [
-      { id: "p1", internalReference: "B-REF-1" },
-      { id: "p2", internalReference: "B-REF-2" },
-    ]
+  it("getBrandWithProducts returns brand with total product count by category", async () => {
+    const encrypted = encryptProductFields({
+      product: ProductCategory.Pull,
+      business: Business.Small,
+      numberOfReferences: 9000,
+      mass: 1,
+      price: 100,
+      materials: [],
+      trims: [],
+      countryDyeing: "FR",
+      countryFabric: "FR",
+      countryMaking: "FR",
+    })
 
-    const spy = jest.spyOn(productDb, "getPublicProductsByBrandId").mockResolvedValue(mockedProducts as any)
+    await Promise.all([
+      prismaTest.product.create({
+        data: {
+          status: Status.Done,
+          hash: "h-tshirt-1",
+          gtins: ["TSH001"],
+          internalReference: "TSHIRT-001",
+          brandId: brandA.id,
+          createdAt: new Date(),
+          uploadId: testUploadId,
+          informations: {
+            create: [
+              {
+                ...encrypted.product,
+                categorySlug: ProductCategory.TShirtPolo,
+              },
+            ],
+          },
+        },
+      }),
+      prismaTest.product.create({
+        data: {
+          status: Status.Done,
+          hash: "h-tshirt-2",
+          gtins: ["TSH002"],
+          internalReference: "TSHIRT-001",
+          brandId: brandA.id,
+          createdAt: new Date(),
+          uploadId: testUploadId,
+          informations: {
+            create: [
+              {
+                ...encrypted.product,
+                categorySlug: ProductCategory.TShirtPolo,
+              },
+            ],
+          },
+        },
+      }),
+      prismaTest.product.create({
+        data: {
+          status: Status.Error,
+          hash: "h-tshirt-3",
+          gtins: ["TSH003"],
+          internalReference: "TSHIRT-003",
+          brandId: brandA.id,
+          createdAt: new Date(),
+          uploadId: testUploadId,
+          informations: {
+            create: [
+              {
+                ...encrypted.product,
+                categorySlug: ProductCategory.TShirtPolo,
+              },
+            ],
+          },
+        },
+      }),
+      prismaTest.product.create({
+        data: {
+          status: Status.Done,
+          hash: "h-jeans-1",
+          gtins: ["JEANS001"],
+          internalReference: "JEANS-001",
+          brandId: brandA.id,
+          createdAt: new Date(),
+          uploadId: testUploadId,
+          informations: {
+            create: [
+              {
+                ...encrypted.product,
+                categorySlug: ProductCategory.Jean,
+              },
+            ],
+          },
+        },
+      }),
+      prismaTest.product.create({
+        data: {
+          status: Status.Done,
+          hash: "h-jeans-2",
+          gtins: ["JEANS002"],
+          internalReference: "JEANS-002",
+          brandId: brandA.id,
+          createdAt: new Date(),
+          uploadId: testUploadId,
+          informations: {
+            create: [
+              {
+                ...encrypted.product,
+                categorySlug: ProductCategory.Jean,
+              },
+            ],
+          },
+        },
+      }),
+      prismaTest.product.create({
+        data: {
+          status: Status.Done,
+          hash: "h-jacket-1",
+          gtins: ["JACKET001"],
+          internalReference: "JACKET-001",
+          brandId: brandA.id,
+          createdAt: new Date(),
+          uploadId: testUploadId,
+          informations: {
+            create: [
+              {
+                ...encrypted.product,
+                categorySlug: ProductCategory.ManteauVeste,
+              },
+            ],
+          },
+        },
+      }),
+    ])
 
     const result = await getBrandWithProducts(brandA.id)
-    expect(spy).toHaveBeenCalledTimes(1)
-    expect(spy).toHaveBeenCalledWith(brandA.id)
+
     expect(result).not.toBeNull()
-    expect(result?.brand).toEqual({ id: brandA.id, name: brandA.name })
-    expect(result?.products).toEqual(mockedProducts)
+    expect(result?.id).toEqual(brandA.id)
+    expect(result?.name).toEqual(brandA.name)
+    expect(result?.productsByCategory.reduce((acc, curr) => acc + curr.count, 0)).toBe(4)
+    expect(result?.productsByCategory[0]).toEqual({
+      slug: ProductCategory.Jean,
+      count: 2,
+    })
+    expect(result?.productsByCategory[1]).toEqual({
+      slug: ProductCategory.ManteauVeste,
+      count: 1,
+    })
+    expect(result?.productsByCategory[2]).toEqual({
+      slug: ProductCategory.TShirtPolo,
+      count: 1,
+    })
   })
 })

@@ -14,7 +14,7 @@
     "queue": "tsx ./queue.ts",
     "test": "jest && playwright test",
     "ecobalyse:data": "tsx src/scripts/decryptEcobalyseData.ts",
-    "reset:test": "DATABASE_URL=postgresql://ecopass_test:ecopass_test@localhost:5433/ecopass_test pnpm prisma migrate reset --force --skip-seed",
+    "reset:test": "DATABASE_URL=postgresql://ecopass_test:ecopass_test@localhost:5433/ecopass_test pnpm prisma migrate reset --force",
     "preinstall": "npx -y only-allow@1.2.2 pnpm"
   },
   "engines": {

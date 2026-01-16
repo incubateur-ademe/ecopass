@@ -1,6 +1,7 @@
 import { Status } from "@prisma/enums"
 import { prismaClient } from "./prismaClient"
-import { getPublicProductsByBrandId } from "./product"
+import { ProductCategory } from "../types/Product"
+import { productMapping } from "../utils/ecobalyse/mappings"
 
 export const getAllBrandsWithStats = async () => {
   const allProducts = await prismaClient.product.findMany({
@@ -81,7 +82,59 @@ export const getBrandWithProducts = async (id: string) => {
     return null
   }
 
-  const products = await getPublicProductsByBrandId(id)
+  const uniqueGtins = await prismaClient.product.findMany({
+    where: {
+      status: Status.Done,
+      brandId: id,
+    },
+    select: { id: true },
+    distinct: ["internalReference"],
+    orderBy: [{ createdAt: "desc" }, { internalReference: "asc" }],
+  })
 
-  return { brand, products }
+  const products = await prismaClient.product.findMany({
+    where: { id: { in: uniqueGtins.map((p) => p.id) }, brandId: id, status: Status.Done },
+    select: { informations: { select: { categorySlug: true } } },
+    orderBy: { createdAt: "desc" },
+  })
+  return {
+    ...brand,
+    productsByCategory: Object.values(
+      products
+        .filter((product) => product !== null)
+        .reduce(
+          (acc, product) => {
+            if (product.informations.length !== 1 || !product.informations[0].categorySlug) {
+              return acc
+            }
+
+            const slug = product.informations[0].categorySlug as ProductCategory
+            const icon = productMapping[slug]
+
+            if (!icon) {
+              return acc
+            }
+
+            if (!acc[slug]) {
+              acc[slug] = {
+                slug,
+                count: 0,
+              }
+            }
+
+            acc[slug].count += 1
+            return acc
+          },
+          {} as Record<
+            ProductCategory,
+            {
+              slug: ProductCategory
+              count: number
+            }
+          >,
+        ),
+    ).sort((a, b) => b.count - a.count || a.slug.localeCompare(b.slug)),
+  }
 }
+
+export type BrandInformation = NonNullable<Awaited<ReturnType<typeof getBrandWithProducts>>>
