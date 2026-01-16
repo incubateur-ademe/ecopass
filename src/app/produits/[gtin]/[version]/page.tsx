@@ -1,16 +1,27 @@
-import { getOldProductWithScore, getProductWithScore } from "../../../../db/product"
+import { getOldProductWithScore, getProductWithScore, getProductByGtin } from "../../../../db/product"
 import Product from "../../../../views/Product"
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import EmptyProduct from "../../../../views/EmptyProduct"
 import { Metadata } from "next"
 import { tryAndGetSession } from "../../../../services/auth/redirect"
 
-export const metadata: Metadata = {
-  title: "Produit - Affichage environnemental",
-}
-
 type Props = {
   params: Promise<{ gtin: string; version: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { gtin, version } = await params
+  const product = await getProductByGtin(gtin, version)
+
+  if (!product) {
+    return {
+      title: "Produit - Affichage environnemental",
+    }
+  }
+
+  return {
+    title: `${product.internalReference} - Affichage environnemental`,
+  }
 }
 
 const OldProductPage = async (props: Props) => {

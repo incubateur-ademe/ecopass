@@ -193,6 +193,17 @@ export const getProductWithScore = async (gtin: string) =>
 
 export type ProductWithScore = NonNullable<Awaited<ReturnType<typeof getProductWithScore>>>
 
+export const getProductByGtin = async (gtin: string, id?: string) =>
+  prismaClient.product.findFirst({
+    select: { internalReference: true },
+    where: {
+      gtins: { has: gtin },
+      id,
+      status: Status.Done,
+    },
+    orderBy: { createdAt: "desc" },
+  })
+
 export const getOldProductWithScore = async (gtin: string, version: string) =>
   prismaClient.product.findFirst({
     select: productWithScoreSelect,

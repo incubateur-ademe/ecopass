@@ -51,18 +51,22 @@ const SearchInput = ({
         />
       </div>
       {(searchButtonHref || advancedSearchHref) && (
-        <div className={styles.buttons}>
+        <ul className={styles.buttons}>
           {searchButtonHref && (
-            <Button linkProps={{ href: searchButtonHref, prefetch: false }} iconId='ri-search-line'>
-              Rechercher
-            </Button>
+            <li>
+              <Button linkProps={{ href: searchButtonHref, prefetch: false }} iconId='ri-search-line'>
+                Rechercher
+              </Button>
+            </li>
           )}
           {advancedSearchHref && (
-            <Button linkProps={{ href: advancedSearchHref }} priority='secondary' iconId='ri-settings-line'>
-              Recherche avancée
-            </Button>
+            <li>
+              <Button linkProps={{ href: advancedSearchHref }} priority='secondary' iconId='ri-settings-line'>
+                Recherche avancée
+              </Button>
+            </li>
           )}
-        </div>
+        </ul>
       )}
       {!searchButtonHref && !advancedSearchHref && (
         <Button iconId='fr-icon-search-line' onClick={handleSearch} className={styles.searchButton}>
