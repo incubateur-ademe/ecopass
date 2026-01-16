@@ -4,17 +4,21 @@ import { auth } from "../../services/auth/auth"
 import ForgetPassword from "../../views/ForgetPassword"
 
 const ForgetPasswordPage = async () => {
+  console.log("[MEMORY][forget-password/page][start]", process.memoryUsage())
   const session = await auth()
   if (session) {
+    console.log("[MEMORY][forget-password/page][end]", process.memoryUsage())
     redirect("/")
   }
 
-  return (
+  const result = (
     <>
       <StartDsfrOnHydration />
       <ForgetPassword />
     </>
   )
+  console.log("[MEMORY][forget-password/page][end]", process.memoryUsage())
+  return result
 }
 
 export default ForgetPasswordPage

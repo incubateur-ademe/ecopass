@@ -10,16 +10,19 @@ export const metadata: Metadata = {
 }
 
 const DeclarationsPage = async ({ searchParams }: PageProps) => {
+  console.log("[MEMORY][declarations/page][start]", process.memoryUsage())
   await tryAndGetSession(true, true, organizationTypesAllowedToDeclare)
 
   const params = await searchParams
   const page = params.page ? parseInt(params.page as string, 10) : 1
-  return (
+  const result = (
     <>
       <StartDsfrOnHydration />
       <Declarations page={page} />
     </>
   )
+  console.log("[MEMORY][declarations/page][end]", process.memoryUsage())
+  return result
 }
 
 export default DeclarationsPage

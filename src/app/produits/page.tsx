@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 }
 
 const ProductsPage = async ({ searchParams }: PageProps) => {
+  console.log("[MEMORY][produits/page][start]", process.memoryUsage())
   const session = await tryAndGetSession(true, true, organizationTypesAllowedToDeclare)
 
   const params = await searchParams
@@ -22,12 +23,14 @@ const ProductsPage = async ({ searchParams }: PageProps) => {
     getOrganizationProductsCountByUserIdAndBrand(session.user.id, brand),
   ])
 
-  return (
+  const result = (
     <>
       <StartDsfrOnHydration />
       <Products page={page} productsCount={productsCount} brands={brands} brand={brand} />
     </>
   )
+  console.log("[MEMORY][produits/page][end]", process.memoryUsage())
+  return result
 }
 
 export default ProductsPage

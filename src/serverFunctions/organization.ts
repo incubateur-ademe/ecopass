@@ -6,6 +6,7 @@ import { auth } from "../services/auth/auth"
 import { getSiretInfo } from "./siret"
 
 export const authorizeOrganization = async (siret: string) => {
+  console.log("[MEMORY][serverFunctions/organization/authorizeOrganization][start]", process.memoryUsage())
   if (!siret || !/^\d{14}$/.test(siret)) {
     return "SIRET invalide"
   }
@@ -63,7 +64,7 @@ export const authorizeOrganization = async (siret: string) => {
     id = newOrganization.id
   }
 
-  await prismaClient.authorizedOrganization.create({
+  const result = await prismaClient.authorizedOrganization.create({
     data: {
       from: {
         connect: { id: userOrganization.organization.id },
@@ -77,9 +78,12 @@ export const authorizeOrganization = async (siret: string) => {
       },
     },
   })
+  console.log("[MEMORY][serverFunctions/organization/authorizeOrganization][end]", process.memoryUsage())
+  return result
 }
 
 export const removeOrganizationAuthorization = async (id: string) => {
+  console.log("[MEMORY][serverFunctions/organization/removeOrganizationAuthorization][start]", process.memoryUsage())
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -95,13 +99,16 @@ export const removeOrganizationAuthorization = async (id: string) => {
     return "Aucune organisation trouvée pour l'utilisateur"
   }
 
-  await prismaClient.authorizedOrganization.update({
+  const result = await prismaClient.authorizedOrganization.update({
     where: { id, fromId: user.organization.id, active: true },
     data: { active: false, removedAt: new Date() },
   })
+  console.log("[MEMORY][serverFunctions/organization/removeOrganizationAuthorization][end]", process.memoryUsage())
+  return result
 }
 
 export const updateOrganizationType = async (type: OrganizationType) => {
+  console.log("[MEMORY][serverFunctions/organization/updateOrganizationType][start]", process.memoryUsage())
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -116,13 +123,16 @@ export const updateOrganizationType = async (type: OrganizationType) => {
   if (!user || !user.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
   }
-  await prismaClient.organization.update({
+  const result = await prismaClient.organization.update({
     where: { id: user.organization.id },
     data: { type },
   })
+  console.log("[MEMORY][serverFunctions/organization/updateOrganizationType][end]", process.memoryUsage())
+  return result
 }
 
 export const updateDisplayName = async (displayName: string) => {
+  console.log("[MEMORY][serverFunctions/organization/updateDisplayName][start]", process.memoryUsage())
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -137,8 +147,10 @@ export const updateDisplayName = async (displayName: string) => {
   if (!user || !user.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
   }
-  await prismaClient.organization.update({
+  const result = await prismaClient.organization.update({
     where: { id: user.organization.id },
     data: { displayName },
   })
+  console.log("[MEMORY][serverFunctions/organization/updateDisplayName][end]", process.memoryUsage())
+  return result
 }

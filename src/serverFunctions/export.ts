@@ -10,6 +10,7 @@ import { organizationTypesAllowedToDeclare } from "../utils/organization/canDecl
 import { getUserOrganizationType } from "../db/user"
 
 export const exportScores = async (brand?: string) => {
+  console.log("[MEMORY][serverFunctions/export/exportScores][start]", process.memoryUsage())
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -26,13 +27,16 @@ export const exportScores = async (brand?: string) => {
 
   const headers = ["Référence interne", "Score"]
 
-  return stringify(data, {
+  const result = stringify(data, {
     header: true,
     columns: headers,
   })
+  console.log("[MEMORY][serverFunctions/export/exportScores][end]", process.memoryUsage())
+  return result
 }
 
 export const exportUpload = async (uploadId: string) => {
+  console.log("[MEMORY][serverFunctions/export/exportUpload][start]", process.memoryUsage())
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -74,16 +78,21 @@ export const exportUpload = async (uploadId: string) => {
     const worksheet = XLSX.utils.aoa_to_sheet([headers, ...data])
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, "Export")
-    return Buffer.from(XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }))
+    const result = Buffer.from(XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }))
+    console.log("[MEMORY][serverFunctions/export/exportUpload][end]", process.memoryUsage())
+    return result
   }
 
-  return stringify(data, {
+  const result = stringify(data, {
     header: true,
     columns: headers,
   })
+  console.log("[MEMORY][serverFunctions/export/exportUpload][end]", process.memoryUsage())
+  return result
 }
 
 export const exportProducts = async (brand?: string) => {
+  console.log("[MEMORY][serverFunctions/export/exportProducts][start]", process.memoryUsage())
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -94,5 +103,7 @@ export const exportProducts = async (brand?: string) => {
     return "Vous n'êtes pas autorisé à exporter ces produits"
   }
 
-  return createExport(session.user.id, brand)
+  const result = await createExport(session.user.id, brand)
+  console.log("[MEMORY][serverFunctions/export/exportProducts][end]", process.memoryUsage())
+  return result
 }

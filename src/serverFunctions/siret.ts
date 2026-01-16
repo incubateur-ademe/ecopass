@@ -4,6 +4,7 @@ import axios from "axios"
 import { SiretAPI } from "../types/Siret"
 
 export const getSiretInfo = async (siret: string) => {
+  console.log("[MEMORY][serverFunctions/siret/getSiretInfo][start]", process.memoryUsage())
   try {
     const result = await axios.get<SiretAPI>(`https://api.insee.fr/api-sirene/3.11/siret/${siret}`, {
       headers: { "X-INSEE-Api-Key-Integration": process.env.INSEE_API_KEY },
@@ -17,9 +18,11 @@ export const getSiretInfo = async (siret: string) => {
       result.data.etablissement.uniteLegale.denominationUniteLegale = `${result.data.etablissement.uniteLegale.prenom1UniteLegale} ${result.data.etablissement.uniteLegale.nomUniteLegale}`
     }
 
+    console.log("[MEMORY][serverFunctions/siret/getSiretInfo][end]", process.memoryUsage())
     return result.data
   } catch (e) {
     console.error("Error fetching SIRET information:", e)
+    console.log("[MEMORY][serverFunctions/siret/getSiretInfo][end]", process.memoryUsage())
     return null
   }
 }

@@ -7,12 +7,15 @@ export const metadata: Metadata = {
 }
 
 const MentionsLegalesPage = () => {
-  return (
+  console.log("[MEMORY][mentions-legales/page][start]", process.memoryUsage())
+  const result = (
     <>
       <StartDsfrOnHydration />
       <MentionsLegales />
     </>
   )
+  console.log("[MEMORY][mentions-legales/page][end]", process.memoryUsage())
+  return result
 }
 
 export default MentionsLegalesPage
