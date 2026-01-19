@@ -26,26 +26,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const BrandPage = async ({ params, searchParams }: Props) => {
-  console.log("[MEMORY][marques/[brandId]/page][start]", process.memoryUsage())
   const { brandId } = await params
   const { page } = await searchParams
   const currentPage = parseInt(page || "1", 10)
 
   const brandData = await getBrandWithProducts(brandId)
   if (!brandData) {
-    console.log("[MEMORY][marques/[brandId]/page][end]", process.memoryUsage())
     return notFound()
   }
 
   const products = await getPublicProductsByBrandId(brandId, currentPage)
-  const result = (
+  return (
     <>
       <StartDsfrOnHydration />
       <BrandDetail brand={brandData} products={products} currentPage={currentPage} />
     </>
   )
-  console.log("[MEMORY][marques/[brandId]/page][end]", process.memoryUsage())
-  return result
 }
 
 export default BrandPage

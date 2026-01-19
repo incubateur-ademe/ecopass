@@ -9,22 +9,18 @@ export const metadata: Metadata = {
 }
 
 const OrganizationTypePage = async () => {
-  console.log("[MEMORY][organisation/type/page][start]", process.memoryUsage())
   const session = await tryAndGetSession(true, false)
   const organization = await getUserOrganization(session.user.id)
-  let result
   if (!organization) {
-    result = <p>Vous ne faites parti d'aucune organisation</p>
-  } else {
-    result = (
-      <>
-        <StartDsfrOnHydration />
-        <OrganizationType organization={organization} />
-      </>
-    )
+    return <p>Vous ne faites parti d'aucune organisation</p>
   }
-  console.log("[MEMORY][organisation/type/page][end]", process.memoryUsage())
-  return result
+
+  return (
+    <>
+      <StartDsfrOnHydration />
+      <OrganizationType organization={organization} />
+    </>
+  )
 }
 
 export default OrganizationTypePage

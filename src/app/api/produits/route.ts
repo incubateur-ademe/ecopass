@@ -5,7 +5,6 @@ import { getOrganizationProductsByUserIdAndBrand } from "../../../db/product"
 import { handleProductPOST } from "../../../utils/api/products"
 
 export async function GET(req: Request) {
-  console.log("[MEMORY][produits/GET][start]", process.memoryUsage())
   const api = await getApiUser(req.headers)
   if (!api || !api.user || !api.user.organization) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -30,14 +29,9 @@ export async function GET(req: Request) {
     validationResult.data.brand,
   )
 
-  const result = NextResponse.json(products)
-  console.log("[MEMORY][produits/GET][end]", process.memoryUsage())
-  return result
+  return NextResponse.json(products)
 }
 
 export async function POST(req: Request) {
-  console.log("[MEMORY][produits/POST][start]", process.memoryUsage())
-  const result = await handleProductPOST(req)
-  console.log("[MEMORY][produits/POST][end]", process.memoryUsage())
-  return result
+  return handleProductPOST(req)
 }

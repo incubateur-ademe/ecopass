@@ -20,12 +20,11 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  console.log("[MEMORY][layout][start]", process.memoryUsage())
   const lang = "fr"
 
   const session = await auth()
   const type = await getUserOrganizationType(session?.user.id)
-  const result = (
+  return (
     <html lang={lang} {...getHtmlAttributes({ lang })}>
       <head>
         <DsfrHead preloadFonts={["Marianne-Regular", "Marianne-Medium", "Marianne-Bold"]} />
@@ -45,6 +44,4 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       </body>
     </html>
   )
-  console.log("[MEMORY][layout][end]", process.memoryUsage())
-  return result
 }
