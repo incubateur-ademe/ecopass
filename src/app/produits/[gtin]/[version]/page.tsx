@@ -25,14 +25,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const OldProductPage = async (props: Props) => {
-  console.log("[MEMORY][produits/[gtin]/[version]/page][start]", process.memoryUsage())
   const session = await tryAndGetSession(false, false)
   const params = await props.params
   const [product, oldProduct] = await Promise.all([
     getProductWithScore(params.gtin),
     getOldProductWithScore(params.gtin, params.version),
   ])
-  const result = (
+
+  return (
     <>
       <StartDsfrOnHydration />
       {oldProduct ? (
@@ -47,8 +47,6 @@ const OldProductPage = async (props: Props) => {
       )}
     </>
   )
-  console.log("[MEMORY][produits/[gtin]/[version]/page][end]", process.memoryUsage())
-  return result
 }
 
 export default OldProductPage

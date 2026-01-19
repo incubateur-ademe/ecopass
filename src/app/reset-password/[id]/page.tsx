@@ -8,22 +8,18 @@ type Props = {
 }
 
 const ResetPasswordPage = async (props: Props) => {
-  console.log("[MEMORY][reset-password/[id]/page][start]", process.memoryUsage())
   const session = await auth()
   if (session) {
-    console.log("[MEMORY][reset-password/[id]/page][end]", process.memoryUsage())
     redirect("/")
   }
   const params = await props.params
 
-  const result = (
+  return (
     <>
       <StartDsfrOnHydration />
       <ResetPassword token={params.id} />
     </>
   )
-  console.log("[MEMORY][reset-password/[id]/page][end]", process.memoryUsage())
-  return result
 }
 
 export default ResetPasswordPage

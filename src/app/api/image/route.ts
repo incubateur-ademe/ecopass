@@ -5,7 +5,6 @@ import { getProductWithScore } from "../../../db/product"
 
 export async function GET(request: NextRequest) {
   try {
-    console.log("[MEMORY][image/GET][start]", process.memoryUsage())
     const { searchParams } = new URL(request.url)
 
     const validationResult = imageValidation.safeParse({
@@ -44,15 +43,13 @@ export async function GET(request: NextRequest) {
     }
 
     const svgContent = getSVG(productScore, productStandardized)
-    const result = new NextResponse(svgContent, {
+    return new NextResponse(svgContent, {
       status: 200,
       headers: {
         "Content-Type": "image/svg+xml",
         "Cache-Control": "public, max-age=2592000",
       },
     })
-    console.log("[MEMORY][image/GET][end]", process.memoryUsage())
-    return result
   } catch (error) {
     console.error("Erreur lors de la génération du SVG:", error)
     return NextResponse.json({ error: "Erreur interne du serveur" }, { status: 500 })

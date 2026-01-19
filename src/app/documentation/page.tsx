@@ -7,15 +7,12 @@ export const metadata: Metadata = {
 }
 
 const DocumentationPage = () => {
-  console.log("[MEMORY][documentation/page][start]", process.memoryUsage())
-  const result = (
+  return (
     <>
       <StartDsfrOnHydration />
       <Documentation />
     </>
   )
-  console.log("[MEMORY][documentation/page][end]", process.memoryUsage())
-  return result
 }
 
 export default DocumentationPage

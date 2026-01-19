@@ -53,7 +53,6 @@ const scanFileContent = async (buffer: Buffer): Promise<boolean> => {
 }
 
 export const uploadFile = async (file: File) => {
-  console.log("[MEMORY][serverFunctions/upload/uploadFile][start]", process.memoryUsage())
   const session = await auth()
   if (!session || !session.user) {
     return "Veuillez vous reconnecter et réessayer"
@@ -93,11 +92,9 @@ export const uploadFile = async (file: File) => {
     await uploadFileToS3(id, zip, "upload")
     await createUpload(session.user.id, UploadType.FILE, sanitizedFileName, id)
 
-    console.log("[MEMORY][serverFunctions/upload/uploadFile][end]", process.memoryUsage())
     return null
   } catch (error) {
     console.error("Error during upload:", error)
-    console.log("[MEMORY][serverFunctions/upload/uploadFile][end]", process.memoryUsage())
     return "Erreur inconnue lors du traitement du fichier"
   }
 }
