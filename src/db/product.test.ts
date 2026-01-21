@@ -849,5 +849,121 @@ describe("Product DB integration", () => {
       expect(newProduct).not.toBeNull()
       expect(newProduct?.hash).toBe(oldHash)
     })
+
+    it("sets all products with any duplicated GTINs in batch to error", async () => {
+      const gtinA = "5555555555555"
+      const gtinB = "6666666666666"
+      const gtinC = "7777777777777"
+      const gtinD = "8888888888888"
+      const productId1 = uuid()
+      const productId2 = uuid()
+      const productId3 = uuid()
+      const productId4 = uuid()
+      const encrypted = encryptProductFields({
+        product: ProductCategory.Pull,
+        business: Business.Small,
+        numberOfReferences: 1000,
+        mass: 1,
+        price: 50,
+        materials: [],
+        trims: [],
+        countryDyeing: "FR",
+        countryFabric: "FR",
+        countryMaking: "FR",
+      } satisfies ProductInformationAPI)
+
+      await createProducts({
+        products: [
+          {
+            error: null,
+            hash: "hash-1",
+            id: productId1,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 1,
+            status: Status.Pending,
+            gtins: [gtinA, gtinB],
+            internalReference: "DUP-REF-1",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 1000.0,
+            score: null,
+            standardized: null,
+          },
+          {
+            error: null,
+            hash: "hash-2",
+            id: productId2,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 2,
+            status: Status.Pending,
+            gtins: [gtinB, gtinC],
+            internalReference: "DUP-REF-2",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 1000.0,
+            score: null,
+            standardized: null,
+          },
+          {
+            error: null,
+            hash: "hash-3",
+            id: productId3,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 3,
+            status: Status.Pending,
+            gtins: [gtinD],
+            internalReference: "UNIQ-REF-3",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 1000.0,
+            score: null,
+            standardized: null,
+          },
+          {
+            error: null,
+            hash: "hash-4",
+            id: productId4,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 4,
+            status: Status.Pending,
+            gtins: [gtinC],
+            internalReference: "DUP-REF-4",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 1000.0,
+            score: null,
+            standardized: null,
+          },
+        ],
+        informations: [
+          { id: "info-1", productId: productId1, ...encrypted.product, emptyTrims: false },
+          { id: "info-2", productId: productId2, ...encrypted.product, emptyTrims: false },
+          { id: "info-3", productId: productId3, ...encrypted.product, emptyTrims: false },
+          { id: "info-4", productId: productId4, ...encrypted.product, emptyTrims: false },
+        ],
+        materials: [],
+        accessories: [],
+      })
+
+      const prod1 = await prismaTest.product.findUnique({ where: { id: productId1 } })
+      expect(prod1?.status).toBe(Status.Error)
+      expect(prod1?.error).toBe("GTIN dupliqué dans le fichier")
+
+      const prod2 = await prismaTest.product.findUnique({ where: { id: productId2 } })
+      expect(prod2?.status).toBe(Status.Error)
+      expect(prod2?.error).toBe("GTIN dupliqué dans le fichier")
+
+      const prod3 = await prismaTest.product.findUnique({ where: { id: productId3 } })
+      expect(prod3?.status).toBe(Status.Pending)
+      expect(prod3?.error).toBe(null)
+
+      const prod4 = await prismaTest.product.findUnique({ where: { id: productId4 } })
+      expect(prod4?.status).toBe(Status.Error)
+      expect(prod4?.error).toBe("GTIN dupliqué dans le fichier")
+    })
   })
 })
