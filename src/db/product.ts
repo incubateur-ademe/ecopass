@@ -17,12 +17,36 @@ export const createProducts = async ({
   accessories: Accessory[]
   informations: (ProductInformation & { materials: undefined; accessories: undefined })[]
 }) => {
+  const gtinToProductIds = new Map<string, string[]>()
+  products.forEach((product) =>
+    product.gtins.forEach((gtin) => {
+      if (!gtinToProductIds.has(gtin)) {
+        gtinToProductIds.set(gtin, [])
+      }
+      gtinToProductIds.get(gtin)!.push(product.id)
+    }),
+  )
+
+  const duplicatedProductIds = new Set<string>()
+  for (const ids of gtinToProductIds.values()) {
+    if (ids.length > 1) {
+      ids.forEach((id) => duplicatedProductIds.add(id))
+    }
+  }
+
   return prismaClient.$transaction(
     async (transaction) => {
       const productsToCreate = []
       const ids = new Set<string>()
 
       for (const product of products) {
+        if (duplicatedProductIds.has(product.id)) {
+          await transaction.product.create({
+            data: { ...product, status: Status.Error, error: "GTIN dupliqué dans le fichier" },
+          })
+          continue
+        }
+
         const lastVersion = await getLastProductByGtin(product.gtins[0])
 
         if (lastVersion && lastVersion.hash === product.hash) {
