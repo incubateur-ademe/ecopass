@@ -1,5 +1,4 @@
 import Badge from "@codegouvfr/react-dsfr/Badge"
-import Button from "@codegouvfr/react-dsfr/Button"
 import Image from "next/image"
 import Table from "../Table/Table"
 import { Products } from "../../db/product"
@@ -9,6 +8,7 @@ import { productMapping } from "../../utils/ecobalyse/mappings"
 import styles from "./BrandProductsTable.module.css"
 import { BATCH_CATEGORY } from "../../utils/types/productCategory"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
+import ProductLink from "../Product/ProductLink"
 
 const BrandProductsTable = ({
   products,
@@ -42,13 +42,7 @@ const BrandProductsTable = ({
       ) : (
         ""
       ),
-      <Button
-        key={`${product.id}-cta`}
-        size='small'
-        priority='secondary'
-        linkProps={{ href: `/produits/${product.gtins[0]}` }}>
-        Voir le détail
-      </Button>,
+      <ProductLink product={product} brandId={brandId} key={`${product.id}-cta`} />,
     ]
   })
 

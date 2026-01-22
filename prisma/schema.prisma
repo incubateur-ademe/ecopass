@@ -353,6 +353,5 @@ model UploadProduct {
   product   Product @relation(fields: [productId], references: [id])
   productId String  @map("product_id")
 
-  @@unique([uploadId, productId])
   @@map("upload_products")
 }

@@ -1,5 +1,5 @@
 "use client"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import Fuse from "fuse.js"
 import Table from "../Table/Table"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
@@ -12,10 +12,29 @@ import styles from "./BrandsList.module.css"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import Link from "next/link"
 import { BrandWithStats } from "../../db/brands"
+import { useRouter } from "next/navigation"
 
-const BrandsList = ({ brands }: { brands: BrandWithStats[] }) => {
-  const [search, setSearch] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
+const getSearchParams = (search: string, newPage?: number) => {
+  const params = new URLSearchParams()
+  if (search.trim()) {
+    params.set("search", search.trim())
+  }
+  params.set("page", newPage ? newPage.toString() : "1")
+  return params.toString()
+}
+
+const BrandsList = ({
+  brands,
+  defaultSearch,
+  defaultPage,
+}: {
+  brands: BrandWithStats[]
+  defaultSearch: string
+  defaultPage: number
+}) => {
+  const router = useRouter()
+  const [search, setSearch] = useState(defaultSearch)
+  const [currentPage, setCurrentPage] = useState(defaultPage)
   const itemsPerPage = 20
 
   const fuse = useMemo(
@@ -36,6 +55,10 @@ const BrandsList = ({ brands }: { brands: BrandWithStats[] }) => {
 
   const totalPages = Math.ceil(filteredBrands.length / itemsPerPage)
   const paginatedBrands = filteredBrands.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
+  useEffect(() => {
+    router.push(`/marques?${getSearchParams(search, currentPage)}`)
+  }, [search, currentPage, router])
 
   const handleSearchChange = (value: string) => {
     setSearch(value)
@@ -85,7 +108,10 @@ const BrandsList = ({ brands }: { brands: BrandWithStats[] }) => {
               noCaption
               headers={["Marques", "Nombre de produits déclarés", "Date de la dernière déclaration"]}
               data={paginatedBrands.map((brand) => [
-                <Link className={styles.link} href={`/marques/${brand.id}`} key={brand.id}>
+                <Link
+                  className={styles.link}
+                  href={`/marques/${brand.id}?${getSearchParams(search, currentPage)}`}
+                  key={brand.id}>
                   {brand.name} <span className='fr-icon-arrow-right-line' aria-hidden='true'></span>
                 </Link>,
                 <Badge key={brand.id} severity='info' noIcon>
