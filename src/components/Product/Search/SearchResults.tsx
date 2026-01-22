@@ -1,4 +1,3 @@
-import Button from "@codegouvfr/react-dsfr/Button"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import classNames from "classnames"
@@ -11,6 +10,7 @@ import { productMapping } from "../../../utils/ecobalyse/mappings"
 import { ProductCategory } from "../../../types/Product"
 import { formatNumber } from "../../../services/format"
 import Table from "../../Table/Table"
+import ProductLink from "../ProductLink"
 
 const SearchResults = ({
   products,
@@ -55,14 +55,7 @@ const SearchResults = ({
             <Badge severity='info' noIcon key={product.id}>
               {product.score ? formatNumber(product.score) : "-"}
             </Badge>,
-            <Button
-              priority='secondary'
-              size='small'
-              linkProps={{ href: `/produits/${product.gtins[0]}` }}
-              key={product.id}
-              className={styles.displayButton}>
-              Voir le détail
-            </Button>,
+            <ProductLink product={product} key={product.id} />,
           ])}
         />
       </div>

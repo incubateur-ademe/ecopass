@@ -6,10 +6,10 @@ import Table from "../Table/Table"
 import { getProductHistory } from "../../serverFunctions/product"
 import LoadingButton from "../Button/LoadingButton"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
-import Button from "@codegouvfr/react-dsfr/Button"
 import Badge from "@codegouvfr/react-dsfr/Badge"
+import ProductLink from "./ProductLink"
 
-const ProductHistory = ({ gtin }: { gtin: string }) => {
+const ProductHistory = ({ brandId, gtin }: { brandId?: string; gtin: string }) => {
   const [history, setHistory] = useState<ProductWithScore[] | null>(null)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -51,13 +51,7 @@ const ProductHistory = ({ gtin }: { gtin: string }) => {
           <Badge severity='info' noIcon key={version.id}>
             {version.score ? formatNumber(version.score) : "-"}
           </Badge>,
-          <Button
-            linkProps={{ href: `/produits/${version.gtins[0]}/${version.id}` }}
-            key={version.id}
-            size='small'
-            priority='secondary'>
-            Voir le détail
-          </Button>,
+          <ProductLink product={version} version={version.id} brandId={brandId} key={version.id} />,
         ])}
       />
       {total > 10 && (
