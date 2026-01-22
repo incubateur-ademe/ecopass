@@ -1,7 +1,7 @@
 import classNames from "classnames"
 import { ReactNode } from "react"
 import styles from "./Block.module.css"
-import Link from "next/link"
+import BackLink from "./BackLink"
 
 const Block = ({
   children,
@@ -31,11 +31,7 @@ const Block = ({
           [styles.noMargin]: noMargin,
           [styles.large]: large,
         })}>
-        {backLink && (
-          <Link href={backLink.url} className={styles.backLink}>
-            <span className='fr-icon-arrow-left-line' aria-hidden='true'></span> {backLink.label}
-          </Link>
-        )}
+        {backLink && <BackLink {...backLink} />}
         {children}
       </div>
     </div>

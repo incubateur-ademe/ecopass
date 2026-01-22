@@ -1,7 +1,3 @@
-.displayButton {
-  white-space: nowrap;
-}
-
 .category {
   display: flex;
   gap: 0.5rem;

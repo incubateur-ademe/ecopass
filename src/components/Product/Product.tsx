@@ -20,17 +20,21 @@ const Product = ({
   gtin,
   isPro,
   isOld,
+  brandId,
 }: {
   product: ProductWithScore
   gtin: string
   isPro?: boolean
   isOld?: boolean
+  brandId?: string
 }) => {
   const isBatch = product.informations.length > 1
   const totalScore = computeBatchScore(product)
   return (
     <>
-      <Block home backLink={{ url: "/recherche", label: "Consulter une autre fiche produit" }}>
+      <Block
+        home
+        backLink={{ url: brandId ? `/marques/${brandId}` : "/recherche", label: "Consulter une autre fiche produit" }}>
         {isPro && (
           <Badge severity={isOld ? "warning" : "success"} className='fr-mb-4w'>
             {isOld ? "Déclaration obsolète" : "Déclaration validée"}
@@ -90,7 +94,7 @@ const Product = ({
       </Block>
       <Block>
         {isPro ? <ProductScoreImpacts score={totalScore} /> : <PublicProductScoreImpact score={totalScore} />}
-        <ProductHistory gtin={gtin} />
+        <ProductHistory gtin={gtin} brandId={brandId} />
       </Block>
       {!isPro && (
         <Block secondary>

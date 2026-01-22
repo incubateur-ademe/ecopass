@@ -3,7 +3,6 @@ import { getOrganizationProductsByUserIdAndBrand } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
-import Button from "@codegouvfr/react-dsfr/Button"
 import Link from "next/link"
 import DownloadScores from "./DownloadScores"
 import { BATCH_CATEGORY } from "../../utils/types/productCategory"
@@ -15,6 +14,7 @@ import { ProductCategory } from "../../types/Product"
 import styles from "./Search/SearchResults.module.css"
 import { formatDate, formatNumber } from "../../services/format"
 import Table from "../Table/Table"
+import ProductLink from "./ProductLink"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
@@ -62,15 +62,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
               {product.score ? formatNumber(product.score) : "-"}
             </Badge>,
             formatDate(product.createdAt),
-            <Button
-              priority='secondary'
-              size='small'
-              iconId='fr-icon-arrow-right-line'
-              linkProps={{ href: `/produits/${product.gtins[0]}` }}
-              key={`btn-${product.id}`}
-              className={styles.displayButton}>
-              Voir le détail
-            </Button>,
+            <ProductLink product={product} key={`btn-${product.id}`} />,
           ])}
         />
         {productsCount > 10 && (
