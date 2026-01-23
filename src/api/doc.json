@@ -400,8 +400,6 @@
                         "etf": 172.27,
                         "fru": 44.07,
                         "fwe": 0.0007,
-                        "htc": 1.25e-9,
-                        "htn": 1.25e-7,
                         "ior": 8.66,
                         "ldu": 48.77,
                         "mru": 0.0014,
@@ -1334,8 +1332,6 @@
             "etf": 172.2658976359552,
             "fru": 44.07360301333709,
             "fwe": 0.0007120915634146073,
-            "htc": 1.253754933395389e-9,
-            "htn": 1.254026821447234e-7,
             "ior": 8.660045224543365,
             "ldu": 48.76698455485243,
             "mru": 0.001361737365871345,
@@ -1395,14 +1391,6 @@
           "fwe": {
             "type": "number",
             "description": "Eutrophisation eaux douces (en points)"
-          },
-          "htc": {
-            "type": "number",
-            "description": "Toxicité humaine - cancer, corrigée (en points)"
-          },
-          "htn": {
-            "type": "number",
-            "description": "Toxicité humaine - non cancer, corrigée (en points)"
           },
           "ior": {
             "type": "number",

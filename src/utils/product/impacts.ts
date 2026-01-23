@@ -4,8 +4,6 @@ export const ponderations = {
   etf: { label: "Écotoxicité de l'eau douce, corrigée", base: 98120, ponderation: 0.2106 },
   fru: { label: "Utilisation de ressources fossiles", base: 65004.3, ponderation: 0.0659 },
   fwe: { label: "Eutrophisation eaux douces", base: 1.60685, ponderation: 0.0222 },
-  htc: { label: "Toxicité humaine - cancer, corrigée", base: 0.0000172529, ponderation: 0 },
-  htn: { label: "Toxicité humaine - non-cancer, corrigée", base: 0.000128736, ponderation: 0 },
   ior: { label: "Radiations ionisantes", base: 4220.16, ponderation: 0.0397 },
   ldu: { label: "Utilisation des sols", base: 819498, ponderation: 0.0629 },
   mru: {
@@ -34,14 +32,25 @@ export const impactCategories = {
       },
     ],
   },
-  qualiteAir: {
-    icon: "quality",
-    label: "Qualité de l'air",
+  ressources: {
+    icon: "ressources",
+    label: "Ressources",
     impacts: [
       {
-        key: "pma" as const,
+        key: "ldu" as const,
         definition:
-          "Indicateur correspondant aux effets négatifs sur la santé humaine causés par les émissions de particules (PM) et de leurs précurseurs (NOx, SOx, NH3).",
+          "Mesure de l'évolution de la qualité des sols (production biotique, résistance à l'érosion, filtration mécanique).",
+      },
+      {
+        key: "fru" as const,
+        definition:
+          "Indicateur de l'épuisement des ressources naturelles en combustibles fossiles (gaz, charbon, pétrole).",
+      },
+      { key: "mru" as const, definition: "Indicateur de l'épuisement des ressources naturelles non fossiles." },
+      {
+        key: "wtu" as const,
+        definition:
+          "Indicateur de la consommation d'eau et son épuisement dans certaines régions. À ce stade, elle n'est prise en compte que pour l'étape “Matière & Filature”.",
       },
     ],
   },
@@ -91,25 +100,14 @@ export const impactCategories = {
       },
     ],
   },
-  ressources: {
-    icon: "ressources",
-    label: "Ressources",
+  qualiteAir: {
+    icon: "quality",
+    label: "Qualité de l'air",
     impacts: [
       {
-        key: "ldu" as const,
+        key: "pma" as const,
         definition:
-          "Mesure de l'évolution de la qualité des sols (production biotique, résistance à l'érosion, filtration mécanique).",
-      },
-      {
-        key: "fru" as const,
-        definition:
-          "Indicateur de l'épuisement des ressources naturelles en combustibles fossiles (gaz, charbon, pétrole).",
-      },
-      { key: "mru" as const, definition: "Indicateur de l'épuisement des ressources naturelles non fossiles." },
-      {
-        key: "wtu" as const,
-        definition:
-          "Indicateur de la consommation d'eau et son épuisement dans certaines régions. À ce stade, elle n'est prise en compte que pour l'étape “Matière & Filature”.",
+          "Indicateur correspondant aux effets négatifs sur la santé humaine causés par les émissions de particules (PM) et de leurs précurseurs (NOx, SOx, NH3).",
       },
     ],
   },
@@ -119,16 +117,6 @@ export const impactCategories = {
     impacts: [
       { key: "microfibers" as const, definition: "" },
       { key: "outOfEuropeEOL" as const, definition: "" },
-      {
-        key: "htc" as const,
-        definition:
-          "Indicateur de toxicité  cancérigène pour l'homme. Cet indicateur se mesure en Comparative Toxic  Unit for humans (CTUh). Cet indicateur est corrigé.",
-      },
-      {
-        key: "htn" as const,
-        definition:
-          "Indicateur de toxicité non  cancérigène pour l'homme. Cet indicateur se mesure en Comparative Toxic  Unit for humans (CTUh). Cet indicateur est corrigé.",
-      },
     ],
   },
 }
