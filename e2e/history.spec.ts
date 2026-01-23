@@ -3,6 +3,7 @@ import { login } from "./utils/login"
 import { exec } from "child_process"
 import { promisify } from "util"
 import { formatDate } from "../src/services/format"
+import { updateManyProducts } from "./utils/product"
 
 const execAsync = promisify(exec)
 
@@ -45,6 +46,29 @@ test("shows product history", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(201)
+  await updateManyProducts(
+    {
+      createdAt: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    },
+    { createdAt: new Date("2023-12-31") },
+  )
+
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, mass: undefined },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(400)
+
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: product,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(208)
+
   response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, mass: 0.5 },
     headers: {
@@ -78,7 +102,7 @@ test("shows product history", async ({ page }) => {
 
   await expect(page.locator("#contenu")).toContainText("Déclaration obsolète")
   await expect(page.getByTestId("product-details")).toHaveText(
-    `Code-barres : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : 7.0.0`,
+    `Code-barres : 1234567890128Déposé le : 31/12/2023Par : EmmausVersion Ecobalyse : 7.0.0`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
     "Coût environnemental : 1755 points d'impact, 1032 pour 100g1 032 pts/100g1 755Télécharger le SVGcoût pour 100g : 1 032 pointscoefficient de durabilité : 0.67 points?",
