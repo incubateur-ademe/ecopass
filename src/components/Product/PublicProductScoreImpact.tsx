@@ -27,7 +27,8 @@ const PublicProductScoreImpact = ({
         <br />
         <br />
         Le tableau ci-dessous, issu des méthodes d’empreinte environnementale des produits (EEP) et d’empreinte
-        environnementale des organisations (EEO) vous détaille ces impacts sur 18 catégories.
+        environnementale des organisations (EEO) vous détaille ces impacts sur{" "}
+        {Object.values(impactCategories).reduce((acc, category) => acc + category.impacts.length, 0)} catégories.
       </Highlight>
 
       {Object.entries(impactCategories).map(([categoryKey, category]) => {

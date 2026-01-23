@@ -175,7 +175,34 @@ const productWithScoreSelect = {
   createdAt: true,
   score: true,
   standardized: true,
-  informations: { select: { categorySlug: true, score: true } },
+  informations: {
+    select: {
+      categorySlug: true,
+      score: {
+        select: {
+          score: true,
+          standardized: true,
+          durability: true,
+          acd: true,
+          cch: true,
+          etf: true,
+          fru: true,
+          fwe: true,
+          ior: true,
+          ldu: true,
+          mru: true,
+          ozd: true,
+          pco: true,
+          pma: true,
+          swe: true,
+          tre: true,
+          wtu: true,
+          microfibers: true,
+          outOfEuropeEOL: true,
+        },
+      },
+    },
+  },
   upload: {
     select: {
       version: true,
