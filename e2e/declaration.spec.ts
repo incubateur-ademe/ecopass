@@ -3,6 +3,8 @@ import { login } from "./utils/login"
 import { exec } from "child_process"
 import { promisify } from "util"
 import { retry } from "./utils/retry"
+import { updateManyProducts } from "./utils/product"
+import { Status } from "@prisma/enums"
 
 const execAsync = promisify(exec)
 
@@ -10,8 +12,53 @@ test.beforeEach(async () => {
   await execAsync("npx prisma db seed")
 })
 
+const product = {
+  internalReference: "REF-100",
+  brandId: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
+  mass: 0.17,
+  countryDyeing: "IN",
+  countryFabric: "CN",
+  countryMaking: "MM",
+  materials: [
+    {
+      id: "ei-coton",
+      share: 1,
+      country: "FR",
+    },
+  ],
+  product: "tshirt",
+}
+
 test("declare my products", async ({ page }) => {
   await login(page)
+
+  // On commence par créer un vieux produit et un nouveau
+  await page.getByRole("link", { name: "API", exact: true }).click()
+
+  await page.getByRole("textbox", { name: "Nom de la clé API" }).fill("Ma clé")
+  await page.getByRole("button", { name: "Générer une nouvelle clé d'API" }).click()
+  const apiKey = await page.getByTestId("new-api-key").textContent()
+
+  let response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, gtins: ["1234567890128"] },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(201)
+  // On modifie manuellement la date du premier produit pour simuler le passage du temps
+  await updateManyProducts(
+    { internalReference: "REF-100", status: Status.Done },
+    { createdAt: new Date(Date.now() - 94 * 24 * 60 * 60 * 1000) },
+  )
+
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, gtins: ["1234567891125"] },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(201)
 
   await page.getByRole("link", { name: "Déclarations" }).first().click()
   await expect(page).toHaveURL(/.*\/declaration/)
@@ -40,7 +87,7 @@ test("declare my products", async ({ page }) => {
         "À corriger",
       )
       await expect(page.getByTestId("uploads-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
-        "6/19",
+        "7/21",
       )
       await expect(
         page.getByTestId("uploads-table").locator("table tbody tr").nth(0).locator("td").nth(4).getByRole("button"),
@@ -67,15 +114,15 @@ test("declare my products", async ({ page }) => {
   const csvContent = fs.readFileSync(downloadPath!, "utf-8")
 
   expect(csvContent).toEqual(
-    `Référence interne,Score,Erreur\n2234567899991,,"Marque invalide. Voici la liste de vos marques : ""26ed7820-ebca-4235-b1d3-dbeab02b1768"", ""175570b3-59e4-40b4-89be-08a185685f78"", ""6abd8a2b-8fee-4c54-8d23-17e1f8c27b56"""\n2234567899984,,"Catégorie de produit invalide, Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide, Origine de filature invalide, Type d'impression invalide, Type de matière invalide, Type de matière invalide"\nREF-123,2318,\n3234567899976,,Origine de confection invalide\nREF-124,6739,\n4234567891009,,"Le score doit être un nombre positif, La part de transport aérien doit être un pourcentage, Le poids est obligatoire, Le nombre de références doit être un nombre, Le prix doit être un nombre, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être un pourcentage, La part de la matière doit être un pourcentage, La quantité de l'accessoire doit être un nombre"\n5234567891008,,"Remanufacturé doit valoir 'Oui' ou 'Non', Délavage doit valoir 'Oui' ou 'Non'"\n7234567891006,,"Origine de confection invalide, La somme des parts de matières doit être égale à 100%"\n6234567891007,,Origine de confection invalide\n8234567891005,,Le score déclaré (2221) ne correspond pas au score calculé (2318.326247789541)\nREF-125,1290,\n9234567891004,,"La masse doit être supérieure à 0,01 kg, Origine de confection invalide"\n1134567891005,,"La part de transport aérien doit être inférieure à 100%, Le nombre de références doit être inférieur à 999 999, Origine de confection invalide, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être inférieure à 100%, La somme des parts de matières doit être égale à 100%"\nREF-126,2793,\n3134567891003,,L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé\nREF-127,2762,\nREF-128,2760,\n4234567899944-1,,GTIN dupliqué dans le fichier\n4234567899944-2,,GTIN dupliqué dans le fichier\n`,
+    `Référence interne,Score,Erreur\n2234567899991,,"Marque invalide. Voici la liste de vos marques : ""26ed7820-ebca-4235-b1d3-dbeab02b1768"", ""175570b3-59e4-40b4-89be-08a185685f78"", ""6abd8a2b-8fee-4c54-8d23-17e1f8c27b56"""\n2234567899984,,"Catégorie de produit invalide, Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide, Origine de filature invalide, Type d'impression invalide, Type de matière invalide, Type de matière invalide"\nREF-123,2318,\n3234567899976,,Origine de confection invalide\nREF-124,6739,\n4234567891009,,"Le score doit être un nombre positif, La part de transport aérien doit être un pourcentage, Le poids est obligatoire, Le nombre de références doit être un nombre, Le prix doit être un nombre, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être un pourcentage, La part de la matière doit être un pourcentage, La quantité de l'accessoire doit être un nombre"\n5234567891008,,"Remanufacturé doit valoir 'Oui' ou 'Non', Délavage doit valoir 'Oui' ou 'Non'"\n7234567891006,,"Origine de confection invalide, La somme des parts de matières doit être égale à 100%"\n6234567891007,,Origine de confection invalide\n8234567891005,,Le score déclaré (2221) ne correspond pas au score calculé (2318.326247789541)\nREF-125,1290,\n9234567891004,,"La masse doit être supérieure à 0,01 kg, Origine de confection invalide"\n1134567891005,,"La part de transport aérien doit être inférieure à 100%, Le nombre de références doit être inférieur à 999 999, Origine de confection invalide, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être inférieure à 100%, La somme des parts de matières doit être égale à 100%"\nREF-126,2793,\n3134567891003,,L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé\nREF-127,2762,\nREF-128,2760,\n4234567899944-1,,GTIN dupliqué dans le fichier\n4234567899944-2,,GTIN dupliqué dans le fichier\nREF-129,2760,\n1234567891125,,Un produit avec le même GTIN a été déclaré trop récemment\n`,
   )
 
   await page.getByRole("link", { name: "Produits déclarés" }).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(6)
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(8)
   await expect(page.locator("#contenu")).toContainText("Vous avez déclaré des produits sur 2 marques différentes.")
-  await expect(page.locator("#contenu")).toContainText("Vous avez 6 produits déclarés.")
+  await expect(page.locator("#contenu")).toContainText("Vous avez 8 produits déclarés.")
 
   await page.getByLabel("Choisir une marque").selectOption({ value: "26ed7820-ebca-4235-b1d3-dbeab02b1768" })
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)

@@ -9,12 +9,12 @@ import {
   ProductInformationAPI,
   ProductMetadataAPI,
 } from "../../services/validation/api"
-import { getLastProductByGtin } from "../../db/product"
-import { hashProductAPI } from "../encryption/hash"
 import { getAuthorizedBrands } from "../organization/brands"
 import { scoreIsValid } from "../validation/score"
 import { organizationTypesAllowedToDeclare } from "../organization/canDeclare"
 import { organizationTypes } from "../organization/types"
+import { checkOldProduct, ProductCheckResult } from "../../services/validation/oldProduct"
+import { hashProduct } from "../encryption/hash"
 
 export async function handleProductPOST(req: Request, batch?: boolean) {
   try {
@@ -102,11 +102,18 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
       informations = [productValidation.data]
     }
 
-    const lastProduct = await getLastProductByGtin(product.gtins[0])
-    const hash = hashProductAPI(product, informations, brands)
+    const hash = hashProduct(product, informations, brands)
+    const oldProductCheck = await checkOldProduct(product.gtins, hash)
 
-    if (lastProduct && lastProduct.hash === hash) {
+    if (oldProductCheck.result === ProductCheckResult.Unchanged) {
       return NextResponse.json({ message: "Le produit existe déjà." }, { status: 208 })
+    }
+
+    if (oldProductCheck.result === ProductCheckResult.TooRecent) {
+      return NextResponse.json(
+        { message: "Un produit avec le même GTIN a été déclaré trop récemment." },
+        { status: 400 },
+      )
     }
 
     const scores = await Promise.all(informations.map((information) => computeEcobalyseScore(information)))

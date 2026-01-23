@@ -11,7 +11,7 @@ import { Status } from "@prisma/enums"
 import { impressions } from "../../types/impression"
 import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
-import { hashParsedProduct } from "../../encryption/hash"
+import { hashProduct } from "../../encryption/hash"
 import { checkHeaders, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
 
@@ -137,14 +137,14 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
       id: productId,
       score: null,
       standardized: null,
-      hash: hashParsedProduct(
+      hash: hashProduct(
         {
           gtins: gtins,
           internalReference: internalReference,
           brandId: brand,
           declaredScore: declaredScore,
         },
-        rawProduct,
+        [rawProduct],
         authorizedBrands,
       ),
       createdAt: now,
