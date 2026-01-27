@@ -24,6 +24,7 @@ const getVisits = async () => {
       },
     )
     .then((response) => response.data)
+    .catch(() => [])
 }
 
 export const computeStats = async () => {

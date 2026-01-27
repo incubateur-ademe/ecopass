@@ -34,9 +34,11 @@ const Statistics = ({ stats }: { stats: Stats }) => {
       <Block>
         <h1>Statistiques</h1>
         <StatsList>
-          <li>
-            <b>{stats.visits.toLocaleString("fr-FR")}</b> visites
-          </li>
+          {stats.visits && (
+            <li>
+              <b>{stats.visits.toLocaleString("fr-FR")}</b> visites
+            </li>
+          )}
           <li>
             <b>{stats.fileUploads.toLocaleString("fr-FR")}</b> fichiers déposés
           </li>
