@@ -355,3 +355,16 @@ model UploadProduct {
 
   @@map("upload_products")
 }
+
+model GS1 {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  gtin      String   @unique
+  jsonData  Json     @map("json_data")
+
+  siren     String?
+  category  String?
+  brandName String? @map("brand_name")
+
+  @@map("gs1")
+}
