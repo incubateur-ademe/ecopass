@@ -3,6 +3,8 @@ import { login } from "./utils/login"
 import { exec } from "child_process"
 import { promisify } from "util"
 import { formatDate } from "../src/services/format"
+import { Status } from "@prisma/enums"
+import { updateManyProducts } from "./utils/product"
 
 const execAsync = promisify(exec)
 
@@ -107,6 +109,16 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(208)
 
+  // An update should return 400, TOO RECENT
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, mass: 0.18 },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(400)
+  expect(await response.text()).toEqual('{"message":"Un produit avec le même GTIN a été déclaré trop récemment."}')
+
   response = await page.request.post("http://localhost:3000/api/produits/lot", {
     data: batch,
     headers: {
@@ -114,6 +126,18 @@ test("declare my products by API", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(404)
+
+  // On modifie manuellement la date du premier produit pour simuler le passage du temps
+  await updateManyProducts(
+    { internalReference: "REF-100", status: Status.Done },
+    { createdAt: new Date(Date.now() - 94 * 24 * 60 * 60 * 1000) },
+  )
+
+  // On modifie manuellement la date du premier produit pour simuler le passage du temps
+  await updateManyProducts(
+    { internalReference: "REF-100", status: Status.Error },
+    { createdAt: new Date(Date.now() - 93 * 24 * 60 * 60 * 1000) },
+  )
 
   // An update should succeed
   response = await page.request.post("http://localhost:3000/api/produits", {
@@ -123,6 +147,16 @@ test("declare my products by API", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(201)
+
+  // On modifie manuellement la date du premier produit pour simuler le passage du temps
+  await updateManyProducts(
+    {
+      internalReference: "REF-100",
+      status: Status.Done,
+      createdAt: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    },
+    { createdAt: new Date(Date.now() - 92 * 24 * 60 * 60 * 1000) },
+  )
 
   // Back to the first version should also succeed (3 versions created in total)
   response = await page.request.post("http://localhost:3000/api/produits", {
@@ -134,7 +168,7 @@ test("declare my products by API", async ({ page }) => {
   expect(response.status()).toBe(201)
 
   response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, internalReference: "REF-101", declaredScore: 100.25 },
+    data: { ...product, internalReference: "REF-101", declaredScore: 100.25, gtins: ["1234567890135"] },
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
@@ -145,7 +179,7 @@ test("declare my products by API", async ({ page }) => {
   )
 
   response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, internalReference: "REF-102", mass: undefined },
+    data: { ...product, internalReference: "REF-102", mass: undefined, gtins: ["1234567890135"] },
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },

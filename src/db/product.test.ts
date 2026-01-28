@@ -592,6 +592,7 @@ describe("Product DB integration", () => {
           gtins: [existingGtin],
           hash: existingHash,
           internalReference: "EXISTING-REF",
+          createdAt: new Date("2024-01-01"),
         },
       })
 
@@ -679,6 +680,7 @@ describe("Product DB integration", () => {
           gtins: [sameGtin],
           hash: existingHash,
           internalReference: "ORIGINAL-REF",
+          createdAt: new Date("2024-01-01"),
         },
       })
 
@@ -756,6 +758,360 @@ describe("Product DB integration", () => {
       })
       expect(uploadProducts).not.toBeNull()
       expect(uploadProducts).toHaveLength(0)
+    })
+
+    it("creates products in error if modification is too recent", async () => {
+      const lastMonth = new Date()
+      lastMonth.setMonth(lastMonth.getMonth() - 1)
+
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: uuid(),
+          gtins: ["1111111111111"],
+          hash: "hash-1",
+          internalReference: "ORIGINAL-REF",
+          createdAt: lastMonth,
+        },
+      })
+
+      const newProductId = uuid()
+      const encrypted = encryptProductFields({
+        product: ProductCategory.Pull,
+        business: Business.Small,
+        numberOfReferences: 4000,
+        mass: 0.6,
+        price: 80,
+        materials: [{ id: MaterialType.Lin, share: 0.7 }],
+        trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
+        countryDyeing: "FR",
+        countryFabric: "FR",
+        countryMaking: "FR",
+      } satisfies ProductInformationAPI)
+
+      const numberOfCreatedProducts = await createProducts({
+        products: [
+          {
+            error: null,
+            hash: "new-hash",
+            id: newProductId,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 1,
+            status: Status.Pending,
+            gtins: ["1111111111111"],
+            internalReference: "UPDATED-REF",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 2500.0,
+            score: null,
+            standardized: null,
+          },
+        ],
+        informations: [
+          {
+            id: "info-2",
+            productId: newProductId,
+            ...encrypted.product,
+            emptyTrims: false,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: "info-2",
+        })),
+        accessories:
+          encrypted.accessories?.map((accessory) => ({
+            ...accessory,
+            id: uuid(),
+            productId: "info-2",
+          })) || [],
+      })
+
+      expect(numberOfCreatedProducts).toBe(0)
+
+      const newProduct = await prismaTest.product.findUnique({
+        where: { id: newProductId },
+        include: { informations: { include: { materials: true, accessories: true } } },
+      })
+
+      expect(newProduct).not.toBeNull()
+      expect(newProduct?.status).toBe(Status.Error)
+      expect(newProduct?.error).toBe("Un produit avec le même GTIN a été déclaré trop récemment")
+    })
+
+    it("creates products if modification is too recent but in error", async () => {
+      const lastMonth = new Date()
+      lastMonth.setMonth(lastMonth.getMonth() - 1)
+
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: uuid(),
+          gtins: ["1111111111111"],
+          hash: "hash-1",
+          internalReference: "ORIGINAL-REF",
+          createdAt: lastMonth,
+          status: Status.Error,
+        },
+      })
+
+      const newProductId = uuid()
+      const encrypted = encryptProductFields({
+        product: ProductCategory.Pull,
+        business: Business.Small,
+        numberOfReferences: 4000,
+        mass: 0.6,
+        price: 80,
+        materials: [{ id: MaterialType.Lin, share: 0.7 }],
+        trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
+        countryDyeing: "FR",
+        countryFabric: "FR",
+        countryMaking: "FR",
+      } satisfies ProductInformationAPI)
+
+      const numberOfCreatedProducts = await createProducts({
+        products: [
+          {
+            error: null,
+            hash: "new-hash",
+            id: newProductId,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 1,
+            status: Status.Pending,
+            gtins: ["1111111111111"],
+            internalReference: "UPDATED-REF",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 2500.0,
+            score: null,
+            standardized: null,
+          },
+        ],
+        informations: [
+          {
+            id: "info-2",
+            productId: newProductId,
+            ...encrypted.product,
+            emptyTrims: false,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: "info-2",
+        })),
+        accessories:
+          encrypted.accessories?.map((accessory) => ({
+            ...accessory,
+            id: uuid(),
+            productId: "info-2",
+          })) || [],
+      })
+
+      expect(numberOfCreatedProducts).toBe(1)
+
+      const newProduct = await prismaTest.product.findUnique({
+        where: { id: newProductId },
+        include: { informations: { include: { materials: true, accessories: true } } },
+      })
+
+      expect(newProduct).not.toBeNull()
+      expect(newProduct?.status).toBe(Status.Pending)
+      expect(newProduct?.error).toBeNull()
+    })
+
+    it("creates products in error if modification is too recent but in error and done", async () => {
+      const lastMonth = new Date()
+      lastMonth.setMonth(lastMonth.getMonth() - 1)
+
+      const twoMonths = new Date()
+      twoMonths.setMonth(twoMonths.getMonth() - 2)
+
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: uuid(),
+          gtins: ["1111111111111"],
+          hash: "hash-1",
+          internalReference: "ORIGINAL-REF",
+          createdAt: lastMonth,
+          status: Status.Error,
+        },
+      })
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: uuid(),
+          gtins: ["1111111111111"],
+          hash: "hash-2",
+          internalReference: "ORIGINAL-REF",
+          createdAt: twoMonths,
+          status: Status.Done,
+        },
+      })
+
+      const newProductId = uuid()
+      const encrypted = encryptProductFields({
+        product: ProductCategory.Pull,
+        business: Business.Small,
+        numberOfReferences: 4000,
+        mass: 0.6,
+        price: 80,
+        materials: [{ id: MaterialType.Lin, share: 0.7 }],
+        trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
+        countryDyeing: "FR",
+        countryFabric: "FR",
+        countryMaking: "FR",
+      } satisfies ProductInformationAPI)
+
+      const numberOfCreatedProducts = await createProducts({
+        products: [
+          {
+            error: null,
+            hash: "new-hash",
+            id: newProductId,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 1,
+            status: Status.Pending,
+            gtins: ["1111111111111"],
+            internalReference: "UPDATED-REF",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 2500.0,
+            score: null,
+            standardized: null,
+          },
+        ],
+        informations: [
+          {
+            id: "info-2",
+            productId: newProductId,
+            ...encrypted.product,
+            emptyTrims: false,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: "info-2",
+        })),
+        accessories:
+          encrypted.accessories?.map((accessory) => ({
+            ...accessory,
+            id: uuid(),
+            productId: "info-2",
+          })) || [],
+      })
+
+      expect(numberOfCreatedProducts).toBe(0)
+
+      const newProduct = await prismaTest.product.findUnique({
+        where: { id: newProductId },
+        include: { informations: { include: { materials: true, accessories: true } } },
+      })
+
+      expect(newProduct).not.toBeNull()
+      expect(newProduct?.status).toBe(Status.Error)
+      expect(newProduct?.error).toBe("Un produit avec le même GTIN a été déclaré trop récemment")
+    })
+
+    it("creates products in error if modification one gtin is too recent", async () => {
+      const lastMonth = new Date()
+      lastMonth.setMonth(lastMonth.getMonth() - 1)
+
+      const fiveMonths = new Date()
+      fiveMonths.setMonth(fiveMonths.getMonth() - 5)
+
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: uuid(),
+          gtins: ["1111111111111"],
+          hash: "hash-1",
+          internalReference: "ORIGINAL-REF",
+          createdAt: lastMonth,
+        },
+      })
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: uuid(),
+          gtins: ["2222222222222"],
+          hash: "hash-2",
+          internalReference: "ORIGINAL-REF",
+          createdAt: fiveMonths,
+          status: Status.Done,
+        },
+      })
+
+      const newProductId = uuid()
+      const encrypted = encryptProductFields({
+        product: ProductCategory.Pull,
+        business: Business.Small,
+        numberOfReferences: 4000,
+        mass: 0.6,
+        price: 80,
+        materials: [{ id: MaterialType.Lin, share: 0.7 }],
+        trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 2 }],
+        countryDyeing: "FR",
+        countryFabric: "FR",
+        countryMaking: "FR",
+      } satisfies ProductInformationAPI)
+
+      const numberOfCreatedProducts = await createProducts({
+        products: [
+          {
+            error: null,
+            hash: "new-hash",
+            id: newProductId,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 1,
+            status: Status.Pending,
+            gtins: ["2222222222222", "1111111111111"],
+            internalReference: "UPDATED-REF",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 2500.0,
+            score: null,
+            standardized: null,
+          },
+        ],
+        informations: [
+          {
+            id: "info-2",
+            productId: newProductId,
+            ...encrypted.product,
+            emptyTrims: false,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: "info-2",
+        })),
+        accessories:
+          encrypted.accessories?.map((accessory) => ({
+            ...accessory,
+            id: uuid(),
+            productId: "info-2",
+          })) || [],
+      })
+
+      expect(numberOfCreatedProducts).toBe(0)
+
+      const newProduct = await prismaTest.product.findUnique({
+        where: { id: newProductId },
+        include: { informations: { include: { materials: true, accessories: true } } },
+      })
+
+      expect(newProduct).not.toBeNull()
+      expect(newProduct?.status).toBe(Status.Error)
+      expect(newProduct?.error).toBe("Un produit avec le même GTIN a été déclaré trop récemment")
     })
 
     it("compares hash with the latest product version, not older ones", async () => {
@@ -848,6 +1204,108 @@ describe("Product DB integration", () => {
       })
       expect(newProduct).not.toBeNull()
       expect(newProduct?.hash).toBe(oldHash)
+    })
+
+    it("compares hash with the latest done product version", async () => {
+      const gtin = "3333333333333"
+      const oldHash = "old-version-hash"
+      const latestHash = "latest-version-hash"
+
+      const oldProductId = uuid()
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: oldProductId,
+          gtins: [gtin],
+          hash: oldHash,
+          internalReference: "OLD-DONE-VERSION",
+          createdAt: new Date("2025-01-01"),
+          status: Status.Done,
+        },
+      })
+
+      const latestProductId = uuid()
+      await prismaTest.product.create({
+        data: {
+          ...baseProduct,
+          id: latestProductId,
+          gtins: [gtin],
+          hash: latestHash,
+          internalReference: "LATEST-ERROR-VERSION",
+          createdAt: new Date("2025-03-01"),
+          status: Status.Error,
+        },
+      })
+
+      const newProductId = uuid()
+      const encrypted = encryptProductFields({
+        product: ProductCategory.Pull,
+        business: Business.Small,
+        numberOfReferences: 1200,
+        mass: 0.7,
+        price: 90,
+        materials: [{ id: MaterialType.Coton, share: 0.5 }],
+        trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
+        countryDyeing: "FR",
+        countryFabric: "FR",
+        countryMaking: "FR",
+      } satisfies ProductInformationAPI)
+
+      const numberOfCreatedProducts = await createProducts({
+        products: [
+          {
+            error: null,
+            hash: oldHash,
+            id: newProductId,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 1,
+            status: Status.Pending,
+            gtins: [gtin],
+            internalReference: "NEW-WITH-OLD-HASH",
+            brandName: null,
+            brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
+            declaredScore: 2800.0,
+            score: null,
+            standardized: null,
+          },
+        ],
+        informations: [
+          {
+            id: "info-1",
+            productId,
+            ...encrypted.product,
+            emptyTrims: false,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: newProductId,
+        })),
+        accessories:
+          encrypted.accessories?.map((accessory) => ({
+            ...accessory,
+            id: uuid(),
+            productId: newProductId,
+          })) || [],
+      })
+
+      expect(numberOfCreatedProducts).toBe(0)
+
+      const newProduct = await prismaTest.product.findUnique({
+        where: { id: newProductId },
+      })
+      expect(newProduct).toBeNull()
+
+      const uploadProduct = await prismaTest.uploadProduct.findFirst({
+        where: {
+          uploadId: testUploadId,
+          productId: oldProductId,
+        },
+      })
+      expect(uploadProduct).not.toBeNull()
+      expect(uploadProduct?.uploadOrder).toBe(1)
     })
 
     it("sets all products with any duplicated GTINs in batch to error", async () => {
