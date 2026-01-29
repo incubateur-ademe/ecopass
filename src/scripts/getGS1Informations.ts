@@ -164,8 +164,6 @@ const main = async (limit: number) => {
           errorCount++
         }
       }
-
-      await new Promise((resolve) => setTimeout(resolve, 500))
     }
 
     console.log(`\n📊 Résumé:`)
