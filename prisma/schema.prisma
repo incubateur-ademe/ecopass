@@ -365,6 +365,9 @@ model GS1 {
   siren     String?
   category  String?
   brandName String? @map("brand_name")
+  website   String?
+  image     String?
+  weight    Float?
 
   @@map("gs1")
 }
