@@ -103,7 +103,7 @@ const defaultProduct = async () => {
       nom: "Textile",
       prenom: "Admin",
       organization: {
-        connect: { siret: org.siret },
+        connect: { siret: org.siret as string },
       },
       accounts: {
         create: {

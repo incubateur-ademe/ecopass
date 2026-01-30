@@ -1,3 +1,4 @@
+import "dotenv/config"
 import { createOrganization } from "../db/organization"
 import { prismaClient } from "../db/prismaClient"
 
@@ -15,7 +16,7 @@ export const createMail = async () => {
     where: { email: email.toLowerCase() },
   })
   if (user) {
-    console.log("User alreay exists")
+    console.log("User already exists")
     return
   }
 
@@ -42,6 +43,7 @@ export const createMail = async () => {
     },
   })
   console.log("User created")
+  await prismaClient.$disconnect()
 }
 
 createMail()
