@@ -183,7 +183,7 @@
           }
         ],
         "tags": ["Déclaration"],
-        "summary": "Déclare un lot de produits sur le portail de l'Affichage Environnemental. Uniquement disponible sur le serveur de test.",
+        "summary": "Déclare un lot de produits sur le portail de l'Affichage Environnemental.",
         "description": "Permet de déclarer plusieurs produits regroupés en lot. Tous les produits du lot partagent les mêmes métadonnées (GTINs, référence interne, marque, score déclaré) mais peuvent avoir des informations techniques différentes (matériaux, pays, etc.).",
         "requestBody": {
           "description": "Requête modélisant les paramètres du lot de produits à déclarer",
