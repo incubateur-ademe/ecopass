@@ -51,6 +51,15 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
       )
     }
 
+    const invalidBrandIdKey = Object.keys(body).find(
+      (key) => key !== "brandId" && key.replace(/_/g, "").toLowerCase() === "brandid",
+    )
+    if (invalidBrandIdKey) {
+      return NextResponse.json(
+        `Attention, le champ '${invalidBrandIdKey}' n'est pas reconnu. Veuillez utiliser 'brandId'.`,
+      )
+    }
+
     let product: ProductMetadataAPI
     let informations: ProductInformationAPI[]
 
