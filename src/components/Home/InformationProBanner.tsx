@@ -30,9 +30,22 @@ const InformationProBanner = () => {
           desc="L'affichage environnemental du textile permet de calculer l'impact de chaque vêtement, en considérant l'ensemble des opérations sur son cycle de vie (ex: fabrication du coton, filage, teinture, ennoblissement, transport, fin de vie)."
           titleAs='h3'
           footer={
-            <Link href='/notice-reglementaire.pdf' target='_blank' rel='noopener noreferrer' className='fr-link'>
-              Téléchargez la notice règlementaire (PDF, 1.5 Mo)
-            </Link>
+            <ul className='fr-links-group'>
+              <li>
+                <Link href='/notice-reglementaire.pdf' target='_blank' rel='noopener noreferrer' className='fr-link'>
+                  Téléchargez la notice règlementaire (PDF, 1.5 Mo)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href='/notice-reglementaire-english.pdf'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='fr-link'>
+                  Download the regulatory notice (PDF, 1.7 Mo)
+                </Link>
+              </li>
+            </ul>
           }
         />
       </div>

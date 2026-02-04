@@ -5,6 +5,10 @@ import { getSiretInfo } from "../serverFunctions/siret"
 const main = async () => {
   const organizations = await prismaClient.organization.findMany({ select: { siret: true, id: true } })
   for (const organization of organizations) {
+    if (!organization.siret) {
+      console.warn(`Organisation ID ${organization.id} sans SIRET, mise à jour ignorée`)
+      continue
+    }
     console.log(`SIRET: ${organization.siret}, ID: ${organization.id}`)
     const info = await getSiretInfo(organization.siret)
     if (!info) {

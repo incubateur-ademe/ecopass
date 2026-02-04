@@ -56,6 +56,14 @@ const getGS1ProductInfo = async (gtin: string, token: string) => {
         }
         gpcDescription?: string
         additionalPartyIdentificationValue?: string
+        pip?: string
+        netContent?: Array<{
+          quantity: number
+          unitCode: string
+        }>
+        tradeItemImageUrl?: Array<{
+          url: string
+        }>
       }
     }>(`https://api.gs1.fr/products/${gtin}?api-version=v2`, {
       headers: {
@@ -151,6 +159,9 @@ const main = async (limit: number) => {
             brandName:
               productInfo.itemOffered.brand?.brandName.find((brand) => brand.lang === "fr")?.value ||
               productInfo.itemOffered.brandOwner.companyName,
+            website: productInfo.itemOffered.pip,
+            image: productInfo.itemOffered.tradeItemImageUrl?.[0]?.url,
+            weight: productInfo.itemOffered.netContent?.find((item) => item.unitCode === "KGM")?.quantity,
           },
         })
         console.log(`  ✅ GTIN ${gtin} créé avec succès`)
