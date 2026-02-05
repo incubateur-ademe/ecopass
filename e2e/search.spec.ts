@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test"
 
 import { exec } from "child_process"
 import { promisify } from "util"
+import { updateManyProducts } from "./utils/product"
 
 const execAsync = promisify(exec)
 
@@ -28,25 +29,49 @@ const product = {
 }
 
 test("Search", async ({ page }) => {
-  await page.request.post("http://localhost:3000/api/produits", {
+  let result = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
   })
-  await page.request.post("http://localhost:3000/api/produits", {
+  expect(result.status()).toBe(201)
+  await updateManyProducts(
+    {
+      createdAt: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    },
+    { createdAt: new Date(Date.now() - 93 * 24 * 60 * 60 * 1000) },
+  )
+
+  result = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, mass: 0.7 },
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
   })
-  await page.request.post("http://localhost:3000/api/produits", {
+  expect(result.status()).toBe(201)
+  await updateManyProducts(
+    {
+      createdAt: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    },
+    { createdAt: new Date(Date.now() - 92 * 24 * 60 * 60 * 1000) },
+  )
+
+  result = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, product: "pantalon", internalReference: "REF-101" },
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
   })
-  await page.request.post("http://localhost:3000/api/produits", {
+  expect(result.status()).toBe(201)
+  await updateManyProducts(
+    {
+      createdAt: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    },
+    { createdAt: new Date(Date.now() - 91 * 24 * 60 * 60 * 1000) },
+  )
+
+  result = await page.request.post("http://localhost:3000/api/produits", {
     data: {
       ...product,
       product: "pantalon",
@@ -57,6 +82,7 @@ test("Search", async ({ page }) => {
       Authorization: `Bearer ${apiKey}`,
     },
   })
+  expect(result.status()).toBe(201)
 
   await page.goto("http://localhost:3000/recherche")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(0)

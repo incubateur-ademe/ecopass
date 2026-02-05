@@ -1,10 +1,8 @@
 import hash from "object-hash"
-import { ProductInformationAPI, ProductMetadataAPI } from "../../services/validation/api"
 import { ecobalyseVersion } from "../ecobalyse/config"
 import { Prisma } from "@prisma/client"
-import { ParsedProduct } from "../../types/Product"
 
-const hashProduct = (
+export const hashProduct = (
   product: Omit<Prisma.ProductCreateInput, "hash" | "upload" | "brand"> & { brandId: string },
   informations: {
     product: string
@@ -76,9 +74,3 @@ const hashProduct = (
     },
     { unorderedArrays: true },
   )
-
-export const hashParsedProduct = (product: ProductMetadataAPI, information: ParsedProduct, brands: string[]) =>
-  hashProduct(product, [information], brands)
-
-export const hashProductAPI = (product: ProductMetadataAPI, informations: ProductInformationAPI[], brands: string[]) =>
-  hashProduct(product, informations, brands)

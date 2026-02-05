@@ -5,6 +5,7 @@ import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { BATCH_CATEGORY, productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
+import { checkOldProduct, ProductCheckResult } from "../services/validation/oldProduct"
 
 export const createProducts = async ({
   products,
@@ -47,21 +48,30 @@ export const createProducts = async ({
           continue
         }
 
-        const lastVersion = await getLastProductByGtin(product.gtins[0])
+        const oldProductCheck = await checkOldProduct(product.gtins, product.hash)
 
-        if (lastVersion && lastVersion.hash === product.hash) {
-          await prismaClient.uploadProduct.create({
+        if (oldProductCheck.result === ProductCheckResult.Unchanged && oldProductCheck.lastProduct) {
+          await transaction.uploadProduct.create({
             data: {
-              productId: lastVersion.id,
+              productId: oldProductCheck.lastProduct.id,
               uploadId: product.uploadId,
               uploadOrder: product.uploadOrder || 0,
             },
           })
           continue
-        } else {
-          productsToCreate.push(product)
-          ids.add(product.id)
         }
+        if (oldProductCheck.result === ProductCheckResult.TooRecent && oldProductCheck.lastProduct) {
+          await transaction.product.create({
+            data: {
+              ...product,
+              status: Status.Error,
+              error: "Un produit avec le même GTIN a été déclaré trop récemment",
+            },
+          })
+          continue
+        }
+        productsToCreate.push(product)
+        ids.add(product.id)
       }
 
       if (productsToCreate.length > 0) {
@@ -576,14 +586,20 @@ export const searchProducts = async (options: {
   }
 }
 
-export const getLastProductByGtin = async (gtin: string) =>
-  prismaClient.product.findFirst({
+export const getLastProductsByGtins = async (gtins: string[]) => {
+  const products = await prismaClient.product.findMany({
     where: {
-      gtins: { has: gtin },
+      gtins: { hasSome: gtins },
+      status: Status.Done,
     },
     orderBy: { createdAt: "desc" },
-    select: { hash: true, id: true },
+    select: { hash: true, id: true, gtins: true, createdAt: true },
   })
+
+  return gtins
+    .map((gtin) => products.find((product) => product.gtins.includes(gtin)))
+    .filter((product) => product !== undefined)
+}
 
 export const getProductCountByCategory = async () => {
   const allProducts = await prismaClient.product.findMany({
