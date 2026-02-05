@@ -1,0 +1,14 @@
+.cards {
+  display: flex;
+  gap: 1rem;
+
+  @media (max-width: 40rem) {
+    flex-direction: column;
+  }
+}
+
+.card {
+  border: 1px solid #ddd;
+  padding: 1.5rem;
+  flex: 1;
+}

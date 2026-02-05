@@ -263,10 +263,12 @@ enum OrganizationType {
 }
 
 model Organization {
-  id          String  @id @default(uuid())
+  id          String @id @default(uuid())
   name        String
   displayName String
-  siret       String? @unique
+
+  siret    String? @unique
+  uniqueId String? @unique @map("unique_id")
 
   type OrganizationType?
 
