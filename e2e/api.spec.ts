@@ -3,6 +3,8 @@ import { login } from "./utils/login"
 import { exec } from "child_process"
 import { promisify } from "util"
 import { formatDate } from "../src/services/format"
+import { Status } from "@prisma/enums"
+import { updateManyProducts } from "./utils/product"
 import { ecobalyseVersion } from "../src/utils/ecobalyse/config"
 
 const execAsync = promisify(exec)
@@ -116,6 +118,16 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(208)
 
+  // An update should return 400, TOO RECENT
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, mass: 0.18 },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(400)
+  expect(await response.text()).toEqual('{"message":"Un produit avec le même GTIN a été déclaré trop récemment."}')
+
   // A first batch upload should succeed
   response = await page.request.post("http://localhost:3000/api/produits/lot", {
     data: batch,
@@ -134,6 +146,37 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(208)
 
+  // A batch update should return 400, TOO RECENT
+  response = await page.request.post("http://localhost:3000/api/produits/lot", {
+    data: { ...batch, products: [{ ...batch.products[0], mass: 0.18 }, batch.products[1]] },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(400)
+  expect(await response.text()).toEqual('{"message":"Un produit avec le même GTIN a été déclaré trop récemment."}')
+
+  // On modifie manuellement la date des premiers produits pour simuler le passage du temps
+  await updateManyProducts(
+    { internalReference: "REF-100", status: Status.Done },
+    { createdAt: new Date(Date.now() - 94 * 24 * 60 * 60 * 1000) },
+  )
+
+  await updateManyProducts(
+    { internalReference: "REF-100", status: Status.Error },
+    { createdAt: new Date(Date.now() - 93 * 24 * 60 * 60 * 1000) },
+  )
+
+  await updateManyProducts(
+    { internalReference: "BATCH-100", status: Status.Done },
+    { createdAt: new Date(Date.now() - 94 * 24 * 60 * 60 * 1000) },
+  )
+
+  await updateManyProducts(
+    { internalReference: "BATCH-100", status: Status.Error },
+    { createdAt: new Date(Date.now() - 93 * 24 * 60 * 60 * 1000) },
+  )
+
   // An update should succeed
   response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, mass: 0.18 },
@@ -151,6 +194,24 @@ test("declare my products by API", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(201)
+
+  // On modifie manuellement la date des premiers produits pour simuler le passage du temps
+  await updateManyProducts(
+    {
+      internalReference: "REF-100",
+      status: Status.Done,
+      createdAt: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    },
+    { createdAt: new Date(Date.now() - 92 * 24 * 60 * 60 * 1000) },
+  )
+  await updateManyProducts(
+    {
+      internalReference: "BATCH-100",
+      status: Status.Done,
+      createdAt: { gt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+    },
+    { createdAt: new Date(Date.now() - 92 * 24 * 60 * 60 * 1000) },
+  )
 
   // Back to the first version should also succeed (3 versions created in total)
   response = await page.request.post("http://localhost:3000/api/produits", {
@@ -171,7 +232,7 @@ test("declare my products by API", async ({ page }) => {
   expect(response.status()).toBe(201)
 
   response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, internalReference: "REF-101", declaredScore: 100.25 },
+    data: { ...product, internalReference: "REF-101", declaredScore: 100.25, gtins: ["1234567890135"] },
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
@@ -182,7 +243,7 @@ test("declare my products by API", async ({ page }) => {
   )
 
   response = await page.request.post("http://localhost:3000/api/produits/lot", {
-    data: { ...batch, internalReference: "BATCH-101", declaredScore: 1000.25 },
+    data: { ...batch, internalReference: "BATCH-101", declaredScore: 1000.25, gtins: ["1234567890142"] },
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
@@ -193,7 +254,7 @@ test("declare my products by API", async ({ page }) => {
   )
 
   response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, internalReference: "REF-102", mass: undefined },
+    data: { ...product, internalReference: "REF-102", mass: undefined, gtins: ["1234567890135"] },
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
@@ -208,6 +269,7 @@ test("declare my products by API", async ({ page }) => {
       ...batch,
       internalReference: "BATCH-102",
       products: [{ ...batch.products[0], mass: undefined }, batch.products[1]],
+      gtins: ["1234567890142"],
     },
     headers: {
       Authorization: `Bearer ${apiKey}`,

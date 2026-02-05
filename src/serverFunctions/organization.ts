@@ -79,6 +79,74 @@ export const authorizeOrganization = async (siret: string) => {
   })
 }
 
+export const authorizeOrganizationById = async (id: string) => {
+  if (!id) {
+    return "ID invalide"
+  }
+
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+
+  const [userOrganization, organization] = await Promise.all([
+    prismaClient.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        organization: {
+          select: {
+            id: true,
+            siret: true,
+            authorizedOrganizations: {
+              where: { active: true, to: { id } },
+            },
+          },
+        },
+      },
+    }),
+    prismaClient.organization.findFirst({
+      select: {
+        id: true,
+        siret: true,
+      },
+      where: {
+        id,
+      },
+    }),
+  ])
+
+  if (!organization) {
+    return "Aucune organisation trouvée pour cet ID"
+  }
+
+  if (!userOrganization || !userOrganization.organization) {
+    return "Aucune organisation trouvée pour l'utilisateur"
+  }
+
+  if (userOrganization.organization.id === id) {
+    return "Vous ne pouvez pas autoriser votre propre organisation"
+  }
+
+  if (userOrganization.organization.authorizedOrganizations.length > 0) {
+    return "L'organisation est déjà autorisée"
+  }
+
+  await prismaClient.authorizedOrganization.create({
+    data: {
+      from: {
+        connect: { id: userOrganization.organization.id },
+      },
+      to: {
+        connect: { id },
+      },
+      active: true,
+      createdBy: {
+        connect: { id: session.user.id },
+      },
+    },
+  })
+}
+
 export const removeOrganizationAuthorization = async (id: string) => {
   const session = await auth()
   if (!session || !session.user) {
@@ -140,5 +208,19 @@ export const updateDisplayName = async (displayName: string) => {
   await prismaClient.organization.update({
     where: { id: user.organization.id },
     data: { displayName },
+  })
+}
+
+export const getOrganizationByUniqueId = async (uniqueId: string) => {
+  const session = await auth()
+  if (!session || !session.user) {
+    return null
+  }
+  return prismaClient.organization.findUnique({
+    where: { uniqueId: uniqueId.toLowerCase() },
+    select: {
+      id: true,
+      name: true,
+    },
   })
 }

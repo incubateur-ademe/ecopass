@@ -45,6 +45,7 @@ jobs:
           echo "CI=true" >> .env
           echo "BATCH_SIZE=20" >> .env
           echo "NODE_ENV=production" >> .env
+          echo "FORBID_RECENT_DECLARATION=true" >> .env
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Linter
