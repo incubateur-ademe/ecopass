@@ -82,12 +82,14 @@ export const getUserOrganization = async (userId: string) => {
           displayName: true,
           type: true,
           naf: true,
+          siret: true,
+          uniqueId: true,
           brands: { select: { id: true, name: true, default: true, active: true } },
           authorizedOrganizations: {
             select: {
               id: true,
               createdAt: true,
-              to: { select: { id: true, name: true, siret: true } },
+              to: { select: { id: true, name: true, siret: true, uniqueId: true } },
             },
             where: { active: true },
             orderBy: { createdAt: "desc" },
@@ -101,6 +103,7 @@ export const getUserOrganization = async (userId: string) => {
                   id: true,
                   name: true,
                   siret: true,
+                  uniqueId: true,
                   brands: { select: { id: true, name: true, default: true, active: true } },
                 },
               },

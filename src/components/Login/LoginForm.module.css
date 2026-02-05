@@ -1,0 +1,34 @@
+.title {
+  text-align: center;
+}
+
+.boxes {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .box {
+    align-items: center;
+  }
+
+  @media (max-width: 37rem) {
+    flex-direction: column;
+  }
+}
+
+.box {
+  flex: 1;
+  border: 1px solid #bcbbbb;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  fieldset,
+  legend {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+}

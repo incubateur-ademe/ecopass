@@ -15,15 +15,17 @@ const Delegations = ({
         fixed
         caption='Mes délégations'
         noCaption
-        headers={type === "to" ? ["Nom", "Siret", "Action"] : ["Nom", "Siret"]}
+        headers={
+          type === "to" ? ["Nom", "SIRET ou identifiant unique", "Action"] : ["Nom", "SIRET ou identifiant unique"]
+        }
         data={organizations.map((organization) =>
           "to" in organization
             ? [
                 organization.to.name,
-                organization.to.siret ?? "N/A",
+                organization.to.siret ?? organization.to.uniqueId ?? "N/A",
                 <DeleteDelegation key={organization.id} name={organization.to.name} id={organization.id} />,
               ]
-            : [organization.from.name, organization.from.siret ?? "N/A"],
+            : [organization.from.name, organization.from.siret ?? organization.from.uniqueId ?? "N/A"],
         )}
       />
     </div>

@@ -83,12 +83,10 @@ const users = async () => {
 const defaultProduct = async () => {
   const org = await prismaClient.organization.create({
     data: {
-      siret: "12345678901234",
       name: "Textile Premium",
       displayName: "Textile Premium",
-      effectif: "50",
-      naf: "14.19Z",
-      type: OrganizationType.Brand,
+      type: OrganizationType.Consultancy,
+      uniqueId: "350b9fc6-0d05-496b-b429-cc66064e98e8",
       brands: {
         createMany: {
           data: [{ name: "Premium Wear", id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d", default: true }],
@@ -103,7 +101,7 @@ const defaultProduct = async () => {
       nom: "Textile",
       prenom: "Admin",
       organization: {
-        connect: { siret: org.siret as string },
+        connect: { id: org.id },
       },
       accounts: {
         create: {
