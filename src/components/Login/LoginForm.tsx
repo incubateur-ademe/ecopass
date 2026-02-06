@@ -57,7 +57,10 @@ const LoginForm = () => {
             <div className='fr-fieldset__element'>
               <fieldset className='fr-fieldset'>
                 <div className='fr-fieldset__element'>
-                  <span className='fr-hint-text'>Sauf mention contraire, tous les champs sont obligatoires.</span>
+                  <span className='fr-hint-text'>
+                    Vous n'avez pas d'accès pro-connect, utilisez l'accès qui vous a été créé. Tous les champs sont
+                    obligatoires.
+                  </span>
                 </div>
                 <div className='fr-fieldset__element'>
                   <Input
