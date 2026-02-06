@@ -1,6 +1,6 @@
 import { ProductWithScore } from "../../db/product"
 
-export const computeBatchScore = (product: ProductWithScore) => {
+export const computeBatchScore = (product: Pick<ProductWithScore, "informations" | "score" | "standardized">) => {
   const scores = product.informations.reduce(
     (acc, value) => {
       if (value.score) {

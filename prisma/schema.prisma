@@ -373,3 +373,74 @@ model GS1 {
 
   @@map("gs1")
 }
+
+model AnonymizedProduct {
+  id String @id @default(uuid())
+
+  score        Float?
+  standardized Float?
+  durability   Float?
+
+  informations AnonymizedProductInformation[]
+
+  @@map("anonymized_products")
+}
+
+model AnonymizedProductInformation {
+  id         String   @id @default(uuid())
+  category   String
+  emptyTrims Boolean? @map("empty_trims")
+
+  business        String?
+  countryDyeing   String? @map("country_dyeing")
+  countryFabric   String? @map("country_fabric")
+  countryMaking   String? @map("country_making")
+  countrySpinning String? @map("country_spinning")
+  impression      String?
+
+  mass                 Float?
+  price                Float?
+  airTransportRatio    Float? @map("air_transport_ratio")
+  numberOfReferences   Float? @map("number_of_references")
+  impressionPercentage Float? @map("impression_percentage")
+
+  fading   Boolean?
+  upcycled Boolean?
+
+  materials   AnonymizedMaterial[]
+  accessories AnonymizedAccessory[]
+
+  product   AnonymizedProduct? @relation(fields: [productId], references: [id])
+  productId String?            @map("product_id")
+
+  @@map("anonymized_product_informations")
+}
+
+model AnonymizedMaterial {
+  id String @id @default(uuid())
+
+  slug    String
+  country String?
+
+  share Float
+
+  product   AnonymizedProductInformation? @relation(fields: [productId], references: [id])
+  productId String?                       @map("product_id")
+
+  @@index([productId], map: "idx_anonymized_material_product_id")
+  @@map("anonymized_materials")
+}
+
+model AnonymizedAccessory {
+  id String @id @default(uuid())
+
+  slug String
+
+  quantity Float
+
+  product   AnonymizedProductInformation? @relation(fields: [productId], references: [id])
+  productId String?                       @map("product_id")
+
+  @@index([productId], map: "idx_anonymized_accessory_product_id")
+  @@map("anonymized_accessories")
+}
