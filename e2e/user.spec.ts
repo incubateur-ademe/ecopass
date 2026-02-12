@@ -101,6 +101,9 @@ test("Connection with a distributor user", async ({ page }) => {
 test("Connection with a other user", async ({ page }) => {
   await login(page, "ecopass-no-organization@yopmail.com")
 
+  await page.getByRole("radio").nth(4).click({ force: true })
+  await page.getByRole("button", { name: "Valider" }).click()
+
   await expect(page.getByRole("link", { name: "Informez-vous", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Les marques déclarantes", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Recherchez un produit", exact: true })).toBeVisible()

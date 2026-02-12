@@ -54,7 +54,7 @@ const main = async (batchSize: number) => {
             create: product.informations.map((information) => {
               const decrypted = decryptProductFields(information)
               return {
-                category: decrypted.category ?? information.category,
+                category: decrypted.categorySlug || decrypted.category,
                 emptyTrims: information.emptyTrims,
                 business: decrypted.business,
                 countryDyeing: decrypted.countryDyeing,
