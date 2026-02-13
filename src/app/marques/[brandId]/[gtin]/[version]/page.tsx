@@ -4,6 +4,7 @@ import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import EmptyProduct from "../../../../../views/EmptyProduct"
 import { Metadata } from "next"
 import { tryAndGetSession } from "../../../../../services/auth/redirect"
+import { UserRole } from "@prisma/enums"
 
 type Props = {
   params: Promise<{ gtin: string; version: string; brandId: string }>
@@ -42,6 +43,30 @@ const OldProductPage = async (props: Props) => {
           isOld={!!product && product.id !== oldProduct.id}
           isPro={!!session}
           brandId={params.brandId}
+          breadCrumbs={{
+            currentPageLabel: oldProduct.internalReference,
+            segments:
+              session?.user?.role === UserRole.DGCCRF
+                ? [
+                    { linkProps: { href: "/" }, label: "Accueil" },
+                    {
+                      linkProps: { href: `/organisations/${oldProduct.brand?.organization?.id}` },
+                      label: `Organisation - ${oldProduct.brand?.organization?.displayName}`,
+                    },
+                    {
+                      linkProps: { href: `/marques/${oldProduct.brand?.id}` },
+                      label: `Marque - ${oldProduct.brand?.name}`,
+                    },
+                  ]
+                : [
+                    { linkProps: { href: "/" }, label: "Accueil" },
+                    { linkProps: { href: "/marques" }, label: "Marques" },
+                    {
+                      linkProps: { href: `/marques/${oldProduct.brand?.id}` },
+                      label: `Marque - ${oldProduct.brand?.name}`,
+                    },
+                  ],
+          }}
         />
       ) : (
         <EmptyProduct />

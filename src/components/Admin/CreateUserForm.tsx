@@ -7,6 +7,7 @@ import { createUserAndOrganization } from "../../serverFunctions/admin"
 import styles from "./CreateUserForm.module.css"
 import LoadingButton from "../Button/LoadingButton"
 import { OrganizationType } from "@prisma/enums"
+import { organizationTypes } from "../../utils/organization/types"
 
 const CreateUserForm = () => {
   const [loading, setLoading] = useState(false)
@@ -81,11 +82,11 @@ const CreateUserForm = () => {
               disabled: loading,
             }}>
             <option value=''>-- Sélectionner un type --</option>
-            <option value={OrganizationType.Brand}>Marque</option>
-            <option value={OrganizationType.Distributor}>Distributeur</option>
-            <option value={OrganizationType.BrandAndDistributor}>Marque et Distributeur</option>
-            <option value={OrganizationType.Consultancy}>Bureau d'études</option>
-            <option value={OrganizationType.Other}>Autre</option>
+            {Object.entries(organizationTypes).map(([key, value]) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
           </Select>
 
           <LoadingButton className={styles.button} type='submit' loading={loading}>

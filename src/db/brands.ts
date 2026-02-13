@@ -73,7 +73,20 @@ export type BrandWithStats = {
 export const getBrandById = async (id: string) =>
   prismaClient.brand.findFirst({
     where: { id },
-    select: { id: true, name: true },
+    select: {
+      id: true,
+      name: true,
+      organization: {
+        select: {
+          id: true,
+          displayName: true,
+          authorizedOrganizations: {
+            select: { to: { select: { id: true, displayName: true } } },
+            where: { active: true },
+          },
+        },
+      },
+    },
   })
 
 export const getBrandWithProducts = async (id: string) => {

@@ -12,7 +12,8 @@ import { Business, ProductCategory } from "../types/Product"
 import { encryptProductFields } from "../utils/encryption/encryption"
 
 describe("Brands DB", () => {
-  let orgId: string
+  const orgId = "55e4c3f8-5dec-4416-94cf-00156996ee4d"
+  const consultancyOrgId = "6817811c-0b22-41e8-bbbe-5a4be50db023"
   let brandA: { id: string; name: string }
   let brandB: { id: string; name: string }
   let testUserId: string
@@ -21,10 +22,17 @@ describe("Brands DB", () => {
   beforeAll(async () => {
     await cleanDB()
 
-    const org = await prismaTest.organization.create({
-      data: { name: "Org", displayName: "Org", siret: "12345678901234" },
+    const orgs = await prismaTest.organization.createMany({
+      data: [
+        {
+          name: "Org",
+          displayName: "Org",
+          siret: "12345678901234",
+          id: orgId,
+        },
+        { name: "Consultancy org", displayName: "Nice org", id: consultancyOrgId },
+      ],
     })
-    orgId = org.id
 
     const brands = await prismaTest.brand.createManyAndReturn({
       data: [
@@ -40,6 +48,15 @@ describe("Brands DB", () => {
       data: { email: "brands-test@example.com", organizationId: orgId },
     })
     testUserId = user.id
+
+    await prismaTest.authorizedOrganization.create({
+      data: {
+        fromId: orgId,
+        toId: consultancyOrgId,
+        active: true,
+        createdById: testUserId,
+      },
+    })
 
     const upload = await prismaTest.upload.create({
       data: {
@@ -144,7 +161,22 @@ describe("Brands DB", () => {
 
   it("getBrandById returns brand info", async () => {
     const brand = await getBrandById(brandA.id)
-    expect(brand).toEqual({ id: brandA.id, name: brandA.name })
+    expect(brand).toEqual({
+      id: brandA.id,
+      name: brandA.name,
+      organization: {
+        authorizedOrganizations: [
+          {
+            to: {
+              displayName: "Nice org",
+              id: "6817811c-0b22-41e8-bbbe-5a4be50db023",
+            },
+          },
+        ],
+        displayName: "Org",
+        id: orgId,
+      },
+    })
   })
 
   it("getBrandWithProducts returns brand with total product count by category", async () => {
