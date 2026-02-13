@@ -22,6 +22,13 @@ export const computeBatchScore = (product: Pick<ProductWithScore, "informations"
           swe: acc.swe + value.score.swe,
           tre: acc.tre + value.score.tre,
           wtu: acc.wtu + value.score.wtu,
+          materials: acc.materials + (value.score.materials || 0),
+          spinning: acc.spinning + (value.score.spinning || 0),
+          fabric: acc.fabric + (value.score.fabric || 0),
+          dyeing: acc.dyeing + (value.score.dyeing || 0),
+          making: acc.making + (value.score.making || 0),
+          usage: acc.usage + (value.score.usage || 0),
+          endOfLife: acc.endOfLife + (value.score.endOfLife || 0),
         }
       }
       return acc
@@ -44,6 +51,13 @@ export const computeBatchScore = (product: Pick<ProductWithScore, "informations"
       swe: 0,
       tre: 0,
       wtu: 0,
+      materials: 0,
+      spinning: 0,
+      fabric: 0,
+      dyeing: 0,
+      making: 0,
+      usage: 0,
+      endOfLife: 0,
     },
   )
   return {

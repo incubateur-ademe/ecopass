@@ -1,7 +1,7 @@
 import { ProductWithScore } from "../../db/product"
 import Table from "../Table/Table"
 import styles from "./ProductScore.module.css"
-import { ponderations } from "../../utils/product/impacts"
+import { lyfeCycleStages, ponderations } from "../../utils/product/impacts"
 import Link from "next/link"
 
 type ScoreKey = keyof typeof ponderations
@@ -34,7 +34,6 @@ const ProductScoreImpacts = ({
         headers={["Nom", "Valeur", "Pourcentage", ""]}
         data={Object.entries(ponderations)
           .map(([key, { label, base, ponderation }]) => ({
-            baseValue: score[key as ScoreKey],
             value: (score[key as ScoreKey] / base) * ponderation * 1_000_000,
             label,
           }))
@@ -45,6 +44,26 @@ const ProductScoreImpacts = ({
             <div key={label} className={styles.bar} style={{ width: `${(value / values[0].value) * 100}%` }}></div>,
             (Math.round((value / score.score) * 10_000) / 100).toFixed(2) + "%",
           ])}
+      />
+      <h2>Quels sont les étapes du cycle de vie les plus impactantes de ce produit</h2>
+      <Table
+        noCaption
+        className='fr-mt-4w'
+        fixed
+        headers={["Nom", "Valeur", "Pourcentage", ""]}
+        data={Object.entries(lyfeCycleStages)
+          .map(([key, label]) => ({
+            value: (score[key as ScoreKey] || 0) / score.durability,
+            label,
+          }))
+          .map(({ value, label }, index, values) => {
+            return [
+              label,
+              `${Math.round(value)} pts`,
+              <div key={label} className={styles.bar} style={{ width: `${(value / values[0].value) * 100}%` }}></div>,
+              (Math.round((value / score.score) * 10_000) / 100).toFixed(2) + "%",
+            ]
+          })}
       />
     </>
   )

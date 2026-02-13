@@ -110,9 +110,14 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     body: removeUndefined(productData),
   })
 
+  result.lifeCycle.forEach((stage) => {
+    console.log(`Stage: ${stage.label}, ECS: ${stage.impacts.ecs}`)
+  })
+
   return {
     score: result.impacts.ecs,
     durability: result.durability,
+
     acd: result.impacts.acd,
     cch: result.impacts.cch,
     etf: result.impacts["etf-c"],
@@ -131,6 +136,14 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     wtu: result.impacts.wtu,
     microfibers: result.complementsImpacts.microfibers,
     outOfEuropeEOL: result.complementsImpacts.outOfEuropeEOL,
+
+    materials: result.lifeCycle.find((stage) => stage.label === "Matières premières")?.impacts.ecs,
+    spinning: result.lifeCycle.find((stage) => stage.label === "Filature")?.impacts.ecs,
+    fabric: result.lifeCycle.find((stage) => stage.label === "Tissage & Tricotage")?.impacts.ecs,
+    dyeing: result.lifeCycle.find((stage) => stage.label === "Ennoblissement")?.impacts.ecs,
+    making: result.lifeCycle.find((stage) => stage.label === "Confection")?.impacts.ecs,
+    usage: result.lifeCycle.find((stage) => stage.label === "Utilisation")?.impacts.ecs,
+    endOfLife: result.lifeCycle.find((stage) => stage.label === "Fin de vie")?.impacts.ecs,
   }
 }
 
