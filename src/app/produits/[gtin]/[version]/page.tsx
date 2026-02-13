@@ -41,6 +41,13 @@ const OldProductPage = async (props: Props) => {
           gtin={params.gtin}
           isOld={!!product && product.id !== oldProduct.id}
           isPro={!!session}
+          breadCrumbs={{
+            currentPageLabel: oldProduct.internalReference,
+            segments: [
+              { linkProps: { href: "/" }, label: "Accueil" },
+              { linkProps: { href: "/recherche" }, label: "Recherche" },
+            ],
+          }}
         />
       ) : (
         <EmptyProduct />

@@ -181,7 +181,7 @@ const productWithScoreSelect = {
   id: true,
   gtins: true,
   internalReference: true,
-  brand: { select: { name: true } },
+  brand: { select: { id: true, name: true, organization: { select: { displayName: true, id: true } } } },
   createdAt: true,
   score: true,
   standardized: true,
@@ -225,7 +225,7 @@ const productWithScoreSelect = {
   upload: {
     select: {
       version: true,
-      createdBy: { select: { organization: { select: { displayName: true } } } },
+      createdBy: { select: { organization: { select: { displayName: true, id: true } } } },
     },
   },
 } satisfies Prisma.ProductSelect
@@ -286,7 +286,7 @@ export const getOldProductWithScore = async (gtin: string, version: string) =>
   })
 
 const getProducts = async (
-  where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId" | "createdAt" | "brandId" | "OR">,
+  where: Pick<Prisma.ProductWhereInput, "upload" | "informations" | "uploadId" | "createdAt" | "brandId" | "OR">,
   skip?: number,
   take?: number,
 ) => {
@@ -316,8 +316,63 @@ const getProducts = async (
 
 export type Products = Awaited<ReturnType<typeof getProducts>>
 
-export const getPublicProductsByBrandId = async (brandId: string, page: number) =>
-  getProducts({ brandId }, (page - 1) * 10, 10)
+export const countPublicProductsByBrandId = async (
+  brandId: string,
+  category: string | undefined,
+  organization: string | undefined,
+  from: Date | undefined,
+  to: Date | undefined,
+) => {
+  const result = await prismaClient.product.findMany({
+    where: {
+      status: Status.Done,
+      brandId,
+      informations: category
+        ? {
+            some: {
+              categorySlug: productCategories[category],
+            },
+          }
+        : undefined,
+      upload: organization ? { organizationId: organization } : undefined,
+      createdAt: {
+        gte: from,
+        lte: to,
+      },
+    },
+    select: { internalReference: true },
+    distinct: ["internalReference"],
+  })
+  return result.length
+}
+
+export const getPublicProductsByBrandId = async (
+  brandId: string,
+  category: string | undefined,
+  organization: string | undefined,
+  from: Date | undefined,
+  to: Date | undefined,
+  page: number,
+) =>
+  getProducts(
+    {
+      brandId,
+      informations: category
+        ? {
+            some: {
+              categorySlug: productCategories[category],
+            },
+          }
+        : undefined,
+      upload: organization ? { organizationId: organization } : undefined,
+      createdAt: {
+        gte: from,
+        lte: to,
+      },
+    },
+    (page - 1) * 10,
+    10,
+  )
 
 export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brand?: string) => {
   const user = await prismaClient.user.findUnique({
@@ -815,4 +870,49 @@ export const getLastBrands = async () => {
   })
 
   return brands.map((brand) => brandsDetails.find((b) => b.id === brand.brandId)).filter((brand) => brand !== undefined)
+}
+
+export const getLatestProductsByBrandIdForExport = async (
+  brandId: string,
+  category?: string,
+  organization?: string,
+) => {
+  const latest = await prismaClient.product.findMany({
+    where: {
+      status: Status.Done,
+      brandId,
+      informations: category
+        ? {
+            some: {
+              categorySlug: productCategories[category],
+            },
+          }
+        : undefined,
+      upload: organization ? { organizationId: organization } : undefined,
+    },
+    select: { id: true, internalReference: true, createdAt: true },
+    distinct: ["internalReference"],
+    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
+  })
+
+  if (latest.length === 0) {
+    return []
+  }
+
+  return prismaClient.product.findMany({
+    where: {
+      id: { in: latest.map((row) => row.id) },
+    },
+    include: {
+      brand: { select: { id: true, name: true } },
+      informations: {
+        include: {
+          materials: true,
+          accessories: true,
+          score: true,
+        },
+      },
+    },
+    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
+  })
 }

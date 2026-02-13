@@ -9,6 +9,7 @@ import { OrganizationType, UserRole } from "@prisma/enums"
 const Header = ({ session, type }: { session: Session | null; type: OrganizationType | null }) => {
   const canDeclare = type ? organizationTypesAllowedToDeclare.includes(type) : false
   const pathname = usePathname()
+
   return (
     <HeaderDSFR
       brandTop={
@@ -65,16 +66,20 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
             ]
           : [
               { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
-              {
-                linkProps: { href: "/organisation" },
-                text: "Organisation",
-                isActive: pathname.startsWith("/organisation"),
-              },
-              {
-                linkProps: { href: "/informations" },
-                text: "Informez-vous",
-                isActive: pathname === "/informations",
-              },
+              session.user.role !== UserRole.DGCCRF
+                ? {
+                    linkProps: { href: "/organisation" },
+                    text: "Organisation",
+                    isActive: pathname.startsWith("/organisation"),
+                  }
+                : null,
+              session.user.role !== UserRole.DGCCRF
+                ? {
+                    linkProps: { href: "/informations" },
+                    text: "Informez-vous",
+                    isActive: pathname === "/informations",
+                  }
+                : null,
               {
                 linkProps: { href: "/marques" },
                 text: "Les marques déclarantes",

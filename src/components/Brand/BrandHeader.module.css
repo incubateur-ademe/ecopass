@@ -29,32 +29,33 @@
   padding: 1.5rem 0;
   border-top: 1px solid var(--border-default-grey);
   border-bottom: 1px solid var(--border-default-grey);
+  color: var(--text-title-grey);
 }
 
 .categoryPreviewItem {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
-  min-width: 90px;
+  min-width: 5rem;
 }
 
 .categoryPreviewIcon {
-  width: 56px;
-  height: 56px;
+  width: 3.5rem;
+  height: 3.5rem;
 }
 
 .categoryPreviewLabel {
   font-size: 0.9rem;
   font-weight: 600;
   text-align: center;
-  color: var(--text-title-grey);
 }
 
 .categoryPreviewCount {
   font-size: 1.3rem;
   font-weight: 800;
-  color: var(--blue-france-sun-113-625);
 }
 
 @media screen and (max-width: 50rem) {

@@ -14,13 +14,14 @@ const BrandProductsTable = ({
   products,
   brandId,
   currentPage,
-  totalPages,
+  productCount,
 }: {
   products: Products
   brandId: string
   currentPage: number
-  totalPages: number
+  productCount: number
 }) => {
+  const totalPages = Math.ceil(productCount / 10)
   const tableRows = products.map((product) => {
     const isBatch = product.informations.length !== 1
     const categorySlug = !isBatch ? product.informations[0].categorySlug : undefined
@@ -47,7 +48,7 @@ const BrandProductsTable = ({
   })
 
   return (
-    <div>
+    <>
       <div className={styles.tableHeader} id='produits'>
         <h2>Liste complète des produits déclarés</h2>
       </div>
@@ -68,7 +69,7 @@ const BrandProductsTable = ({
           showFirstLast
         />
       )}
-    </div>
+    </>
   )
 }
 
