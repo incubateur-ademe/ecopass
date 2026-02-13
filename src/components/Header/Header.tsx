@@ -9,6 +9,7 @@ import { OrganizationType, UserRole } from "@prisma/enums"
 const Header = ({ session, type }: { session: Session | null; type: OrganizationType | null }) => {
   const canDeclare = type ? organizationTypesAllowedToDeclare.includes(type) : false
   const pathname = usePathname()
+  console.log(type, canDeclare)
   return (
     <HeaderDSFR
       brandTop={
@@ -44,22 +45,23 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
                 text: "Organisation",
                 isActive: pathname.startsWith("/organisation"),
               },
-              session.user.role === UserRole.ADMIN
-                ? { linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }
-                : null,
             ]
           : [
               { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
-              {
-                linkProps: { href: "/organisation" },
-                text: "Organisation",
-                isActive: pathname.startsWith("/organisation"),
-              },
-              {
-                linkProps: { href: "/informations" },
-                text: "Informez-vous",
-                isActive: pathname === "/informations",
-              },
+              session.user.role !== UserRole.DGCCRF
+                ? {
+                    linkProps: { href: "/organisation" },
+                    text: "Organisation",
+                    isActive: pathname.startsWith("/organisation"),
+                  }
+                : null,
+              session.user.role !== UserRole.DGCCRF
+                ? {
+                    linkProps: { href: "/informations" },
+                    text: "Informez-vous",
+                    isActive: pathname === "/informations",
+                  }
+                : null,
               {
                 linkProps: { href: "/marques" },
                 text: "Les marques déclarantes",
@@ -72,6 +74,9 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
               },
               type === OrganizationType.Distributor
                 ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") }
+                : null,
+              session.user.role === UserRole.ADMIN || session.user.role === UserRole.DGCCRF
+                ? { linkProps: { href: "/dgccrf" }, text: "DGCCRF", isActive: pathname.startsWith("/dgccrf") }
                 : null,
               session.user.role === UserRole.ADMIN
                 ? { linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }

@@ -20,56 +20,91 @@ const clean = async () => {
 }
 
 const users = async () => {
-  await prismaClient.organization.create({
-    data: {
-      siret: "31723624800017",
-      name: "EMMAUS",
-      displayName: "Emmaus",
-      effectif: "41",
-      naf: "87.90B",
-      type: OrganizationType.Brand,
-      brands: {
-        createMany: {
-          data: [
-            { name: "Emmaus Solidarité", id: "26ed7820-ebca-4235-b1d3-dbeab02b1768" },
-            { name: "Emmaus Connect", id: "175570b3-59e4-40b4-89be-08a185685f78" },
-            { name: "Emmaus", default: true, id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56" },
-          ],
+  await Promise.all([
+    prismaClient.organization.create({
+      data: {
+        siret: "31723624800017",
+        name: "EMMAUS",
+        displayName: "Emmaus",
+        effectif: "41",
+        naf: "87.90B",
+        type: OrganizationType.Brand,
+        brands: {
+          createMany: {
+            data: [
+              { name: "Emmaus Solidarité", id: "26ed7820-ebca-4235-b1d3-dbeab02b1768" },
+              { name: "Emmaus Connect", id: "175570b3-59e4-40b4-89be-08a185685f78" },
+              { name: "Emmaus", default: true, id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56" },
+            ],
+          },
         },
       },
-    },
-  })
-
-  await prismaClient.user.create({
-    data: {
-      email: "ecopass-password@yopmail.com",
-      nom: "Ecopass",
-      prenom: "Password",
-      organization: {
-        connect: { siret: "31723624800017" },
-      },
-      accounts: {
-        create: {
-          provider: "credentials",
-          providerAccountId: "ecopass-password@yopmail.com",
-          type: "credentials",
-          password: await signPassword("ecopasscestsupercool"),
+    }),
+    prismaClient.organization.create({
+      data: {
+        uniqueId: "5310fbe6-5975-458b-a5d2-53fd5ddb5ce0",
+        name: "DGCCRF",
+        displayName: "DGCCRF",
+        type: OrganizationType.Other,
+        brands: {
+          createMany: {
+            data: [{ name: "DGCCRF", default: true, id: "9b4cf6b0-9eb0-4b57-9b6c-03a1e37c7064" }],
+          },
         },
       },
-    },
-  })
+    }),
+  ])
 
-  const user = await prismaClient.user.create({
-    data: {
-      email: "ecopass-admin-dev@yopmail.com",
-      role: UserRole.ADMIN,
-      nom: "Ecopass",
-      prenom: "Admin",
-      organization: {
-        connect: { siret: "31723624800017" },
+  const [, , user] = await Promise.all([
+    prismaClient.user.create({
+      data: {
+        email: "ecopass-password@yopmail.com",
+        nom: "Ecopass",
+        prenom: "Password",
+        organization: {
+          connect: { siret: "31723624800017" },
+        },
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "ecopass-password@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
       },
-    },
-  })
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "ecopass-dgccrf@yopmail.com",
+        nom: "Ecopass",
+        prenom: "DGCCRF",
+        organization: {
+          connect: { uniqueId: "5310fbe6-5975-458b-a5d2-53fd5ddb5ce0" },
+        },
+        role: UserRole.DGCCRF,
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "ecopass-dgccrf@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "ecopass-admin-dev@yopmail.com",
+        role: UserRole.ADMIN,
+        nom: "Ecopass",
+        prenom: "Admin",
+        organization: {
+          connect: { siret: "31723624800017" },
+        },
+      },
+    }),
+  ])
 
   await prismaClient.aPIKey.create({
     data: {
