@@ -44,7 +44,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
       <Search withoutHint />
       <div data-testid='products-table'>
         <Table
-          headers={["Référence interne", "Catégorie", "Score", "Date de dépot", "Détails"]}
+          headers={["Référence interne", "Catégorie", "Score", "Date de dépôt", "Détails"]}
           data={products.map((product) => [
             <b key={`${product.id}-reference`}>{product.internalReference}</b>,
             <div className={styles.category} key={`cat-${product.id}`}>

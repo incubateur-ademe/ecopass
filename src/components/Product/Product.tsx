@@ -14,6 +14,8 @@ import { ProductCategory } from "../../types/Product"
 import DownloadScore from "./DownloadScore"
 import ProductScoreImpacts from "./ProductScoreImpacts"
 import DurabilityBadge from "./DurabilityBadge"
+import { BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
+import Link from "next/link"
 
 const Product = ({
   product,
@@ -21,20 +23,20 @@ const Product = ({
   isPro,
   isOld,
   brandId,
+  breadCrumbs,
 }: {
   product: ProductWithScore
   gtin: string
   isPro?: boolean
   isOld?: boolean
   brandId?: string
+  breadCrumbs?: BreadcrumbProps
 }) => {
   const isBatch = product.informations.length > 1
   const totalScore = computeBatchScore(product)
   return (
     <>
-      <Block
-        home
-        backLink={{ url: brandId ? `/marques/${brandId}` : "/recherche", label: "Consulter une autre fiche produit" }}>
+      <Block home breadCrumbs={breadCrumbs}>
         {isPro && (
           <Badge severity={isOld ? "warning" : "success"} className='fr-mb-4w'>
             {isOld ? "Déclaration obsolète" : "Déclaration validée"}
@@ -46,7 +48,9 @@ const Product = ({
             <h2 className={styles.title}>
               {product.internalReference}
               <br />
-              <span className={styles.brandName}>{product.brand?.name}</span>
+              <Link href={`/marques/${product.brand?.id}`} className={styles.brandName}>
+                {product.brand?.name}
+              </Link>
             </h2>
             {!isBatch && product.informations[0].categorySlug !== null && (
               <Image
@@ -82,7 +86,10 @@ const Product = ({
           </p>
           {product.upload.createdBy.organization && (
             <p>
-              Par : <b>{product.upload.createdBy.organization.displayName}</b>
+              Par :{" "}
+              <Link href={`/organisations/${product.upload.createdBy.organization.id}`}>
+                <b>{product.upload.createdBy.organization.displayName}</b>
+              </Link>
             </p>
           )}
           <p>

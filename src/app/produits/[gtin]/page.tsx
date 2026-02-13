@@ -31,7 +31,22 @@ const ProductPage = async (props: Props) => {
   return (
     <>
       <StartDsfrOnHydration />
-      {product ? <Product product={product} gtin={params.gtin} isPro={!!session} /> : <EmptyProduct />}
+      {product ? (
+        <Product
+          product={product}
+          gtin={params.gtin}
+          isPro={!!session}
+          breadCrumbs={{
+            currentPageLabel: product.internalReference,
+            segments: [
+              { linkProps: { href: "/" }, label: "Accueil" },
+              { linkProps: { href: "/recherche" }, label: "Recherche" },
+            ],
+          }}
+        />
+      ) : (
+        <EmptyProduct />
+      )}
     </>
   )
 }

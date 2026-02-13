@@ -1,6 +1,6 @@
 import { getUserOrganization } from "../../db/user"
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
-import Organization from "../../views/Organization"
+import Organization from "../../views/MyOrganization"
 import { Metadata } from "next"
 import { tryAndGetSession } from "../../services/auth/redirect"
 import { redirect } from "next/navigation"

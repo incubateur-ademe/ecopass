@@ -1,7 +1,7 @@
 import classNames from "classnames"
 import { ReactNode } from "react"
 import styles from "./Block.module.css"
-import BackLink from "./BackLink"
+import { Breadcrumb, BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
 
 const Block = ({
   children,
@@ -10,7 +10,7 @@ const Block = ({
   noMargin,
   large,
   home,
-  backLink,
+  breadCrumbs,
 }: {
   children: ReactNode
   className?: string
@@ -18,7 +18,7 @@ const Block = ({
   noMargin?: boolean
   large?: boolean
   home?: boolean
-  backLink?: { url: string; label: string }
+  breadCrumbs?: BreadcrumbProps
 }) => {
   return (
     <div
@@ -30,8 +30,9 @@ const Block = ({
         className={classNames("fr-container", styles.container, className, {
           [styles.noMargin]: noMargin,
           [styles.large]: large,
+          [styles.withBreadcrumbs]: breadCrumbs,
         })}>
-        {backLink && <BackLink {...backLink} />}
+        {breadCrumbs && <Breadcrumb {...breadCrumbs} />}
         {children}
       </div>
     </div>

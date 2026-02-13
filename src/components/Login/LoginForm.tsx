@@ -51,7 +51,7 @@ const LoginForm = () => {
       <div className={styles.box}>
         <h3>Avec mon accès ProConnect</h3>
         <p className={styles.description}>
-          Je suis une entreprise française avec un numéro siret et un accès France connect (pour les entreprises de
+          Je suis une entreprise française avec un numéro SIRET et un accès France connect (pour les entreprises de
           moins de 50 salariés)
         </p>
         <ProConnectButton
@@ -71,7 +71,7 @@ const LoginForm = () => {
               <>
                 <h3 className={styles.title}>Je n’ai pas d’accès ProConnect</h3>
                 <p className={styles.description}>
-                  Vous n’avez pas de siret ou/et pas de compte France connect, remplissez ce formulaire pour fournir les
+                  Vous n’avez pas de SIRET ou/et pas de compte France connect, remplissez ce formulaire pour fournir les
                   pièces nécessaires à la création de votre espace.
                 </p>
                 <Button
