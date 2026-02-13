@@ -8,7 +8,7 @@ const KeyResults = () => {
       <h2 className={styles.heading}>Chiffres clés</h2>
       <div className={styles.grid}>
         <KeyResult
-          imageSrc='/images/key-results/sewing-machine.png'
+          imageSrc='/images/key-results/chemises.webp'
           source="Source : Estimation d'après le baromètre Refashion sur les ventes 2022">
           <p>
             <span>Environ</span>
@@ -17,7 +17,7 @@ const KeyResults = () => {
           </p>
         </KeyResult>
         <KeyResult
-          imageSrc='/images/key-results/clothes-pile.png'
+          imageSrc='/images/key-results/jeans.webp'
           source='Source : Volumes and destruction of returned and unsold textiles in Europe‘s circular economy, ETC CE Report 2024/4 Volumes'>
           <p>Plus de</p>
           <p>
@@ -26,7 +26,7 @@ const KeyResults = () => {
           <p>(invendus) chaque année dans le monde.</p>
         </KeyResult>
         <KeyResult
-          imageSrc='/images/key-results/polar-bear.png'
+          imageSrc='/images/key-results/planete.webp'
           source='Source : EU Strategy for Sustainable and Circular Textiles'>
           <p>La consommation européenne de textiles représente la</p>
           <p>
@@ -36,7 +36,7 @@ const KeyResults = () => {
           </p>
           <p>de l&apos;UE, après l&apos;alimentation, le logement et les transports.</p>
         </KeyResult>
-        <KeyResult imageSrc='/images/key-results/clothes-bag.png' source="Source : Refashion, Rapport d'activité 2022">
+        <KeyResult imageSrc='/images/key-results/carton.webp' source="Source : Refashion, Rapport d'activité 2022">
           <p>Chaque Français a acheté en moyenne</p>
           <p>
             <strong>40 PIÈCES D&apos;HABILLEMENT ET 4 PAIRES DE CHAUSSURES EN 2022.</strong>

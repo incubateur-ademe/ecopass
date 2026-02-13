@@ -2,6 +2,14 @@ import "dotenv/config"
 import { prismaClient } from "../db/prismaClient"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { computeBatchScore } from "../utils/ecobalyse/batches"
+import { getValue } from "../utils/parsing/parsing"
+import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../types/Product"
+import { businesses } from "../utils/types/business"
+import { countries } from "../utils/types/country"
+import { impressions } from "../utils/types/impression"
+import { materials } from "../utils/types/material"
+import { accessories } from "../utils/types/accessory"
+import { productCategories } from "../utils/types/productCategory"
 
 const getLatestProductIds = async () => {
   const result = await prismaClient.$queryRaw<Array<{ id: string }>>`
@@ -54,14 +62,14 @@ const main = async (batchSize: number) => {
             create: product.informations.map((information) => {
               const decrypted = decryptProductFields(information)
               return {
-                category: decrypted.categorySlug || decrypted.category,
+                category: getValue<ProductCategory>(productCategories, decrypted.category),
                 emptyTrims: information.emptyTrims,
-                business: decrypted.business,
-                countryDyeing: decrypted.countryDyeing,
-                countryFabric: decrypted.countryFabric,
-                countryMaking: decrypted.countryMaking,
-                countrySpinning: decrypted.countrySpinning,
-                impression: decrypted.impression,
+                business: getValue<Business>(businesses, decrypted.business),
+                countryDyeing: getValue<Country>(countries, decrypted.countryDyeing),
+                countryFabric: getValue<Country>(countries, decrypted.countryFabric),
+                countryMaking: getValue<Country>(countries, decrypted.countryMaking),
+                countrySpinning: getValue<Country>(countries, decrypted.countrySpinning),
+                impression: getValue<Impression>(impressions, decrypted.impression),
                 mass: decrypted.mass,
                 price: decrypted.price,
                 airTransportRatio: decrypted.airTransportRatio,
@@ -71,14 +79,14 @@ const main = async (batchSize: number) => {
                 upcycled: decrypted.upcycled,
                 materials: {
                   create: (decrypted.materials || []).map((material) => ({
-                    slug: material.slug,
-                    country: material.country ?? null,
+                    slug: getValue<MaterialType>(materials, material.slug),
+                    country: getValue<Country>(countries, material.country ?? null),
                     share: material.share,
                   })),
                 },
                 accessories: {
                   create: (decrypted.accessories || []).map((accessory) => ({
-                    slug: accessory.slug,
+                    slug: getValue<AccessoryType>(accessories, accessory.slug),
                     quantity: accessory.quantity,
                   })),
                 },
