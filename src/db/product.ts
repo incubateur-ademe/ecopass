@@ -816,3 +816,36 @@ export const getLastBrands = async () => {
 
   return brands.map((brand) => brandsDetails.find((b) => b.id === brand.brandId)).filter((brand) => brand !== undefined)
 }
+
+export const getLatestProductsByBrandIdForExport = async (brandId: string) => {
+  const latest = await prismaClient.product.findMany({
+    where: {
+      status: Status.Done,
+      brandId,
+    },
+    select: { id: true, internalReference: true, createdAt: true },
+    distinct: ["internalReference"],
+    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
+  })
+
+  if (latest.length === 0) {
+    return []
+  }
+
+  return prismaClient.product.findMany({
+    where: {
+      id: { in: latest.map((row) => row.id) },
+    },
+    include: {
+      brand: { select: { id: true, name: true } },
+      informations: {
+        include: {
+          materials: true,
+          accessories: true,
+          score: true,
+        },
+      },
+    },
+    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
+  })
+}

@@ -3,6 +3,8 @@ import { StartDsfrOnHydration } from "../dsfr-bootstrap"
 import Home from "../views/Home"
 import { tryAndGetSession } from "../services/auth/redirect"
 import { getUserOrganizationType } from "../serverFunctions/user"
+import { UserRole } from "@prisma/enums"
+import DGCCRFHome from "../views/DGCCRFHome"
 
 export const metadata: Metadata = {
   title: "Accueil - Affichage environnemental",
@@ -14,7 +16,7 @@ export default async function HomePage() {
   return (
     <>
       <StartDsfrOnHydration />
-      <Home connected={!!session} type={type} />
+      {session && session.user.role === UserRole.DGCCRF ? <DGCCRFHome /> : <Home connected={!!session} type={type} />}
     </>
   )
 }

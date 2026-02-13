@@ -67,7 +67,7 @@ export const authOptions = {
           throw new Error("Invalid crendentials")
         }
 
-        return { email: user.email || "", id: user.id }
+        return { email: user.email || "", id: user.id, role: user.role || undefined }
       },
     }),
     {
