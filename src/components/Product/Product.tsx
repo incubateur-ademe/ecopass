@@ -73,9 +73,7 @@ const Product = ({
             </div>
           </div>
         </div>
-      </Block>
-      <Block>
-        <div data-testid='product-details'>
+        <div data-testid='product-details' className='fr-mt-5w'>
           <p>
             Code-barres : <b>{product.gtins.join(", ")}</b>
           </p>

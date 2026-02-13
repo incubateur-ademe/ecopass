@@ -94,6 +94,16 @@ export const getEcobalyseIds = async (type: "materials" | "products" | "trims") 
   return result
 }
 
+const lifeCycles = {
+  materials: "Matières premières",
+  spinning: "Filature",
+  fabric: "Tissage & Tricotage",
+  dyeing: "Ennoblissement",
+  making: "Confection",
+  usage: "Utilisation",
+  endOfLife: "Fin de vie",
+}
+
 export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
   const productData = {
     ...product,
@@ -110,9 +120,19 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     body: removeUndefined(productData),
   })
 
+  const lifeCycleValues: Partial<Record<keyof typeof lifeCycles | "transport", number>> = {
+    transport: result.transport.impacts.ecs,
+  }
+
+  Object.entries(lifeCycles).forEach(([key, label]) => {
+    lifeCycleValues[key as keyof typeof lifeCycles] =
+      result.lifeCycle.find((stage) => stage.label === label)?.impacts.ecs || 0
+  })
+
   return {
     score: result.impacts.ecs,
     durability: result.durability,
+
     acd: result.impacts.acd,
     cch: result.impacts.cch,
     etf: result.impacts["etf-c"],
@@ -131,6 +151,10 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     wtu: result.impacts.wtu,
     microfibers: result.complementsImpacts.microfibers,
     outOfEuropeEOL: result.complementsImpacts.outOfEuropeEOL,
+
+    trims:
+      result.impacts.ecs * result.durability - Object.values(lifeCycleValues).reduce((acc, value) => acc + value, 0),
+    ...lifeCycleValues,
   }
 }
 
