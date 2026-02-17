@@ -10,6 +10,7 @@ import { createScore, createScores } from "./score"
 import { APIUser } from "../services/auth/auth"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { cleanDB } from "./testUtils"
+import { trim } from "zod"
 
 describe("Score DB integration", () => {
   let user: NonNullable<APIUser>["user"]
@@ -136,6 +137,15 @@ describe("Score DB integration", () => {
         durability: 0.82,
         microfibers: 8.7,
         outOfEuropeEOL: 0.6,
+        materials: 120,
+        transport: 25,
+        spinning: 8,
+        fabric: 4,
+        dyeing: 2,
+        making: 0.5,
+        usage: 0.3,
+        endOfLife: 0.1,
+        trims: 0.00012,
       },
       {
         productId: id2,
@@ -160,6 +170,15 @@ describe("Score DB integration", () => {
         durability: 0.45,
         microfibers: 18.2,
         outOfEuropeEOL: 2.1,
+        materials: 150,
+        transport: 30,
+        spinning: 10,
+        fabric: 5,
+        dyeing: 3,
+        making: 1,
+        usage: 0.5,
+        endOfLife: 0.2,
+        trims: 0.00034,
       },
     ]
 
@@ -234,6 +253,15 @@ describe("Score DB integration", () => {
       durability: 0.67,
       microfibers: 12.3,
       outOfEuropeEOL: 1.2,
+      materials: 120,
+      transport: 25,
+      spinning: 8,
+      fabric: 4,
+      dyeing: 2,
+      making: 0.5,
+      usage: 0.3,
+      endOfLife: 0.1,
+      trims: 0.00012,
     }
 
     const product = {

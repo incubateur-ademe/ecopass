@@ -108,11 +108,8 @@ const BrandsList = ({
               noCaption
               headers={["Marques", "Nombre de produits déclarés", "Date de la dernière déclaration"]}
               data={paginatedBrands.map((brand) => [
-                <Link
-                  className={styles.link}
-                  href={`/marques/${brand.id}?${getSearchParams(search, currentPage)}`}
-                  key={brand.id}>
-                  {brand.name} <span className='fr-icon-arrow-right-line' aria-hidden='true'></span>
+                <Link className={styles.link} href={`/marques/${brand.id}?${getSearchParams(search)}`} key={brand.id}>
+                  {brand.name} <span className='fr-icon-arrow-right-line' aria-hidden='true' />
                 </Link>,
                 <Badge key={brand.id} severity='info' noIcon>
                   {brand.productCount.toString()}

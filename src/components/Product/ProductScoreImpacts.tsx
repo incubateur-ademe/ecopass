@@ -36,6 +36,7 @@ const ProductScoreImpacts = ({
       <Table
         className='fr-mt-4w'
         noCaption
+        fixed
         caption='Détails des impacts environnementaux'
         headers={["Nom", "Valeur", "Pourcentage", ""]}
         data={Object.entries(ponderations)

@@ -445,6 +445,15 @@ describe("Product DB integration", () => {
         wtu: 1,
         microfibers: 1,
         outOfEuropeEOL: 1,
+        materials: 1,
+        transport: 1,
+        spinning: 1,
+        fabric: 1,
+        dyeing: 1,
+        making: 1,
+        usage: 1,
+        endOfLife: 1,
+        trims: 1,
       },
     })
 
@@ -473,6 +482,15 @@ describe("Product DB integration", () => {
         wtu: 2,
         microfibers: 2,
         outOfEuropeEOL: 2,
+        materials: 2,
+        transport: 2,
+        spinning: 2,
+        fabric: 2,
+        dyeing: 2,
+        making: 2,
+        usage: 2,
+        endOfLife: 2,
+        trims: 2,
       },
     })
 
