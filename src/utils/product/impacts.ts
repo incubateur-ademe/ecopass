@@ -21,6 +21,18 @@ export const ponderations = {
   outOfEuropeEOL: { label: "Complément export hors-Europe", base: 1_000_000, ponderation: 1 },
 }
 
+export const lifeCycleStages = {
+  trims: "Accessoires",
+  materials: "Matières premières",
+  spinning: "Filature",
+  fabric: "Tissage & Tricotage",
+  dyeing: "Ennoblissement",
+  making: "Confection",
+  transport: "Transport",
+  usage: "Utilisation",
+  endOfLife: "Fin de vie",
+} as const
+
 export const impactCategories = {
   climat: {
     icon: "climat",

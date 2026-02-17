@@ -119,7 +119,7 @@ const defaultProduct = async () => {
     airTransportRatio: 0,
     business: Business.Small,
     fading: true,
-    mass: 150,
+    mass: 0.15,
     numberOfReferences: 1,
     price: 45,
     countryDyeing: Country.France,
@@ -138,7 +138,7 @@ const defaultProduct = async () => {
         share: 0.85,
       },
       {
-        id: "elastane",
+        id: "elasthane",
         country: Country.Maroc,
         share: 0.15,
       },

@@ -40,8 +40,9 @@ const ProductHistory = ({ brandId, gtin }: { brandId?: string; gtin: string }) =
 
   return (
     <div data-testid='history-table' className='fr-mt-8w'>
+      <h2>Historique des versions</h2>
       <Table
-        caption='Historique des versions'
+        noCaption
         fixed
         headers={["Déposé le", "Par", "Version Ecobalyse", "Score", ""]}
         data={history.map((version) => [
