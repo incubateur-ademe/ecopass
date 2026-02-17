@@ -120,8 +120,15 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     body: removeUndefined(productData),
   })
 
-  const lifeCycleValues: Partial<Record<keyof typeof lifeCycles | "transport", number>> = {
+  const lifeCycleValues: Record<keyof typeof lifeCycles | "transport", number> = {
     transport: result.transport.impacts.ecs,
+    materials: 0,
+    spinning: 0,
+    fabric: 0,
+    dyeing: 0,
+    making: 0,
+    usage: 0,
+    endOfLife: 0,
   }
 
   Object.entries(lifeCycles).forEach(([key, label]) => {
