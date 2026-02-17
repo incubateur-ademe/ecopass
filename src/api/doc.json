@@ -392,25 +392,34 @@
                       "createdAt": "2025-11-27T10:00:00Z",
                       "category": "T-shirt",
                       "score": {
-                        "score": 2311.08,
-                        "standardized": 955.01,
-                        "durability": 1.06,
-                        "acd": 0.105,
-                        "cch": 2.794,
-                        "etf": 172.27,
-                        "fru": 44.07,
-                        "fwe": 0.0007,
-                        "ior": 8.66,
-                        "ldu": 48.77,
-                        "mru": 0.0014,
-                        "ozd": 2.33e-7,
-                        "pco": 0.024,
-                        "pma": 2.9e-7,
-                        "swe": 0.007,
-                        "tre": 0.085,
-                        "wtu": 0.438,
-                        "microfibers": 129.95,
-                        "outOfEuropeEOL": 138.12
+                        "score": 1404.965599718265,
+                        "standardized": 936.6437331455104,
+                        "durability": 0.67,
+                        "acd": 0.04195569657855826,
+                        "cch": 7.74213460144599,
+                        "etf": 305.9071623783734,
+                        "fru": 99.54550743506823,
+                        "fwe": 0.001226779343506402,
+                        "ior": 9.453062345833024,
+                        "ldu": 102.9176328600372,
+                        "mru": 0.00002244465726084131,
+                        "ozd": 1.904132357839134e-7,
+                        "pco": 0.03029830439785,
+                        "pma": 5.17488501906917e-7,
+                        "swe": 0.0245479277707963,
+                        "tre": 0.1024326352422391,
+                        "wtu": 2.089747384008741,
+                        "microfibers": 55.97014925373134,
+                        "outOfEuropeEOL": 54.85074626865671,
+                        "materials": 410.5263602338779,
+                        "spinning": 42.6176992142446,
+                        "fabric": 30.19844148041522,
+                        "dyeing": 201.2995480190762,
+                        "making": 26.750412,
+                        "usage": 106.7891634,
+                        "endOfLife": 41.73391728,
+                        "transport": 80.60366918362402,
+                        "trims": 0.8077410000000782
                       },
                       "upload": {
                         "version": "7.0.0",
@@ -1324,25 +1333,34 @@
           "createdAt": "2025-08-08T10:17:58.231Z",
           "category": "Chaussettes",
           "score": {
-            "score": 2311.078426292239,
-            "standardized": 955.008359333349,
-            "durability": 1.06,
-            "acd": 0.1049088905964158,
-            "cch": 2.794430456618692,
-            "etf": 172.2658976359552,
-            "fru": 44.07360301333709,
-            "fwe": 0.0007120915634146073,
-            "ior": 8.660045224543365,
-            "ldu": 48.76698455485243,
-            "mru": 0.001361737365871345,
-            "ozd": 2.333908506457944e-7,
-            "pco": 0.02443578069892489,
-            "pma": 2.904338778583435e-7,
-            "swe": 0.007269255547161345,
-            "tre": 0.0852166469255385,
-            "wtu": 0.4375728953090684,
-            "microfibers": 129.9470834508611,
-            "outOfEuropeEOL": 138.1201431619307
+            "score": 1404.965599718265,
+            "standardized": 936.6437331455104,
+            "durability": 0.67,
+            "acd": 0.04195569657855826,
+            "cch": 7.74213460144599,
+            "etf": 305.9071623783734,
+            "fru": 99.54550743506823,
+            "fwe": 0.001226779343506402,
+            "ior": 9.453062345833024,
+            "ldu": 102.9176328600372,
+            "mru": 0.00002244465726084131,
+            "ozd": 1.904132357839134e-7,
+            "pco": 0.03029830439785,
+            "pma": 5.17488501906917e-7,
+            "swe": 0.0245479277707963,
+            "tre": 0.1024326352422391,
+            "wtu": 2.089747384008741,
+            "microfibers": 55.97014925373134,
+            "outOfEuropeEOL": 54.85074626865671,
+            "materials": 410.5263602338779,
+            "spinning": 42.6176992142446,
+            "fabric": 30.19844148041522,
+            "dyeing": 201.2995480190762,
+            "making": 26.750412,
+            "usage": 106.7891634,
+            "endOfLife": 41.73391728,
+            "transport": 80.60366918362402,
+            "trims": 0.8077410000000782
           },
           "upload": {
             "version": "7.0.0",
@@ -1374,68 +1392,77 @@
           },
           "acd": {
             "type": "number",
-            "description": "Acidification (en points)"
+            "description": "Impact - Acidification (en points)"
           },
           "cch": {
             "type": "number",
-            "description": "Changement climatique (en points)"
+            "description": "Impact - Changement climatique (en points)"
           },
           "etf": {
             "type": "number",
-            "description": "Écotoxicité pour écosystèmes d'eau douce, corrigée (en points)"
+            "description": "Impact - Écotoxicité pour écosystèmes d'eau douce, corrigée (en points)"
           },
           "fru": {
             "type": "number",
-            "description": "Épuisement des ressources fossiles (en points)"
+            "description": "Impact - Épuisement des ressources fossiles (en points)"
           },
           "fwe": {
             "type": "number",
-            "description": "Eutrophisation eaux douces (en points)"
+            "description": "Impact - Eutrophisation eaux douces (en points)"
           },
           "ior": {
             "type": "number",
-            "description": "Rayonnements ionisants (en points)"
+            "description": "Impact - Rayonnements ionisants (en points)"
           },
           "ldu": {
             "type": "number",
-            "description": "Occupation des sols (en points)"
+            "description": "Impact - Occupation des sols (en points)"
           },
           "mru": {
             "type": "number",
-            "description": "Épuisement des ressources minéraux et métaux (en points)"
+            "description": "Impact - Épuisement des ressources minéraux et métaux (en points)"
           },
           "ozd": {
             "type": "number",
-            "description": "Appauvrissement de la couche d'ozone (en points)"
+            "description": "Impact - Appauvrissement de la couche d'ozone (en points)"
           },
           "pco": {
             "type": "number",
-            "description": "Formation photochimique d'ozone (en points)"
+            "description": "Impact - Formation photochimique d'ozone (en points)"
           },
           "pma": {
             "type": "number",
-            "description": "Particules (en points)"
+            "description": "Impact - Particules (en points)"
           },
           "swe": {
             "type": "number",
-            "description": "Eutrophisation marine (en points)"
+            "description": "Impact - Eutrophisation marine (en points)"
           },
           "tre": {
             "type": "number",
-            "description": "Eutrophisation terrestre (en points)"
+            "description": "Impact - Eutrophisation terrestre (en points)"
           },
           "wtu": {
             "type": "number",
-            "description": "Consommation d'eau (en points)"
+            "description": "Impact - Consommation d'eau (en points)"
           },
           "microfibers": {
             "type": "number",
-            "description": "Émission de microfibres (en points)"
+            "description": "Impact - Émission de microfibres (en points)"
           },
           "outOfEuropeEOL": {
             "type": "number",
-            "description": "Fin de vie hors Europe (en points)"
-          }
+            "description": "Impact - Fin de vie hors Europe (en points)"
+          },
+          "materials": { "type": "number", "description": "Cycle de vie - Matières premières (en points)" },
+          "spinning": { "type": "number", "description": "Cycle de vie - Filature (en points)" },
+          "fabric": { "type": "number", "description": "Cycle de vie - Tissage & Tricotage (en points)" },
+          "dyeing": { "type": "number", "description": "Cycle de vie - Ennoblissement (en points)" },
+          "making": { "type": "number", "description": "Cycle de vie - Confection (en points)" },
+          "usage": { "type": "number", "description": "Cycle de vie - Utilisation (en points)" },
+          "endOfLife": { "type": "number", "description": "Cycle de vie - Fin de vie (en points)" },
+          "transport": { "type": "number", "description": "Cycle de vie - Transport (en points)" },
+          "trims": { "type": "number", "description": "Cycle de vie - Accessoires (en points)" }
         }
       },
       "UploadInfo": {

@@ -34,6 +34,8 @@ export type EcobalyseResponse = {
     permanentPasture: number
     plotSize: number
   }
+  lifeCycle: { label: string; impacts: { ecs: number } }[]
+  transport: { impacts: { ecs: number } }
 }
 
 export type EcobalyseCode = { code: string; name: string }

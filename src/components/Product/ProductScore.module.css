@@ -1,5 +1,12 @@
-.bar {
+.barTrack {
   height: 0.5rem;
+  background-color: var(--background-contrast-grey);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
   background-color: var(--blue-france-sun-113-625);
 }
 
