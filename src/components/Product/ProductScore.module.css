@@ -8,6 +8,7 @@
 .barFill {
   height: 100%;
   background-color: var(--blue-france-sun-113-625);
+  width: 0;
 }
 
 .link {

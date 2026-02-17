@@ -148,15 +148,15 @@ model Score {
   microfibers    Float
   outOfEuropeEOL Float
 
-  trims     Float?
-  materials Float?
-  transport Float?
-  spinning  Float?
-  fabric    Float?
-  dyeing    Float?
-  making    Float?
-  usage     Float?
-  endOfLife Float? @map("end_of_life")
+  trims     Float
+  materials Float
+  transport Float
+  spinning  Float
+  fabric    Float
+  dyeing    Float
+  making    Float
+  usage     Float
+  endOfLife Float @map("end_of_life")
 
   product   ProductInformation? @relation(fields: [productId], references: [id])
   productId String?             @unique @map("product_id")
