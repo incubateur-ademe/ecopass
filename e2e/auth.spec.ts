@@ -4,7 +4,7 @@ import { login, loginWithPassword } from "./utils/login"
 test("connection with proconnect, and properly disconnect", async ({ page }) => {
   await login(page)
 
-  await page.getByRole("link", { name: "Se déconnecter" }).click()
+  await page.getByRole("link", { name: "Se déconnecter" }).first().click()
 
   await expect(page.locator("#contenu").getByRole("heading", { name: "Affichage environnemental" })).toBeVisible()
 
