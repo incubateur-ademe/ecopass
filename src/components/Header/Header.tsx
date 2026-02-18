@@ -45,7 +45,22 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
                 isActive: pathname.startsWith("/organisation"),
               },
               session.user.role === UserRole.ADMIN
-                ? { linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }
+                ? {
+                    text: "Admin",
+                    isActive: pathname.startsWith("/admin"),
+                    menuLinks: [
+                      {
+                        linkProps: { href: "/admin" },
+                        text: "Statistiques",
+                        isActive: pathname === "/admin",
+                      },
+                      {
+                        linkProps: { href: "/admin/nouvel-utilisateur" },
+                        text: "Créer un utilisateur",
+                        isActive: pathname === "/admin/nouvel-utilisateur",
+                      },
+                    ],
+                  }
                 : null,
             ]
           : [
@@ -74,7 +89,22 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
                 ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") }
                 : null,
               session.user.role === UserRole.ADMIN
-                ? { linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }
+                ? {
+                    text: "Admin",
+                    isActive: pathname.startsWith("/admin"),
+                    menuLinks: [
+                      {
+                        linkProps: { href: "/admin" },
+                        text: "Statistiques",
+                        isActive: pathname === "/admin",
+                      },
+                      {
+                        linkProps: { href: "/admin/nouvel-utilisateur" },
+                        text: "Créer un utilisateur",
+                        isActive: pathname === "/admin/nouvel-utilisateur",
+                      },
+                    ],
+                  }
                 : null,
             ]
         : [

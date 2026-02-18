@@ -27,7 +27,7 @@ export const login = async (page: Page, email = "ecopass-e2e@yopmail.com", passw
   await page.getByRole("textbox", { name: "Renseignez votre mot de passe" }).fill(password)
   await page.getByRole("button", { name: "S’identifier" }).click()
 
-  await expect(page.getByRole("link", { name: "Se déconnecter", exact: true })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Se déconnecter", exact: true }).first()).toBeVisible()
 }
 
 export const loginWithPassword = async (
@@ -42,11 +42,11 @@ export const loginWithPassword = async (
   await page.getByRole("textbox", { name: "Mot de passe" }).fill(password)
   await page.getByRole("button", { name: "Se connecter" }).click()
 
-  await expect(page.getByRole("link", { name: "Se déconnecter", exact: true })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Se déconnecter", exact: true }).first()).toBeVisible()
 }
 
 export const logout = async (page: Page) => {
-  await page.getByRole("link", { name: "Se déconnecter" }).click()
+  await page.getByRole("link", { name: "Se déconnecter" }).first().click()
 
   await expect(page.getByRole("link", { name: "Se connecter", exact: true })).toBeVisible()
   await expect(page.locator("#contenu").getByRole("heading", { name: "Affichage environnemental" })).toBeVisible()
