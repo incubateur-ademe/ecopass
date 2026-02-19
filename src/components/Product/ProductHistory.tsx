@@ -52,7 +52,7 @@ const ProductHistory = ({ brandId, gtin }: { brandId?: string; gtin: string }) =
           <Badge severity='info' noIcon key={version.id}>
             {version.score ? formatNumber(version.score) : "-"}
           </Badge>,
-          <ProductLink product={version} version={version.id} brandId={brandId} key={version.id} />,
+          <ProductLink product={version} brandId={brandId} key={version.id} />,
         ])}
       />
       {total > 10 && (
