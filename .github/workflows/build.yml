@@ -21,6 +21,11 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      maildev:
+        image: maildev/maildev:latest
+        ports:
+          - 1080:1080
+          - 1025:1025
     steps:
       - uses: actions/checkout@v6
       - name: Enable Corepack
@@ -46,6 +51,8 @@ jobs:
           echo "BATCH_SIZE=20" >> .env
           echo "NODE_ENV=production" >> .env
           echo "FORBID_RECENT_DECLARATION=true" >> .env
+          echo "MAIL_HOST=localhost" >> .env
+          echo "MAIL_PORT=1025" >> .env
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Linter
