@@ -9,7 +9,7 @@ test.beforeEach(async () => {
   await execAsync("npx prisma db seed")
 })
 
-test.skip("admin can create a new user", async ({ page }) => {
+test("admin can create a new user", async ({ page }) => {
   await login(page, "ecopass-admin-dev@yopmail.com")
 
   await page.goto("http://localhost:3000/admin/nouvel-utilisateur")
