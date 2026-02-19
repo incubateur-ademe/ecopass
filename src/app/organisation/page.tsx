@@ -3,6 +3,7 @@ import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import Organization from "../../views/Organization"
 import { Metadata } from "next"
 import { tryAndGetSession } from "../../services/auth/redirect"
+import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
   title: "Mon organisation - Affichage environnemental",
@@ -13,7 +14,7 @@ const OrganizationPage = async () => {
   const organization = await getUserOrganization(session.user.id)
 
   if (!organization) {
-    return <p>Vous ne faites parti d'aucune organisation</p>
+    return redirect("/logout")
   }
   return (
     <>
