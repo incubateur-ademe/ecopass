@@ -1,5 +1,12 @@
+import { exec } from "child_process"
+import { promisify } from "util"
 import { test, expect } from "@playwright/test"
 import { login, loginWithPassword } from "./utils/login"
+
+const execAsync = promisify(exec)
+test.beforeEach(async () => {
+  await execAsync("npx prisma db seed")
+})
 
 test("connection with proconnect, and properly disconnect", async ({ page }) => {
   await login(page)
