@@ -54,12 +54,12 @@ export const authOptions = {
         })
 
         if (!user) {
-          throw new Error("Invalid crendentials")
+          throw new Error("Invalid credentials")
         }
-        const account = user.accounts.find((account) => account.provider === "credentials")
 
+        const account = user.accounts.find((account) => account.provider === "credentials")
         if (!account || !account.password) {
-          throw new Error("Invalid crendentials")
+          throw new Error("proconnect")
         }
 
         const isValidPassword = await bcrypt.compare(credentials.password, account.password)
