@@ -73,6 +73,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/swagger-ui-react": "^5.18.0",
+    "baseline-browser-mapping": "^2.10.0",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.4",
     "eslint-config-prettier": "^10.1.8",

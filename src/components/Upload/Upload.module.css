@@ -1,36 +1,35 @@
-.container {
+.layout {
   display: flex;
-  flex-direction: row-reverse;
-  gap: 1rem 2rem;
+  gap: 2rem;
+  align-items: flex-start;
 
   @media screen and (max-width: 50rem) {
     flex-direction: column;
   }
 }
 
-.upload {
-  width: 40%;
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 30rem;
+
+  @media screen and (max-width: 62rem) {
+    min-width: 20rem;
+  }
 
   @media screen and (max-width: 50rem) {
-    width: 100%;
+    min-width: unset;
   }
 }
 
-.help {
-  width: 60%;
-  margin: 0;
-
-  @media screen and (max-width: 50rem) {
-    width: 100%;
-  }
+.tile {
+  width: 100%;
 }
 
-.helpTitle {
-  font-weight: bold;
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-}
-
-.button {
-  margin-top: 1rem;
+.tileMeta {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--text-mention-grey);
+  font-size: 0.875rem;
 }

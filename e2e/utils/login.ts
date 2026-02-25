@@ -38,6 +38,8 @@ export const loginWithPassword = async (
   await page.goto("http://localhost:3000/login")
   await expect(page.locator("#contenu").getByRole("button", { name: "S’identifier avec ProConnect" })).toBeVisible()
 
+  await page.getByRole("tab", { name: "Connexion", exact: true }).click()
+
   await page.getByRole("textbox", { name: "Email" }).fill(email)
   await page.getByRole("textbox", { name: "Mot de passe" }).fill(password)
   await page.getByRole("button", { name: "Se connecter" }).click()

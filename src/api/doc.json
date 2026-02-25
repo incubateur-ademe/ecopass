@@ -965,7 +965,7 @@
           },
           "declaredScore": {
             "type": "number",
-            "description": "Score Ecobalyse, si vous l'avez calculé. Attention, si il est différent de notre calcul, le produit sera en erreur."
+            "description": "Dans l'hypothèse où vous ne déclarez pas ce champ, le calcul sera effectué automatiquement conformément à vos déclarations. Le score calculé demeure sous votre responsabilité. [Consultez la méthode de calcul](/notice-reglementaire.pdf)."
           },
           "mass": {
             "type": "number",
@@ -1137,7 +1137,7 @@
           },
           "declaredScore": {
             "type": "number",
-            "description": "Score Ecobalyse total du lot, si vous l'avez calculé. Attention, si il est différent de notre calcul, le lot sera en erreur."
+            "description": "Dans l'hypothèse où vous ne déclarez pas ce champ, le calcul sera effectué automatiquement conformément à vos déclarations. Le score calculé demeure sous votre responsabilité. [Consultez la méthode de calcul](/notice-reglementaire.pdf)."
           },
           "numberOfReferences": {
             "description": "Nombre de références au catalogue de la marque.",
