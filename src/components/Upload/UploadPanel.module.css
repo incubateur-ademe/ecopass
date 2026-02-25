@@ -1,0 +1,8 @@
+.uploadCard {
+  border: 1px solid var(--border-default-grey);
+  padding: 2rem;
+}
+
+.button {
+  margin-top: 2rem;
+}
