@@ -158,6 +158,7 @@ describe("API Ecobalyse", () => {
       { label: "Fin de vie", impacts: { ecs: 5 } },
     ],
     transport: { impacts: { ecs: 0.123 } },
+    trimsImpacts: { ecs: -35.998000000000005 },
   } satisfies EcobalyseResponse
 
   describe("saveEcobalyseResults", () => {
@@ -629,6 +630,7 @@ describe("API Ecobalyse", () => {
           { label: "Fin de vie", impacts: { ecs: 6 } },
         ],
         transport: { impacts: { ecs: 0.321 } },
+        trimsImpacts: { ecs: -44.556999999999995 },
       } satisfies EcobalyseResponse)
 
       const results = await saveEcobalyseResults(products)
