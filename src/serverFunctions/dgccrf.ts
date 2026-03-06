@@ -241,21 +241,27 @@ export const searchOrganizationsAndBrands = async (query: string) => {
     }),
   )
 
-  const brandsWithCounts = await Promise.all(
-    brands.map(async (brand) => {
-      const products = await prismaClient.product.findMany({
-        where: {
-          status: Status.Done,
-          brandId: brand.id,
-        },
-        select: {
-          internalReference: true,
-        },
-        distinct: ["internalReference"],
-      })
-      return { ...brand, references: products.length }
-    }),
-  )
+  const brandIds = brands.map((b) => b.id)
+  const brandReferenceGroups =
+    brandIds.length > 0
+      ? await prismaClient.product.groupBy({
+          by: ["brandId", "internalReference"],
+          where: {
+            status: Status.Done,
+            brandId: { in: brandIds },
+          },
+        })
+      : []
+  const brandCountMap = new Map<string, number>()
+  for (const group of brandReferenceGroups) {
+    if (group.brandId) {
+      brandCountMap.set(group.brandId, (brandCountMap.get(group.brandId) ?? 0) + 1)
+    }
+  }
+  const brandsWithCounts = brands.map((brand) => ({
+    ...brand,
+    references: brandCountMap.get(brand.id) ?? 0,
+  }))
 
   return { organizations: organizationsWithCounts, brands: brandsWithCounts }
 }
