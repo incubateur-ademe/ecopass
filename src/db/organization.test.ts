@@ -1,14 +1,13 @@
-import { jest } from "@jest/globals"
 import { prismaTest } from "../../jest.setup"
 
 jest.mock("./prismaClient", () => ({
   prismaClient: prismaTest,
 }))
 
-import { createOrganization, getUserOrganizationType } from "./organization"
+import { createOrganization, getUserOrganizationType, getOrganizationById } from "./organization"
 import { getSiretInfo } from "../serverFunctions/siret"
 import { prismaClient } from "./prismaClient"
-import { OrganizationType } from "@prisma/enums"
+import { OrganizationType, Status, UploadType } from "@prisma/enums"
 import { cleanDB } from "./testUtils"
 
 jest.mock("../serverFunctions/siret")
@@ -146,6 +145,192 @@ describe("organization", () => {
 
       const result = await getUserOrganizationType(orgWithNullType.id)
       expect(result).toBeNull()
+    })
+  })
+
+  describe("getOrganizationById", () => {
+    it("should return null when organization does not exist", async () => {
+      const result = await getOrganizationById("non-existent-id")
+
+      expect(result).toBeNull()
+    })
+
+    it("should return organization with every information", async () => {
+      const user = await prismaClient.user.create({
+        data: {
+          email: "test-user@example.com",
+        },
+      })
+
+      const orgFrom = await prismaClient.organization.create({
+        data: {
+          name: "From Org",
+          displayName: "From Org",
+          type: OrganizationType.Distributor,
+        },
+      })
+
+      await prismaClient.authorizedOrganization.create({
+        data: {
+          fromId: orgFrom.id,
+          toId: testOrganizationId,
+          active: true,
+          createdById: user.id,
+        },
+      })
+
+      await prismaClient.brand.createMany({
+        data: [
+          {
+            id: "brand1-id",
+            name: "Test Brand",
+            organizationId: testOrganizationId,
+            active: true,
+          },
+          {
+            name: "Test Brand Inactive",
+            organizationId: testOrganizationId,
+            active: false,
+          },
+          {
+            id: "brand2-id",
+            name: "Test Brand 2",
+            organizationId: orgFrom.id,
+            active: false,
+          },
+        ],
+      })
+
+      await prismaClient.upload.createMany({
+        data: [
+          {
+            id: "upload1-id",
+            organizationId: testOrganizationId,
+            version: "v1",
+            type: UploadType.FILE,
+            createdById: user.id,
+          },
+          {
+            id: "upload2-id",
+            organizationId: orgFrom.id,
+            version: "v1",
+            type: UploadType.FILE,
+            createdById: user.id,
+          },
+        ],
+      })
+
+      await prismaClient.product.createMany({
+        data: [
+          {
+            brandId: "brand1-id",
+            hash: "hash1",
+            uploadId: "upload1-id",
+            internalReference: "REF001",
+            status: Status.Done,
+            createdAt: new Date("2035-01-01T00:00:00Z"),
+          },
+          {
+            brandId: "brand1-id",
+            hash: "hash2",
+            uploadId: "upload1-id",
+            internalReference: "REF002",
+            status: Status.Done,
+          },
+          {
+            brandId: "brand1-id",
+            hash: "hash3",
+            uploadId: "upload1-id",
+            internalReference: "REF003",
+            status: Status.Error,
+          },
+          {
+            brandId: "brand2-id",
+            hash: "hash1",
+            uploadId: "upload2-id",
+            internalReference: "REF001",
+            status: Status.Done,
+            createdAt: new Date("2045-01-01T00:00:00Z"),
+          },
+          {
+            brandId: "brand2-id",
+            hash: "hash2",
+            uploadId: "upload2-id",
+            internalReference: "REF002",
+            status: Status.Done,
+          },
+          {
+            brandId: "brand2-id",
+            hash: "hash3",
+            uploadId: "upload2-id",
+            internalReference: "REF003",
+            status: Status.Error,
+          },
+        ],
+      })
+
+      const result = await getOrganizationById(testOrganizationId)
+
+      expect(result).not.toBeNull()
+      expect(result).toMatchObject({
+        id: testOrganizationId,
+        siret: "11111111111111",
+        name: "Test Org",
+        displayName: "Test Org",
+        type: OrganizationType.Brand,
+      })
+      expect(result?.brands).toHaveLength(2)
+      expect(result?.brands[0]).toMatchObject({
+        id: "brand1-id",
+        name: "Test Brand",
+        active: true,
+        references: 2,
+      })
+      expect(result?.brands[0].lastDeclaration?.getTime()).toBe(new Date("2035-01-01T00:00:00Z").getTime())
+      expect(result?.authorizedBy).toHaveLength(1)
+      expect(result?.authorizedBy[0]).toMatchObject({
+        active: true,
+        references: 2,
+        from: {
+          id: orgFrom.id,
+          name: "From Org",
+          displayName: "From Org",
+          siret: null,
+          brands: [
+            {
+              active: false,
+              id: "brand2-id",
+              name: "Test Brand 2",
+              references: 2,
+            },
+          ],
+        },
+      })
+    })
+
+    it("should return zero references when brand has no products", async () => {
+      const org = await prismaClient.organization.create({
+        data: {
+          siret: "99999999999999",
+          name: "No Products Org",
+          displayName: "No Products Org",
+          type: OrganizationType.Brand,
+        },
+      })
+
+      await prismaClient.brand.create({
+        data: {
+          name: "Empty Brand",
+          organizationId: org.id,
+          active: true,
+          default: true,
+        },
+      })
+
+      const result = await getOrganizationById(org.id)
+
+      expect(result?.brands[0].references).toBe(0)
+      expect(result?.brands[0].lastDeclaration).toBeNull()
     })
   })
 })

@@ -26,7 +26,7 @@ const Uploads = async ({ page }: { page: number }) => {
         fixed
         caption='Mes fichiers'
         noCaption
-        headers={["Date de dépot", "Nom du fichier", "Statut", "Nombre de produits validés", "Fichier de résultat"]}
+        headers={["Date de dépôt", "Nom du fichier", "Statut", "Nombre de produits validés", "Fichier de résultat"]}
         data={uploads.map((upload) => [
           formatDateTime(upload.createdAt),
           upload.name,

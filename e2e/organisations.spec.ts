@@ -341,10 +341,82 @@ test("manage unique id delegation", async ({ page }) => {
   )
 
   await logout(page)
+
+  await page.goto("http://localhost:3000/organisations/4e2d3027-de21-4a54-9e57-9128755bfa09")
+
+  await expect(page.getByTestId("brands-organizations-list")).not.toBeVisible()
+  await expect(page.getByTestId("consultancies-organizations-list").locator("table tbody tr")).toHaveCount(1)
+  await expect(
+    page.getByTestId("consultancies-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(0),
+  ).toHaveText("Textile Premium")
+  await expect(
+    page.getByTestId("consultancies-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(3),
+  ).toHaveText("Actif")
+  await expect(
+    page.getByTestId("consultancies-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(4),
+  ).toHaveText("1")
+  await expect(page.getByTestId("brands-list").locator("table tbody tr")).toHaveCount(3)
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
+    "Active",
+  )
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("1")
+
+  await page
+    .getByTestId("consultancies-organizations-list")
+    .locator("table tbody tr")
+    .nth(0)
+    .locator("td")
+    .nth(6)
+    .click()
+
+  await expect(page.getByTestId("consultancies-organizations-list")).not.toBeVisible()
+  await expect(page.getByTestId("brands-organizations-list").locator("table tbody tr")).toHaveCount(1)
+  await expect(
+    page.getByTestId("brands-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(0),
+  ).toHaveText("EMMAUS")
+  await expect(
+    page.getByTestId("brands-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(3),
+  ).toHaveText("Active")
+  await expect(
+    page.getByTestId("brands-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(4),
+  ).toHaveText("1")
+  await expect(page.getByTestId("brands-list").locator("table tbody tr")).toHaveCount(4)
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
+    "Active",
+  )
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("1")
+
   await login(page)
 
   await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
+
+  await expect(page.getByTestId("brands-table").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("brands-table").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText(
+    "Marque active",
+  )
+  await page
+    .getByTestId("brands-table")
+    .locator("table tbody tr")
+    .nth(1)
+    .getByRole("button", { name: "Modifier" })
+    .click()
+  await page.getByRole("radio").nth(1).click({ force: true })
+  await page.getByRole("button", { name: "Enregistrer" }).click()
+  await expect(page.getByTestId("brands-table").locator("table tbody tr").nth(2).locator("td").nth(0)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("brands-table").locator("table tbody tr").nth(2).locator("td").nth(2)).toHaveText(
+    "Marque retirée",
+  )
 
   await page
     .getByTestId("to-delegations-table")
@@ -387,6 +459,57 @@ test("manage unique id delegation", async ({ page }) => {
   )
 
   await logout(page)
+
+  await page.goto("http://localhost:3000/organisations/4e2d3027-de21-4a54-9e57-9128755bfa09")
+
+  await expect(page.getByTestId("brands-organizations-list")).not.toBeVisible()
+  await expect(page.getByTestId("consultancies-organizations-list").locator("table tbody tr")).toHaveCount(1)
+  await expect(
+    page.getByTestId("consultancies-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(0),
+  ).toHaveText("Textile Premium")
+  await expect(
+    page.getByTestId("consultancies-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(3),
+  ).toHaveText("Inactif")
+  await expect(
+    page.getByTestId("consultancies-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(4),
+  ).toHaveText("1")
+  await expect(page.getByTestId("brands-list").locator("table tbody tr")).toHaveCount(3)
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
+    "Inactive",
+  )
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("1")
+
+  await page
+    .getByTestId("consultancies-organizations-list")
+    .locator("table tbody tr")
+    .nth(0)
+    .locator("td")
+    .nth(6)
+    .click()
+
+  await expect(page.getByTestId("consultancies-organizations-list")).not.toBeVisible()
+  await expect(page.getByTestId("brands-organizations-list").locator("table tbody tr")).toHaveCount(1)
+  await expect(
+    page.getByTestId("brands-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(0),
+  ).toHaveText("EMMAUS")
+  await expect(
+    page.getByTestId("brands-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(3),
+  ).toHaveText("Inactive")
+  await expect(
+    page.getByTestId("brands-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(4),
+  ).toHaveText("1")
+  await expect(page.getByTestId("brands-list").locator("table tbody tr")).toHaveCount(4)
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
+    "Inactive",
+  )
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("1")
+
   await loginWithPassword(page, "textile@yopmail.com", "textilepassword")
 
   await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()

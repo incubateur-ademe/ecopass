@@ -50,6 +50,6 @@ export const loginWithPassword = async (
 export const logout = async (page: Page) => {
   await page.getByRole("link", { name: "Se déconnecter" }).first().click()
 
-  await expect(page.getByRole("link", { name: "Se connecter", exact: true })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Se connecter", exact: true }).first()).toBeVisible()
   await expect(page.locator("#contenu").getByRole("heading", { name: "Affichage environnemental" })).toBeVisible()
 }
