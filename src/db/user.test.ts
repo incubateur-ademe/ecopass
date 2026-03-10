@@ -10,7 +10,7 @@ import { cleanDB } from "./testUtils"
 
 describe("User DB integration", () => {
   let testUser: { id: string; email: string }
-  let testOrganization: { id: string; name: string; siret: string }
+  let testOrganization: { id: string; name: string; displayName: string; siret: string | null }
   let testBrand: { id: string; name: string }
   let testAPIKey: { id: string; key: string; name: string }
 

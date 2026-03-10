@@ -36,6 +36,7 @@ export type EcobalyseResponse = {
   }
   lifeCycle: { label: string; impacts: { ecs: number } }[]
   transport: { impacts: { ecs: number } }
+  trimsImpacts: { ecs: number }
 }
 
 export type EcobalyseCode = { code: string; name: string }

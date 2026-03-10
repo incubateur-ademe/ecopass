@@ -67,7 +67,12 @@ const BrandsList = ({
 
   return (
     <>
-      <Block home>
+      <Block
+        home
+        breadCrumbs={{
+          currentPageLabel: "Marques",
+          segments: [{ linkProps: { href: "/" }, label: "Accueil" }],
+        }}>
         <h1>Liste des marques ayant déclaré au moins un produit</h1>
         <div className={styles.headerContainer}>
           <div className={styles.content}>

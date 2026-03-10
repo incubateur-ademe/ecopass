@@ -1,0 +1,41 @@
+.filter {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background-color: var(--grey-975-75);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 0.25rem;
+}
+
+.select {
+  flex: 1;
+  min-width: 200px;
+}
+
+.button {
+  @media screen and (min-width: 37.5rem) {
+    margin-bottom: 0 !important;
+  }
+}
+
+.dates {
+  display: flex;
+  align-items: center;
+  gap: 1rem 0.25rem;
+  color: var(--blue-france-sun-113-625);
+  margin-top: 0.5rem;
+  :global(.fr-input-group),
+  :global(.fr-input) {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 31.25rem) {
+    flex-direction: column;
+    align-items: flex-start;
+    span {
+      display: none;
+    }
+  }
+}

@@ -120,8 +120,9 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     body: removeUndefined(productData),
   })
 
-  const lifeCycleValues: Record<keyof typeof lifeCycles | "transport", number> = {
+  const lifeCycleValues: Record<keyof typeof lifeCycles | "transport" | "trims", number> = {
     transport: result.transport.impacts.ecs,
+    trims: result.trimsImpacts.ecs,
     materials: 0,
     spinning: 0,
     fabric: 0,
@@ -158,9 +159,6 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     wtu: result.impacts.wtu,
     microfibers: result.complementsImpacts.microfibers,
     outOfEuropeEOL: result.complementsImpacts.outOfEuropeEOL,
-
-    trims:
-      result.impacts.ecs * result.durability - Object.values(lifeCycleValues).reduce((acc, value) => acc + value, 0),
     ...lifeCycleValues,
   }
 }
