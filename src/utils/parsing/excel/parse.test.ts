@@ -220,7 +220,7 @@ describe("parseExcel", () => {
     const excelBuffer = createExcelBuffer([incompleteHeaders, incompleteRow])
 
     await expect(parseExcel(excelBuffer, upload)).rejects.toThrow(
-      "Colonne(s) manquante(s): GTINs/Eans, Référence interne, Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Quantité de bouton en métal, Quantité de bouton en plastique, Quantité de zip long, Quantité de zip court",
+      "Colonne(s) manquante(s): GTINs/EANs, Référence interne, Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Quantité de bouton en métal, Quantité de bouton en plastique, Quantité de zip long, Quantité de zip court",
     )
   })
 

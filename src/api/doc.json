@@ -947,7 +947,7 @@
         "properties": {
           "gtins": {
             "type": "array",
-            "description": "Les codes GTIN (ou EAN) du produit, format 13 ou 8 chiffres",
+            "description": "Les codes GTIN (ou EAN) du produit, format 13 ou 8 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez [nous contacter](mailto:affichage-environnemental@ecobalyse.beta.gouv.fr).",
             "items": {
               "type": "string",
               "pattern": "^(\\d{8}|\\d{13})$",
@@ -1119,7 +1119,7 @@
         "properties": {
           "gtins": {
             "type": "array",
-            "description": "Les codes GTIN (ou EAN) du lot de produits, format 13 ou 8 chiffres",
+            "description": "Les codes GTIN (ou EAN) du lot de produits, format 13 ou 8 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez [nous contacter](mailto:affichage-environnemental@ecobalyse.beta.gouv.fr).",
             "items": {
               "type": "string",
               "pattern": "^(\\d{8}|\\d{13})$",

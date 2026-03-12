@@ -54,9 +54,38 @@ const users = async () => {
         },
       },
     }),
+    prismaClient.organization.create({
+      data: {
+        id: "676fc42f-97a8-427d-a133-536b6592bd67",
+        uniqueId: "d20f3e00-cd02-4364-8063-0b141828464b",
+        name: "NO GTIN",
+        displayName: "NO GTIN",
+        type: OrganizationType.Brand,
+        noGTIN: true,
+        brands: {
+          createMany: {
+            data: [{ name: "NO GTIN", default: true, id: "56c27d6a-a879-406a-9ab3-17c439772e57" }],
+          },
+        },
+      },
+    }),
+    prismaClient.organization.create({
+      data: {
+        id: "74b49447-2a89-4056-a112-24ba4597ffc8",
+        name: "Textile Premium",
+        displayName: "Textile Premium",
+        type: OrganizationType.Consultancy,
+        uniqueId: "350b9fc6-0d05-496b-b429-cc66064e98e8",
+        brands: {
+          createMany: {
+            data: [{ name: "Premium Wear", id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d", default: true }],
+          },
+        },
+      },
+    }),
   ])
 
-  const [, , user] = await Promise.all([
+  await Promise.all([
     prismaClient.user.create({
       data: {
         email: "ecopass-password@yopmail.com",
@@ -103,53 +132,61 @@ const users = async () => {
         organization: {
           connect: { siret: "31723624800017" },
         },
+        apiKeys: {
+          create: {
+            key: "ce4a461a-ae00-49a9-8fbc-d342dc635da6",
+            name: "API Key for development",
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        id: "0eb6fb02-edcd-4efe-9b8e-49a6fc61307a",
+        email: "textile@yopmail.com",
+        nom: "Textile",
+        prenom: "Admin",
+        organization: {
+          connect: { id: "74b49447-2a89-4056-a112-24ba4597ffc8" },
+        },
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "textile@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "nogtin@yopmail.com",
+        nom: "No",
+        prenom: "GTIN",
+        organization: {
+          connect: { id: "676fc42f-97a8-427d-a133-536b6592bd67" },
+        },
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "nogtin@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+        apiKeys: {
+          create: {
+            key: "7e729ca5-2c60-4755-8ca2-6d3c818ca8e8",
+            name: "API Key for development",
+          },
+        },
       },
     }),
   ])
-
-  await prismaClient.aPIKey.create({
-    data: {
-      key: "ce4a461a-ae00-49a9-8fbc-d342dc635da6",
-      userId: user.id,
-      name: "API Key for development",
-    },
-  })
 }
 
 const defaultProduct = async () => {
-  const org = await prismaClient.organization.create({
-    data: {
-      name: "Textile Premium",
-      displayName: "Textile Premium",
-      type: OrganizationType.Consultancy,
-      uniqueId: "350b9fc6-0d05-496b-b429-cc66064e98e8",
-      brands: {
-        createMany: {
-          data: [{ name: "Premium Wear", id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d", default: true }],
-        },
-      },
-    },
-  })
-
-  const user = await prismaClient.user.create({
-    data: {
-      email: "textile@yopmail.com",
-      nom: "Textile",
-      prenom: "Admin",
-      organization: {
-        connect: { id: org.id },
-      },
-      accounts: {
-        create: {
-          provider: "credentials",
-          providerAccountId: "textile@yopmail.com",
-          type: "credentials",
-          password: await signPassword("textilepassword"),
-        },
-      },
-    },
-  })
-
   const { product, materials, accessories } = encryptProductFields({
     product: ProductCategory.MaillotDeBain,
     airTransportRatio: 0,
@@ -193,8 +230,8 @@ const defaultProduct = async () => {
       upload: {
         create: {
           type: UploadType.API,
-          organization: { connect: { id: org.id } },
-          createdBy: { connect: { id: user.id } },
+          organization: { connect: { id: "74b49447-2a89-4056-a112-24ba4597ffc8" } },
+          createdBy: { connect: { id: "0eb6fb02-edcd-4efe-9b8e-49a6fc61307a" } },
           version: "7.0.0",
           status: Status.Done,
         },
