@@ -15,6 +15,9 @@ import { organizationTypesAllowedToDeclare } from "../organization/canDeclare"
 import { organizationTypes } from "../organization/types"
 import { checkOldProduct, ProductCheckResult } from "../../services/validation/oldProduct"
 import { hashProduct } from "../encryption/hash"
+import { getBrandById } from "../../db/brands"
+import { getDefaultGTINs } from "../validation/gtin"
+import { gtinsValidation } from "../../services/validation/gtins"
 
 export async function handleProductPOST(req: Request, batch?: boolean) {
   try {
@@ -60,23 +63,57 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
       )
     }
 
-    let product: ProductMetadataAPI
+    let product: ProductMetadataAPI & { gtins: string[] }
     let informations: ProductInformationAPI[]
+    const brandId = (body.brandId || api.user.organization.brands.find((b) => b.default)?.id || "").trim()
+    const brand = await getBrandById(brandId)
+
+    if (!brand) {
+      return NextResponse.json(
+        { error: "La marque spécifiée n'existe pas ou n'est pas autorisée pour votre organisation." },
+        { status: 400 },
+      )
+    }
+
+    if (brand.organization.noGTIN && body.gtins) {
+      return NextResponse.json(
+        { error: "Votre organisation n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné." },
+        { status: 400 },
+      )
+    }
+
+    const gtins = brand.organization.noGTIN
+      ? {
+          success: true,
+          error: {
+            issues: [],
+          },
+          data: getDefaultGTINs(brand.organization, body.internalReference),
+        }
+      : gtinsValidation.safeParse(body.gtins)
 
     if (batch) {
       const productValidation = getUserProductsAPIValidation(brands).safeParse({
         ...body,
-        brandId: (body.brandId || api.user.organization.brands.find((b) => b.default)?.id || "").trim(),
+        brandId,
       })
 
-      if (!productValidation.success) {
-        return NextResponse.json(productValidation.error.issues, { status: 400 })
+      if (!productValidation.success || !gtins.success) {
+        return NextResponse.json(
+          [
+            ...(productValidation.success ? [] : productValidation.error.issues),
+            ...(gtins.success ? [] : gtins.error.issues),
+          ],
+          {
+            status: 400,
+          },
+        )
       }
       product = {
-        gtins: productValidation.data.gtins,
         internalReference: productValidation.data.internalReference,
         declaredScore: productValidation.data.declaredScore,
         brandId: productValidation.data.brandId,
+        gtins: gtins.data,
       }
       informations = computeBatchInformations(
         productValidation.data.price,
@@ -89,15 +126,23 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
         brandId: (body.brandId || api.user.organization.brands.find((b) => b.default)?.id || "").trim(),
       })
 
-      if (!productValidation.success) {
-        return NextResponse.json(productValidation.error.issues, { status: 400 })
+      if (!productValidation.success || !gtins.success) {
+        return NextResponse.json(
+          [
+            ...(productValidation.success ? [] : productValidation.error.issues),
+            ...(gtins.success ? [] : gtins.error.issues),
+          ],
+          {
+            status: 400,
+          },
+        )
       }
 
       product = {
-        gtins: productValidation.data.gtins,
         internalReference: productValidation.data.internalReference,
         declaredScore: productValidation.data.declaredScore,
         brandId: productValidation.data.brandId,
+        gtins: gtins.data,
       }
       informations = [productValidation.data]
     }

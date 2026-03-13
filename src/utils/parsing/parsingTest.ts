@@ -1,5 +1,5 @@
 export const defaultHeaders = [
-  "GTINs/EANS",
+  "GTINs/EANs",
   "Référence interne",
   "Marque ID",
   "Score",

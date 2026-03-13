@@ -23,7 +23,7 @@ const Upload = () => {
         <CallOut className='fr-mt-2w'>
           <span>
             Dans l'hypothèse où vous ne déclarez pas le champ "score", le calcul sera effectué automatiquement
-            conformément à vos déclarations. Le score calculé demeure sous votre responsabilité.
+            conformément à vos déclarations. Le score calculé demeure sous votre responsabilité.{" "}
           </span>
           <Link href='/notice-reglementaire.pdf' className='fr-link' prefetch={false}>
             Consultez la méthode de calcul
@@ -70,7 +70,7 @@ const Upload = () => {
           titleAs='h3'
           small
           desc="Consultez l'aide en ligne"
-          linkProps={{ href: "/notice-reglementaire.pdf", target: "_blank", rel: "noopener noreferrer" }}
+          linkProps={{ href: "/documentation" }}
         />
       </aside>
     </div>

@@ -13,7 +13,13 @@ const En = () => {
       <ul>
         <li>
           <b>GTINs/EANs</b> : all GTIN (or EAN) codes of the product, separated by semi colon. These codes must consist
-          of 8 or 13 digits.
+          of 8 or 13 digits. If you don't use GTIN codes, please{" "}
+          <Link
+            href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'
+            target='_blank'
+            rel='noopener noreferrer'>
+            contact us.
+          </Link>
         </li>
         <li>
           <b>Référence interne</b> : reference used internally for your product. If you don't have one, you can use the

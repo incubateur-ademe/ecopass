@@ -6,7 +6,7 @@ jest.mock("./prismaClient", () => ({
   prismaClient: prismaTest,
 }))
 
-import { getAllBrandsWithStats, getBrandById, getBrandWithProducts } from "./brands"
+import { getAllBrandsWithStats, getBrandById, getBrandsByIds, getBrandWithProducts } from "./brands"
 import { cleanDB } from "./testUtils"
 import { Business, ProductCategory } from "../types/Product"
 import { encryptProductFields } from "../utils/encryption/encryption"
@@ -22,7 +22,7 @@ describe("Brands DB", () => {
   beforeAll(async () => {
     await cleanDB()
 
-    const orgs = await prismaTest.organization.createMany({
+    await prismaTest.organization.createMany({
       data: [
         {
           name: "Org",
@@ -38,6 +38,7 @@ describe("Brands DB", () => {
       data: [
         { name: "Brand A", organizationId: orgId, active: true },
         { name: "Brand B", organizationId: orgId, active: false },
+        { name: "Brand C", organizationId: consultancyOrgId, active: true },
       ],
     })
 
@@ -165,6 +166,9 @@ describe("Brands DB", () => {
       id: brandA.id,
       name: brandA.name,
       organization: {
+        noGTIN: false,
+        siret: "12345678901234",
+        uniqueId: null,
         authorizedOrganizations: [
           {
             to: {
@@ -177,6 +181,35 @@ describe("Brands DB", () => {
         id: orgId,
       },
     })
+  })
+
+  it("getBrandsByIds returns brands info", async () => {
+    const brands = await getBrandsByIds([brandA.id, brandB.id])
+    expect(brands).toEqual([
+      {
+        id: brandA.id,
+        organization: {
+          id: "55e4c3f8-5dec-4416-94cf-00156996ee4d",
+          noGTIN: false,
+          siret: "12345678901234",
+          uniqueId: null,
+        },
+      },
+      {
+        id: brandB.id,
+        organization: {
+          id: "55e4c3f8-5dec-4416-94cf-00156996ee4d",
+          noGTIN: false,
+          siret: "12345678901234",
+          uniqueId: null,
+        },
+      },
+    ])
+  })
+
+  it("getBrandsByIds returns empty if no id", async () => {
+    const brands = await getBrandsByIds([])
+    expect(brands).toEqual([])
   })
 
   it("getBrandWithProducts returns brand with total product count by category", async () => {
