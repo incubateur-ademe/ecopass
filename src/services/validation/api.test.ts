@@ -4,7 +4,6 @@ import { expectZodValidationToFail } from "./zodValidationTest"
 describe("productAPIValidation", () => {
   const productAPIValidation = getUserProductAPIValidation(["Test Brand", "Test Brand 2"])
   const validProduct = {
-    gtins: ["12345670"],
     internalReference: "TestRef",
     brandId: "Test Brand",
     product: "jean",
@@ -84,30 +83,6 @@ describe("productAPIValidation", () => {
         },
       ],
     )
-  })
-
-  it("does not allow product without GTINs", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { gtins: undefined }, [
-      { path: ["gtins"], message: "Invalid input: expected array, received undefined" },
-    ])
-  })
-
-  it("does not allow product with invalid GTINs", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { gtins: ["123"] }, [
-      { path: ["gtins", "0"], message: "Le code GTIN doit contenir 8 ou 13 chiffres" },
-    ])
-  })
-
-  it("does not allow product with empty GTINs", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { gtins: [] }, [
-      { path: ["gtins"], message: "Too small: expected array to have >=1 items" },
-    ])
-  })
-
-  it("does not allow product with invalid gtin code control", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { gtins: ["1234567891012"] }, [
-      { path: ["gtins", "0"], message: "Le code GTIN n'est pas valide (somme de contrôle incorrecte)" },
-    ])
   })
 
   it("does not allow product without internal reference", () => {
@@ -457,7 +432,6 @@ describe("productsAPIValidation", () => {
   }
 
   const validProducts = {
-    gtins: ["12345670"],
     internalReference: "TestRef",
     brandId: "Test Brand",
     products: [validProductBase, { ...validProductBase, mass: 2.45 }],
@@ -532,30 +506,6 @@ describe("productsAPIValidation", () => {
         },
       ],
     )
-  })
-
-  it("does not allow products without GTINs", () => {
-    expectZodValidationToFail(productsAPIValidation, validProducts, { gtins: undefined }, [
-      { path: ["gtins"], message: "Invalid input: expected array, received undefined" },
-    ])
-  })
-
-  it("does not allow products with invalid GTINs", () => {
-    expectZodValidationToFail(productsAPIValidation, validProducts, { gtins: ["123"] }, [
-      { path: ["gtins", "0"], message: "Le code GTIN doit contenir 8 ou 13 chiffres" },
-    ])
-  })
-
-  it("does not allow products with empty GTINs", () => {
-    expectZodValidationToFail(productsAPIValidation, validProducts, { gtins: [] }, [
-      { path: ["gtins"], message: "Too small: expected array to have >=1 items" },
-    ])
-  })
-
-  it("does not allow products with invalid gtin code control", () => {
-    expectZodValidationToFail(productsAPIValidation, validProducts, { gtins: ["12345671"] }, [
-      { path: ["gtins", "0"], message: "Le code GTIN n'est pas valide (somme de contrôle incorrecte)" },
-    ])
   })
 
   it("does not allow products without internal reference", () => {

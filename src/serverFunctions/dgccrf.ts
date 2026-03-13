@@ -46,7 +46,7 @@ const materialColumns = Array.from({ length: 16 }, (_, index) => [
 ]).flat()
 
 const headers = [
-  "GTINs/EANS",
+  "GTINs/EANs",
   "Référence interne",
   "Marque ID",
   "Marque",

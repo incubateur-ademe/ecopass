@@ -362,3 +362,68 @@ test("declare my products by API", async ({ page }) => {
   })
   expect(response.status()).toBe(401)
 })
+
+test("declare my products without gtin by API", async ({ page }) => {
+  const apiKeysWithoutGTIN = "7e729ca5-2c60-4755-8ca2-6d3c818ca8e8"
+  const apiKeysWithGTIN = "ce4a461a-ae00-49a9-8fbc-d342dc635da6"
+
+  let response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, brandId: undefined },
+    headers: {
+      Authorization: `Bearer ${apiKeysWithoutGTIN}`,
+    },
+  })
+  expect(response.status()).toBe(400)
+  expect(await response.text()).toEqual(
+    '{"error":"Votre organisation n\'utilise pas de GTIN, le champ \'gtins\' ne doit pas être renseigné."}',
+  )
+
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, brandId: undefined, gtins: undefined },
+    headers: {
+      Authorization: `Bearer ${apiKeysWithoutGTIN}`,
+    },
+  })
+  expect(response.status()).toBe(201)
+
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, brandId: undefined, gtins: undefined },
+    headers: {
+      Authorization: `Bearer ${apiKeysWithGTIN}`,
+    },
+  })
+  expect(response.status()).toBe(400)
+  expect(await response.text()).toEqual(
+    '[{"expected":"array","code":"invalid_type","path":[],"message":"Il doit y avoir au moins un GTIN"}]',
+  )
+
+  response = await page.request.post("http://localhost:3000/api/produits/lot", {
+    data: { ...batch, brandId: undefined },
+    headers: {
+      Authorization: `Bearer ${apiKeysWithoutGTIN}`,
+    },
+  })
+  expect(response.status()).toBe(400)
+  expect(await response.text()).toEqual(
+    '{"error":"Votre organisation n\'utilise pas de GTIN, le champ \'gtins\' ne doit pas être renseigné."}',
+  )
+
+  response = await page.request.post("http://localhost:3000/api/produits/lot", {
+    data: { ...batch, brandId: undefined, gtins: undefined },
+    headers: {
+      Authorization: `Bearer ${apiKeysWithoutGTIN}`,
+    },
+  })
+  expect(response.status()).toBe(201)
+
+  response = await page.request.post("http://localhost:3000/api/produits/lot", {
+    data: { ...batch, brandId: undefined, gtins: undefined },
+    headers: {
+      Authorization: `Bearer ${apiKeysWithGTIN}`,
+    },
+  })
+  expect(response.status()).toBe(400)
+  expect(await response.text()).toEqual(
+    '[{"expected":"array","code":"invalid_type","path":[],"message":"Il doit y avoir au moins un GTIN"}]',
+  )
+})

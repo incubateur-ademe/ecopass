@@ -231,7 +231,7 @@ test("manage siret delegation", async ({ page }) => {
 })
 
 test("manage unique id delegation", async ({ page }) => {
-  await loginWithPassword(page, "textile@yopmail.com", "textilepassword")
+  await loginWithPassword(page, "textile@yopmail.com")
 
   await page.getByRole("link", { name: "API", exact: true }).click()
   await expect(page).toHaveURL(/.*\/api/)
@@ -329,7 +329,7 @@ test("manage unique id delegation", async ({ page }) => {
   }, 3)
 
   await logout(page)
-  await loginWithPassword(page, "textile@yopmail.com", "textilepassword")
+  await loginWithPassword(page, "textile@yopmail.com")
 
   await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
@@ -510,7 +510,7 @@ test("manage unique id delegation", async ({ page }) => {
   )
   await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("1")
 
-  await loginWithPassword(page, "textile@yopmail.com", "textilepassword")
+  await loginWithPassword(page, "textile@yopmail.com")
 
   await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
   await expect(page).toHaveURL(/.*\/produits/)

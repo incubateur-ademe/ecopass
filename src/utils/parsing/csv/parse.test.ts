@@ -198,7 +198,7 @@ describe("parseCSV", () => {
 
   it("parses a valid CSV with Accessoires", async () => {
     const accessoiresHeader =
-      "GTINs/EANS;Référence interne;Marque ID;Score;Catégorie;Masse (en kg);Remanufacturé;Nombre de références;Prix (en euros, TTC);Taille de l'entreprise;Matière 1;Matière 1 pourcentage;Matière 1 origine;Matière 2;Matière 2 pourcentage;Matière 2 origine;Matière 3;Matière 3 pourcentage;Matière 3 origine;Matière 4;Matière 4 pourcentage;Matière 4 origine;Matière 5;Matière 5 pourcentage;Matière 5 origine;Matière 6;Matière 6 pourcentage;Matière 6 origine;Matière 7;Matière 7 pourcentage;Matière 7 origine;Matière 8;Matière 8 pourcentage;Matière 8 origine;Matière 9;Matière 9 pourcentage;Matière 9 origine;Matière 10;Matière 10 pourcentage;Matière 10 origine;Matière 11;Matière 11 pourcentage;Matière 11 origine;Matière 12;Matière 12 pourcentage;Matière 12 origine;Matière 13;Matière 13 pourcentage;Matière 13 origine;Matière 14;Matière 14 pourcentage;Matière 14 origine;Matière 15;Matière 15 pourcentage;Matière 15 origine;Matière 16;Matière 16 pourcentage;Matière 16 origine;Origine de filature;Origine de tissage/tricotage;Origine de l'ennoblissement/impression;Type d'impression;Pourcentage d'impression;Origine de confection;Délavage;Part du transport aérien;Accessoire 1;Accessoire 1 quantité;Accessoire 2;Accessoire 2 quantité;Accessoire 3;Accessoire 3 quantité;Accessoire 4;Accessoire 4 quantité"
+      "GTINs/EANs;Référence interne;Marque ID;Score;Catégorie;Masse (en kg);Remanufacturé;Nombre de références;Prix (en euros, TTC);Taille de l'entreprise;Matière 1;Matière 1 pourcentage;Matière 1 origine;Matière 2;Matière 2 pourcentage;Matière 2 origine;Matière 3;Matière 3 pourcentage;Matière 3 origine;Matière 4;Matière 4 pourcentage;Matière 4 origine;Matière 5;Matière 5 pourcentage;Matière 5 origine;Matière 6;Matière 6 pourcentage;Matière 6 origine;Matière 7;Matière 7 pourcentage;Matière 7 origine;Matière 8;Matière 8 pourcentage;Matière 8 origine;Matière 9;Matière 9 pourcentage;Matière 9 origine;Matière 10;Matière 10 pourcentage;Matière 10 origine;Matière 11;Matière 11 pourcentage;Matière 11 origine;Matière 12;Matière 12 pourcentage;Matière 12 origine;Matière 13;Matière 13 pourcentage;Matière 13 origine;Matière 14;Matière 14 pourcentage;Matière 14 origine;Matière 15;Matière 15 pourcentage;Matière 15 origine;Matière 16;Matière 16 pourcentage;Matière 16 origine;Origine de filature;Origine de tissage/tricotage;Origine de l'ennoblissement/impression;Type d'impression;Pourcentage d'impression;Origine de confection;Délavage;Part du transport aérien;Accessoire 1;Accessoire 1 quantité;Accessoire 2;Accessoire 2 quantité;Accessoire 3;Accessoire 3 quantité;Accessoire 4;Accessoire 4 quantité"
     const product = `"2234567891001;3234567891000";"REF-123";"";"2222;63";Pull;"0;55";Non;9000;100;Grande entreprise sans service de réparation;Viscose;"90,00 %";Chine;Jute;"10,00 %";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Chine;Chine;Chine;Pigmentaire;"20,00 %";Chine;Non;"75,00%";Bouton en métal;1;;;;;;`
     const csv = Buffer.from(`${accessoiresHeader}\n${product}`)
     const { products, informations, materials, accessories } = await parseCSV(csv, null, upload)
@@ -290,19 +290,19 @@ describe("parseCSV", () => {
   it("give proper errors on missing header", async () => {
     const csv = Buffer.from(`Test,Header\nValue1,Value2`)
     await expect(parseCSV(csv, null, upload)).rejects.toThrow(
-      "Colonne(s) manquante(s): GTINs/Eans, Référence interne, Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Quantité de bouton en métal, Quantité de bouton en plastique, Quantité de zip long, Quantité de zip court",
+      "Colonne(s) manquante(s): GTINs/EANs, Référence interne, Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Quantité de bouton en métal, Quantité de bouton en plastique, Quantité de zip long, Quantité de zip court",
     )
   })
 
   it("give proper errors on some missing header", async () => {
-    const csv = Buffer.from(`GTINs/Eans, Référence interne\nValue1,Value2`)
+    const csv = Buffer.from(`GTINs/EANs, Référence interne\nValue1,Value2`)
     await expect(parseCSV(csv, null, upload)).rejects.toThrow(
       "Colonne(s) manquante(s): Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Quantité de bouton en métal, Quantité de bouton en plastique, Quantité de zip long, Quantité de zip court",
     )
   })
 
   it("give proper errors on some missing header and ; delimiter", async () => {
-    const csv = Buffer.from(`GTINs/Eans; Référence interne\nValue1;Value2`)
+    const csv = Buffer.from(`GTINs/EANs; Référence interne\nValue1;Value2`)
     await expect(parseCSV(csv, null, upload)).rejects.toThrow(
       "Colonne(s) manquante(s): Catégorie, Masse (en kg), Remanufacturé, Nombre de références, Prix (en euros, TTC), Taille de l'entreprise, Matière 1, Matière 1 pourcentage, Matière 1 origine, Origine de filature, Origine de tissage/tricotage, Origine de l'ennoblissement/impression, Type d'impression, Pourcentage d'impression, Origine de confection, Délavage, Part du transport aérien, Quantité de bouton en métal, Quantité de bouton en plastique, Quantité de zip long, Quantité de zip court",
     )

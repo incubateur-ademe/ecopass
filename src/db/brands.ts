@@ -70,6 +70,24 @@ export type BrandWithStats = {
   lastDeclarationDate: Date
 }
 
+export const getBrandsByIds = async (ids: string[]) =>
+  ids.length > 0
+    ? prismaClient.brand.findMany({
+        where: { id: { in: ids } },
+        select: {
+          id: true,
+          organization: {
+            select: {
+              id: true,
+              siret: true,
+              uniqueId: true,
+              noGTIN: true,
+            },
+          },
+        },
+      })
+    : []
+
 export const getBrandById = async (id: string) =>
   prismaClient.brand.findFirst({
     where: { id },
@@ -80,6 +98,9 @@ export const getBrandById = async (id: string) =>
         select: {
           id: true,
           displayName: true,
+          noGTIN: true,
+          siret: true,
+          uniqueId: true,
           authorizedOrganizations: {
             select: { to: { select: { id: true, displayName: true } } },
             where: { active: true },

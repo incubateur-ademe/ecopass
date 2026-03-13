@@ -8,7 +8,6 @@ import {
   productMapping,
 } from "../../utils/ecobalyse/mappings"
 import { PrintingRatio } from "./printing"
-import { isValidGtin } from "../../utils/validation/gtin"
 
 const epsilon = 1e-10
 
@@ -59,19 +58,11 @@ const product = z.object({
 export type ProductInformationAPI = z.infer<typeof product> & { numberOfItem?: number }
 
 const metaData = z.object({
-  gtins: z
-    .array(
-      z
-        .string()
-        .regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")
-        .refine(isValidGtin, "Le code GTIN n'est pas valide (somme de contrôle incorrecte)"),
-    )
-    .min(1),
   internalReference: z.string(),
   declaredScore: z.number().optional(),
 })
 
-export type ProductMetadataAPI = z.infer<typeof metaData> & { brandId: string }
+export type ProductMetadataAPI = z.infer<typeof metaData> & { brandId: string; gtins: string[] }
 
 const productAPIValidation = z.object({
   ...metaData.shape,
