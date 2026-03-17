@@ -7,6 +7,7 @@ import { getLatestProductsByBrandIdForExport } from "../db/product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { AccessoryType } from "../types/Product"
 import { prismaClient } from "../db/prismaClient"
+import { formatDate } from "../services/format"
 
 const formatBoolean = (value: boolean | string | undefined) => {
   if (value === undefined || value === null || value === "") {
@@ -46,12 +47,12 @@ const materialColumns = Array.from({ length: 16 }, (_, index) => [
 ]).flat()
 
 const headers = [
+  "Date de la dernière déclaration",
   "GTINs/EANs",
   "Référence interne",
-  "Marque ID",
-  "Marque",
-  "Score déclaré",
-  "Score calculé",
+  "Marque déclarée",
+  "Score déclaré par la marque",
+  "Score calculé pour la marque",
   "Score standardisé",
   "Catégorie",
   "Masse (en kg)",
@@ -136,13 +137,13 @@ export const exportDgccrfBrandProducts = async (brandId: string, category?: stri
     }).flat()
 
     return [
+      formatDate(product.createdAt),
       product.gtins.join(";"),
       product.internalReference,
-      product.brand?.id || "",
       product.brand?.name || "",
-      formatNumber(product.declaredScore ?? ""),
-      formatNumber(product.score ?? ""),
-      formatNumber(product.standardized ?? ""),
+      formatNumber(product.declaredScore !== null ? Math.round(product.declaredScore) : ""),
+      formatNumber(product.score !== null ? Math.round(product.score) : ""),
+      formatNumber(product.standardized !== null ? Math.round(product.standardized) : ""),
       decryptedProduct.categorySlug || decryptedProduct.category,
       formatNumber(decryptedProduct.mass),
       formatBoolean(decryptedProduct.upcycled),
