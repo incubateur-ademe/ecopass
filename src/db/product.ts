@@ -411,11 +411,11 @@ export const getOrganizationProductsCountByUserIdAndBrand = async (userId: strin
   return products.length
 }
 
-export const getOrganizationProductsByUserIdAndBrand = async (
+export const getOrganizationProductsByUserIdAndBrandId = async (
   userId: string,
   page: number,
   size: number | undefined,
-  brand?: string,
+  brandId?: string,
 ) => {
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
@@ -437,13 +437,13 @@ export const getOrganizationProductsByUserIdAndBrand = async (
         {
           OR: [
             {
-              brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
+              brandId: brandId ? brandId : { in: user.organization.brands.map((brand) => brand.id) },
               status: Status.Done,
             },
             {
               upload: { organizationId: user.organization.id },
               status: Status.Done,
-              brandId: brand,
+              brandId,
             },
           ],
         },
@@ -453,13 +453,13 @@ export const getOrganizationProductsByUserIdAndBrand = async (
     : getProducts({
         OR: [
           {
-            brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
+            brandId: brandId ? brandId : { in: user.organization.brands.map((brand) => brand.id) },
             status: Status.Done,
           },
           {
             upload: { organizationId: user.organization.id },
             status: Status.Done,
-            brandId: brand,
+            brandId,
           },
         ],
       })
