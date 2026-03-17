@@ -122,12 +122,12 @@ test("declare my products", async ({ page }) => {
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(8)
   await expect(page.locator("#contenu")).toContainText("Vous avez déclaré des produits sur 2 marques différentes.")
-  await expect(page.locator("#contenu")).toContainText("Vous avez 8 produits déclarés.")
+  await expect(page.locator("#contenu")).toContainText("Vous avez 8 références produit déclarées.")
 
   await page.getByLabel("Choisir une marque").selectOption({ value: "26ed7820-ebca-4235-b1d3-dbeab02b1768" })
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)
   await expect(page.locator("#contenu")).toContainText("Vous avez déclaré des produits sur 2 marques différentes.")
   await expect(page.locator("#contenu")).toContainText(
-    "Vous avez 2 produits déclarés pour la marque Emmaus Solidarité.",
+    "Vous avez 2 références produit déclarées pour la marque Emmaus Solidarité.",
   )
 })
