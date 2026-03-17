@@ -148,6 +148,16 @@ describe("parseExcel", () => {
     expect(accessories).toHaveLength(1)
   })
 
+  it("parses a valid CSV with empty number trims", async () => {
+    const excelBuffer = createExcelBuffer([defaultHeaders, [...defaultProducts.slice(0, -4), 0, 0, 0, 0]])
+    const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(1)
+    expect(informations[0].emptyTrims).toBe(false)
+    expect(materials).toHaveLength(2)
+    expect(accessories).toHaveLength(4)
+  })
+
   it("parses a valid CSV with default trims", async () => {
     const excelBuffer = createExcelBuffer([defaultHeaders, [...defaultProducts.slice(0, -4), "", "", "", ""]])
     const { products, informations, materials, accessories } = await parseExcel(excelBuffer, upload)
