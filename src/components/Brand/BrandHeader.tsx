@@ -11,7 +11,8 @@ const BrandHeader = ({ productCount, brand }: { brand: BrandInformation; product
         <h1 className={styles.title}>{brand.name}</h1>
         {productCount > 0 && (
           <p className={styles.subtitle}>
-            Cette marque a déclaré <strong>{productCount.toLocaleString("fr-FR")}</strong> produits.
+            Cette marque a déclaré <strong>{productCount.toLocaleString("fr-FR")}</strong> référence
+            {productCount > 1 ? "s" : ""} produit.
           </p>
         )}
         <p className={styles.subtitle}>
