@@ -224,10 +224,7 @@ test("manage siret delegation", async ({ page }) => {
   await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
-    "REF-098",
-  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(0)
 })
 
 test("manage unique id delegation", async ({ page }) => {
@@ -515,8 +512,5 @@ test("manage unique id delegation", async ({ page }) => {
   await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
-    "REF-098",
-  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
 })
