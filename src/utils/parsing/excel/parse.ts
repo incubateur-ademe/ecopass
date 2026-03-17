@@ -47,9 +47,9 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
   const now = new Date()
 
   for (let rowIndex = 1; rowIndex < data.length; rowIndex++) {
-    const row = data[rowIndex].map((cell) => (cell ? cell.toString().trim() : ""))
+    const row = data[rowIndex].map((cell) => (cell !== null && cell !== undefined ? cell.toString().trim() : ""))
 
-    if (!row || row.every((cell) => !cell)) {
+    if (!row || row.length === 0 || row.every((cell) => !cell)) {
       continue
     }
     const id = uuid()
