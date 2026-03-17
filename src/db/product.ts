@@ -286,7 +286,7 @@ export const getOldProductWithScore = async (gtin: string, version: string) =>
   })
 
 const getProducts = async (
-  where: Pick<Prisma.ProductWhereInput, "upload" | "informations" | "uploadId" | "createdAt" | "brandId" | "OR">,
+  where: Pick<Prisma.ProductWhereInput, "upload" | "informations" | "uploadId" | "createdAt" | "brandId" | "status">,
   skip?: number,
   take?: number,
 ) => {
@@ -374,14 +374,18 @@ export const getPublicProductsByBrandId = async (
     10,
   )
 
-export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brand?: string) => {
+export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brandId?: string) => {
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
     select: {
       organization: {
         select: {
           id: true,
-          brands: true,
+          brands: { select: { id: true } },
+          authorizedBy: {
+            select: { from: { select: { brands: { select: { id: true } } } } },
+            where: { active: true },
+          },
         },
       },
     },
@@ -391,31 +395,31 @@ export const getOrganizationProductsCountByUserIdAndBrand = async (userId: strin
     return 0
   }
 
+  const authorizedBrands = new Set([
+    ...user.organization.brands.map((brand) => brand.id),
+    ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
+  ])
+
+  if (brandId && !authorizedBrands.has(brandId)) {
+    return 0
+  }
+
   const products = await prismaClient.product.groupBy({
     by: ["internalReference"],
     where: {
-      OR: [
-        {
-          brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
-          status: Status.Done,
-        },
-        {
-          upload: { organizationId: user.organization.id },
-          status: Status.Done,
-          brandId: brand,
-        },
-      ],
+      brandId: brandId ? brandId : { in: Array.from(authorizedBrands) },
+      status: Status.Done,
     },
     _count: { internalReference: true },
   })
   return products.length
 }
 
-export const getOrganizationProductsByUserIdAndBrand = async (
+export const getOrganizationProductsByUserIdAndBrandId = async (
   userId: string,
   page: number,
   size: number | undefined,
-  brand?: string,
+  brandId?: string,
 ) => {
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
@@ -423,7 +427,11 @@ export const getOrganizationProductsByUserIdAndBrand = async (
       organization: {
         select: {
           id: true,
-          brands: true,
+          brands: { select: { id: true } },
+          authorizedBy: {
+            select: { from: { select: { brands: { select: { id: true } } } } },
+            where: { active: true },
+          },
         },
       },
     },
@@ -432,36 +440,28 @@ export const getOrganizationProductsByUserIdAndBrand = async (
   if (!user || !user.organization) {
     return []
   }
+
+  const authorizedBrands = new Set([
+    ...user.organization.brands.map((brand) => brand.id),
+    ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
+  ])
+
+  if (brandId && !authorizedBrands.has(brandId)) {
+    return []
+  }
+
   return size
     ? getProducts(
         {
-          OR: [
-            {
-              brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
-              status: Status.Done,
-            },
-            {
-              upload: { organizationId: user.organization.id },
-              status: Status.Done,
-              brandId: brand,
-            },
-          ],
+          brandId: brandId ? brandId : { in: Array.from(authorizedBrands) },
+          status: Status.Done,
         },
         (page || 0) * size,
         size,
       )
     : getProducts({
-        OR: [
-          {
-            brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
-            status: Status.Done,
-          },
-          {
-            upload: { organizationId: user.organization.id },
-            status: Status.Done,
-            brandId: brand,
-          },
-        ],
+        brandId: brandId ? brandId : { in: Array.from(authorizedBrands) },
+        status: Status.Done,
       })
 }
 export const getProductsByUploadId = async (uploadId: string) => {

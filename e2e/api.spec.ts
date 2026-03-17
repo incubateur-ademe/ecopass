@@ -36,7 +36,7 @@ const batch = {
   internalReference: "BATCH-100",
   price: 50,
   numberOfReferences: 1000,
-  brandId: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
+  brandId: "26ed7820-ebca-4235-b1d3-dbeab02b1768",
   products: [
     {
       numberOfItem: 2,
@@ -346,16 +346,44 @@ test("declare my products by API", async ({ page }) => {
     "1 755",
   )
 
+  response = await page.request.get("http://localhost:3000/api/produits", {
+    headers: {
+      Authorization: "Bearer nimps",
+    },
+  })
+  expect(response.status()).toBe(401)
+
+  response = await page.request.get("http://localhost:3000/api/produits", {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(200)
+  expect((await response.json()).length).toBe(2)
+
+  response = await page.request.get(`http://localhost:3000/api/produits?brandId=${product.brandId}`, {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(200)
+  expect((await response.json()).length).toBe(1)
+
   await page.getByRole("link", { name: "API", exact: true }).click()
   await expect(page).toHaveURL(/.*\/api/)
 
   await expect(page.getByTestId("api-keys-table").locator("table tbody tr")).toHaveCount(1)
   await page.getByTestId("api-keys-table").locator("table tbody tr").getByRole("button", { name: "Supprimer" }).click()
 
-  await page.reload()
-
   response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(401)
+
+  response = await page.request.get("http://localhost:3000/api/produits", {
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },

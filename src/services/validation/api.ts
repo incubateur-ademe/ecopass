@@ -132,6 +132,6 @@ export const paginationValidation = z.object({
 export const productsListValidation = z.intersection(
   paginationValidation,
   z.object({
-    brand: z.string().optional(),
+    brandId: z.string().optional(),
   }),
 )

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { getApiUser } from "../../../services/auth/auth"
 import { productsListValidation } from "../../../services/validation/api"
-import { getOrganizationProductsByUserIdAndBrand } from "../../../db/product"
+import { getOrganizationProductsByUserIdAndBrandId } from "../../../db/product"
 import { handleProductPOST } from "../../../utils/api/products"
 
 export async function GET(req: Request) {
@@ -15,18 +15,18 @@ export async function GET(req: Request) {
   const validationResult = productsListValidation.safeParse({
     page: parseInt(searchParams.get("page") || "0", 10),
     size: parseInt(searchParams.get("size") || "10", 10),
-    brand: searchParams.get("brand") || undefined,
+    brandId: searchParams.get("brandId") || undefined,
   })
 
   if (!validationResult.success) {
     return NextResponse.json(validationResult.error.issues, { status: 400 })
   }
 
-  const products = await getOrganizationProductsByUserIdAndBrand(
+  const products = await getOrganizationProductsByUserIdAndBrandId(
     api.user.id,
     validationResult.data.page,
     validationResult.data.size,
-    validationResult.data.brand,
+    validationResult.data.brandId,
   )
 
   return NextResponse.json(products)

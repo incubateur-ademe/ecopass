@@ -1,6 +1,6 @@
 "use server"
 import { Status } from "@prisma/client"
-import { getOrganizationProductsByUserIdAndBrand, getProductsByUploadId } from "../db/product"
+import { getOrganizationProductsByUserIdAndBrandId, getProductsByUploadId } from "../db/product"
 import { stringify } from "csv-stringify/sync"
 import * as XLSX from "xlsx"
 import { getUploadById } from "../db/upload"
@@ -9,7 +9,7 @@ import { createExport } from "../db/export"
 import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
 import { getUserOrganizationType } from "../db/user"
 
-export const exportScores = async (brand?: string) => {
+export const exportScores = async (brandId?: string) => {
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -20,7 +20,7 @@ export const exportScores = async (brand?: string) => {
     return "Vous n'êtes pas autorisé à exporter ces scores"
   }
 
-  const products = await getOrganizationProductsByUserIdAndBrand(session.user.id, 0, undefined, brand)
+  const products = await getOrganizationProductsByUserIdAndBrandId(session.user.id, 0, undefined, brandId)
 
   const data = products.map((product) => [product.internalReference, product.score ? Math.round(product.score) : ""])
 
