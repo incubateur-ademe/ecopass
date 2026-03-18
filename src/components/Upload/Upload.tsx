@@ -25,6 +25,7 @@ const Upload = () => {
             Dans l'hypothèse où vous ne déclarez pas le champ "score", le calcul sera effectué automatiquement
             conformément à vos déclarations. Le score calculé demeure sous votre responsabilité.{" "}
           </span>
+          <br />
           <Link href='/notice-reglementaire.pdf' className='fr-link' prefetch={false}>
             Consultez la méthode de calcul
           </Link>

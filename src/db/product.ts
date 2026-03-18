@@ -1,7 +1,6 @@
 import { Accessory, Material, Prisma, Product, ProductInformation } from "@prisma/client"
 import { Status, UploadType } from "@prisma/enums"
 import { ParsedProductValidation } from "../services/validation/product"
-import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { BATCH_CATEGORY, productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
@@ -666,59 +665,54 @@ export const getLastProductsByGtins = async (gtins: string[]) => {
 }
 
 export const getProductCountByCategory = async () => {
-  const allProducts = await prismaClient.product.findMany({
-    where: {
-      status: Status.Done,
-    },
-    select: {
-      internalReference: true,
-      createdAt: true,
-      informations: {
-        select: {
-          categorySlug: true,
-        },
-      },
-    },
-    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
-  })
+  const rows = await prismaClient.$queryRaw<Array<{ category: string | null; count: bigint }>>(Prisma.sql`
+    WITH latest AS (
+      SELECT DISTINCT ON (p.brand_id, p.internal_reference) p.id
+      FROM products p
+      WHERE p.status = ${Status.Done}
+      ORDER BY p.brand_id ASC NULLS FIRST, p.internal_reference ASC, p.created_at DESC
+    ),
+    categorized AS (
+      SELECT
+        l.id,
+        CASE
+          WHEN COUNT(pi.id) = 1 THEN MAX(pi.category_slug)
+          ELSE ${BATCH_CATEGORY}
+        END AS category
+      FROM latest l
+      LEFT JOIN product_informations pi ON pi.product_id = l.id
+      GROUP BY l.id
+    )
+    SELECT category, COUNT(*)::bigint AS count
+    FROM categorized
+    WHERE category IS NOT NULL
+    GROUP BY category
+  `)
 
-  const uniqueProducts = []
-  let lastInternalReference = null
-
-  for (const product of allProducts) {
-    if (product.internalReference !== lastInternalReference) {
-      uniqueProducts.push(product)
-      lastInternalReference = product.internalReference
-    }
-  }
-
-  const categoryCount = uniqueProducts.reduce(
-    (acc, product) => {
-      const category = product.informations.length == 1 ? product.informations[0].categorySlug : BATCH_CATEGORY
-      if (!category) {
+  return rows.reduce(
+    (acc, row) => {
+      if (!row.category) {
         return acc
       }
-      if (!acc[category]) {
-        acc[category] = 0
-      }
-      acc[category] += 1
+      acc[row.category] = Number(row.count)
       return acc
     },
-    {} as Record<ProductCategory | string, number>,
+    {} as Record<string, number>,
   )
-
-  return categoryCount
 }
 
 export const getDistinctBrandCount = async () => {
-  const result = await prismaClient.product.groupBy({
-    by: ["brandId"],
+  const brands = await prismaClient.product.findMany({
     where: {
       status: Status.Done,
+      brandId: { not: null },
     },
+    select: {
+      brandId: true,
+    },
+    distinct: ["brandId"],
   })
-
-  return result.length
+  return brands.length
 }
 
 export const getOrganizationProductsByUserId = async (userId: string) => {
