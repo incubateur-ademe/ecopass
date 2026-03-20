@@ -258,6 +258,89 @@
         }
       }
     },
+    "/produits/multicomposants": {
+      "post": {
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Déclaration"],
+        "summary": "Déclare un produit multicomposants sur le portail de l'Affichage Environnemental. Uniquement disponible sur l'environnement de test pour le moment.",
+        "description": "Permet de déclarer un produit regroupant plusieurs composants. Tous les composants du produit partagent les mêmes métadonnées (GTINs, référence interne, marque, score déclaré) et le même type de produit, mais peuvent avoir des informations techniques différentes (masse, matières, pays, impression, etc.). Un seul composant doit être défini comme composant principal.",
+        "requestBody": {
+          "description": "Requête modélisant les paramètres du produit multicomposants à déclarer",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiComponentProductQuery"
+              },
+              "examples": {
+                "vesteMulticomposants": {
+                  "$ref": "#/components/examples/vesteMulticomposants"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Déclaration de produit multicomposants validée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Déclaration de produit multicomposants réussie.",
+                  "properties": {
+                    "result": {
+                      "type": "string",
+                      "enum": ["success"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "208": {
+            "description": "Le nouveau produit multicomposants est identique à l'ancien",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "enum": ["Le produit existe déjà."]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidParametersError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise - L'utilisateur doit fournir un token Bearer valide dans l'en-tête Authorization. Cette erreur survient si le token est manquant, invalide ou expiré.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/produits/tous": {
       "get": {
         "tags": ["Consultation"],
@@ -812,6 +895,63 @@
             }
           ]
         }
+      },
+      "vesteMulticomposants": {
+        "summary": "Produit multicomposants de type manteau",
+        "value": {
+          "gtins": ["1234567890456"],
+          "internalReference": "VESTE-MULTI-001",
+          "brandId": "74a1ce48-56e1-452e-ba9b-0c55fae4ed85",
+          "product": "manteau",
+          "price": 89,
+          "numberOfReferences": 300,
+          "business": "small-business",
+          "trims": [
+            {
+              "id": "zip",
+              "quantity": 1
+            }
+          ],
+          "components": [
+            {
+              "mainComponent": true,
+              "mass": 0.65,
+              "materials": [
+                {
+                  "id": "ei-coton",
+                  "share": 0.7,
+                  "country": "TR"
+                },
+                {
+                  "id": "ei-pet",
+                  "share": 0.3,
+                  "country": "CN"
+                }
+              ],
+              "countrySpinning": "TR",
+              "countryFabric": "TR",
+              "countryDyeing": "TR",
+              "countryMaking": "MA"
+            },
+            {
+              "mass": 0.12,
+              "materials": [
+                {
+                  "id": "ei-pet",
+                  "share": 1,
+                  "country": "CN"
+                }
+              ],
+              "countrySpinning": "CN",
+              "countryFabric": "CN",
+              "countryDyeing": "CN",
+              "printing": {
+                "kind": "pigment",
+                "ratio": 0.05
+              }
+            }
+          ]
+        }
       }
     },
     "schemas": {
@@ -1272,6 +1412,170 @@
                 },
                 "upcycled": {
                   "description": "Produit remanufacturé",
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "MultiComponentProductQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gtins", "internalReference", "product", "components"],
+        "properties": {
+          "gtins": {
+            "type": "array",
+            "description": "Les codes GTIN (ou EAN) du produit multicomposants, format 13 ou 8 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez [nous contacter](mailto:affichage-environnemental@ecobalyse.beta.gouv.fr).",
+            "items": {
+              "type": "string",
+              "pattern": "^(\\d{8}|\\d{13})$",
+              "example": "1234567890123"
+            }
+          },
+          "internalReference": {
+            "type": "string",
+            "description": "Référence interne du produit multicomposants",
+            "example": "MULTI-123"
+          },
+          "brandId": {
+            "type": "string",
+            "description": "Marque id du produit"
+          },
+          "declaredScore": {
+            "type": "number",
+            "description": "Dans l'hypothèse où vous ne déclarez pas ce champ, le calcul sera effectué automatiquement conformément à vos déclarations. Le score calculé demeure sous votre responsabilité. [Consultez la méthode de calcul](/notice-reglementaire.pdf)."
+          },
+          "product": {
+            "type": "string",
+            "description": "Identifiant du produit final, commun à l'ensemble des composants (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/products`)",
+            "enum": [
+              "chemise",
+              "jean",
+              "jupe",
+              "manteau",
+              "pantalon",
+              "pull",
+              "tshirt",
+              "chaussettes",
+              "calecon",
+              "slip",
+              "maillot-de-bain"
+            ]
+          },
+          "business": {
+            "type": "string",
+            "description": "Type d'entreprise et d'offre de services :<br/>- `small-business` : TPE/PME<br/>- `large-business-with-services` : Grande entreprise avec service de réparation<br/>- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation",
+            "enum": ["small-business", "large-business-with-services", "large-business-without-services"]
+          },
+          "numberOfReferences": {
+            "description": "Nombre de références au catalogue de la marque.",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 999999
+          },
+          "price": {
+            "description": "Prix du produit, en Euros (€).",
+            "type": "number",
+            "minimum": 1
+          },
+          "trims": {
+            "description": "Liste des accessoires du produit (boutons, zip, etc).<br/>La liste des accessoires disponibles est accessible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/trims`.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Identifiant de l'accessoire"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "components": {
+            "type": "array",
+            "description": "Liste des composants du produit. Un et un seul composant doit avoir `mainComponent` à `true` et un `countryMaking` spécifié.",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["mass", "materials"],
+              "properties": {
+                "mainComponent": {
+                  "type": "boolean",
+                  "description": "Indique si ce composant est le composant principal du produit. Exactement un composant doit être principal."
+                },
+                "mass": {
+                  "type": "number",
+                  "description": "Masse du composant, en kilogrammes",
+                  "minimum": 0.01,
+                  "example": 0.17
+                },
+                "materials": {
+                  "type": "array",
+                  "description": "Liste des matières composant ce composant",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductQueryMaterial"
+                  },
+                  "minItems": 1
+                },
+                "airTransportRatio": {
+                  "type": "number",
+                  "description": "Part de **transport aérien** entre l'étape de **Confection** et l'étape de **Distribution**, entre `0` et `1`",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "countryDyeing": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Teinture** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)<br/>Ce champs est requis si `upcycled` n'est pas `true`.",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "countryFabric": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Tissage/Tricotage** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)<br/>Ce champs est requis si `upcycled` n'est pas `true`.",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "countryMaking": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Confection** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`). Ce champ est requis uniquement si `mainComponent` vaut `true`.",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "countrySpinning": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Filature** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`).<br/>Si non spécifié, le pays de filature pris en considération est celui de production de<br/>la matière la plus représentée dans le mix.",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "fading": {
+                  "type": "boolean",
+                  "description": "Active l'application du **procédé de délavage** pour l'étape de confection du composant."
+                },
+                "printing": {
+                  "type": "object",
+                  "description": "Ce paramètre permet de préciser le type d'impression effectuée sur le composant.<br/>Par exemple, `{\"kind\": \"pigment\", \"ratio\": 0.1}` signifie impression pigmentaire sur 10%<br/>de la superficie du composant.",
+                  "required": ["kind"],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "description": "Type de procédé d'impression pouvant prendre les valeurs suivantes :<br/>- `pigment` pour une impression pigmentaire ;<br/>- `substantive` pour une impression fixé/lavé ;",
+                      "enum": ["pigment", "substantive"]
+                    },
+                    "ratio": {
+                      "type": "number",
+                      "description": "Pourcentage de surface imprimée",
+                      "enum": [0.01, 0.05, 0.2, 0.5, 0.8]
+                    }
+                  }
+                },
+                "upcycled": {
+                  "description": "Composant remanufacturé",
                   "type": "boolean"
                 }
               }

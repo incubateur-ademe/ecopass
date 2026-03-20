@@ -3,9 +3,10 @@ import { Status, UploadType } from "@prisma/enums"
 import { ParsedProductValidation } from "../services/validation/product"
 import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"
-import { BATCH_CATEGORY, productCategories } from "../utils/types/productCategory"
+import { productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
 import { checkOldProduct, ProductCheckResult } from "../services/validation/oldProduct"
+import { getProductCategory } from "../utils/product/category"
 
 export const createProducts = async ({
   products,
@@ -188,6 +189,7 @@ const productWithScoreSelect = {
   informations: {
     select: {
       categorySlug: true,
+      mainComponent: true,
       score: {
         select: {
           score: true,
@@ -676,6 +678,7 @@ export const getProductCountByCategory = async () => {
       informations: {
         select: {
           categorySlug: true,
+          mainComponent: true,
         },
       },
     },
@@ -694,7 +697,7 @@ export const getProductCountByCategory = async () => {
 
   const categoryCount = uniqueProducts.reduce(
     (acc, product) => {
-      const category = product.informations.length == 1 ? product.informations[0].categorySlug : BATCH_CATEGORY
+      const category = getProductCategory(product.informations)
       if (!category) {
         return acc
       }

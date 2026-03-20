@@ -1,4 +1,8 @@
-import { getUserProductAPIValidation, getUserProductsAPIValidation } from "./api"
+import {
+  getUserMultiComponentProductAPIValidation,
+  getUserProductAPIValidation,
+  getUserProductsAPIValidation,
+} from "./api"
 import { expectZodValidationToFail } from "./zodValidationTest"
 
 describe("productAPIValidation", () => {
@@ -412,6 +416,12 @@ describe("productAPIValidation", () => {
     })
     expect(result.success).toEqual(true)
   })
+
+  it("does not allow product with main component", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { mainComponent: true }, [
+      { path: ["mainComponent"], message: "Invalid input: expected undefined, received boolean" },
+    ])
+  })
 })
 
 describe("productsAPIValidation", () => {
@@ -729,6 +739,170 @@ describe("productsAPIValidation", () => {
   it("does not allow product with too low price", () => {
     expectZodValidationToFail(productsAPIValidation, validProducts, { price: 0 }, [
       { path: ["price"], message: "Too small: expected number to be >=1" },
+    ])
+  })
+
+  it("does not allow product with main component", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      {
+        products: [
+          { ...validProductBase, mainComponent: true },
+          { ...validProductBase, mainComponent: false },
+        ],
+      },
+      [
+        { path: ["products", "0", "mainComponent"], message: "Invalid input: expected undefined, received boolean" },
+        { path: ["products", "1", "mainComponent"], message: "Invalid input: expected undefined, received boolean" },
+      ],
+    )
+  })
+})
+
+describe("multiComponentProductAPIValidation", () => {
+  const multiComponentProductAPIValidation = getUserMultiComponentProductAPIValidation(["Test Brand", "Test Brand 2"])
+
+  const validComponent = {
+    mass: 1.23,
+    materials: [
+      {
+        id: "ei-coton",
+        share: 1,
+      },
+    ],
+    countryDyeing: "CN",
+    countryFabric: "FR",
+    countryMaking: "REO",
+    mainComponent: false,
+  }
+
+  const validMultiComponentProduct = {
+    internalReference: "TestRef",
+    brandId: "Test Brand",
+    product: "jean",
+    components: [validComponent, { ...validComponent, mass: 2.45, mainComponent: true }],
+  }
+
+  it("allows valid multi-component product", () => {
+    const result = multiComponentProductAPIValidation.safeParse(validMultiComponentProduct)
+    expect(result.success).toEqual(true)
+  })
+
+  it("allows multi-component product with no country making on secondary component", () => {
+    const result = multiComponentProductAPIValidation.safeParse({
+      ...validMultiComponentProduct,
+      components: [
+        { ...validComponent, mainComponent: true },
+        { ...validComponent, mass: 2.45, mainComponent: false, countryMaking: undefined },
+      ],
+    })
+    expect(result.success).toEqual(true)
+  })
+
+  it("does not allow multi-component product without components", () => {
+    expectZodValidationToFail(multiComponentProductAPIValidation, validMultiComponentProduct, { components: [] }, [
+      { path: ["components"], message: "Veuillez remplir au moins un composant." },
+      { path: ["components"], message: "Il doit y avoir exactement un composant principal." },
+    ])
+  })
+
+  it("does not allow multi-component product with no main component", () => {
+    expectZodValidationToFail(
+      multiComponentProductAPIValidation,
+      validMultiComponentProduct,
+      {
+        components: [
+          { ...validComponent, mainComponent: false },
+          { ...validComponent, mass: 2.45, mainComponent: false },
+        ],
+      },
+      [{ path: ["components"], message: "Il doit y avoir exactement un composant principal." }],
+    )
+  })
+
+  it("does not allow multi-component product with two main components", () => {
+    expectZodValidationToFail(
+      multiComponentProductAPIValidation,
+      validMultiComponentProduct,
+      {
+        components: [
+          { ...validComponent, mainComponent: true },
+          { ...validComponent, mass: 2.45, mainComponent: true },
+        ],
+      },
+      [{ path: ["components"], message: "Il doit y avoir exactement un composant principal." }],
+    )
+  })
+
+  it("does not allow main component without countryMaking", () => {
+    expectZodValidationToFail(
+      multiComponentProductAPIValidation,
+      validMultiComponentProduct,
+      {
+        components: [
+          { ...validComponent, mainComponent: false },
+          { ...validComponent, mass: 2.45, mainComponent: true, countryMaking: undefined },
+        ],
+      },
+      [
+        {
+          path: ["components", "1", "countryMaking"],
+          message: "Le composant principal doit avoir un countryMaking spécifié.",
+        },
+      ],
+    )
+  })
+
+  it("does not allow non-upcycled component without countryDyeing", () => {
+    expectZodValidationToFail(
+      multiComponentProductAPIValidation,
+      validMultiComponentProduct,
+      {
+        components: [
+          { ...validComponent, countryDyeing: undefined, mainComponent: true },
+          { ...validComponent, mass: 2.45, mainComponent: false },
+        ],
+      },
+      [
+        {
+          path: ["components"],
+          message: "countryDyeing et countryFabric sont requis pour chaque composant quand upcycled n'est pas true",
+        },
+      ],
+    )
+  })
+
+  it("allows upcycled components without countryDyeing and countryFabric", () => {
+    const result = multiComponentProductAPIValidation.safeParse({
+      ...validMultiComponentProduct,
+      components: [
+        {
+          ...validComponent,
+          upcycled: true,
+          countryDyeing: undefined,
+          countryFabric: undefined,
+          mainComponent: true,
+        },
+        {
+          ...validComponent,
+          mass: 2.45,
+          upcycled: true,
+          countryDyeing: undefined,
+          countryFabric: undefined,
+          mainComponent: false,
+        },
+      ],
+    })
+    expect(result.success).toEqual(true)
+  })
+
+  it("does not allow multi-component product with invalid brand", () => {
+    expectZodValidationToFail(multiComponentProductAPIValidation, validMultiComponentProduct, { brandId: "Nop" }, [
+      {
+        path: ["brandId"],
+        message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
+      },
     ])
   })
 })

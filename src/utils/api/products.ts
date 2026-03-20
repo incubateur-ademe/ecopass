@@ -4,6 +4,7 @@ import { computeBatchInformations, computeEcobalyseScore } from "../ecobalyse/ap
 import { createScore } from "../../db/score"
 import { updateAPIUse } from "../../db/user"
 import {
+  getUserMultiComponentProductAPIValidation,
   getUserProductAPIValidation,
   getUserProductsAPIValidation,
   ProductInformationAPI,
@@ -19,7 +20,126 @@ import { getBrandById } from "../../db/brands"
 import { getDefaultGTINs } from "../validation/gtin"
 import { gtinsValidation } from "../../services/validation/gtins"
 
-export async function handleProductPOST(req: Request, batch?: boolean) {
+type ProductAndInformations = {
+  product: ProductMetadataAPI & { gtins: string[] }
+  informations: ProductInformationAPI[]
+}
+
+type GtinsResult = { success: true; data: string[] } | { success: false; error: { issues: unknown[] } }
+
+const parseMultiComponentProduct = (
+  body: Record<string, unknown>,
+  brands: ReturnType<typeof getAuthorizedBrands>,
+  brandId: string,
+  gtins: GtinsResult,
+) => {
+  const productValidation = getUserMultiComponentProductAPIValidation(brands).safeParse({
+    ...body,
+    brandId,
+  })
+
+  if (!productValidation.success || !gtins.success) {
+    return NextResponse.json(
+      [
+        ...(productValidation.success ? [] : productValidation.error.issues),
+        ...(gtins.success ? [] : gtins.error.issues),
+      ],
+      { status: 400 },
+    )
+  }
+
+  const mainComponentCountryMaking = productValidation.data.components.find((component) => component.mainComponent)
+    ?.countryMaking as string
+
+  return {
+    product: {
+      internalReference: productValidation.data.internalReference,
+      declaredScore: productValidation.data.declaredScore,
+      brandId: productValidation.data.brandId,
+      gtins: gtins.data,
+    },
+    informations: productValidation.data.components.map((component) => ({
+      ...component,
+      countryMaking: component.countryMaking || mainComponentCountryMaking,
+      product: productValidation.data.product,
+      price: productValidation.data.price,
+      numberOfReferences: productValidation.data.numberOfReferences,
+      business: productValidation.data.business,
+      mainComponent: component.mainComponent || false,
+      trims: component.mainComponent ? productValidation.data.trims : [],
+    })),
+  }
+}
+
+const parseBatchProduct = (
+  body: Record<string, unknown>,
+  brands: ReturnType<typeof getAuthorizedBrands>,
+  brandId: string,
+  gtins: GtinsResult,
+) => {
+  const productValidation = getUserProductsAPIValidation(brands).safeParse({
+    ...body,
+    brandId,
+  })
+
+  if (!productValidation.success || !gtins.success) {
+    return NextResponse.json(
+      [
+        ...(productValidation.success ? [] : productValidation.error.issues),
+        ...(gtins.success ? [] : gtins.error.issues),
+      ],
+      { status: 400 },
+    )
+  }
+
+  return {
+    product: {
+      internalReference: productValidation.data.internalReference,
+      declaredScore: productValidation.data.declaredScore,
+      brandId: productValidation.data.brandId,
+      gtins: gtins.data,
+    },
+    informations: computeBatchInformations(
+      productValidation.data.price,
+      productValidation.data.numberOfReferences,
+      productValidation.data.products,
+    ),
+  }
+}
+
+const parseSingleProduct = (
+  body: Record<string, unknown>,
+  brands: ReturnType<typeof getAuthorizedBrands>,
+  brandId: string,
+  gtins: GtinsResult,
+) => {
+  const productValidation = getUserProductAPIValidation(brands).safeParse({
+    ...body,
+    brandId,
+  })
+
+  if (!productValidation.success || !gtins.success) {
+    return NextResponse.json(
+      [
+        ...(productValidation.success ? [] : productValidation.error.issues),
+        ...(gtins.success ? [] : gtins.error.issues),
+      ],
+      { status: 400 },
+    )
+  }
+
+  return {
+    product: {
+      internalReference: productValidation.data.internalReference,
+      declaredScore: productValidation.data.declaredScore,
+      brandId: productValidation.data.brandId,
+      gtins: gtins.data,
+    },
+    informations: [productValidation.data],
+  }
+}
+
+export async function handleProductPOST(req: Request, type: "single" | "batch" | "multicomponents") {
   try {
     const api = await getApiUser(req.headers)
     if (!api || !api.user || !api.user.organization) {
@@ -63,8 +183,6 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
       )
     }
 
-    let product: ProductMetadataAPI & { gtins: string[] }
-    let informations: ProductInformationAPI[]
     const brandId = (body.brandId || api.user.organization.brands.find((b) => b.default)?.id || "").trim()
     const brand = await getBrandById(brandId)
 
@@ -92,60 +210,24 @@ export async function handleProductPOST(req: Request, batch?: boolean) {
         }
       : gtinsValidation.safeParse(body.gtins)
 
-    if (batch) {
-      const productValidation = getUserProductsAPIValidation(brands).safeParse({
-        ...body,
-        brandId,
-      })
-
-      if (!productValidation.success || !gtins.success) {
-        return NextResponse.json(
-          [
-            ...(productValidation.success ? [] : productValidation.error.issues),
-            ...(gtins.success ? [] : gtins.error.issues),
-          ],
-          {
-            status: 400,
-          },
-        )
-      }
-      product = {
-        internalReference: productValidation.data.internalReference,
-        declaredScore: productValidation.data.declaredScore,
-        brandId: productValidation.data.brandId,
-        gtins: gtins.data,
-      }
-      informations = computeBatchInformations(
-        productValidation.data.price,
-        productValidation.data.numberOfReferences,
-        productValidation.data.products,
-      )
-    } else {
-      const productValidation = getUserProductAPIValidation(brands).safeParse({
-        ...body,
-        brandId: (body.brandId || api.user.organization.brands.find((b) => b.default)?.id || "").trim(),
-      })
-
-      if (!productValidation.success || !gtins.success) {
-        return NextResponse.json(
-          [
-            ...(productValidation.success ? [] : productValidation.error.issues),
-            ...(gtins.success ? [] : gtins.error.issues),
-          ],
-          {
-            status: 400,
-          },
-        )
-      }
-
-      product = {
-        internalReference: productValidation.data.internalReference,
-        declaredScore: productValidation.data.declaredScore,
-        brandId: productValidation.data.brandId,
-        gtins: gtins.data,
-      }
-      informations = [productValidation.data]
+    let parseResult: NextResponse | ProductAndInformations
+    switch (type) {
+      case "batch":
+        parseResult = parseBatchProduct(body, brands, brandId, gtins)
+        break
+      case "single":
+        parseResult = parseSingleProduct(body, brands, brandId, gtins)
+        break
+      case "multicomponents":
+        parseResult = parseMultiComponentProduct(body, brands, brandId, gtins)
+        break
     }
+
+    if (parseResult instanceof NextResponse) {
+      return parseResult
+    }
+
+    const { product, informations } = parseResult
 
     const hash = hashProduct(product, informations, brands)
     const oldProductCheck = await checkOldProduct(product.gtins, hash)

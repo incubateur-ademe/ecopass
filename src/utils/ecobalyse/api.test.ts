@@ -5,7 +5,7 @@ import { prismaClient } from "../../db/prismaClient"
 import { runElmFunction } from "./elm"
 import { Status } from "@prisma/enums"
 import { Business, Country, MaterialType, AccessoryType, Impression, ProductCategory } from "../../types/Product"
-import { EcobalyseResponse } from "../../types/Ecobalyse"
+import { EcobalyseImpacts, EcobalyseResponse } from "../../types/Ecobalyse"
 import { ParsedProductValidation } from "../../services/validation/product"
 import { ProductInformationAPI } from "../../services/validation/api"
 
@@ -149,13 +149,13 @@ describe("API Ecobalyse", () => {
       plotSize: 0,
     },
     lifeCycle: [
-      { label: "Matières premières", impacts: { ecs: 20 } },
-      { label: "Filature", impacts: { ecs: 15 } },
-      { label: "Tissage & Tricotage", impacts: { ecs: 10 } },
-      { label: "Ennoblissement", impacts: { ecs: 25 } },
-      { label: "Confection", impacts: { ecs: 5 } },
-      { label: "Utilisation", impacts: { ecs: 20 } },
-      { label: "Fin de vie", impacts: { ecs: 5 } },
+      { label: "Matières premières", impacts: { ecs: 20 } as EcobalyseImpacts },
+      { label: "Filature", impacts: { ecs: 15 } as EcobalyseImpacts },
+      { label: "Tissage & Tricotage", impacts: { ecs: 10 } as EcobalyseImpacts },
+      { label: "Ennoblissement", impacts: { ecs: 25 } as EcobalyseImpacts },
+      { label: "Confection", impacts: { ecs: 5 } as EcobalyseImpacts },
+      { label: "Utilisation", impacts: { ecs: 20 } as EcobalyseImpacts },
+      { label: "Fin de vie", impacts: { ecs: 5 } as EcobalyseImpacts },
     ],
     transport: { impacts: { ecs: 0.123 } },
     trimsImpacts: { ecs: -35.998000000000005 },
@@ -165,7 +165,6 @@ describe("API Ecobalyse", () => {
     const mockProduct: ParsedProductValidation = {
       id: "id-1",
       productId: "product-1",
-      gtins: ["1234567890123"],
       internalReference: "REF-001",
       brandId: "Test Brand",
       status: Status.Pending,
@@ -621,13 +620,13 @@ describe("API Ecobalyse", () => {
           plotSize: 0,
         },
         lifeCycle: [
-          { label: "Matières premières", impacts: { ecs: 21 } },
-          { label: "Filature", impacts: { ecs: 16 } },
-          { label: "Tissage & Tricotage", impacts: { ecs: 11 } },
-          { label: "Ennoblissement", impacts: { ecs: 26 } },
-          { label: "Confection", impacts: { ecs: 6 } },
-          { label: "Utilisation", impacts: { ecs: 21 } },
-          { label: "Fin de vie", impacts: { ecs: 6 } },
+          { label: "Matières premières", impacts: { ecs: 21 } as EcobalyseImpacts },
+          { label: "Filature", impacts: { ecs: 16 } as EcobalyseImpacts },
+          { label: "Tissage & Tricotage", impacts: { ecs: 11 } as EcobalyseImpacts },
+          { label: "Ennoblissement", impacts: { ecs: 26 } as EcobalyseImpacts },
+          { label: "Confection", impacts: { ecs: 6 } as EcobalyseImpacts },
+          { label: "Utilisation", impacts: { ecs: 21 } as EcobalyseImpacts },
+          { label: "Fin de vie", impacts: { ecs: 6 } as EcobalyseImpacts },
         ],
         transport: { impacts: { ecs: 0.321 } },
         trimsImpacts: { ecs: -44.556999999999995 },
@@ -810,6 +809,82 @@ describe("API Ecobalyse", () => {
         usage: 20,
         wtu: 763.4,
       })
+    })
+
+    it("should remove confection impacts for non-main component", async () => {
+      const confectionImpacts = {
+        ecs: 5,
+        acd: 1,
+        cch: 1,
+        etf: 1,
+        "etf-c": 1,
+        fru: 1,
+        fwe: 1,
+        htc: 1,
+        "htc-c": 1,
+        htn: 1,
+        "htn-c": 1,
+        ior: 1,
+        ldu: 1,
+        mru: 1,
+        ozd: 1,
+        pco: 1,
+        pma: 1,
+        swe: 1,
+      } as EcobalyseImpacts
+
+      mockedRunElmFunction.mockResolvedValueOnce({
+        ...mockEcobalyseResponse,
+        impacts: { ...mockEcobalyseResponse.impacts },
+        lifeCycle: mockEcobalyseResponse.lifeCycle.map((stage) =>
+          stage.label === "Confection" ? { ...stage, impacts: confectionImpacts } : stage,
+        ),
+      })
+
+      const result = await computeEcobalyseScore({ ...mockAPIProduct, mainComponent: false })
+
+      expect(result.making).toBe(0)
+      expect(result.score).toBe(80.5)
+      expect(result.acd).toBe(1.73)
+      expect(result.etf).toBe(21286.2)
+    })
+
+    it("should keep confection impacts for main component", async () => {
+      const confectionImpacts = {
+        ecs: 5,
+        acd: 1,
+        cch: 1,
+        etf: 1,
+        "etf-c": 1,
+        fru: 1,
+        fwe: 1,
+        htc: 1,
+        "htc-c": 1,
+        htn: 1,
+        "htn-c": 1,
+        ior: 1,
+        ldu: 1,
+        mru: 1,
+        ozd: 1,
+        pco: 1,
+        pma: 1,
+        swe: 1,
+      } as EcobalyseImpacts
+
+      mockedRunElmFunction.mockResolvedValueOnce({
+        ...mockEcobalyseResponse,
+        impacts: { ...mockEcobalyseResponse.impacts },
+        lifeCycle: mockEcobalyseResponse.lifeCycle.map((stage) =>
+          stage.label === "Confection" ? { ...stage, impacts: confectionImpacts } : stage,
+        ),
+      })
+
+      const result = await computeEcobalyseScore({ ...mockAPIProduct, mainComponent: true })
+
+      expect(result.making).toBe(5)
+      expect(result.score).toBe(85.5)
+      expect(result.acd).toBe(2.73)
+      expect(result.etf).toBe(21287.2)
     })
 
     it("should cap price at 1000 when price is above 1000", async () => {

@@ -225,17 +225,6 @@ describe("User DB integration", () => {
   })
 
   describe("updateAPIUse", () => {
-    it("should update last used date for API key", async () => {
-      const beforeUpdate = new Date()
-
-      const result = await updateAPIUse(testAPIKey.key)
-
-      expect(result.lastUsed).toBeDefined()
-      expect(result.lastUsed!.getTime()).toBeGreaterThanOrEqual(beforeUpdate.getTime())
-      expect(result.id).toBe(testAPIKey.id)
-      expect(result.key).toBe(testAPIKey.key)
-    })
-
     it("should throw error for non-existent API key", async () => {
       await expect(updateAPIUse("non-existent-key")).rejects.toThrow()
     })

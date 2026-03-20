@@ -34,6 +34,7 @@ export const hashProduct = (
           quantity: string | number | undefined
         }[]
       | undefined
+    mainComponent?: boolean
   }[],
   brands: string[],
 ) =>
@@ -68,6 +69,7 @@ export const hashProduct = (
           id: trim.id,
           quantity: trim.quantity,
         })),
+        mainComponent: informations.mainComponent,
       })),
       ecobalyseVersion,
       brandIncluded: brands.includes(product.brandId),

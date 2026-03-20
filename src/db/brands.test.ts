@@ -10,6 +10,7 @@ import { getAllBrandsWithStats, getBrandById, getBrandsByIds, getBrandWithProduc
 import { cleanDB } from "./testUtils"
 import { Business, ProductCategory } from "../types/Product"
 import { encryptProductFields } from "../utils/encryption/encryption"
+import { BATCH_CATEGORY } from "../utils/product/category"
 
 describe("Brands DB", () => {
   const orgId = "55e4c3f8-5dec-4416-94cf-00156996ee4d"
@@ -341,6 +342,54 @@ describe("Brands DB", () => {
           },
         },
       }),
+      prismaTest.product.create({
+        data: {
+          status: Status.Done,
+          hash: "h-lot-1",
+          gtins: ["LOT-001"],
+          internalReference: "LOT-001",
+          brandId: brandA.id,
+          createdAt: new Date(),
+          uploadId: testUploadId,
+          informations: {
+            create: [
+              {
+                ...encrypted.product,
+                categorySlug: ProductCategory.ManteauVeste,
+              },
+              {
+                ...encrypted.product,
+                categorySlug: ProductCategory.BoxerSlipTricoté,
+              },
+            ],
+          },
+        },
+      }),
+      prismaTest.product.create({
+        data: {
+          status: Status.Done,
+          hash: "h-mc-1",
+          gtins: ["MC-001"],
+          internalReference: "MC-001",
+          brandId: brandA.id,
+          createdAt: new Date(),
+          uploadId: testUploadId,
+          informations: {
+            create: [
+              {
+                ...encrypted.product,
+                categorySlug: ProductCategory.BoxerSlipTricoté,
+                mainComponent: true,
+              },
+              {
+                ...encrypted.product,
+                categorySlug: ProductCategory.BoxerSlipTricoté,
+                mainComponent: false,
+              },
+            ],
+          },
+        },
+      }),
     ])
 
     const result = await getBrandWithProducts(brandA.id)
@@ -348,16 +397,24 @@ describe("Brands DB", () => {
     expect(result).not.toBeNull()
     expect(result?.id).toEqual(brandA.id)
     expect(result?.name).toEqual(brandA.name)
-    expect(result?.productsByCategory.reduce((acc, curr) => acc + curr.count, 0)).toBe(4)
+    expect(result?.productsByCategory.reduce((acc, curr) => acc + curr.count, 0)).toBe(6)
     expect(result?.productsByCategory[0]).toEqual({
       slug: ProductCategory.Jean,
       count: 2,
     })
     expect(result?.productsByCategory[1]).toEqual({
-      slug: ProductCategory.ManteauVeste,
+      slug: ProductCategory.BoxerSlipTricoté,
       count: 1,
     })
     expect(result?.productsByCategory[2]).toEqual({
+      slug: BATCH_CATEGORY,
+      count: 1,
+    })
+    expect(result?.productsByCategory[3]).toEqual({
+      slug: ProductCategory.ManteauVeste,
+      count: 1,
+    })
+    expect(result?.productsByCategory[4]).toEqual({
       slug: ProductCategory.TShirtPolo,
       count: 1,
     })

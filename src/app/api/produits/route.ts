@@ -33,5 +33,5 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  return handleProductPOST(req)
+  return handleProductPOST(req, "single")
 }
