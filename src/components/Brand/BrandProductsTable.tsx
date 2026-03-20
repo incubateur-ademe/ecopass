@@ -6,9 +6,9 @@ import { formatNumber } from "../../services/format"
 import { ProductCategory } from "../../types/Product"
 import { productMapping } from "../../utils/ecobalyse/mappings"
 import styles from "./BrandProductsTable.module.css"
-import { BATCH_CATEGORY } from "../../utils/types/productCategory"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import ProductLink from "../Product/ProductLink"
+import { BATCH_CATEGORY, getProductCategory } from "../../utils/product/category"
 
 const BrandProductsTable = ({
   products,
@@ -23,9 +23,9 @@ const BrandProductsTable = ({
 }) => {
   const totalPages = Math.ceil(productCount / 10)
   const tableRows = products.map((product) => {
-    const isBatch = product.informations.length !== 1
-    const categorySlug = !isBatch ? product.informations[0].categorySlug : undefined
-    const icon = categorySlug ? productMapping[categorySlug as ProductCategory] : undefined
+    const categorySlug = getProductCategory(product.informations)
+    const icon =
+      categorySlug && categorySlug !== BATCH_CATEGORY ? productMapping[categorySlug as ProductCategory] : undefined
 
     return [
       <span className={styles.productRef} key={`${product.id}-reference`}>
@@ -33,7 +33,7 @@ const BrandProductsTable = ({
       </span>,
       <div className={styles.categoryCell} key={`${product.id}-category`}>
         {icon && <Image src={`/icons/${icon}.svg`} alt='' width={32} height={32} className={styles.categoryIcon} />}
-        <span>{isBatch ? BATCH_CATEGORY : categorySlug || "Non renseignée"}</span>
+        <span>{categorySlug || "Non renseignée"}</span>
       </div>,
       product.gtins.join(", "),
       product.score !== null && product.score !== undefined ? (

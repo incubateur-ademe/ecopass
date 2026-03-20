@@ -2,7 +2,6 @@ import Alert from "@codegouvfr/react-dsfr/Alert"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import classNames from "classnames"
 import { Products } from "../../../db/product"
-import { BATCH_CATEGORY } from "../../../utils/types/productCategory"
 import styles from "./SearchResults.module.css"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import Image from "next/image"
@@ -11,6 +10,7 @@ import { ProductCategory } from "../../../types/Product"
 import { formatNumber } from "../../../services/format"
 import Table from "../../Table/Table"
 import ProductLink from "../ProductLink"
+import { getProductCategory } from "../../../utils/product/category"
 
 const SearchResults = ({
   products,
@@ -50,7 +50,7 @@ const SearchResults = ({
                   height={32}
                 />
               )}
-              {product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY}
+              {getProductCategory(product.informations)}
             </div>,
             <Badge severity='info' noIcon key={product.id}>
               {product.score ? formatNumber(product.score) : "-"}

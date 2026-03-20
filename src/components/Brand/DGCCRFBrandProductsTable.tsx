@@ -7,12 +7,12 @@ import { formatDate, formatNumber } from "../../services/format"
 import { ProductCategory } from "../../types/Product"
 import { productMapping } from "../../utils/ecobalyse/mappings"
 import styles from "./BrandProductsTable.module.css"
-import { BATCH_CATEGORY } from "../../utils/types/productCategory"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import ProductLink from "../Product/ProductLink"
 import DGCCRFExport from "./DGCCRFExportButton"
 import DGCCRFFilter from "./DGCCRFFilter"
 import Alert from "@codegouvfr/react-dsfr/Alert"
+import { BATCH_CATEGORY, getProductCategory } from "../../utils/product/category"
 
 const DGCCRFBrandProductsTable = ({
   products,
@@ -40,9 +40,9 @@ const DGCCRFBrandProductsTable = ({
   const totalPages = Math.ceil(productCount / 10) || 1
 
   const tableRows = products.map((product) => {
-    const isBatch = product.informations.length !== 1
-    const categorySlug = !isBatch ? product.informations[0].categorySlug : undefined
-    const icon = categorySlug ? productMapping[categorySlug as ProductCategory] : undefined
+    const categorySlug = getProductCategory(product.informations)
+    const icon =
+      categorySlug && categorySlug !== BATCH_CATEGORY ? productMapping[categorySlug as ProductCategory] : undefined
 
     return [
       <span className={styles.productRef} key={`${product.id}-reference`}>
@@ -50,7 +50,7 @@ const DGCCRFBrandProductsTable = ({
       </span>,
       <div className={styles.categoryCell} key={`${product.id}-category`}>
         {icon && <Image src={`/icons/${icon}.svg`} alt='' width={32} height={32} className={styles.categoryIcon} />}
-        <span>{isBatch ? BATCH_CATEGORY : categorySlug || "Non renseignée"}</span>
+        <span>{categorySlug || "Non renseignée"}</span>
       </div>,
       product.score !== null && product.score !== undefined ? (
         <Badge key={`${product.id}-score`} severity='info' noIcon>

@@ -51,11 +51,12 @@ export const getAPIKeys = async (userId: string) => {
   return results.map((result) => ({ ...result, key: result.key.slice(0, 3) }))
 }
 
-export const updateAPIUse = async (apiKey: string) =>
-  prismaClient.aPIKey.update({
+export const updateAPIUse = async (apiKey: string) => {
+  await prismaClient.aPIKey.update({
     where: { key: apiKey },
     data: { lastUsed: new Date() },
   })
+}
 
 export const getUserOrganizationType = async (userId: string) => {
   const user = await prismaClient.user.findFirst({
