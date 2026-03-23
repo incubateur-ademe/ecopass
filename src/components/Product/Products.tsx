@@ -5,7 +5,6 @@ import Search from "./Search"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
 import Link from "next/link"
 import DownloadScores from "./DownloadScores"
-import { BATCH_CATEGORY } from "../../utils/types/productCategory"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import Image from "next/image"
@@ -15,6 +14,7 @@ import styles from "./Search/SearchResults.module.css"
 import { formatDate, formatNumber } from "../../services/format"
 import Table from "../Table/Table"
 import ProductLink from "./ProductLink"
+import { getProductCategory } from "../../utils/product/category"
 
 const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
   const session = await auth()
@@ -56,7 +56,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
                   height={32}
                 />
               )}
-              {product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY}
+              {getProductCategory(product.informations)}
             </div>,
             <Badge severity='info' noIcon key={`score-${product.id}`}>
               {product.score ? formatNumber(product.score) : "-"}

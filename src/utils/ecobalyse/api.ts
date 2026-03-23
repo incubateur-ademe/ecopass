@@ -10,12 +10,10 @@ import {
 import { createProductScore, failProducts } from "../../db/product"
 import { prismaClient } from "../../db/prismaClient"
 import { Status } from "@prisma/enums"
-import { ProductAPIValidation, ProductInformationAPI } from "../../services/validation/api"
+import { ProductInformationAPI } from "../../services/validation/api"
 import { runElmFunction } from "./elm"
 import { scoreIsValid } from "../validation/score"
 import { ParsedProductValidation } from "../../services/validation/product"
-
-type EcobalyseProduct = Omit<ProductAPIValidation, "brandId" | "gtins" | "internalReference" | "declaredScore">
 
 const removeUndefined = <T>(obj: T): T => {
   if (obj === null || obj === undefined) {
@@ -41,7 +39,7 @@ const removeUndefined = <T>(obj: T): T => {
   return obj
 }
 
-const convertProductToEcobalyse = (product: ParsedProductValidation): EcobalyseProduct => {
+const convertProductToEcobalyse = (product: ParsedProductValidation) => {
   const result = {
     airTransportRatio: product.airTransportRatio,
     business: product.business ? businessesMapping[product.business] : undefined,
@@ -104,7 +102,7 @@ const lifeCycles = {
   endOfLife: "Fin de vie",
 }
 
-export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
+export const computeEcobalyseScore = async (product: ProductInformationAPI) => {
   const productData = {
     ...product,
     price: product.price === undefined ? undefined : Math.min(product.price, 1000),
@@ -136,6 +134,19 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     lifeCycleValues[key as keyof typeof lifeCycles] =
       result.lifeCycle.find((stage) => stage.label === label)?.impacts.ecs || 0
   })
+
+  if (product.mainComponent === false) {
+    const confection = result.lifeCycle.find((stage) => stage.label === "Confection")
+    if (confection) {
+      lifeCycleValues.making = 0
+      ;(Object.keys(result.impacts) as (keyof typeof result.impacts)[]).forEach((key) => {
+        const confectionValue = confection.impacts[key]
+        if (confectionValue) {
+          result.impacts[key] = result.impacts[key] - confectionValue
+        }
+      })
+    }
+  }
 
   return {
     score: result.impacts.ecs,

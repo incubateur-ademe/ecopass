@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { prismaClient } from "../../../../db/prismaClient"
 import { computeBatchScore } from "../../../../utils/ecobalyse/batches"
-import { BATCH_CATEGORY } from "../../../../utils/types/productCategory"
+import { getProductCategory } from "../../../../utils/product/category"
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
@@ -48,7 +48,7 @@ export async function GET(req: Request) {
     },
     include: {
       brand: { select: { name: true } },
-      informations: { select: { categorySlug: true, score: true } },
+      informations: { select: { categorySlug: true, score: true, mainComponent: true } },
       upload: {
         include: {
           createdBy: {
@@ -90,7 +90,7 @@ export async function GET(req: Request) {
       internalReference: product.internalReference,
       brand: product.brand,
       createdAt: product.createdAt,
-      category: product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY,
+      category: getProductCategory(product.informations),
       score: totalScore,
       upload: {
         version: product.upload.version,
