@@ -32,7 +32,7 @@ const SearchResults = ({
   return (
     <>
       <p data-testid='search-results-count'>
-        <b>{total}</b> {total > 1 ? "produits trouvés" : "produit trouvé"}
+        <b>{total}</b> {total > 1 ? "références produit trouvées" : "référence produit trouvée"}
       </p>
       <div data-testid='search-results-table'>
         <Table

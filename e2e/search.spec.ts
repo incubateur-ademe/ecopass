@@ -90,14 +90,14 @@ test("Search", async ({ page }) => {
   await expect(page.getByLabel("Sélectionner une marque").locator("option")).toHaveCount(4)
   await page.getByLabel("Sélectionner une marque").selectOption("6abd8a2b-8fee-4c54-8d23-17e1f8c27b56")
   await page.getByRole("button", { name: "Rechercher" }).click()
-  await expect(page.getByTestId("search-results-count")).toContainText("2 produits trouvés")
+  await expect(page.getByTestId("search-results-count")).toContainText("2 références produit trouvées")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(2)
   await expect(page).toHaveURL("http://localhost:3000/recherche?brandId=6abd8a2b-8fee-4c54-8d23-17e1f8c27b56&page=1")
   await page.getByRole("button", { name: "Réinitialiser" }).click()
 
   await page.getByLabel("Sélectionner une catégorie").selectOption("T-shirt / Polo")
   await page.getByRole("button", { name: "Rechercher" }).click()
-  await expect(page.getByTestId("search-results-count")).toContainText("1 produit trouvé")
+  await expect(page.getByTestId("search-results-count")).toContainText("1 référence produit trouvée")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(1)
   await expect(page).toHaveURL("http://localhost:3000/recherche?category=tshirt&page=1")
   await page.getByRole("button", { name: "Réinitialiser" }).click()
@@ -106,7 +106,7 @@ test("Search", async ({ page }) => {
     .getByRole("textbox", { name: "Saisir un code-barres (8 ou 13 chiffres) ou une référence produit" })
     .fill("ref-101")
   await page.getByRole("button", { name: "Rechercher" }).click()
-  await expect(page.getByTestId("search-results-count")).toContainText("1 produit trouvé")
+  await expect(page.getByTestId("search-results-count")).toContainText("1 référence produit trouvée")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(1)
   await expect(page).toHaveURL("http://localhost:3000/recherche?search=ref-101&page=1")
 
@@ -115,7 +115,7 @@ test("Search", async ({ page }) => {
     page.getByRole("heading", { name: "Liste des marques ayant déclaré au moins un produit", exact: true }),
   ).toBeVisible()
 
-  await expect(page.getByTestId("search-results-count")).toContainText("3 marques ont déclaré 4 produits.")
+  await expect(page.getByTestId("search-results-count")).toContainText("3 marques ont déclaré 4 références produit.")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(3)
 
   await page.getByRole("textbox", { name: "Rechercher une marque" }).fill("sol")
@@ -134,6 +134,6 @@ test("Search", async ({ page }) => {
   await page.getByRole("textbox", { name: "Rechercher une marque" }).clear()
   await page.getByRole("link", { name: "Emmaus Solidarité" }).click()
 
-  await expect(page.locator("#contenu")).toContainText("Cette marque a déclaré 1 produits.")
+  await expect(page.locator("#contenu")).toContainText("Cette marque a déclaré 1 référence produit.")
   await expect(page.locator("#contenu")).toContainText("Emmaus Solidarité")
 })

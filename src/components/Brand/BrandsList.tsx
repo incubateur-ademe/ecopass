@@ -92,7 +92,7 @@ const BrandsList = ({
                     <>
                       <b>{brands.length}</b> marques ont déclaré{" "}
                       <b>{brands.reduce((acc, brand) => acc + brand.productCount, 0).toLocaleString("fr-FR")}</b>{" "}
-                      produits.
+                      références produit.
                     </>
                   ) : (
                     <>Aucun résultat pour votre recherche</>
@@ -111,7 +111,7 @@ const BrandsList = ({
               fixed
               caption='Liste des marques'
               noCaption
-              headers={["Marques", "Nombre de produits déclarés", "Date de la dernière déclaration"]}
+              headers={["Marques", "Références", "Date de la dernière déclaration"]}
               data={paginatedBrands.map((brand) => [
                 <Link className={styles.link} href={`/marques/${brand.id}?${getSearchParams(search)}`} key={brand.id}>
                   {brand.name} <span className='fr-icon-arrow-right-line' aria-hidden='true' />

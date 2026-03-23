@@ -40,7 +40,7 @@ const Informations = () => {
       <Block>
         <h2>Pourquoi cet affichage ?</h2>
         <div className={styles.sectionReversed}>
-          <Image src='/images/tshirt.webp' alt='' width={192} height={193} />
+          <Image src='/images/tshirt.webp' alt='' width={192} height={207} />
           <div>
             <p>
               Dans notre vie quotidienne, la plupart de nos activités et de nos habitudes de consommation ont un impact,
