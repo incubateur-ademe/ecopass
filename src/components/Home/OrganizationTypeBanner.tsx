@@ -77,7 +77,7 @@ const OrganizationTypeBanner = ({ organization }: { organization: UserOrganizati
           </LoadingButton>
         </form>
       </div>
-      <Image className={styles.image} src='/images/tshirt.jpg' alt='' width={384} height={386} />
+      <Image className={styles.image} src='/images/tshirt.webp' alt='' width={384} height={386} />
     </div>
   )
 }
