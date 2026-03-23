@@ -1,7 +1,7 @@
 import { Status } from "@prisma/enums"
 import { prismaClient } from "./prismaClient"
 import { ProductCategory } from "../types/Product"
-import { productMapping } from "../utils/ecobalyse/mappings"
+import { getProductCategory } from "../utils/product/category"
 
 export const getAllBrandsWithStats = async () => {
   const allProducts = await prismaClient.product.findMany({
@@ -128,7 +128,7 @@ export const getBrandWithProducts = async (id: string) => {
 
   const products = await prismaClient.product.findMany({
     where: { id: { in: uniqueGtins.map((p) => p.id) }, brandId: id, status: Status.Done },
-    select: { informations: { select: { categorySlug: true } } },
+    select: { informations: { select: { categorySlug: true, mainComponent: true } } },
     orderBy: { createdAt: "desc" },
   })
   return {
@@ -138,14 +138,8 @@ export const getBrandWithProducts = async (id: string) => {
         .filter((product) => product !== null)
         .reduce(
           (acc, product) => {
-            if (product.informations.length !== 1 || !product.informations[0].categorySlug) {
-              return acc
-            }
-
-            const slug = product.informations[0].categorySlug as ProductCategory
-            const icon = productMapping[slug]
-
-            if (!icon) {
+            const slug = getProductCategory(product.informations) as ProductCategory | null
+            if (slug === null) {
               return acc
             }
 

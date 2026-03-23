@@ -3,8 +3,8 @@ import { prismaClient } from "../db/prismaClient"
 import { stringify } from "csv-stringify/sync"
 import fs from "fs"
 import path from "path"
-import { BATCH_CATEGORY } from "../utils/types/productCategory"
 import { computeBatchScore } from "../utils/ecobalyse/batches"
+import { getProductCategory } from "../utils/product/category"
 
 const getDataGouvCSV = async () => {
   console.log("Fetching all Done products...")
@@ -15,7 +15,7 @@ const getDataGouvCSV = async () => {
     },
     include: {
       brand: { select: { name: true } },
-      informations: { select: { categorySlug: true, score: true } },
+      informations: { select: { categorySlug: true, score: true, mainComponent: true } },
       upload: {
         include: {
           createdBy: {
@@ -58,7 +58,7 @@ const getDataGouvCSV = async () => {
     const totalScore = computeBatchScore(product)
     return [
       product.brand?.name ?? "",
-      product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY,
+      getProductCategory(product.informations),
       gtin,
       product.internalReference,
       totalScore.score ?? "",

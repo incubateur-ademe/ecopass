@@ -198,10 +198,11 @@ model Product {
 }
 
 model ProductInformation {
-  id           String   @id @default(uuid())
-  category     String
-  categorySlug String?  @map("category_slug")
-  emptyTrims   Boolean? @map("empty_trims")
+  id            String   @id @default(uuid())
+  category      String
+  categorySlug  String?  @map("category_slug")
+  emptyTrims    Boolean? @map("empty_trims")
+  mainComponent Boolean? @map("main_component")
 
   // Encrypted string
   business        String
@@ -399,9 +400,10 @@ model AnonymizedProduct {
 }
 
 model AnonymizedProductInformation {
-  id         String   @id @default(uuid())
-  category   String
-  emptyTrims Boolean? @map("empty_trims")
+  id            String   @id @default(uuid())
+  category      String
+  emptyTrims    Boolean? @map("empty_trims")
+  mainComponent Boolean? @map("main_component")
 
   business        String?
   countryDyeing   String? @map("country_dyeing")

@@ -53,6 +53,7 @@ const product = z.object({
     return Math.abs(totalShare - 1) < epsilon
   }, "La somme des parts de matières doit être égale à 100%"),
   trims: z.array(accessoryValidation).optional(),
+  mainComponent: z.boolean().optional(),
 })
 
 export type ProductInformationAPI = z.infer<typeof product> & { numberOfItem?: number }
@@ -67,6 +68,7 @@ export type ProductMetadataAPI = z.infer<typeof metaData> & { brandId: string; g
 const productAPIValidation = z.object({
   ...metaData.shape,
   ...product.shape,
+  mainComponent: z.undefined(),
 })
 
 export const getUserProductAPIValidation = (brands: [string, ...string[]]) =>
@@ -97,7 +99,7 @@ const productsAPIValidation = z.object({
     .array(
       product
         .omit({ price: true, numberOfReferences: true })
-        .extend({ numberOfItem: z.number().min(1).max(999).optional() }),
+        .extend({ numberOfItem: z.number().min(1).max(999).optional(), mainComponent: z.undefined() }),
     )
     .min(1, { message: "Veuillez remplir au moins un produit." }),
 })
@@ -123,6 +125,75 @@ export const getUserProductsAPIValidation = (brands: [string, ...string[]]) =>
     )
 
 export type ProductsAPIValidation = z.infer<ReturnType<typeof getUserProductsAPIValidation>>
+
+const multiComponentProductAPIValidation = z.object({
+  ...metaData.shape,
+  price: product.shape.price,
+  numberOfReferences: product.shape.numberOfReferences,
+  product: product.shape.product,
+  trims: product.shape.trims,
+  business: product.shape.business,
+  components: z
+    .array(
+      product
+        .omit({
+          price: true,
+          numberOfReferences: true,
+          product: true,
+          trims: true,
+          business: true,
+          countryMaking: true,
+        })
+        .extend({ countryMaking: z.enum(countryValues).optional() }),
+    )
+    .min(1, { message: "Veuillez remplir au moins un composant." }),
+})
+
+export const getUserMultiComponentProductAPIValidation = (brands: [string, ...string[]]) =>
+  multiComponentProductAPIValidation
+    .extend({
+      brandId: z.enum(brands),
+    })
+    .refine(
+      (data) => {
+        const mainComponents = data.components.filter((component) => component.mainComponent)
+        if (mainComponents.length !== 1) {
+          return false
+        }
+        return true
+      },
+      {
+        message: "Il doit y avoir exactement un composant principal.",
+        path: ["components"],
+      },
+    )
+    .superRefine((data, ctx) => {
+      const mainComponentIndex = data.components.findIndex(
+        (component) => component.mainComponent && component.countryMaking === undefined,
+      )
+
+      if (mainComponentIndex !== -1) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Le composant principal doit avoir un countryMaking spécifié.",
+          path: ["components", mainComponentIndex, "countryMaking"],
+        })
+      }
+    })
+    .refine(
+      (data) => {
+        return data.components.every((component) => {
+          if (!component.upcycled) {
+            return component.countryDyeing !== undefined && component.countryFabric !== undefined
+          }
+          return true
+        })
+      },
+      {
+        message: "countryDyeing et countryFabric sont requis pour chaque composant quand upcycled n'est pas true",
+        path: ["components"],
+      },
+    )
 
 export const paginationValidation = z.object({
   page: z.number().min(0),

@@ -104,6 +104,7 @@ export function encryptProductFields(product: ProductInformationAPI | ParsedProd
   return {
     product: {
       category: product.product,
+      mainComponent: product.mainComponent === undefined ? null : product.mainComponent,
       categorySlug: computeCategorySlug(product.product),
       airTransportRatio: encrypt(product.airTransportRatio),
       business: encrypt(product.business),

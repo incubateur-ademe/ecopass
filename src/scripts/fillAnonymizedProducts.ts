@@ -90,6 +90,7 @@ const main = async (batchSize: number) => {
                     quantity: accessory.quantity,
                   })),
                 },
+                mainComponent: decrypted.mainComponent,
               }
             }),
           },

@@ -1,7 +1,5 @@
 import { ProductCategory } from "../../types/Product"
 
-export const BATCH_CATEGORY = "Lot de produits"
-
 export const productCategories: Record<string, ProductCategory> = {
   // Chemise
   chemise: ProductCategory.Chemise,
