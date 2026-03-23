@@ -42,7 +42,7 @@ const DGCCRFExport = ({
     <>
       <div className={tableStyles.tableHeader}>
         <h3>
-          {productCount} {productCount > 1 ? "produits" : "produit"}
+          {productCount} référence{productCount > 1 ? "s" : ""} produit
         </h3>
         <LoadingButton loading={loading} onClick={downloadCSV}>
           Télécharger le CSV

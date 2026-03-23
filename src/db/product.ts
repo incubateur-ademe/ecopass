@@ -1,7 +1,6 @@
 import { Accessory, Material, Prisma, Product, ProductInformation } from "@prisma/client"
 import { Status, UploadType } from "@prisma/enums"
 import { ParsedProductValidation } from "../services/validation/product"
-import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
@@ -674,7 +673,6 @@ export const getProductCountByCategory = async () => {
     },
     select: {
       internalReference: true,
-      createdAt: true,
       informations: {
         select: {
           categorySlug: true,
@@ -695,33 +693,31 @@ export const getProductCountByCategory = async () => {
     }
   }
 
-  const categoryCount = uniqueProducts.reduce(
+  return uniqueProducts.reduce(
     (acc, product) => {
       const category = getProductCategory(product.informations)
       if (!category) {
         return acc
       }
-      if (!acc[category]) {
-        acc[category] = 0
-      }
-      acc[category] += 1
+      acc[category] = acc[category] ? acc[category] + 1 : 1
       return acc
     },
-    {} as Record<ProductCategory | string, number>,
+    {} as Record<string, number>,
   )
-
-  return categoryCount
 }
 
 export const getDistinctBrandCount = async () => {
-  const result = await prismaClient.product.groupBy({
-    by: ["brandId"],
+  const brands = await prismaClient.product.findMany({
     where: {
       status: Status.Done,
+      brandId: { not: null },
     },
+    select: {
+      brandId: true,
+    },
+    distinct: ["brandId"],
   })
-
-  return result.length
+  return brands.length
 }
 
 export const getOrganizationProductsByUserId = async (userId: string) => {
