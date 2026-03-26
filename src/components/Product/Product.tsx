@@ -4,18 +4,17 @@ import Block from "../Block/Block"
 import { computeBatchScore } from "../../utils/ecobalyse/batches"
 import styles from "./Product.module.css"
 import Image from "next/image"
-import { productMapping } from "../../utils/ecobalyse/mappings"
 import Label from "../Label/Label"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import ProductHistory from "./ProductHistory"
 import PublicProductScoreImpact from "./PublicProductScoreImpact"
 import InformationBanner from "../Home/InformationBanner"
-import { ProductCategory } from "../../types/Product"
 import DownloadScore from "./DownloadScore"
 import ProductScoreImpacts from "./ProductScoreImpacts"
 import DurabilityBadge from "./DurabilityBadge"
 import { BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
 import Link from "next/link"
+import { getProductCategory, getProductIcon } from "../../utils/product/category"
 
 const Product = ({
   product,
@@ -32,8 +31,10 @@ const Product = ({
   brandId?: string
   breadCrumbs?: BreadcrumbProps
 }) => {
-  const isBatch = product.informations.length > 1
   const totalScore = computeBatchScore(product)
+
+  const categorySlug = getProductCategory(product.informations)
+  const icon = getProductIcon(categorySlug)
   return (
     <>
       <Block home breadCrumbs={breadCrumbs}>
@@ -52,14 +53,7 @@ const Product = ({
                 {product.brand?.name}
               </Link>
             </h2>
-            {!isBatch && product.informations[0].categorySlug !== null && (
-              <Image
-                src={`/icons/${productMapping[product.informations[0].categorySlug as ProductCategory]}.svg`}
-                alt=''
-                width={64}
-                height={64}
-              />
-            )}
+            {icon && <Image src={`/icons/${icon}.svg`} alt='' width={64} height={64} />}
           </div>
           <div className={styles.productLine} data-testid='product-score'>
             <div className={styles.badges}>
