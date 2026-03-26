@@ -89,7 +89,7 @@ const InformationProBanner = () => {
             <ul className='fr-links-group'>
               <li>
                 <Link href='/charte.pdf' target='_blank' rel='noopener noreferrer' className='fr-link'>
-                  Téléchargez la charte graphique (PDF, 2.9 Mo)
+                  Téléchargez la charte graphique (PDF, 538 Ko)
                 </Link>
               </li>
               <li>
