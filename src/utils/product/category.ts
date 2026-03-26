@@ -1,3 +1,6 @@
+import { ProductCategory } from "../../types/Product"
+import { productMapping } from "../ecobalyse/mappings"
+
 export const BATCH_CATEGORY = "Lot de produits"
 
 export const getProductCategory = (informations: { categorySlug: string | null; mainComponent: boolean | null }[]) => {
@@ -10,4 +13,16 @@ export const getProductCategory = (informations: { categorySlug: string | null; 
     return mainComponent.categorySlug
   }
   return BATCH_CATEGORY
+}
+
+export const getProductIcon = (categorySlug: string | null) => {
+  if (categorySlug === null) {
+    return undefined
+  }
+
+  if (categorySlug === BATCH_CATEGORY) {
+    return "batch"
+  }
+
+  return productMapping[categorySlug as ProductCategory]
 }

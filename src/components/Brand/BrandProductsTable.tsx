@@ -3,12 +3,10 @@ import Image from "next/image"
 import Table from "../Table/Table"
 import { Products } from "../../db/product"
 import { formatNumber } from "../../services/format"
-import { ProductCategory } from "../../types/Product"
-import { productMapping } from "../../utils/ecobalyse/mappings"
 import styles from "./BrandProductsTable.module.css"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import ProductLink from "../Product/ProductLink"
-import { BATCH_CATEGORY, getProductCategory } from "../../utils/product/category"
+import { getProductCategory, getProductIcon } from "../../utils/product/category"
 
 const BrandProductsTable = ({
   products,
@@ -24,8 +22,7 @@ const BrandProductsTable = ({
   const totalPages = Math.ceil(productCount / 10)
   const tableRows = products.map((product) => {
     const categorySlug = getProductCategory(product.informations)
-    const icon =
-      categorySlug && categorySlug !== BATCH_CATEGORY ? productMapping[categorySlug as ProductCategory] : undefined
+    const icon = getProductIcon(categorySlug)
 
     return [
       <span className={styles.productRef} key={`${product.id}-reference`}>

@@ -1,8 +1,8 @@
 import Image from "next/image"
 import styles from "./BrandHeader.module.css"
-import { productMapping } from "../../utils/ecobalyse/mappings"
 import Link from "next/link"
 import { BrandInformation } from "../../db/brands"
+import { getProductIcon } from "../../utils/product/category"
 
 const BrandHeader = ({ productCount, brand }: { brand: BrandInformation; productCount: number }) => {
   return (
@@ -39,7 +39,7 @@ const BrandHeader = ({ productCount, brand }: { brand: BrandInformation; product
           {brand.productsByCategory.map((category) => (
             <div className={styles.categoryPreviewItem} key={category.slug}>
               <Image
-                src={`/icons/${productMapping[category.slug]}.svg`}
+                src={`/icons/${getProductIcon(category.slug)}.svg`}
                 alt=''
                 width={40}
                 height={40}

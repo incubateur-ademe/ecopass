@@ -5,12 +5,10 @@ import { Products } from "../../../db/product"
 import styles from "./SearchResults.module.css"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import Image from "next/image"
-import { productMapping } from "../../../utils/ecobalyse/mappings"
-import { ProductCategory } from "../../../types/Product"
 import { formatNumber } from "../../../services/format"
 import Table from "../../Table/Table"
 import ProductLink from "../ProductLink"
-import { getProductCategory } from "../../../utils/product/category"
+import { getProductCategory, getProductIcon } from "../../../utils/product/category"
 
 const SearchResults = ({
   products,
@@ -37,26 +35,23 @@ const SearchResults = ({
       <div data-testid='search-results-table'>
         <Table
           headers={["Code-barres", "Référence interne", "Marque", "Catégorie", "Score", "Détails"]}
-          data={products.map((product) => [
-            product.gtins.join(", "),
-            product.internalReference,
-            product.brand?.name || "-",
-            <div className={styles.category} key={product.id}>
-              {product.informations.length === 1 && product.informations[0].categorySlug !== null && (
-                <Image
-                  src={`/icons/${productMapping[product.informations[0].categorySlug as ProductCategory]}.svg`}
-                  alt=''
-                  width={32}
-                  height={32}
-                />
-              )}
-              {getProductCategory(product.informations)}
-            </div>,
-            <Badge severity='info' noIcon key={product.id}>
-              {product.score ? formatNumber(product.score) : "-"}
-            </Badge>,
-            <ProductLink product={product} key={product.id} />,
-          ])}
+          data={products.map((product) => {
+            const categorySlug = getProductCategory(product.informations)
+            const icon = getProductIcon(categorySlug)
+            return [
+              product.gtins.join(", "),
+              product.internalReference,
+              product.brand?.name || "-",
+              <div className={styles.category} key={product.id}>
+                {icon && <Image src={`/icons/${icon}.svg`} alt='' width={32} height={32} />}
+                {categorySlug || "Non renseignée"}
+              </div>,
+              <Badge severity='info' noIcon key={product.id}>
+                {product.score ? formatNumber(product.score) : "-"}
+              </Badge>,
+              <ProductLink product={product} key={product.id} />,
+            ]
+          })}
         />
       </div>
 
