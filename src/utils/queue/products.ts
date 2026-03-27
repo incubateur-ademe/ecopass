@@ -1,4 +1,5 @@
 import { getBrandsByIds } from "../../db/brands"
+import { prismaClient } from "../../db/prismaClient"
 import { failProducts, getProductsToProcess } from "../../db/product"
 import { checkUploadsStatus } from "../../db/upload"
 import { gtinsValidation } from "../../services/validation/gtins"
@@ -18,60 +19,73 @@ export const processProductsQueue = async () => {
   console.log(`Processing ${products.length} products...`)
   const brands = await getBrandsByIds(products.map((product) => product.brandId).filter((id) => id !== null))
   const brandsMap = new Map(brands.map((brand) => [brand.id, brand]))
-  const validatedProducts = products.map((product) => {
-    const organization = product.upload.createdBy.organization
-    if (!organization) {
-      return {
-        id: product.id,
-        product: {
-          success: false as const,
-          error: {
-            issues: [{ message: "Organisation non trouvée" }],
+  const validatedProducts = await Promise.all(
+    products.map(async (product) => {
+      const organization = product.upload.createdBy.organization
+      if (!organization) {
+        return {
+          id: product.id,
+          product: {
+            success: false as const,
+            error: {
+              issues: [{ message: "Organisation non trouvée" }],
+            },
           },
-        },
-        gtins: { success: true as const, data: [], error: undefined },
+          gtins: { success: true as const, data: [], error: undefined },
+        }
       }
-    }
-    const authorizedBrands = getAuthorizedBrands(organization)
-    const userProductValidation = getUserProductValidation(authorizedBrands)
-    const brand = product.brandId ? brandsMap.get(product.brandId) : null
-    if (!brand) {
-      return {
-        id: product.id,
-        product: {
-          success: false as const,
-          error: {
-            issues: [
-              {
-                message: `Marque invalide. Voici la liste de vos marques : ${authorizedBrands.map((brand) => `"${brand}"`).join(", ")}`,
-              },
-            ],
+      const authorizedBrands = getAuthorizedBrands(organization)
+      const userProductValidation = getUserProductValidation(authorizedBrands)
+      const brand = product.brandId ? brandsMap.get(product.brandId) : null
+      if (!brand) {
+        return {
+          id: product.id,
+          product: {
+            success: false as const,
+            error: {
+              issues: [
+                {
+                  message: `Marque invalide. Voici la liste de vos marques : ${authorizedBrands.map((brand) => `"${brand}"`).join(", ")}`,
+                },
+              ],
+            },
           },
-        },
-        gtins: { success: true as const, data: [], error: undefined },
+          gtins: { success: true as const, data: [], error: undefined },
+        }
       }
-    }
 
-    return {
-      product: userProductValidation.safeParse({ ...product, ...product.informations[0] }),
-      gtins: brand.organization.noGTIN
-        ? product.gtins.filter((gtin) => gtin).length > 0
-          ? {
-              success: false as const,
-              error: {
-                issues: [
-                  {
-                    message:
-                      "Votre organisation n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
-                  },
-                ],
-              },
-            }
-          : { success: true as const, data: getDefaultGTINs(brand.organization, product.internalReference) }
-        : gtinsValidation.safeParse(product.gtins),
-      id: product.id,
-    }
-  })
+      const result = {
+        product: userProductValidation.safeParse({ ...product, ...product.informations[0] }),
+        gtins: brand.organization.noGTIN
+          ? product.gtins.filter((gtin) => gtin).length > 0
+            ? {
+                success: false as const,
+                error: {
+                  issues: [
+                    {
+                      message:
+                        "Votre organisation n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
+                    },
+                  ],
+                },
+              }
+            : { success: true as const, data: getDefaultGTINs(brand.organization, product.internalReference) }
+          : gtinsValidation.safeParse(product.gtins),
+        id: product.id,
+      }
+
+      if (brand.organization.noGTIN && result.gtins.success) {
+        await prismaClient.product.update({
+          where: { id: product.id },
+          data: {
+            gtins: result.gtins.data,
+          },
+        })
+      }
+
+      return result
+    }),
+  )
 
   await Promise.all([
     saveEcobalyseResults(
