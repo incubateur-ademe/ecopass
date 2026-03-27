@@ -3,6 +3,7 @@ import { failProducts, getProductsToProcess } from "../../db/product"
 import { getBrandsByIds } from "../../db/brands"
 import { checkUploadsStatus } from "../../db/upload"
 import { saveEcobalyseResults } from "../ecobalyse/api"
+import { prismaClient } from "../../db/prismaClient"
 import { Status, UploadType } from "@prisma/enums"
 import { Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 
@@ -10,12 +11,20 @@ jest.mock("../../db/product")
 jest.mock("../../db/upload")
 jest.mock("../../db/brands")
 jest.mock("../ecobalyse/api")
+jest.mock("../../db/prismaClient", () => ({
+  prismaClient: {
+    product: {
+      update: jest.fn(),
+    },
+  },
+}))
 
 const mockedFailProducts = failProducts as jest.MockedFunction<typeof failProducts>
 const mockedGetProductsToProcess = getProductsToProcess as jest.MockedFunction<typeof getProductsToProcess>
 const mockedCheckUploadsStatus = checkUploadsStatus as jest.MockedFunction<typeof checkUploadsStatus>
 const mockedGetBrandsByIds = getBrandsByIds as jest.MockedFunction<typeof getBrandsByIds>
 const mockedSaveEcobalyseResults = saveEcobalyseResults as jest.MockedFunction<typeof saveEcobalyseResults>
+const mockedPrismaUpdate = prismaClient.product.update as jest.MockedFunction<typeof prismaClient.product.update>
 
 describe("processProductsQueue", () => {
   beforeEach(() => {
@@ -67,6 +76,7 @@ describe("processProductsQueue", () => {
       {
         id: "info-1",
         productId: "product-1",
+        mainComponent: null,
         business: Business.Small,
         countrySpinning: Country.Chine,
         countryDyeing: Country.Chine,
@@ -151,6 +161,7 @@ describe("processProductsQueue", () => {
       },
     ])
     expect(mockedFailProducts).toHaveBeenCalledWith([])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -208,6 +219,12 @@ describe("processProductsQueue", () => {
       },
     ])
     expect(mockedFailProducts).toHaveBeenCalledWith([])
+    expect(mockedPrismaUpdate).toHaveBeenCalledWith({
+      where: { id: "product-1" },
+      data: {
+        gtins: ["My-ref-123456789"],
+      },
+    })
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -265,6 +282,12 @@ describe("processProductsQueue", () => {
       },
     ])
     expect(mockedFailProducts).toHaveBeenCalledWith([])
+    expect(mockedPrismaUpdate).toHaveBeenCalledWith({
+      where: { id: "product-1" },
+      data: {
+        gtins: ["My-ref-unique-i"],
+      },
+    })
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -285,6 +308,7 @@ describe("processProductsQueue", () => {
         error: "Organisation non trouvée",
       },
     ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -301,6 +325,7 @@ describe("processProductsQueue", () => {
         error: 'Marque invalide. Voici la liste de vos marques : "2c3be047-4388-459a-80e1-0ce2bbd0e9d4"',
       },
     ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -322,6 +347,7 @@ describe("processProductsQueue", () => {
         error: "Votre organisation n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
       },
     ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -345,6 +371,7 @@ describe("processProductsQueue", () => {
         error: "Le poids est obligatoire",
       },
     ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -367,6 +394,7 @@ describe("processProductsQueue", () => {
           "Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
     ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -391,6 +419,7 @@ describe("processProductsQueue", () => {
           "Le poids est obligatoire, Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
     ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -448,6 +477,7 @@ describe("processProductsQueue", () => {
           "Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
     ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id", "test-upload-id-2"])
   })
 
@@ -457,5 +487,6 @@ describe("processProductsQueue", () => {
     mockedFailProducts.mockResolvedValue(undefined)
 
     await expect(processProductsQueue()).rejects.toThrow("Ecobalyse API error")
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
   })
 })
