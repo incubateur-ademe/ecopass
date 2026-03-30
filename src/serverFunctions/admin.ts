@@ -44,6 +44,7 @@ export const createUserAndOrganization = async (
           name: organizationName,
           displayName: organizationName,
           type: organizationType,
+          uniqueId: uuid(),
           brands: {
             create: {
               name: organizationName,
