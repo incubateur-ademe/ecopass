@@ -237,7 +237,7 @@ export const getProductWithScoreHistory = async (gtin: string, page: number, pag
   prismaClient.product.findMany({
     select: productWithScoreSelect,
     where: {
-      gtins: { has: gtin },
+      gtins: { has: decodeURI(gtin) },
       status: Status.Done,
     },
     orderBy: { createdAt: "desc" },
@@ -248,7 +248,7 @@ export const getProductWithScoreHistory = async (gtin: string, page: number, pag
 export const getProductWithScoreHistoryCount = async (gtin: string) => {
   return prismaClient.product.count({
     where: {
-      gtins: { has: gtin },
+      gtins: { has: decodeURI(gtin) },
       status: Status.Done,
     },
   })
@@ -258,7 +258,7 @@ export const getProductWithScore = async (gtin: string) =>
   prismaClient.product.findFirst({
     select: productWithScoreSelect,
     where: {
-      gtins: { has: gtin },
+      gtins: { has: decodeURI(gtin) },
       status: Status.Done,
     },
     orderBy: { createdAt: "desc" },
@@ -270,7 +270,7 @@ export const getProductByGtin = async (gtin: string, id?: string) =>
   prismaClient.product.findFirst({
     select: { internalReference: true },
     where: {
-      gtins: { has: gtin },
+      gtins: { has: decodeURI(gtin) },
       id,
       status: Status.Done,
     },
@@ -281,7 +281,7 @@ export const getOldProductWithScore = async (gtin: string, version: string) =>
   prismaClient.product.findFirst({
     select: productWithScoreSelect,
     where: {
-      gtins: { has: gtin },
+      gtins: { has: decodeURI(gtin) },
       id: version,
       status: Status.Done,
     },
