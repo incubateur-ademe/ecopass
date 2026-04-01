@@ -20,12 +20,14 @@ export const createProducts = async ({
 }) => {
   const gtinToProductIds = new Map<string, string[]>()
   products.forEach((product) =>
-    product.gtins.forEach((gtin) => {
-      if (!gtinToProductIds.has(gtin)) {
-        gtinToProductIds.set(gtin, [])
-      }
-      gtinToProductIds.get(gtin)!.push(product.id)
-    }),
+    product.gtins
+      .filter((gtin) => gtin)
+      .forEach((gtin) => {
+        if (!gtinToProductIds.has(gtin)) {
+          gtinToProductIds.set(gtin, [])
+        }
+        gtinToProductIds.get(gtin)!.push(product.id)
+      }),
   )
 
   const duplicatedProductIds = new Set<string>()
