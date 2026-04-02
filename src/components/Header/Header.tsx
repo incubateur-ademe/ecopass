@@ -51,14 +51,19 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
                     isActive: pathname.startsWith("/admin"),
                     menuLinks: [
                       {
-                        linkProps: { href: "/admin" },
+                        linkProps: { href: "/admin/stats" },
                         text: "Statistiques",
-                        isActive: pathname === "/admin",
+                        isActive: pathname === "/admin/stats",
                       },
                       {
                         linkProps: { href: "/admin/nouvel-utilisateur" },
                         text: "Créer un utilisateur",
                         isActive: pathname === "/admin/nouvel-utilisateur",
+                      },
+                      {
+                        linkProps: { href: "/admin/donnees" },
+                        text: "Données",
+                        isActive: pathname === "/admin/donnees",
                       },
                     ],
                   }
@@ -99,14 +104,19 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
                     isActive: pathname.startsWith("/admin"),
                     menuLinks: [
                       {
-                        linkProps: { href: "/admin" },
+                        linkProps: { href: "/admin/stats" },
                         text: "Statistiques",
-                        isActive: pathname === "/admin",
+                        isActive: pathname === "/admin/stats",
                       },
                       {
                         linkProps: { href: "/admin/nouvel-utilisateur" },
                         text: "Créer un utilisateur",
                         isActive: pathname === "/admin/nouvel-utilisateur",
+                      },
+                      {
+                        linkProps: { href: "/admin/donnees" },
+                        text: "Données",
+                        isActive: pathname === "/admin/donnees",
                       },
                     ],
                   }

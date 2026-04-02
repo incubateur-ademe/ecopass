@@ -21,7 +21,7 @@ const DGCCRFBrandProductsTable = ({
   organizations,
 }: {
   products: Products
-  brandId: string
+  brandId?: string
   currentPage: number
   productCount: number
   filter: {
@@ -30,7 +30,7 @@ const DGCCRFBrandProductsTable = ({
     from?: string
     to?: string
   }
-  organizations: {
+  organizations?: {
     key: string
     value: string
   }[]

@@ -75,7 +75,7 @@ const headers = [
   "Quantité de zip court",
 ]
 
-export const exportDgccrfBrandProducts = async (brandId: string, category?: string, organization?: string) => {
+export const exportDgccrfBrandProducts = async (brandId?: string, category?: string, organization?: string) => {
   const session = await auth()
   if (!session || !session.user) {
     return { error: "Utilisateur non authentifié" }
@@ -85,7 +85,7 @@ export const exportDgccrfBrandProducts = async (brandId: string, category?: stri
     return { error: "Vous n'êtes pas autorisé à exporter ces produits" }
   }
 
-  if (!brandId) {
+  if (!brandId && session.user.role !== UserRole.ADMIN) {
     return { error: "Marque invalide" }
   }
 

@@ -17,7 +17,7 @@ const DGCCRFFilter = ({
     from?: string
     to?: string
   }
-  organizations: {
+  organizations?: {
     key: string
     value: string
   }[]
@@ -74,23 +74,25 @@ const DGCCRFFilter = ({
         </Select>
       </div>
 
-      <div className={styles.select}>
-        <Select
-          label='Déclarant'
-          nativeSelectProps={{
-            value: organization,
-            onChange: (e) => setOrganization(e.target.value),
-          }}>
-          <option value=''>Tous les déclarants</option>
-          {organizations
-            .sort((a, b) => a.value.localeCompare(b.value))
-            .map((org) => (
-              <option key={org.key} value={org.key}>
-                {org.value}
-              </option>
-            ))}
-        </Select>
-      </div>
+      {organizations && (
+        <div className={styles.select}>
+          <Select
+            label='Déclarant'
+            nativeSelectProps={{
+              value: organization,
+              onChange: (e) => setOrganization(e.target.value),
+            }}>
+            <option value=''>Tous les déclarants</option>
+            {organizations
+              .sort((a, b) => a.value.localeCompare(b.value))
+              .map((org) => (
+                <option key={org.key} value={org.key}>
+                  {org.value}
+                </option>
+              ))}
+          </Select>
+        </div>
+      )}
 
       <div>
         <p className='fr-label'>Filtrer par date de dernier dépôt</p>

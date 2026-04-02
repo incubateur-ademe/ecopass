@@ -57,7 +57,7 @@ const BrandPage = async ({ params, searchParams }: Props) => {
     category || organization || from || to
       ? await countPublicProductsByBrandId(brandId, validCategory, validOrganization, validFrom, validTo)
       : brandData.productsByCategory.reduce((acc, current) => acc + current.count, 0)
-  const isDGCCRF = session?.user.role === UserRole.DGCCRF
+  const isDGCCRF = session?.user.role === UserRole.DGCCRF || session?.user.role === UserRole.ADMIN
   return (
     <>
       <StartDsfrOnHydration />

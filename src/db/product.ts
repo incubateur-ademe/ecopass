@@ -318,7 +318,7 @@ const getProducts = async (
 export type Products = Awaited<ReturnType<typeof getProducts>>
 
 export const countPublicProductsByBrandId = async (
-  brandId: string,
+  brandId: string | undefined,
   category: string | undefined,
   organization: string | undefined,
   from: Date | undefined,
@@ -348,7 +348,7 @@ export const countPublicProductsByBrandId = async (
 }
 
 export const getPublicProductsByBrandId = async (
-  brandId: string,
+  brandId: string | undefined,
   category: string | undefined,
   organization: string | undefined,
   from: Date | undefined,
@@ -810,6 +810,7 @@ export const getBrandsInformations = async () => {
             const brand = acc[product.brandId]
             if (!brand) {
               acc[product.brandId] = {
+                id: product.brandId,
                 references: new Set<string>([product.internalReference]),
                 firstDepositDate: product.createdAt,
                 lastDepositDate: product.createdAt,
@@ -826,7 +827,7 @@ export const getBrandsInformations = async () => {
           }
           return acc
         },
-        {} as Record<string, { references: Set<string>; firstDepositDate: Date; lastDepositDate: Date }>,
+        {} as Record<string, { id: string; references: Set<string>; firstDepositDate: Date; lastDepositDate: Date }>,
       )
 
     return {
@@ -842,7 +843,9 @@ export const getBrandsInformations = async () => {
       },
       brands: Object.entries(brands).map(([brandName, brand]) => ({
         name: brandsNames.find((brand) => brand.id === brandName)?.name || brandName,
+        brandId: brand.id,
         organization: organization.name,
+        organizationId: organization.id,
         totalProducts: brand.references.size,
         firstDepositDate: brand.firstDepositDate,
         lastDepositDate: brand.lastDepositDate,
@@ -872,7 +875,7 @@ export const getLastBrands = async () => {
 }
 
 export const getLatestProductsByBrandIdForExport = async (
-  brandId: string,
+  brandId?: string,
   category?: string,
   organization?: string,
 ) => {
