@@ -119,3 +119,24 @@ export const createUserAndOrganization = async (
     }
   }
 }
+
+export const changeOrganizationSettings = async (
+  organizationId: string,
+  settings: { type?: OrganizationType; noGTIN?: boolean },
+) => {
+  const session = await auth()
+  if (!session || !session.user || session.user.role !== UserRole.ADMIN) {
+    return { error: "Unauthorized" }
+  }
+
+  return prismaClient.organization.update({
+    where: { id: organizationId },
+    data: {
+      type: settings.type,
+      noGTIN:
+        settings.type === OrganizationType.Brand || settings.type === OrganizationType.BrandAndDistributor
+          ? settings.noGTIN
+          : false,
+    },
+  })
+}

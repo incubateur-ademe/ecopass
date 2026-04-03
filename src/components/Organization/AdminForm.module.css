@@ -1,0 +1,11 @@
+.toggle {
+  label {
+    width: 100%;
+  }
+}
+
+.form {
+  border: 1px solid var(--border-default-grey);
+  background-color: white;
+  padding: 2rem;
+}

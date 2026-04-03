@@ -43,6 +43,7 @@ export const getOrganizationById = async (organizationId: string) => {
       siret: true,
       name: true,
       displayName: true,
+      noGTIN: true,
       type: true,
       brands: {
         select: {

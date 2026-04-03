@@ -12,7 +12,7 @@ const DGCCRFExport = ({
   filter,
 }: {
   productCount: number
-  brandId: string
+  brandId?: string
   filter: { category?: string; organization?: string }
 }) => {
   const [loading, setLoading] = useState(false)
@@ -30,7 +30,7 @@ const DGCCRFExport = ({
         return
       }
 
-      const filename = `${brandId}-${new Date().toISOString()}.csv`
+      const filename = brandId ? `${brandId}-${new Date().toISOString()}.csv` : `${new Date().toISOString()}.csv`
       downloadFile(result, filename)
     } catch {
       setError("Une erreur est survenue lors de l'export")

@@ -41,7 +41,7 @@ const ProductPage = async (props: Props) => {
           breadCrumbs={{
             currentPageLabel: product.internalReference,
             segments:
-              session?.user?.role === UserRole.DGCCRF
+              session?.user?.role === UserRole.DGCCRF || session?.user?.role === UserRole.ADMIN
                 ? [
                     { linkProps: { href: "/" }, label: "Accueil" },
                     {
