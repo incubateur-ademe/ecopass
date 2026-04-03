@@ -5,6 +5,7 @@ import NewExport from "../components/Product/NewExport"
 import Products from "../components/Product/Products"
 import BrandSelection from "../components/Product/BrandSelection"
 import Alert from "@codegouvfr/react-dsfr/Alert"
+import { InfoTri } from "../components/InfoTri/InfoTri"
 
 const ProductsPage = ({
   page,
@@ -55,6 +56,10 @@ const ProductsPage = ({
         <Suspense>
           <Products page={page} productsCount={productsCount} brand={brand} />
         </Suspense>
+      </Block>
+      <Block>
+        <h2 id='info-tri'>Info-tri</h2>
+        <InfoTri />
       </Block>
     </>
   )
