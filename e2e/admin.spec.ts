@@ -72,11 +72,55 @@ test("admin can create a new user", async ({ page }) => {
   await expect(page.getByTestId("organization-name")).toHaveText(organizationName)
 })
 
-test("default user cannot access create user page", async ({ page }) => {
+test("admin can change organization info", async ({ page }) => {
+  await login(page, "ecopass-admin-dev@yopmail.com")
+  await page.goto("http://localhost:3000/organisations/676fc42f-97a8-427d-a133-536b6592bd67")
+
+  await expect(page.getByTestId("organization-type")).toContainText("Type : Marque")
+  await expect(page.getByTestId("organization-no-gtin")).toBeVisible()
+
+  await expect(page.getByLabel("Organisation sans GTIN")).toBeVisible()
+  await page.getByLabel("Type de l'organisation").selectOption("Distributor")
+  await expect(page.getByLabel("Organisation sans GTIN")).not.toBeVisible()
+  await page.getByRole("button", { name: "Valider" }).click()
+
+  await page.reload()
+
+  await expect(page.getByTestId("organization-type")).toContainText("Type : Distributeur")
+  await expect(page.getByTestId("organization-no-gtin")).not.toBeVisible()
+  await expect(page.getByLabel("Organisation sans GTIN")).not.toBeVisible()
+  await page.getByLabel("Type de l'organisation").selectOption("Brand")
+  await expect(page.getByLabel("Organisation sans GTIN")).toBeVisible()
+  await page.getByText("Organisation sans GTIN").click()
+  await page.getByRole("button", { name: "Valider" }).click()
+
+  await expect(page.getByTestId("organization-type")).toContainText("Type : Marque")
+  await expect(page.getByTestId("organization-no-gtin")).toBeVisible()
+
+  await page.reload()
+
+  await expect(page.getByTestId("organization-type")).toContainText("Type : Marque")
+  await expect(page.getByTestId("organization-no-gtin")).toBeVisible()
+})
+
+test("default user cannot access admin pages", async ({ page }) => {
   await page.goto("http://localhost:3000/admin/nouvel-utilisateur")
   await expect(page).toHaveURL("http://localhost:3000/")
 
+  await page.goto("http://localhost:3000/admin/donnees")
+  await expect(page).toHaveURL("http://localhost:3000/")
+
+  await page.goto("http://localhost:3000/admin/stats")
+  await expect(page).toHaveURL("http://localhost:3000/")
+
   await login(page)
+
   await page.goto("http://localhost:3000/admin/nouvel-utilisateur")
+  await expect(page).toHaveURL("http://localhost:3000/")
+
+  await page.goto("http://localhost:3000/admin/donnees")
+  await expect(page).toHaveURL("http://localhost:3000/")
+
+  await page.goto("http://localhost:3000/admin/stats")
   await expect(page).toHaveURL("http://localhost:3000/")
 })

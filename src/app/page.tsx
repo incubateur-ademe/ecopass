@@ -17,14 +17,16 @@ export default async function HomePage({ searchParams }: PageProps) {
   const type = session && session.user ? await getUserOrganizationType(session.user.id) : null
   const params = await searchParams
   const organizationsAndBrands =
-    session?.user?.role === UserRole.DGCCRF && typeof params.search === "string" && params.search
+    (session?.user?.role === UserRole.DGCCRF || session?.user?.role === UserRole.ADMIN) &&
+    typeof params.search === "string" &&
+    params.search
       ? await searchOrganizationsAndBrands(params.search)
       : null
   return (
     <>
       <StartDsfrOnHydration />
-      {session && session.user.role === UserRole.DGCCRF ? (
-        <DGCCRFHome organizationsAndBrands={organizationsAndBrands} />
+      {session && (session.user.role === UserRole.DGCCRF || session.user.role === UserRole.ADMIN) ? (
+        <DGCCRFHome organizationsAndBrands={organizationsAndBrands} isAdmin={session.user.role === UserRole.ADMIN} />
       ) : (
         <Home connected={!!session} type={type} />
       )}

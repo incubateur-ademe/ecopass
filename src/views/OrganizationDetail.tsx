@@ -1,10 +1,10 @@
 import Block from "../components/Block/Block"
 import Informations from "../components/Dgccrf/Informations"
+import Header from "../components/Organization/Header"
 import Links from "../components/Organization/Links"
 import { Organization } from "../db/organization"
-import { organizationTypes } from "../utils/organization/types"
 
-const OrganizationDetail = ({ organization }: { organization: Organization }) => {
+const OrganizationDetail = ({ organization, isAdmin }: { organization: Organization; isAdmin: boolean }) => {
   return (
     <>
       <Block
@@ -13,22 +13,7 @@ const OrganizationDetail = ({ organization }: { organization: Organization }) =>
           currentPageLabel: organization.displayName,
           segments: [{ linkProps: { href: "/" }, label: "Accueil" }],
         }}>
-        <h1>{organization.name}</h1>
-        {organization.displayName !== organization.name && (
-          <p>
-            Nom d'usage : <b>{organization.displayName}</b>
-          </p>
-        )}
-        {organization.type && (
-          <p>
-            Type : <b>{organizationTypes[organization.type]}</b>
-          </p>
-        )}
-        {organization.siret && (
-          <p>
-            SIRET : <b>{organization.siret}</b>
-          </p>
-        )}
+        <Header organization={organization} isAdmin={isAdmin} />
       </Block>
       <Block>
         <Links organization={organization} />
