@@ -1,8 +1,8 @@
-import Table from "@codegouvfr/react-dsfr/Table"
 import { AdminStats } from "../../services/stats/stats"
 import Link from "next/link"
 import { formatDateTime } from "../../services/format"
 import styles from "./StatsTable.module.css"
+import Table from "../Table/Table"
 
 const StatsTable = ({ stats }: { stats: NonNullable<AdminStats> }) => {
   return (
