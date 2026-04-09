@@ -1,8 +1,7 @@
 .link {
   color: var(--blue-france-sun-113-625);
+  transition: all 300ms ease-in-out;
   margin-right: 0.5rem;
-  width: max-content;
-  display: block;
 
   span {
     transition: all 300ms ease-in-out;
