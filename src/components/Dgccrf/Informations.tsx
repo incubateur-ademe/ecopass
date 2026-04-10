@@ -11,6 +11,7 @@ const Informations = () => {
             orientation='horizontal'
             title='Documentation de la déclaration du coût environnemental'
             imageUrl='/images/catalog.svg'
+            imageAlt=''
             titleAs='h3'
             desc='Consulter la matrice de données.'
             linkProps={{ href: "/organisation" }}
@@ -21,6 +22,7 @@ const Informations = () => {
             orientation='horizontal'
             title='Charte graphique officielle'
             imageUrl='/images/conclusion.svg'
+            imageAlt=''
             titleAs='h3'
             desc='Les affichages à respecter.'
             linkProps={{ href: "/charte.pdf", target: "_blank", rel: "noopener noreferrer" }}
@@ -31,6 +33,7 @@ const Informations = () => {
             orientation='horizontal'
             title='Consulter le tableau d’ordre de grandeur'
             imageUrl='/images/search.svg'
+            imageAlt=''
             titleAs='h3'
             desc='Un outil pédagogique simple.'
             linkProps={{ href: "/ordres-de-grandeur" }}

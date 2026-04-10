@@ -40,6 +40,7 @@ const Upload = () => {
           title='Télécharger un modèle Excel'
           titleAs='h3'
           imageUrl='/images/document.svg'
+          imageAlt=''
           small
           desc={
             <>
@@ -55,6 +56,7 @@ const Upload = () => {
           title='Télécharger un modèle CSV'
           titleAs='h3'
           imageUrl='/images/document.svg'
+          imageAlt=''
           small
           desc={
             <>
