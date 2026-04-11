@@ -77,19 +77,41 @@ jobs:
         run: pnpm playwright install chromium
       - name: Run e2e tests
         run: pnpm playwright test
-      - name: Create artifacts directory
-        run: mkdir -p ${{ github.workspace }}/tmp/artifacts
-      - name: Lighthouse Check
+      - name: Create Lighthouse artifacts directories
+        run: |
+          mkdir -p ${{ github.workspace }}/tmp/artifacts/public
+          mkdir -p ${{ github.workspace }}/tmp/artifacts/private
+      - name: Lighthouse Check Public
         uses: foo-software/lighthouse-check-action@master
-        id: lighthouseCheck
+        id: lighthousePublic
         with:
           device: all
           urls: "http://localhost:3000,http://localhost:3000/professionnels,http://localhost:3000/informations,http://localhost:3000/marques,http://localhost:3000/marques/a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d,http://localhost:3000/recherche,http://localhost:3000/produits/0000000000000"
-          outputDirectory: ${{ github.workspace }}/tmp/artifacts
-      - name: Verify Lighthouse Check results
+          outputDirectory: ${{ github.workspace }}/tmp/artifacts/public
+      - name: Verify Lighthouse Check public results
         uses: foo-software/lighthouse-check-status-action@master
         with:
-          lighthouseCheckResults: ${{ steps.lighthouseCheck.outputs.lighthouseCheckResults }}
+          lighthouseCheckResults: ${{ steps.lighthousePublic.outputs.lighthouseCheckResults }}
+          minAccessibilityScore: "100"
+          minBestPracticesScore: "100"
+      - name: Create authenticated Lighthouse session
+        id: lighthouseAuth
+        run: pnpm tsx .github/scripts/create-lighthouse-auth-session.ts
+        env:
+          LIGHTHOUSE_LOGIN_EMAIL: ecopass-e2e@yopmail.com
+          LIGHTHOUSE_LOGIN_PASSWORD: ecopasscestsupercool
+      - name: Lighthouse Check Private
+        uses: foo-software/lighthouse-check-action@master
+        id: lighthousePrivate
+        with:
+          device: all
+          urls: "http://localhost:3000,http://localhost:3000/declarations,http://localhost:3000/api,http://localhost:3000/produits,http://localhost:3000/organisation,http://localhost:3000/produits/0000000000000"
+          extraHeaders: ${{ steps.lighthouseAuth.outputs.extraHeaders }}
+          outputDirectory: ${{ github.workspace }}/tmp/artifacts/private
+      - name: Verify Lighthouse Check private results
+        uses: foo-software/lighthouse-check-status-action@master
+        with:
+          lighthouseCheckResults: ${{ steps.lighthousePrivate.outputs.lighthouseCheckResults }}
           minAccessibilityScore: "100"
           minBestPracticesScore: "100"
       - name: Upload Lighthouse artifacts
