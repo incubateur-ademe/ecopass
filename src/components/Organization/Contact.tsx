@@ -7,6 +7,7 @@ const Contact = () => {
       className={styles.tile}
       orientation='horizontal'
       imageUrl='/images/mail-send.svg'
+      imageAlt=''
       title='Si vous le souhaitez, vous pouvez prendre contact avec nous !'
       linkProps={{ href: `mailto:${process.env.NEXT_PUBLIC_SUPPORT_MAIL}` }}
       desc={process.env.NEXT_PUBLIC_SUPPORT_MAIL}
