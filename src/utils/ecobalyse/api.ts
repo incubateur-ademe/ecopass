@@ -105,7 +105,7 @@ const lifeCycles = {
 export const computeEcobalyseScore = async (product: ProductInformationAPI) => {
   const productData = {
     ...product,
-    price: product.price === undefined ? undefined : Math.min(product.price, 1000),
+    price: product.price === undefined ? undefined : Math.max(Math.min(product.price, 1000), 1),
     brandId: undefined,
     gtins: undefined,
     internalReference: undefined,

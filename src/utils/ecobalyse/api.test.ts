@@ -901,7 +901,21 @@ describe("API Ecobalyse", () => {
       })
     })
 
-    it("should keep price as is when price is below 1000", async () => {
+    it("should floor price at 1 when price is below 1", async () => {
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+
+      await computeEcobalyseScore({ ...mockAPIProduct, price: 0.5 })
+
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: expect.objectContaining({
+          price: 1,
+        }),
+      })
+    })
+
+    it("should keep price as is when price is between 1 and 1000", async () => {
       mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
 
       await computeEcobalyseScore({ ...mockAPIProduct, price: 50 })
