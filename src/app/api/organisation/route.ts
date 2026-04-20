@@ -19,17 +19,21 @@ export async function GET(req: Request) {
       name: organization.name,
       displayName: organization.displayName,
       brands: organization.brands,
-      authorizedBy: organization.authorizedBy.map((auth) => ({
-        createdAt: auth.createdAt,
-        name: auth.from.name,
-        siret: auth.from.siret,
-        brands: auth.from.brands.filter((brand) => brand.active).map((brand) => ({ id: brand.id, name: brand.name })),
-      })),
-      authorizeOrganization: organization.authorizedOrganizations.map((auth) => ({
-        createdAt: auth.createdAt,
-        name: auth.to.name,
-        siret: auth.to.siret,
-      })),
+      authorizedBy: organization.authorizedBy
+        .map((auth) => ({
+          createdAt: auth.createdAt,
+          name: auth.from.name,
+          siret: auth.from.siret,
+          brands: auth.from.brands.filter((brand) => brand.active).map((brand) => ({ id: brand.id, name: brand.name })),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+      authorizeOrganization: organization.authorizedOrganizations
+        .map((auth) => ({
+          createdAt: auth.createdAt,
+          name: auth.to.name,
+          siret: auth.to.siret,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
     })
   } catch (error) {
     console.error("Error fetching organization:", error)
