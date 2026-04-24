@@ -1680,7 +1680,7 @@
       },
       "ProductScore": {
         "type": "object",
-        "description": "Score environnemental du produit",
+        "description": "Score environnemental du produit. Les Impacts sont exprimés dans leurs unités d'usage (comme spécifié [sur le site d'Ecobalyse](https://ecobalyse.beta.gouv.fr/versions/v7.0.0/#/explore/textile/impacts)) et les Cycles de vie sont exprimés en points sans le coefficient de durabilité.",
         "properties": {
           "score": {
             "type": "number",
@@ -1688,7 +1688,7 @@
           },
           "standardized": {
             "type": "number",
-            "description": "Score environnemental standardisé pour 100g"
+            "description": "Score environnemental standardisé (en points pour 100g)"
           },
           "durability": {
             "type": "number",
@@ -1696,77 +1696,77 @@
           },
           "acd": {
             "type": "number",
-            "description": "Impact - Acidification (en points)"
+            "description": "Impact - Acidification"
           },
           "cch": {
             "type": "number",
-            "description": "Impact - Changement climatique (en points)"
+            "description": "Impact - Changement climatique"
           },
           "etf": {
             "type": "number",
-            "description": "Impact - Écotoxicité pour écosystèmes d'eau douce, corrigée (en points)"
+            "description": "Impact - Écotoxicité pour écosystèmes d'eau douce, corrigée"
           },
           "fru": {
             "type": "number",
-            "description": "Impact - Épuisement des ressources fossiles (en points)"
+            "description": "Impact - Épuisement des ressources fossiles"
           },
           "fwe": {
             "type": "number",
-            "description": "Impact - Eutrophisation eaux douces (en points)"
+            "description": "Impact - Eutrophisation eaux douces"
           },
           "ior": {
             "type": "number",
-            "description": "Impact - Rayonnements ionisants (en points)"
+            "description": "Impact - Rayonnements ionisants"
           },
           "ldu": {
             "type": "number",
-            "description": "Impact - Occupation des sols (en points)"
+            "description": "Impact - Occupation des sols"
           },
           "mru": {
             "type": "number",
-            "description": "Impact - Épuisement des ressources minéraux et métaux (en points)"
+            "description": "Impact - Épuisement des ressources minéraux et métaux"
           },
           "ozd": {
             "type": "number",
-            "description": "Impact - Appauvrissement de la couche d'ozone (en points)"
+            "description": "Impact - Appauvrissement de la couche d'ozone"
           },
           "pco": {
             "type": "number",
-            "description": "Impact - Formation photochimique d'ozone (en points)"
+            "description": "Impact - Formation photochimique d'ozone"
           },
           "pma": {
             "type": "number",
-            "description": "Impact - Particules (en points)"
+            "description": "Impact - Particules"
           },
           "swe": {
             "type": "number",
-            "description": "Impact - Eutrophisation marine (en points)"
+            "description": "Impact - Eutrophisation marine"
           },
           "tre": {
             "type": "number",
-            "description": "Impact - Eutrophisation terrestre (en points)"
+            "description": "Impact - Eutrophisation terrestre"
           },
           "wtu": {
             "type": "number",
-            "description": "Impact - Consommation d'eau (en points)"
+            "description": "Impact - Consommation d'eau"
           },
           "microfibers": {
             "type": "number",
-            "description": "Impact - Émission de microfibres (en points)"
+            "description": "Impact - Émission de microfibres"
           },
           "outOfEuropeEOL": {
             "type": "number",
-            "description": "Impact - Fin de vie hors Europe (en points)"
+            "description": "Impact - Fin de vie hors Europe"
           },
-          "materials": { "type": "number", "description": "Cycle de vie - Matières premières (en points)" },
-          "spinning": { "type": "number", "description": "Cycle de vie - Filature (en points)" },
-          "fabric": { "type": "number", "description": "Cycle de vie - Tissage & Tricotage (en points)" },
-          "dyeing": { "type": "number", "description": "Cycle de vie - Ennoblissement (en points)" },
-          "making": { "type": "number", "description": "Cycle de vie - Confection (en points)" },
-          "usage": { "type": "number", "description": "Cycle de vie - Utilisation (en points)" },
-          "endOfLife": { "type": "number", "description": "Cycle de vie - Fin de vie (en points)" },
-          "transport": { "type": "number", "description": "Cycle de vie - Transport (en points)" },
-          "trims": { "type": "number", "description": "Cycle de vie - Accessoires (en points)" }
+          "materials": { "type": "number", "description": "Cycle de vie - Matières premières" },
+          "spinning": { "type": "number", "description": "Cycle de vie - Filature" },
+          "fabric": { "type": "number", "description": "Cycle de vie - Tissage & Tricotage" },
+          "dyeing": { "type": "number", "description": "Cycle de vie - Ennoblissement" },
+          "making": { "type": "number", "description": "Cycle de vie - Confection" },
+          "usage": { "type": "number", "description": "Cycle de vie - Utilisation" },
+          "endOfLife": { "type": "number", "description": "Cycle de vie - Fin de vie" },
+          "transport": { "type": "number", "description": "Cycle de vie - Transport" },
+          "trims": { "type": "number", "description": "Cycle de vie - Accessoires" }
         }
       },
       "UploadInfo": {
