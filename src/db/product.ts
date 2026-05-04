@@ -903,20 +903,32 @@ export const getLatestProductsByBrandIdForExport = async (
     return []
   }
 
-  return prismaClient.product.findMany({
-    where: {
-      id: { in: latest.map((row) => row.id) },
-    },
-    include: {
-      brand: { select: { id: true, name: true } },
-      informations: {
-        include: {
-          materials: true,
-          accessories: true,
-          score: true,
+  const latestIds = latest.map((row) => row.id)
+  const products = []
+
+  const batchSize = parseInt(process.env.QUERY_PARAMETER_BATCH_SIZE || "50000", 10)
+  for (let index = 0; index < latestIds.length; index += batchSize) {
+    const batchIds = latestIds.slice(index, index + batchSize)
+
+    const batchProducts = await prismaClient.product.findMany({
+      where: {
+        id: { in: batchIds },
+      },
+      include: {
+        brand: { select: { id: true, name: true } },
+        informations: {
+          include: {
+            materials: true,
+            accessories: true,
+            score: true,
+          },
         },
       },
-    },
-    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
-  })
+      orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
+    })
+
+    products.push(...batchProducts)
+  }
+
+  return products
 }
