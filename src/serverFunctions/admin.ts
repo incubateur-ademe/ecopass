@@ -1,12 +1,11 @@
 "use server"
-
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
-import { UserRole } from "@prisma/enums"
 import { OrganizationType } from "@prisma/client"
 import jwt from "jsonwebtoken"
 import { v4 as uuid } from "uuid"
 import { sendWelcomeEmail } from "../services/emails/email"
+import { canAccessAdminSpace } from "../utils/authorization/authorizations"
 
 export const createUserAndOrganization = async (
   email: string,
@@ -15,7 +14,7 @@ export const createUserAndOrganization = async (
 ) => {
   try {
     const session = await auth()
-    if (!session || !session.user || session.user.role !== UserRole.ADMIN) {
+    if (!session || !session.user || !canAccessAdminSpace(session.user.role)) {
       return { error: "Unauthorized" }
     }
 
@@ -125,7 +124,7 @@ export const changeOrganizationSettings = async (
   settings: { type?: OrganizationType; noGTIN?: boolean },
 ) => {
   const session = await auth()
-  if (!session || !session.user || session.user.role !== UserRole.ADMIN) {
+  if (!session || !session.user || !canAccessAdminSpace(session.user.role)) {
     return { error: "Unauthorized" }
   }
 

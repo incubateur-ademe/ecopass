@@ -3,7 +3,7 @@ import axios from "axios"
 import { getProductCountByCategory, getDistinctBrandCount, getBrandsInformations } from "../../db/product"
 import { getDoneAPIUploadCount, getDoneFileUploadCount } from "../../db/upload"
 import { auth } from "../auth/auth"
-import { UserRole } from "@prisma/enums"
+import { canAccessAdminSpace } from "../../utils/authorization/authorizations"
 
 const getVisits = async () => {
   const token = process.env.MATOMO_API_TOKEN as string
@@ -49,7 +49,7 @@ export type Stats = Awaited<ReturnType<typeof computeStats>>
 
 export const computeAdminStats = async () => {
   const session = await auth()
-  if (!session || !session.user || session.user.role !== UserRole.ADMIN) {
+  if (!session || !session.user || !canAccessAdminSpace(session.user.role)) {
     return null
   }
 

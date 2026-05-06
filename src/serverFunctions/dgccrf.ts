@@ -1,7 +1,7 @@
 "use server"
 
 import { stringify } from "csv-stringify/sync"
-import { Status, UserRole } from "@prisma/enums"
+import { Status } from "@prisma/enums"
 import { auth } from "../services/auth/auth"
 import { getLatestProductsByBrandIdForExport } from "../db/product"
 import { decryptProductFields } from "../utils/encryption/encryption"
@@ -9,6 +9,7 @@ import { AccessoryType } from "../types/Product"
 import { prismaClient } from "../db/prismaClient"
 import { formatDate } from "../services/format"
 import { BATCH_CATEGORY } from "../utils/product/category"
+import { canExportFullProducts } from "../utils/authorization/authorizations"
 
 const formatBoolean = (value: boolean | string | undefined) => {
   if (value === undefined || value === null || value === "") {
@@ -83,11 +84,11 @@ export const exportDgccrfBrandProducts = async (brandId?: string, category?: str
     return { error: "Utilisateur non authentifié" }
   }
 
-  if (session.user.role !== UserRole.DGCCRF && session.user.role !== UserRole.ADMIN) {
-    return { error: "Vous n'êtes pas autorisé à exporter ces produits" }
-  }
+  if (!canExportFullProducts(session.user.role, brandId)) {
+    if (brandId) {
+      return { error: "Vous n'êtes pas autorisé à exporter ces produits" }
+    }
 
-  if (!brandId && session.user.role !== UserRole.ADMIN) {
     return { error: "Marque invalide" }
   }
 
