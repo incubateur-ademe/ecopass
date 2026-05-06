@@ -4,14 +4,14 @@ import Admin from "../../../views/Admin"
 import { computeAdminStats } from "../../../services/stats/stats"
 import { tryAndGetSession } from "../../../services/auth/redirect"
 import { redirect } from "next/navigation"
-import { UserRole } from "@prisma/enums"
+import { canAccessAdminSpace } from "../../../utils/authorization/authorizations"
 
 export const metadata: Metadata = {
   title: "Admin - Affichage environnemental",
 }
 const AdminPage = async () => {
   const session = await tryAndGetSession(true, true)
-  if (session.user.role !== UserRole.ADMIN) {
+  if (!canAccessAdminSpace(session.user.role)) {
     return redirect("/")
   }
 

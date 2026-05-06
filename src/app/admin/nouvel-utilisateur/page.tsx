@@ -4,7 +4,7 @@ import Block from "../../../components/Block/Block"
 import CreateUserForm from "../../../components/Admin/CreateUserForm"
 import { tryAndGetSession } from "../../../services/auth/redirect"
 import { redirect } from "next/navigation"
-import { UserRole } from "@prisma/enums"
+import { canAccessAdminSpace } from "../../../utils/authorization/authorizations"
 
 export const metadata: Metadata = {
   title: "Créer un utilisateur - Affichage environnemental",
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 const CreateUserPage = async () => {
   const session = await tryAndGetSession(true, true)
-  if (session.user.role !== UserRole.ADMIN) {
+  if (!canAccessAdminSpace(session.user.role)) {
     return redirect("/")
   }
 
