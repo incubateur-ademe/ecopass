@@ -13,8 +13,8 @@ Flux principal :
 
 1. Un utilisateur charge un fichier (CSV ou XLSX) sur la plateforme.
 2. Le worker lit la queue des uploads, parse le fichier, puis cree les produits.
-3. Le worker traite les produits en attente : validations produits puis calculs Ecobalyse et update de status.
-4. Le worker traite aussi les exports et genere des zip des étiquettes.
+3. Le worker traite les produits en attente : validation des produits, puis calculs Ecobalyse et mise a jour des statuts.
+4. Le worker traite aussi les exports et genere des zips des étiquettes.
 
 Composants techniques :
 
@@ -110,7 +110,7 @@ Le projet contient 2 types de tests :
 
 ### Tests unitaires (Jest)
 
-Les tests unitaires couvrent les fonctions metier, services, parsers et une partie des acces base.
+Les tests unitaires couvrent les fonctions metier, les services, les parsers et une partie des acces à la base.
 
 Commande :
 
@@ -131,7 +131,7 @@ pnpm reset:test
 
 ### Tests e2e (Playwright)
 
-Les scenarios e2e sont dans le dossier e2e et verifient les parcours utilisateur complets (auth, API, administration, etc.).
+Les scenarios e2e sont dans le dossier e2e et verifient les parcours utilisateurs complets (auth, API, administration, etc.).
 
 Commande :
 
@@ -144,3 +144,28 @@ Prerequis avant de lancer les e2e :
 1. Demarrer le serveur web : `pnpm dev`
 2. Demarrer la queue : `pnpm queue:watch`
 3. Verifier que PostgreSQL et Maildev tournent : `docker compose up -d`
+
+## S3
+
+Sur les differents environnements deployes (si la variable d'environnement LOCAL_STORAGE n'est pas égale à true), les fichiers uploadés ainsi que les zips contenant les étiquettes sont stockés sur le S3 Scaleway.
+https://console.scaleway.com/object-storage/buckets
+
+En local (LOCAL_STORAGE=true), les fichiers sont stockés dans le dossier `s3`.
+
+## Deploiement
+
+Il y a 3 environnements, tous sur Scalingo avec une base PostgreSQL :
+
+- l'environnement de preprod, deployee automatiquement avec la branche develop (une fois que la CI est passée). Il est utilisé principalement pour des demos.
+  https://dashboard.scalingo.com/apps/osc-fr1/ecobalyse-ecopass-preprod
+  https://ecobalyse-ecopass-preprod.osc-fr1.scalingo.io/
+
+- l'environnement de test, deploye automatiquement avec la branche main (une fois que la CI est passée). Il est utilisé principalement pour des demos. Il est utilisé par les clients pour leurs tests d'integration ou pour simuler des declarations.
+  https://dashboard.scalingo.com/apps/osc-fr1/ecobalyse-ecopass-test
+  https://ecobalyse-ecopass-test.osc-fr1.scalingo.io/
+
+- l'environnement de prod, deploye automatiquement avec la branche main (une fois que la CI est passée).
+  https://dashboard.scalingo.com/apps/osc-secnum-fr1/ecobalyse-ecopass-secnum
+  https://affichage-environnemental.ecobalyse.beta.gouv.fr/
+
+Note : pour les deux premiers environnements, il n'y a pas de serveur mail (pour eviter les spams) et le ProConnect utilise est celui de test (comme en local). Il est conseillé d'utiliser des adresses yopmail pour tester.
