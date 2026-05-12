@@ -1,9 +1,9 @@
 import { v4 as uuid } from "uuid"
-import { prismaTest } from "../../jest.setup"
+import { prismaTest as mockPrismaTest } from "../../jest.setup"
 import { Status } from "@prisma/enums"
 
 jest.mock("./prismaClient", () => ({
-  prismaClient: prismaTest,
+  prismaClient: mockPrismaTest,
 }))
 
 import { getAllBrandsWithStats, getBrandById, getBrandsByIds, getBrandWithProducts } from "./brands"
@@ -23,7 +23,7 @@ describe("Brands DB", () => {
   beforeAll(async () => {
     await cleanDB()
 
-    await prismaTest.organization.createMany({
+    await mockPrismaTest.organization.createMany({
       data: [
         {
           name: "Org",
@@ -35,7 +35,7 @@ describe("Brands DB", () => {
       ],
     })
 
-    const brands = await prismaTest.brand.createManyAndReturn({
+    const brands = await mockPrismaTest.brand.createManyAndReturn({
       data: [
         { name: "Brand A", organizationId: orgId, active: true },
         { name: "Brand B", organizationId: orgId, active: false },
@@ -46,12 +46,12 @@ describe("Brands DB", () => {
     brandA = brands[0]
     brandB = brands[1]
 
-    const user = await prismaTest.user.create({
+    const user = await mockPrismaTest.user.create({
       data: { email: "brands-test@example.com", organizationId: orgId },
     })
     testUserId = user.id
 
-    await prismaTest.authorizedOrganization.create({
+    await mockPrismaTest.authorizedOrganization.create({
       data: {
         fromId: orgId,
         toId: consultancyOrgId,
@@ -60,7 +60,7 @@ describe("Brands DB", () => {
       },
     })
 
-    const upload = await prismaTest.upload.create({
+    const upload = await mockPrismaTest.upload.create({
       data: {
         version: "test-version",
         type: "API",
@@ -78,10 +78,10 @@ describe("Brands DB", () => {
   })
 
   beforeEach(async () => {
-    await prismaTest.score.deleteMany()
-    await prismaTest.productInformation.deleteMany()
-    await prismaTest.uploadProduct.deleteMany()
-    await prismaTest.product.deleteMany()
+    await mockPrismaTest.score.deleteMany()
+    await mockPrismaTest.productInformation.deleteMany()
+    await mockPrismaTest.uploadProduct.deleteMany()
+    await mockPrismaTest.product.deleteMany()
   })
 
   it("getAllBrandsWithStats groups by brand + internalReference and sorts by lastDeclarationDate", async () => {
@@ -91,7 +91,7 @@ describe("Brands DB", () => {
 
     // Brand A: 3 products, but 2 have same internalReference -> count as 2
     // Brand B: 2 products, but 1 error -> count as 1
-    await prismaTest.product.createMany({
+    await mockPrismaTest.product.createMany({
       data: [
         {
           id: uuid(),
@@ -228,7 +228,7 @@ describe("Brands DB", () => {
     })
 
     await Promise.all([
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           status: Status.Done,
           hash: "h-tshirt-1",
@@ -247,7 +247,7 @@ describe("Brands DB", () => {
           },
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           status: Status.Done,
           hash: "h-tshirt-2",
@@ -266,7 +266,7 @@ describe("Brands DB", () => {
           },
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           status: Status.Error,
           hash: "h-tshirt-3",
@@ -285,7 +285,7 @@ describe("Brands DB", () => {
           },
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           status: Status.Done,
           hash: "h-jeans-1",
@@ -304,7 +304,7 @@ describe("Brands DB", () => {
           },
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           status: Status.Done,
           hash: "h-jeans-2",
@@ -323,7 +323,7 @@ describe("Brands DB", () => {
           },
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           status: Status.Done,
           hash: "h-jacket-1",
@@ -342,7 +342,7 @@ describe("Brands DB", () => {
           },
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           status: Status.Done,
           hash: "h-lot-1",
@@ -365,7 +365,7 @@ describe("Brands DB", () => {
           },
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           status: Status.Done,
           hash: "h-mc-1",

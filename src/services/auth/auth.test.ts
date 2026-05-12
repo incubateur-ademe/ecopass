@@ -2,6 +2,10 @@ jest.mock("./config", () => ({
   authOptions: {},
 }))
 
+jest.mock("next-auth", () => ({
+  getServerSession: jest.fn(),
+}))
+
 jest.mock("../../db/user", () => ({
   getUserByApiKey: jest.fn(),
 }))

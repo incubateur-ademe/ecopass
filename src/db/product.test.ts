@@ -1,9 +1,9 @@
 import { v4 as uuid } from "uuid"
 import { Prisma } from "@prisma/client"
 import { Status } from "@prisma/enums"
-import { prismaTest } from "../../jest.setup"
+import { prismaTest as mockPrismaTest } from "../../jest.setup"
 jest.mock("./prismaClient", () => ({
-  prismaClient: prismaTest,
+  prismaClient: mockPrismaTest,
 }))
 
 import {
@@ -52,7 +52,7 @@ describe("Product DB integration", () => {
   beforeAll(async () => {
     await cleanDB()
 
-    const organization = await prismaTest.organization.create({
+    const organization = await mockPrismaTest.organization.create({
       data: {
         name: "TestOrg",
         displayName: "TestOrg",
@@ -70,11 +70,11 @@ describe("Product DB integration", () => {
       },
     })
     testOrganizationId = organization.id
-    const user = await prismaTest.user.create({
+    const user = await mockPrismaTest.user.create({
       data: { email: "test@example.com", organizationId: testOrganizationId },
     })
     testUserId = user.id
-    const upload = await prismaTest.upload.create({
+    const upload = await mockPrismaTest.upload.create({
       data: {
         version: "test-version",
         type: "API",
@@ -86,7 +86,7 @@ describe("Product DB integration", () => {
     })
     testUploadId = upload.id
 
-    const otherOrganisation = await prismaTest.organization.create({
+    const otherOrganisation = await mockPrismaTest.organization.create({
       data: {
         id: OTHER_ORG_ID,
         name: "Other org",
@@ -94,7 +94,7 @@ describe("Product DB integration", () => {
         siret: "12345678901235",
       },
     })
-    await prismaTest.authorizedOrganization.createMany({
+    await mockPrismaTest.authorizedOrganization.createMany({
       data: [
         { fromId: otherOrganisation.id, toId: organization.id, active: true, createdById: testUserId },
         { fromId: otherOrganisation.id, toId: organization.id, active: false, createdById: testUserId },
@@ -123,12 +123,12 @@ describe("Product DB integration", () => {
   })
 
   beforeEach(async () => {
-    await prismaTest.accessory.deleteMany()
-    await prismaTest.material.deleteMany()
-    await prismaTest.score.deleteMany()
-    await prismaTest.productInformation.deleteMany()
-    await prismaTest.uploadProduct.deleteMany()
-    await prismaTest.product.deleteMany()
+    await mockPrismaTest.accessory.deleteMany()
+    await mockPrismaTest.material.deleteMany()
+    await mockPrismaTest.score.deleteMany()
+    await mockPrismaTest.productInformation.deleteMany()
+    await mockPrismaTest.uploadProduct.deleteMany()
+    await mockPrismaTest.product.deleteMany()
 
     productId = uuid()
     const encrypted = encryptProductFields({
@@ -252,17 +252,17 @@ describe("Product DB integration", () => {
   it("failProducts sets status to Error", async () => {
     await failProducts([{ productId, error: "Test error" }])
 
-    const updated = await prismaTest.product.findUnique({ where: { id: productId } })
+    const updated = await mockPrismaTest.product.findUnique({ where: { id: productId } })
     expect(updated?.status).toBe(Status.Error)
     expect(updated?.error).toBe("Test error")
   })
 
   it("getOrganizationProductsCountByUserIdAndBrand returns correct count", async () => {
     await Promise.all([
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: baseProduct,
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: uuid(),
@@ -270,7 +270,7 @@ describe("Product DB integration", () => {
           status: Status.Pending,
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: uuid(),
@@ -278,14 +278,14 @@ describe("Product DB integration", () => {
           internalReference: "REF-126",
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: uuid(),
           status: Status.Pending,
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: uuid(),
@@ -308,7 +308,7 @@ describe("Product DB integration", () => {
       const productId = uuid()
       productIds.push(productId)
 
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: productId,
@@ -344,7 +344,7 @@ describe("Product DB integration", () => {
       const productId = uuid()
       productIds.push(productId)
 
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           uploadId: testUploadId,
           id: productId,
@@ -397,7 +397,7 @@ describe("Product DB integration", () => {
       countryMaking: "FR",
     } satisfies ProductInformationAPI)
 
-    await prismaTest.product.create({
+    await mockPrismaTest.product.create({
       data: {
         uploadId: testUploadId,
         id: "productId1",
@@ -413,7 +413,7 @@ describe("Product DB integration", () => {
       },
     })
 
-    await prismaTest.product.create({
+    await mockPrismaTest.product.create({
       data: {
         uploadId: testUploadId,
         id: "productId2",
@@ -429,7 +429,7 @@ describe("Product DB integration", () => {
       },
     })
 
-    await prismaTest.score.create({
+    await mockPrismaTest.score.create({
       data: {
         id: uuid(),
         productId: productId1,
@@ -466,7 +466,7 @@ describe("Product DB integration", () => {
       },
     })
 
-    await prismaTest.score.create({
+    await mockPrismaTest.score.create({
       data: {
         id: uuid(),
         productId: productId2,
@@ -523,7 +523,7 @@ describe("Product DB integration", () => {
     const gtin = "8234567891005"
     const productId = uuid()
 
-    await prismaTest.product.create({
+    await mockPrismaTest.product.create({
       data: {
         ...baseProduct,
         id: productId,
@@ -595,7 +595,7 @@ describe("Product DB integration", () => {
 
       expect(numberOfCreatedProducts).toBe(1)
 
-      const createdProduct = await prismaTest.product.findUnique({
+      const createdProduct = await mockPrismaTest.product.findUnique({
         where: { id: newProductId },
         include: { informations: { include: { materials: true, accessories: true } } },
       })
@@ -612,7 +612,7 @@ describe("Product DB integration", () => {
       const existingHash = "duplicate-hash"
 
       const existingProductId = uuid()
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: existingProductId,
@@ -679,12 +679,12 @@ describe("Product DB integration", () => {
 
       expect(numberOfCreatedProducts).toBe(0)
 
-      const newProduct = await prismaTest.product.findUnique({
+      const newProduct = await mockPrismaTest.product.findUnique({
         where: { id: newProductId },
       })
       expect(newProduct).toBeNull()
 
-      const uploadProduct = await prismaTest.uploadProduct.findFirst({
+      const uploadProduct = await mockPrismaTest.uploadProduct.findFirst({
         where: {
           uploadId: testUploadId,
           productId: existingProductId,
@@ -700,7 +700,7 @@ describe("Product DB integration", () => {
       const newHash = "updated-hash"
 
       const existingProductId = uuid()
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: existingProductId,
@@ -767,7 +767,7 @@ describe("Product DB integration", () => {
 
       expect(numberOfCreatedProducts).toBe(1)
 
-      const newProduct = await prismaTest.product.findUnique({
+      const newProduct = await mockPrismaTest.product.findUnique({
         where: { id: newProductId },
         include: { informations: { include: { materials: true, accessories: true } } },
       })
@@ -778,7 +778,7 @@ describe("Product DB integration", () => {
       expect(newProduct?.informations[0].materials).toHaveLength(1)
       expect(newProduct?.informations[0].accessories).toHaveLength(1)
 
-      const uploadProducts = await prismaTest.uploadProduct.findMany({
+      const uploadProducts = await mockPrismaTest.uploadProduct.findMany({
         where: {
           uploadId: testUploadId,
         },
@@ -791,7 +791,7 @@ describe("Product DB integration", () => {
       const lastMonth = new Date()
       lastMonth.setMonth(lastMonth.getMonth() - 1)
 
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: uuid(),
@@ -858,7 +858,7 @@ describe("Product DB integration", () => {
 
       expect(numberOfCreatedProducts).toBe(0)
 
-      const newProduct = await prismaTest.product.findUnique({
+      const newProduct = await mockPrismaTest.product.findUnique({
         where: { id: newProductId },
         include: { informations: { include: { materials: true, accessories: true } } },
       })
@@ -872,7 +872,7 @@ describe("Product DB integration", () => {
       const lastMonth = new Date()
       lastMonth.setMonth(lastMonth.getMonth() - 1)
 
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: uuid(),
@@ -940,7 +940,7 @@ describe("Product DB integration", () => {
 
       expect(numberOfCreatedProducts).toBe(1)
 
-      const newProduct = await prismaTest.product.findUnique({
+      const newProduct = await mockPrismaTest.product.findUnique({
         where: { id: newProductId },
         include: { informations: { include: { materials: true, accessories: true } } },
       })
@@ -957,7 +957,7 @@ describe("Product DB integration", () => {
       const twoMonths = new Date()
       twoMonths.setMonth(twoMonths.getMonth() - 2)
 
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: uuid(),
@@ -968,7 +968,7 @@ describe("Product DB integration", () => {
           status: Status.Error,
         },
       })
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: uuid(),
@@ -1036,7 +1036,7 @@ describe("Product DB integration", () => {
 
       expect(numberOfCreatedProducts).toBe(0)
 
-      const newProduct = await prismaTest.product.findUnique({
+      const newProduct = await mockPrismaTest.product.findUnique({
         where: { id: newProductId },
         include: { informations: { include: { materials: true, accessories: true } } },
       })
@@ -1053,7 +1053,7 @@ describe("Product DB integration", () => {
       const fiveMonths = new Date()
       fiveMonths.setMonth(fiveMonths.getMonth() - 5)
 
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: uuid(),
@@ -1063,7 +1063,7 @@ describe("Product DB integration", () => {
           createdAt: lastMonth,
         },
       })
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: uuid(),
@@ -1131,7 +1131,7 @@ describe("Product DB integration", () => {
 
       expect(numberOfCreatedProducts).toBe(0)
 
-      const newProduct = await prismaTest.product.findUnique({
+      const newProduct = await mockPrismaTest.product.findUnique({
         where: { id: newProductId },
         include: { informations: { include: { materials: true, accessories: true } } },
       })
@@ -1147,7 +1147,7 @@ describe("Product DB integration", () => {
       const latestHash = "latest-version-hash"
 
       const oldProductId = uuid()
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: oldProductId,
@@ -1159,7 +1159,7 @@ describe("Product DB integration", () => {
       })
 
       const latestProductId = uuid()
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: latestProductId,
@@ -1226,7 +1226,7 @@ describe("Product DB integration", () => {
 
       expect(numberOfCreatedProducts).toBe(1)
 
-      const newProduct = await prismaTest.product.findUnique({
+      const newProduct = await mockPrismaTest.product.findUnique({
         where: { id: newProductId },
       })
       expect(newProduct).not.toBeNull()
@@ -1239,7 +1239,7 @@ describe("Product DB integration", () => {
       const latestHash = "latest-version-hash"
 
       const oldProductId = uuid()
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: oldProductId,
@@ -1252,7 +1252,7 @@ describe("Product DB integration", () => {
       })
 
       const latestProductId = uuid()
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: latestProductId,
@@ -1320,12 +1320,12 @@ describe("Product DB integration", () => {
 
       expect(numberOfCreatedProducts).toBe(0)
 
-      const newProduct = await prismaTest.product.findUnique({
+      const newProduct = await mockPrismaTest.product.findUnique({
         where: { id: newProductId },
       })
       expect(newProduct).toBeNull()
 
-      const uploadProduct = await prismaTest.uploadProduct.findFirst({
+      const uploadProduct = await mockPrismaTest.uploadProduct.findFirst({
         where: {
           uploadId: testUploadId,
           productId: oldProductId,
@@ -1434,19 +1434,19 @@ describe("Product DB integration", () => {
         accessories: [],
       })
 
-      const prod1 = await prismaTest.product.findUnique({ where: { id: productId1 } })
+      const prod1 = await mockPrismaTest.product.findUnique({ where: { id: productId1 } })
       expect(prod1?.status).toBe(Status.Error)
       expect(prod1?.error).toBe("GTIN dupliqué dans le fichier")
 
-      const prod2 = await prismaTest.product.findUnique({ where: { id: productId2 } })
+      const prod2 = await mockPrismaTest.product.findUnique({ where: { id: productId2 } })
       expect(prod2?.status).toBe(Status.Error)
       expect(prod2?.error).toBe("GTIN dupliqué dans le fichier")
 
-      const prod3 = await prismaTest.product.findUnique({ where: { id: productId3 } })
+      const prod3 = await mockPrismaTest.product.findUnique({ where: { id: productId3 } })
       expect(prod3?.status).toBe(Status.Pending)
       expect(prod3?.error).toBe(null)
 
-      const prod4 = await prismaTest.product.findUnique({ where: { id: productId4 } })
+      const prod4 = await mockPrismaTest.product.findUnique({ where: { id: productId4 } })
       expect(prod4?.status).toBe(Status.Error)
       expect(prod4?.error).toBe("GTIN dupliqué dans le fichier")
     })
@@ -1455,7 +1455,7 @@ describe("Product DB integration", () => {
   describe("countPublicProductsByBrandId", () => {
     it("counts all products for a brand", async () => {
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1468,7 +1468,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1481,7 +1481,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1502,7 +1502,7 @@ describe("Product DB integration", () => {
 
     it("counts products filtered by category", async () => {
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1515,7 +1515,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1530,7 +1530,7 @@ describe("Product DB integration", () => {
             },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1565,7 +1565,7 @@ describe("Product DB integration", () => {
     })
 
     it("counts products filtered by organization", async () => {
-      const otherUpload = await prismaTest.upload.create({
+      const otherUpload = await mockPrismaTest.upload.create({
         data: {
           version: "test-version-2",
           type: "API",
@@ -1577,7 +1577,7 @@ describe("Product DB integration", () => {
       })
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1590,7 +1590,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: otherUpload.id,
@@ -1633,7 +1633,7 @@ describe("Product DB integration", () => {
       const date3 = new Date("2025-03-01")
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1646,7 +1646,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1659,7 +1659,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1689,7 +1689,7 @@ describe("Product DB integration", () => {
 
     it("counts only Done status products", async () => {
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1702,7 +1702,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1715,7 +1715,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1739,7 +1739,7 @@ describe("Product DB integration", () => {
       const ref2 = "REF-602"
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1752,7 +1752,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1765,7 +1765,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1790,7 +1790,7 @@ describe("Product DB integration", () => {
     })
 
     it("returns 0 for non-existent brand", async () => {
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           id: uuid(),
           uploadId: testUploadId,
@@ -1813,7 +1813,7 @@ describe("Product DB integration", () => {
       const date2 = new Date("2025-02-01")
       const date3 = new Date("2025-03-01")
 
-      const otherUpload = await prismaTest.upload.create({
+      const otherUpload = await mockPrismaTest.upload.create({
         data: {
           version: "test-version-3",
           type: "API",
@@ -1825,7 +1825,7 @@ describe("Product DB integration", () => {
       })
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1839,7 +1839,7 @@ describe("Product DB integration", () => {
           },
         }),
 
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1855,7 +1855,7 @@ describe("Product DB integration", () => {
           },
         }),
 
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: otherUpload.id,
@@ -1869,7 +1869,7 @@ describe("Product DB integration", () => {
           },
         }),
 
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1898,7 +1898,7 @@ describe("Product DB integration", () => {
   describe("getPublicProductsByBrandId", () => {
     it("returns products for a brand with pagination", async () => {
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1911,7 +1911,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1924,7 +1924,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1947,7 +1947,7 @@ describe("Product DB integration", () => {
 
     it("returns products filtered by category", async () => {
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1960,7 +1960,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -1975,7 +1975,7 @@ describe("Product DB integration", () => {
             },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2014,7 +2014,7 @@ describe("Product DB integration", () => {
     })
 
     it("returns products filtered by organization", async () => {
-      const otherUpload = await prismaTest.upload.create({
+      const otherUpload = await mockPrismaTest.upload.create({
         data: {
           version: "test-version-2",
           type: "API",
@@ -2026,7 +2026,7 @@ describe("Product DB integration", () => {
       })
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2039,7 +2039,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: otherUpload.id,
@@ -2083,7 +2083,7 @@ describe("Product DB integration", () => {
       const date3 = new Date("2025-03-01")
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2096,7 +2096,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2109,7 +2109,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2139,7 +2139,7 @@ describe("Product DB integration", () => {
 
     it("returns only Done status products", async () => {
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2152,7 +2152,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2165,7 +2165,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2190,7 +2190,7 @@ describe("Product DB integration", () => {
       const ref2 = "REF-602"
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2203,7 +2203,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2216,7 +2216,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2243,7 +2243,7 @@ describe("Product DB integration", () => {
     })
 
     it("returns empty array for non-existent brand", async () => {
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           id: uuid(),
           uploadId: testUploadId,
@@ -2275,7 +2275,7 @@ describe("Product DB integration", () => {
 
       await Promise.all(
         productIds.map((p) =>
-          prismaTest.product.create({
+          mockPrismaTest.product.create({
             data: {
               id: p.id,
               uploadId: testUploadId,
@@ -2308,7 +2308,7 @@ describe("Product DB integration", () => {
       const date2 = new Date("2025-02-01")
       const date3 = new Date("2025-03-01")
 
-      const otherUpload = await prismaTest.upload.create({
+      const otherUpload = await mockPrismaTest.upload.create({
         data: {
           version: "test-version-3",
           type: "API",
@@ -2320,7 +2320,7 @@ describe("Product DB integration", () => {
       })
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2334,7 +2334,7 @@ describe("Product DB integration", () => {
           },
         }),
 
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2350,7 +2350,7 @@ describe("Product DB integration", () => {
           },
         }),
 
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: otherUpload.id,
@@ -2364,7 +2364,7 @@ describe("Product DB integration", () => {
           },
         }),
 
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2409,7 +2409,7 @@ describe("Product DB integration", () => {
 
     it("returns latest products for a brand", async () => {
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2422,7 +2422,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2435,7 +2435,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2459,7 +2459,7 @@ describe("Product DB integration", () => {
 
     it("returns products filtered by category", async () => {
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2472,7 +2472,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2487,7 +2487,7 @@ describe("Product DB integration", () => {
             },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2514,7 +2514,7 @@ describe("Product DB integration", () => {
     })
 
     it("returns products filtered by organization", async () => {
-      const otherUpload = await prismaTest.upload.create({
+      const otherUpload = await mockPrismaTest.upload.create({
         data: {
           version: "test-version-2",
           type: "API",
@@ -2526,7 +2526,7 @@ describe("Product DB integration", () => {
       })
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2539,7 +2539,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: otherUpload.id,
@@ -2569,7 +2569,7 @@ describe("Product DB integration", () => {
       const ref = "REF-601"
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2582,7 +2582,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,
@@ -2595,7 +2595,7 @@ describe("Product DB integration", () => {
             informations: { create: encryptProductFields(BASE_PRODUCT).product },
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             uploadId: testUploadId,

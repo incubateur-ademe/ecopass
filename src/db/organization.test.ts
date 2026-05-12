@@ -1,7 +1,7 @@
-import { prismaTest } from "../../jest.setup"
+import { prismaTest as mockPrismaTest } from "../../jest.setup"
 
 jest.mock("./prismaClient", () => ({
-  prismaClient: prismaTest,
+  prismaClient: mockPrismaTest,
 }))
 
 import { createOrganization, getUserOrganizationType, getOrganizationById } from "./organization"
