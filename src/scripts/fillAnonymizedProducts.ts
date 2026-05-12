@@ -21,24 +21,34 @@ const getLatestProductIds = async () => {
   return result.map((row) => row.id)
 }
 
-const main = async (batchSize: number) => {
+const formatDuration = (start: number) => `${((Date.now() - start) / 1000).toFixed(1)}s`
+
+const main = async (batchSize: number, concurrency: number) => {
+  const startedAt = Date.now()
   console.log("\n🚀 Démarrage du remplissage des tables Anonymized*...\n")
 
   const ids = await getLatestProductIds()
   console.log(`📦 ${ids.length} produits (dernière version par référence interne) à traiter`)
 
   console.log("🧹 Nettoyage des tables anonymisées...")
-  await prismaClient.anonymizedAccessory.deleteMany()
-  await prismaClient.anonymizedMaterial.deleteMany()
-  await prismaClient.anonymizedProductInformation.deleteMany()
-  await prismaClient.anonymizedProduct.deleteMany()
+  await prismaClient.$executeRawUnsafe(`
+    TRUNCATE TABLE
+      anonymized_accessories,
+      anonymized_materials,
+      anonymized_product_informations,
+      anonymized_products
+  `)
+  console.log("✅ Tables anonymisées nettoyées")
 
   let processed = 0
   let index = 0
 
   while (index < ids.length) {
+    const batchStartedAt = Date.now()
+    const idsBatch = ids.slice(index, index + batchSize)
+
     const products = await prismaClient.product.findMany({
-      where: { id: { in: ids.slice(index, index + batchSize) } },
+      where: { id: { in: idsBatch } },
       include: {
         informations: {
           include: {
@@ -50,69 +60,80 @@ const main = async (batchSize: number) => {
       },
     })
 
-    for (const product of products) {
-      const batchScore = computeBatchScore(product)
+    for (let i = 0; i < products.length; i += concurrency) {
+      const productsChunk = products.slice(i, i + concurrency)
 
-      await prismaClient.anonymizedProduct.create({
-        data: {
-          score: product.score ? Math.round(product.score) : null,
-          standardized: product.standardized ? Math.round(product.standardized) : null,
-          durability: batchScore.durability ?? null,
-          informations: {
-            create: product.informations.map((information) => {
-              const decrypted = decryptProductFields(information)
-              return {
-                category: getValue<ProductCategory>(productCategories, decrypted.category),
-                emptyTrims: information.emptyTrims,
-                business: getValue<Business>(businesses, decrypted.business),
-                countryDyeing: getValue<Country>(countries, decrypted.countryDyeing),
-                countryFabric: getValue<Country>(countries, decrypted.countryFabric),
-                countryMaking: getValue<Country>(countries, decrypted.countryMaking),
-                countrySpinning: getValue<Country>(countries, decrypted.countrySpinning),
-                impression: getValue<Impression>(impressions, decrypted.impression),
-                mass: decrypted.mass,
-                price: decrypted.price,
-                airTransportRatio: decrypted.airTransportRatio,
-                numberOfReferences: decrypted.numberOfReferences,
-                impressionPercentage: decrypted.impressionPercentage,
-                fading: decrypted.fading,
-                upcycled: decrypted.upcycled,
-                materials: {
-                  create: (decrypted.materials || []).map((material) => ({
-                    slug: getValue<MaterialType>(materials, material.slug),
-                    country: getValue<Country>(countries, material.country ?? null),
-                    share: material.share,
-                  })),
-                },
-                accessories: {
-                  create: (decrypted.accessories || []).map((accessory) => ({
-                    slug: getValue<AccessoryType>(accessories, accessory.slug),
-                    quantity: accessory.quantity,
-                  })),
-                },
-                mainComponent: decrypted.mainComponent,
-              }
-            }),
-          },
-        },
-      })
+      await Promise.all(
+        productsChunk.map(async (product) => {
+          const batchScore = computeBatchScore(product)
 
-      processed += 1
-      if (processed % 100 === 0) {
-        console.log(`✅ ${processed} produits traités...`)
-      }
+          await prismaClient.anonymizedProduct.create({
+            data: {
+              score: product.score ? Math.round(product.score) : null,
+              standardized: product.standardized ? Math.round(product.standardized) : null,
+              durability: batchScore.durability ?? null,
+              informations: {
+                create: product.informations.map((information) => {
+                  const decrypted = decryptProductFields(information)
+                  return {
+                    category: getValue<ProductCategory>(productCategories, decrypted.category),
+                    emptyTrims: information.emptyTrims,
+                    business: getValue<Business>(businesses, decrypted.business),
+                    countryDyeing: getValue<Country>(countries, decrypted.countryDyeing),
+                    countryFabric: getValue<Country>(countries, decrypted.countryFabric),
+                    countryMaking: getValue<Country>(countries, decrypted.countryMaking),
+                    countrySpinning: getValue<Country>(countries, decrypted.countrySpinning),
+                    impression: getValue<Impression>(impressions, decrypted.impression),
+                    mass: decrypted.mass,
+                    price: decrypted.price,
+                    airTransportRatio: decrypted.airTransportRatio,
+                    numberOfReferences: decrypted.numberOfReferences,
+                    impressionPercentage: decrypted.impressionPercentage,
+                    fading: decrypted.fading,
+                    upcycled: decrypted.upcycled,
+                    materials: {
+                      create: (decrypted.materials || []).map((material) => ({
+                        slug: getValue<MaterialType>(materials, material.slug),
+                        country: getValue<Country>(countries, material.country ?? null),
+                        share: material.share,
+                      })),
+                    },
+                    accessories: {
+                      create: (decrypted.accessories || []).map((accessory) => ({
+                        slug: getValue<AccessoryType>(accessories, accessory.slug),
+                        quantity: accessory.quantity,
+                      })),
+                    },
+                    mainComponent: decrypted.mainComponent,
+                  }
+                }),
+              },
+            },
+          })
+
+          processed += 1
+          if (processed % 100 === 0) {
+            console.log(`✅ ${processed} produits traités...`)
+          }
+        }),
+      )
     }
 
+    console.log(
+      `📚 Batch ${Math.floor(index / batchSize) + 1}: ${products.length} produits en ${formatDuration(batchStartedAt)}`,
+    )
     index += batchSize
   }
 
-  console.log(`\n✅ Terminé. ${processed} produits anonymisés.`)
+  console.log(`\n✅ Terminé. ${processed} produits anonymisés en ${formatDuration(startedAt)}.`)
 }
 
 const batchSizeArg = Number(process.argv[2])
-const batchSize = Number.isFinite(batchSizeArg) && batchSizeArg > 0 ? batchSizeArg : 200
+const batchSize = Number.isFinite(batchSizeArg) && batchSizeArg > 0 ? batchSizeArg : 1000
+const concurrencyArg = Number(process.argv[3])
+const concurrency = Number.isFinite(concurrencyArg) && concurrencyArg > 0 ? concurrencyArg : 10
 
-main(batchSize)
+main(batchSize, concurrency)
   .catch((error) => {
     console.error("❌ Erreur lors du remplissage des tables anonymisées:", error)
     process.exit(1)
