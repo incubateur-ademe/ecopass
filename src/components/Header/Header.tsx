@@ -4,10 +4,14 @@ import { Session } from "next-auth"
 import { usePathname } from "next/navigation"
 import { isTestEnvironment } from "../../utils/test"
 import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
-import { OrganizationType, UserRole } from "@prisma/enums"
+import { OrganizationType } from "@prisma/enums"
+import { canAccessAdminSpace, canAccessProInformationSpace } from "../../utils/authorization/authorizations"
 
 const Header = ({ session, type }: { session: Session | null; type: OrganizationType | null }) => {
   const canDeclare = type ? organizationTypesAllowedToDeclare.includes(type) : false
+  const role = session?.user?.role
+  const canAccessAdmin = canAccessAdminSpace(role)
+  const canAccessProInfo = canAccessProInformationSpace(role)
   const pathname = usePathname()
 
   return (
@@ -45,7 +49,7 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
                 text: "Organisation",
                 isActive: pathname.startsWith("/organisation"),
               },
-              session.user.role === UserRole.ADMIN
+              canAccessAdmin
                 ? {
                     text: "Admin",
                     isActive: pathname.startsWith("/admin"),
@@ -71,14 +75,14 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
             ]
           : [
               { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
-              session.user.role !== UserRole.DGCCRF
+              canAccessProInfo
                 ? {
                     linkProps: { href: "/organisation" },
                     text: "Organisation",
                     isActive: pathname.startsWith("/organisation"),
                   }
                 : null,
-              session.user.role !== UserRole.DGCCRF
+              canAccessProInfo
                 ? {
                     linkProps: { href: "/informations" },
                     text: "Informez-vous",
@@ -98,7 +102,7 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
               type === OrganizationType.Distributor
                 ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") }
                 : null,
-              session.user.role === UserRole.ADMIN
+              canAccessAdmin
                 ? {
                     text: "Admin",
                     isActive: pathname.startsWith("/admin"),

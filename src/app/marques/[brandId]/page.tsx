@@ -5,7 +5,7 @@ import BrandDetail from "../../../views/BrandDetail"
 import { Metadata } from "next"
 import { countPublicProductsByBrandId, getPublicProductsByBrandId } from "../../../db/product"
 import { tryAndGetSession } from "../../../services/auth/redirect"
-import { UserRole } from "@prisma/enums"
+import { canViewAsDgccrf } from "../../../utils/authorization/authorizations"
 
 type Props = {
   params: Promise<{ brandId: string }>
@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const BrandPage = async ({ params, searchParams }: Props) => {
   const session = await tryAndGetSession(false, false)
+  const role = session?.user?.role
   const { brandId } = await params
   const { page, category, organization, from, to } = await searchParams
   const currentPage = parseInt(page || "1", 10)
@@ -57,7 +58,7 @@ const BrandPage = async ({ params, searchParams }: Props) => {
     category || organization || from || to
       ? await countPublicProductsByBrandId(brandId, validCategory, validOrganization, validFrom, validTo)
       : brandData.productsByCategory.reduce((acc, current) => acc + current.count, 0)
-  const isDGCCRF = session?.user.role === UserRole.DGCCRF || session?.user.role === UserRole.ADMIN
+  const isDGCCRF = canViewAsDgccrf(role)
   return (
     <>
       <StartDsfrOnHydration />

@@ -50,6 +50,7 @@ model Session {
 enum UserRole {
   ADMIN
   DGCCRF
+  BERCY
 }
 
 model User {

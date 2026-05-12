@@ -1,10 +1,10 @@
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import { Metadata } from "next"
 import { redirect } from "next/navigation"
-import { UserRole } from "@prisma/enums"
 import { tryAndGetSession } from "../../../services/auth/redirect"
 import AdminData from "../../../views/AdminData"
 import { countPublicProductsByBrandId, getPublicProductsByBrandId } from "../../../db/product"
+import { canAccessAdminSpace } from "../../../utils/authorization/authorizations"
 
 type Props = {
   searchParams: Promise<{ category?: string; organization?: string; from?: string; to?: string; page?: string }>
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 const AdminDataPage = async ({ searchParams }: Props) => {
   const session = await tryAndGetSession(true, true)
-  if (session.user.role !== UserRole.ADMIN) {
+  if (!canAccessAdminSpace(session.user.role)) {
     return redirect("/")
   }
 
