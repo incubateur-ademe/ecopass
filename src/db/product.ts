@@ -876,7 +876,21 @@ export const getLastBrands = async () => {
   return brands.map((brand) => brandsDetails.find((b) => b.id === brand.brandId)).filter((brand) => brand !== undefined)
 }
 
-export const getLatestProductsByBrandIdForExport = async (
+export const forEachLatestProductsByBrandIdForExport = async (
+  onBatch: (
+    products: Prisma.ProductGetPayload<{
+      include: {
+        brand: { select: { id: true; name: true } }
+        informations: {
+          include: {
+            materials: true
+            accessories: true
+            score: true
+          }
+        }
+      }
+    }>[],
+  ) => Promise<void> | void,
   brandId?: string,
   category?: string,
   organization?: string,
@@ -900,13 +914,13 @@ export const getLatestProductsByBrandIdForExport = async (
   })
 
   if (latest.length === 0) {
-    return []
+    return 0
   }
 
   const latestIds = latest.map((row) => row.id)
-  const products = []
-
   const batchSize = parseInt(process.env.QUERY_PARAMETER_BATCH_SIZE || "50000", 10)
+  let processedProducts = 0
+
   for (let index = 0; index < latestIds.length; index += batchSize) {
     const batchIds = latestIds.slice(index, index + batchSize)
 
@@ -927,8 +941,9 @@ export const getLatestProductsByBrandIdForExport = async (
       orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
     })
 
-    products.push(...batchProducts)
+    processedProducts += batchProducts.length
+    await onBatch(batchProducts)
   }
 
-  return products
+  return processedProducts
 }
