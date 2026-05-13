@@ -2,6 +2,16 @@ import { UserRole } from "@prisma/enums"
 
 export const canAccessAdminSpace = (role?: UserRole | null) => role === UserRole.ADMIN
 
+export const canAccessFullData = (role?: UserRole | null) => {
+  switch (role) {
+    case UserRole.ADMIN:
+    case UserRole.BERCY:
+      return true
+    default:
+      return false
+  }
+}
+
 export const canViewAsDgccrf = (role?: UserRole | null) => {
   switch (role) {
     case UserRole.DGCCRF:
@@ -26,16 +36,11 @@ export const canAccessProInformationSpace = (role?: UserRole | null) => {
 export const canExportFullProducts = (role?: UserRole | null, brandId?: string) => {
   switch (role) {
     case UserRole.DGCCRF:
+      return !!brandId
     case UserRole.ADMIN:
     case UserRole.BERCY:
-      break
+      return true
     default:
       return false
   }
-
-  if (!brandId && role !== UserRole.ADMIN) {
-    return false
-  }
-
-  return true
 }
