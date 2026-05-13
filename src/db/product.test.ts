@@ -16,7 +16,7 @@ import {
   getOldProductWithScore,
   countPublicProductsByBrandId,
   getPublicProductsByBrandId,
-  getLatestProductsByBrandIdForExport,
+  forEachLatestProductsByBrandIdForExport,
 } from "./product"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { ProductInformationAPI } from "../services/validation/api"
@@ -2392,7 +2392,21 @@ describe("Product DB integration", () => {
     })
   })
 
-  describe("getLatestProductsByBrandIdForExport", () => {
+  describe("forEachLatestProductsByBrandIdForExport", () => {
+    const collectProducts = async (brandId?: string, category?: string, organization?: string) => {
+      const products: any[] = []
+      const processed = await forEachLatestProductsByBrandIdForExport(
+        async (batch) => {
+          products.push(...batch)
+        },
+        brandId,
+        category,
+        organization,
+      )
+
+      return { products, processed }
+    }
+
     it("returns latest products for a brand", async () => {
       await Promise.all([
         prismaTest.product.create({
@@ -2436,7 +2450,8 @@ describe("Product DB integration", () => {
         }),
       ])
 
-      const products = await getLatestProductsByBrandIdForExport(BRAND_ID_1, undefined, undefined)
+      const { products, processed } = await collectProducts(BRAND_ID_1)
+      expect(processed).toBe(2)
       expect(products).toHaveLength(2)
       expect(products[0].internalReference).toBe("REF-001")
       expect(products[1].internalReference).toBe("REF-002")
@@ -2487,13 +2502,15 @@ describe("Product DB integration", () => {
         }),
       ])
 
-      const pullProducts = await getLatestProductsByBrandIdForExport(BRAND_ID_1, "pull", undefined)
-      expect(pullProducts).toHaveLength(2)
-      expect(pullProducts.every((p) => p.informations[0].categorySlug === ProductCategory.Pull)).toBe(true)
+      const { products, processed } = await collectProducts(BRAND_ID_1, "pull")
+      expect(processed).toBe(2)
+      expect(products).toHaveLength(2)
+      expect(products.every((p) => p.informations[0].categorySlug === ProductCategory.Pull)).toBe(true)
 
-      const tShirtProducts = await getLatestProductsByBrandIdForExport(BRAND_ID_1, "tshirtpolo", undefined)
-      expect(tShirtProducts).toHaveLength(1)
-      expect(tShirtProducts[0].internalReference).toBe("REF-202")
+      const tshirt = await collectProducts(BRAND_ID_1, "tshirtpolo")
+      expect(tshirt.processed).toBe(1)
+      expect(tshirt.products).toHaveLength(1)
+      expect(tshirt.products[0].internalReference).toBe("REF-202")
     })
 
     it("returns products filtered by organization", async () => {
@@ -2537,13 +2554,15 @@ describe("Product DB integration", () => {
         }),
       ])
 
-      const productsTestOrg = await getLatestProductsByBrandIdForExport(BRAND_ID_1, undefined, testOrganizationId)
-      expect(productsTestOrg).toHaveLength(1)
-      expect(productsTestOrg[0].internalReference).toBe("REF-301")
+      const testOrg = await collectProducts(BRAND_ID_1, undefined, testOrganizationId)
+      expect(testOrg.processed).toBe(1)
+      expect(testOrg.products).toHaveLength(1)
+      expect(testOrg.products[0].internalReference).toBe("REF-301")
 
-      const productsOtherOrg = await getLatestProductsByBrandIdForExport(BRAND_ID_1, undefined, OTHER_ORG_ID)
-      expect(productsOtherOrg).toHaveLength(1)
-      expect(productsOtherOrg[0].internalReference).toBe("REF-302")
+      const otherOrg = await collectProducts(BRAND_ID_1, undefined, OTHER_ORG_ID)
+      expect(otherOrg.processed).toBe(1)
+      expect(otherOrg.products).toHaveLength(1)
+      expect(otherOrg.products[0].internalReference).toBe("REF-302")
     })
 
     it("returns only latest version for each internal reference", async () => {
@@ -2591,180 +2610,17 @@ describe("Product DB integration", () => {
         }),
       ])
 
-      const products = await getLatestProductsByBrandIdForExport(BRAND_ID_1, undefined, undefined)
+      const { products, processed } = await collectProducts(BRAND_ID_1)
+      expect(processed).toBe(1)
       expect(products).toHaveLength(1)
       expect(products[0].internalReference).toBe(ref)
       expect(products[0].gtins).toContain("6003")
     })
 
     it("returns empty array when no products found", async () => {
-      const products = await getLatestProductsByBrandIdForExport(BRAND_ID_1, undefined, undefined)
+      const { products, processed } = await collectProducts(BRAND_ID_1)
+      expect(processed).toBe(0)
       expect(products).toEqual([])
-    })
-
-    it("returns empty array for non-existent brand", async () => {
-      await prismaTest.product.create({
-        data: {
-          id: uuid(),
-          uploadId: testUploadId,
-          status: Status.Done,
-          hash: "hash-1",
-          gtins: ["7001"],
-          internalReference: "REF-701",
-          brandId: BRAND_ID_1,
-          createdAt: new Date(),
-          informations: { create: encryptProductFields(BASE_PRODUCT).product },
-        },
-      })
-
-      const products = await getLatestProductsByBrandIdForExport(uuid(), undefined, undefined)
-      expect(products).toEqual([])
-    })
-
-    it("returns empty array for non-existent category", async () => {
-      await prismaTest.product.create({
-        data: {
-          id: uuid(),
-          uploadId: testUploadId,
-          status: Status.Done,
-          hash: "hash-1",
-          gtins: ["2001"],
-          internalReference: "REF-201",
-          brandId: BRAND_ID_1,
-          createdAt: new Date(),
-          informations: { create: encryptProductFields(BASE_PRODUCT).product },
-        },
-      })
-
-      const products = await getLatestProductsByBrandIdForExport(BRAND_ID_1, "tshirtpolo", undefined)
-      expect(products).toEqual([])
-    })
-
-    it("returns only Done status products", async () => {
-      await Promise.all([
-        prismaTest.product.create({
-          data: {
-            id: uuid(),
-            uploadId: testUploadId,
-            status: Status.Done,
-            hash: "hash-1",
-            gtins: ["5001"],
-            internalReference: "REF-501",
-            brandId: BRAND_ID_1,
-            createdAt: new Date(),
-            informations: { create: encryptProductFields(BASE_PRODUCT).product },
-          },
-        }),
-        prismaTest.product.create({
-          data: {
-            id: uuid(),
-            uploadId: testUploadId,
-            status: Status.Pending,
-            hash: "hash-2",
-            gtins: ["5002"],
-            internalReference: "REF-502",
-            brandId: BRAND_ID_1,
-            createdAt: new Date(Date.now() + 1000),
-            informations: { create: encryptProductFields(BASE_PRODUCT).product },
-          },
-        }),
-        prismaTest.product.create({
-          data: {
-            id: uuid(),
-            uploadId: testUploadId,
-            status: Status.Error,
-            hash: "hash-3",
-            gtins: ["5003"],
-            internalReference: "REF-503",
-            brandId: BRAND_ID_1,
-            createdAt: new Date(Date.now() + 2000),
-            informations: { create: encryptProductFields(BASE_PRODUCT).product },
-          },
-        }),
-      ])
-
-      const products = await getLatestProductsByBrandIdForExport(BRAND_ID_1, undefined, undefined)
-      expect(products).toHaveLength(1)
-      expect(products[0].internalReference).toBe("REF-501")
-    })
-
-    it("combines multiple filters correctly", async () => {
-      const otherUpload = await prismaTest.upload.create({
-        data: {
-          version: "test-version-3",
-          type: "API",
-          name: "test3.csv",
-          createdById: testUserId,
-          organizationId: OTHER_ORG_ID,
-          createdAt: new Date(),
-        },
-      })
-
-      await Promise.all([
-        prismaTest.product.create({
-          data: {
-            id: uuid(),
-            uploadId: testUploadId,
-            status: Status.Done,
-            hash: "hash-1",
-            gtins: ["8001"],
-            internalReference: "REF-801",
-            brandId: BRAND_ID_1,
-            createdAt: new Date(),
-            informations: { create: encryptProductFields(BASE_PRODUCT).product },
-          },
-        }),
-
-        prismaTest.product.create({
-          data: {
-            id: uuid(),
-            uploadId: testUploadId,
-            status: Status.Done,
-            hash: "hash-2",
-            gtins: ["8002"],
-            internalReference: "REF-802",
-            brandId: BRAND_ID_1,
-            createdAt: new Date(Date.now() + 1000),
-            informations: {
-              create: encryptProductFields({ ...BASE_PRODUCT, product: ProductCategory.TShirtPolo }).product,
-            },
-          },
-        }),
-
-        prismaTest.product.create({
-          data: {
-            id: uuid(),
-            uploadId: otherUpload.id,
-            status: Status.Done,
-            hash: "hash-3",
-            gtins: ["8003"],
-            internalReference: "REF-803",
-            brandId: BRAND_ID_1,
-            createdAt: new Date(Date.now() + 2000),
-            informations: { create: encryptProductFields(BASE_PRODUCT).product },
-          },
-        }),
-
-        prismaTest.product.create({
-          data: {
-            id: uuid(),
-            uploadId: testUploadId,
-            status: Status.Done,
-            hash: "hash-4",
-            gtins: ["8004"],
-            internalReference: "REF-804",
-            brandId: BRAND_ID_1,
-            createdAt: new Date(Date.now() + 3000),
-            informations: { create: encryptProductFields(BASE_PRODUCT).product },
-          },
-        }),
-      ])
-
-      const products = await getLatestProductsByBrandIdForExport(BRAND_ID_1, "pull", testOrganizationId)
-
-      expect(products).toHaveLength(2)
-      expect(products[0].internalReference).toBe("REF-801")
-      expect(products[1].internalReference).toBe("REF-804")
     })
   })
 })

@@ -2,7 +2,7 @@ import { v4 as uuid } from "uuid"
 import { UserRole } from "@prisma/enums"
 import { parse } from "csv-parse/sync"
 import { auth } from "../services/auth/auth"
-import { getLatestProductsByBrandIdForExport } from "../db/product"
+import { forEachLatestProductsByBrandIdForExport } from "../db/product"
 import { encryptProductFields } from "../utils/encryption/encryption"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../types/Product"
 import { BATCH_CATEGORY } from "../utils/product/category"
@@ -14,7 +14,7 @@ jest.mock("../services/auth/auth", () => ({
 }))
 
 jest.mock("../db/product", () => ({
-  getLatestProductsByBrandIdForExport: jest.fn(),
+  forEachLatestProductsByBrandIdForExport: jest.fn(),
 }))
 
 jest.mock("../db/prismaClient", () => ({
@@ -22,9 +22,16 @@ jest.mock("../db/prismaClient", () => ({
 }))
 
 const mockedAuth = auth as jest.MockedFunction<typeof auth>
-const mockedGetProducts = getLatestProductsByBrandIdForExport as jest.MockedFunction<
-  typeof getLatestProductsByBrandIdForExport
+const mockedGetProducts = forEachLatestProductsByBrandIdForExport as jest.MockedFunction<
+  typeof forEachLatestProductsByBrandIdForExport
 >
+
+const mockExportProducts = (products: any[]) => {
+  mockedGetProducts.mockImplementation(async (onBatch) => {
+    await onBatch(products)
+    return products.length
+  })
+}
 
 const mockSession = async (role: UserRole | string) =>
   ({
@@ -103,7 +110,7 @@ describe("exportDgccrfBrandProducts", () => {
 
     it("retourne une erreur si aucun produit trouvé", async () => {
       mockedAuth.mockResolvedValue(mockSession(UserRole.DGCCRF))
-      mockedGetProducts.mockResolvedValue([])
+      mockExportProducts([])
       const result = await exportDgccrfBrandProducts("brand-1")
       expect(result).toEqual({ error: "Aucun produit trouvé pour cette marque" })
     })
@@ -137,7 +144,7 @@ describe("exportDgccrfBrandProducts", () => {
         ],
       })
 
-      mockedGetProducts.mockResolvedValue([
+      mockExportProducts([
         makeProduct({
           gtins: ["1234567890123"],
           internalReference: "REF-001",
@@ -220,7 +227,7 @@ describe("exportDgccrfBrandProducts", () => {
         trims: [],
       })
 
-      mockedGetProducts.mockResolvedValue([
+      mockExportProducts([
         makeProduct({
           internalReference: "REF-002",
           gtins: ["9876543210987"],
@@ -283,7 +290,7 @@ describe("exportDgccrfBrandProducts", () => {
         trims: [],
       })
 
-      mockedGetProducts.mockResolvedValue([
+      mockExportProducts([
         makeProduct({
           internalReference: "REF-003",
           gtins: [],

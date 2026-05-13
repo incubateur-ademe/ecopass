@@ -3,7 +3,7 @@
 import { stringify } from "csv-stringify/sync"
 import { Status } from "@prisma/enums"
 import { auth } from "../services/auth/auth"
-import { getLatestProductsByBrandIdForExport } from "../db/product"
+import { forEachLatestProductsByBrandIdForExport } from "../db/product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { AccessoryType } from "../types/Product"
 import { prismaClient } from "../db/prismaClient"
@@ -92,102 +92,123 @@ export const exportDgccrfBrandProducts = async (brandId?: string, category?: str
     return { error: "Marque invalide" }
   }
 
-  const products = await getLatestProductsByBrandIdForExport(brandId, category, organization)
-  if (products.length === 0) {
-    return { error: "Aucun produit trouvé pour cette marque" }
-  }
-  const rows = products.flatMap((product) => {
-    const sortedInformations = [...product.informations].sort((a, b) => {
-      if (a.mainComponent && !b.mainComponent) {
-        return -1
-      }
-      if (!a.mainComponent && b.mainComponent) {
-        return 1
-      }
-      return 0
-    })
+  const csvChunks: string[] = []
+  let hasRows = false
 
-    const total = sortedInformations.length
-    const hasMainComponent = sortedInformations.some((info) => info.mainComponent)
+  const processedProducts = await forEachLatestProductsByBrandIdForExport(
+    (products) => {
+      const rows = products.flatMap((product) => {
+        const sortedInformations = [...product.informations].sort((a, b) => {
+          if (a.mainComponent && !b.mainComponent) {
+            return -1
+          }
+          if (!a.mainComponent && b.mainComponent) {
+            return 1
+          }
+          return 0
+        })
 
-    return sortedInformations.map((information, index) => {
-      const decryptedProduct = decryptProductFields({
-        ...information,
-        materials: information.materials,
-        accessories: information.accessories,
+        const total = sortedInformations.length
+        const hasMainComponent = sortedInformations.some((info) => info.mainComponent)
+
+        return sortedInformations.map((information, index) => {
+          const decryptedProduct = decryptProductFields({
+            ...information,
+            materials: information.materials,
+            accessories: information.accessories,
+          })
+
+          const accessoryQuantities = {
+            metal: "",
+            plastic: "",
+            zipLong: "",
+            zipShort: "",
+          }
+
+          for (const accessory of decryptedProduct.accessories) {
+            const quantity = formatNumber(accessory.quantity)
+            switch (accessory.slug) {
+              case AccessoryType.BoutonEnMétal:
+                accessoryQuantities.metal = quantity
+                break
+              case AccessoryType.BoutonEnPlastique:
+                accessoryQuantities.plastic = quantity
+                break
+              case AccessoryType.ZipLong:
+                accessoryQuantities.zipLong = quantity
+                break
+              case AccessoryType.ZipCourt:
+                accessoryQuantities.zipShort = quantity
+                break
+              default:
+                break
+            }
+          }
+
+          const materialValues = Array.from({ length: 16 }, (_, index) => {
+            const material = decryptedProduct.materials[index]
+            if (!material) {
+              return ["", "", ""]
+            }
+            return [material.slug || "", formatPercent(material.share), material.country || ""]
+          }).flat()
+
+          return [
+            formatDate(product.createdAt),
+            product.gtins.join(";"),
+            product.internalReference,
+            product.brand?.name || "",
+            formatNumber(product.declaredScore !== null ? Math.round(product.declaredScore) : ""),
+            formatNumber(product.score !== null ? Math.round(product.score) : ""),
+            formatNumber(product.standardized !== null ? Math.round(product.standardized) : ""),
+            total > 1 && !hasMainComponent
+              ? BATCH_CATEGORY
+              : decryptedProduct.categorySlug || decryptedProduct.category,
+            `${index + 1}/${total}`,
+            formatNumber(decryptedProduct.mass),
+            formatBoolean(decryptedProduct.upcycled),
+            formatNumber(decryptedProduct.numberOfReferences),
+            formatNumber(decryptedProduct.price),
+            decryptedProduct.business || "",
+            ...materialValues,
+            decryptedProduct.countrySpinning || "",
+            decryptedProduct.countryFabric || "",
+            decryptedProduct.countryDyeing || "",
+            decryptedProduct.impression || "",
+            formatPercent(decryptedProduct.impressionPercentage),
+            decryptedProduct.countryMaking || "",
+            formatBoolean(decryptedProduct.fading),
+            formatPercent(decryptedProduct.airTransportRatio),
+            accessoryQuantities.metal,
+            accessoryQuantities.plastic,
+            accessoryQuantities.zipLong,
+            accessoryQuantities.zipShort,
+          ]
+        })
       })
 
-      const accessoryQuantities = {
-        metal: "",
-        plastic: "",
-        zipLong: "",
-        zipShort: "",
+      if (rows.length === 0) {
+        return
       }
 
-      for (const accessory of decryptedProduct.accessories) {
-        const quantity = formatNumber(accessory.quantity)
-        switch (accessory.slug) {
-          case AccessoryType.BoutonEnMétal:
-            accessoryQuantities.metal = quantity
-            break
-          case AccessoryType.BoutonEnPlastique:
-            accessoryQuantities.plastic = quantity
-            break
-          case AccessoryType.ZipLong:
-            accessoryQuantities.zipLong = quantity
-            break
-          case AccessoryType.ZipCourt:
-            accessoryQuantities.zipShort = quantity
-            break
-          default:
-            break
-        }
-      }
+      csvChunks.push(
+        stringify(rows, {
+          header: !hasRows,
+          columns: headers,
+        }),
+      )
+      hasRows = true
+    },
+    brandId,
+    category,
+    organization,
+  )
 
-      const materialValues = Array.from({ length: 16 }, (_, index) => {
-        const material = decryptedProduct.materials[index]
-        if (!material) {
-          return ["", "", ""]
-        }
-        return [material.slug || "", formatPercent(material.share), material.country || ""]
-      }).flat()
+  if (processedProducts === 0 || !hasRows) {
+    return { error: "Aucun produit trouvé pour cette marque" }
+  }
 
-      return [
-        formatDate(product.createdAt),
-        product.gtins.join(";"),
-        product.internalReference,
-        product.brand?.name || "",
-        formatNumber(product.declaredScore !== null ? Math.round(product.declaredScore) : ""),
-        formatNumber(product.score !== null ? Math.round(product.score) : ""),
-        formatNumber(product.standardized !== null ? Math.round(product.standardized) : ""),
-        total > 1 && !hasMainComponent ? BATCH_CATEGORY : decryptedProduct.categorySlug || decryptedProduct.category,
-        `${index + 1}/${total}`,
-        formatNumber(decryptedProduct.mass),
-        formatBoolean(decryptedProduct.upcycled),
-        formatNumber(decryptedProduct.numberOfReferences),
-        formatNumber(decryptedProduct.price),
-        decryptedProduct.business || "",
-        ...materialValues,
-        decryptedProduct.countrySpinning || "",
-        decryptedProduct.countryFabric || "",
-        decryptedProduct.countryDyeing || "",
-        decryptedProduct.impression || "",
-        formatPercent(decryptedProduct.impressionPercentage),
-        decryptedProduct.countryMaking || "",
-        formatBoolean(decryptedProduct.fading),
-        formatPercent(decryptedProduct.airTransportRatio),
-        accessoryQuantities.metal,
-        accessoryQuantities.plastic,
-        accessoryQuantities.zipLong,
-        accessoryQuantities.zipShort,
-      ]
-    })
-  })
-
-  return stringify(rows, {
-    header: true,
-    columns: headers,
-  })
+  return csvChunks.join("")
 }
 
 export const searchOrganizationsAndBrands = async (query: string) => {
