@@ -132,6 +132,7 @@ pnpm reset:test
 ### Tests e2e (Playwright)
 
 Les scenarios e2e sont dans le dossier e2e et verifient les parcours utilisateurs complets (auth, API, administration, etc.).
+Ces tests utilisent le proconnect de test pour se connecter. Il est possible qu'ils demandent de confirmer l'adresse mail via un code et ce cas n'est pas géré par les tests. Si cela arrive il faut se connecter avec l'adresse mail en question et rentrer le code (recu sur yopmail) à la main.
 
 Commande :
 
