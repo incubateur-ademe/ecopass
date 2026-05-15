@@ -1,7 +1,7 @@
 import { Status } from "@prisma/enums"
-import { prismaTest } from "../../jest.setup"
+import { prismaTest as mockPrismaTest } from "../../jest.setup"
 jest.mock("./prismaClient", () => ({
-  prismaClient: prismaTest,
+  prismaClient: mockPrismaTest,
 }))
 
 import { createExport, getExportsByUserIdAndBrand, getFirstExport, completeExport, getExportByName } from "./export"
@@ -13,7 +13,7 @@ describe("Export DB", () => {
 
   beforeAll(async () => {
     await cleanDB()
-    const organization = await prismaTest.organization.create({
+    const organization = await mockPrismaTest.organization.create({
       data: {
         name: "Test Organization",
         displayName: "Test Organization",
@@ -22,7 +22,7 @@ describe("Export DB", () => {
     })
     testOrganizationId = organization.id
 
-    const user = await prismaTest.user.create({
+    const user = await mockPrismaTest.user.create({
       data: {
         email: "test@example.com",
         organizationId: testOrganizationId,
@@ -36,7 +36,7 @@ describe("Export DB", () => {
   })
 
   beforeEach(async () => {
-    await prismaTest.export.deleteMany()
+    await mockPrismaTest.export.deleteMany()
   })
 
   describe("createExport", () => {
@@ -70,7 +70,7 @@ describe("Export DB", () => {
 
       const oldDate = new Date()
       oldDate.setDate(oldDate.getDate() - 35)
-      await prismaTest.export.create({
+      await mockPrismaTest.export.create({
         data: {
           userId: testUserId,
           name: "old-export",
@@ -124,7 +124,7 @@ describe("Export DB", () => {
       await new Promise((resolve) => setTimeout(resolve, 10))
       const export2 = await createExport(testUserId)
 
-      await prismaTest.export.update({
+      await mockPrismaTest.export.update({
         where: { id: export2.id },
         data: { status: Status.Done },
       })
@@ -141,7 +141,7 @@ describe("Export DB", () => {
     it("should return null when no pending exports exist", async () => {
       const export1 = await createExport(testUserId)
 
-      await prismaTest.export.update({
+      await mockPrismaTest.export.update({
         where: { id: export1.id },
         data: { status: Status.Done },
       })
@@ -165,7 +165,7 @@ describe("Export DB", () => {
 
       await completeExport(export1.id)
 
-      const exportUpdated = await prismaTest.export.findUnique({
+      const exportUpdated = await mockPrismaTest.export.findUnique({
         where: { id: export1.id },
       })
 
@@ -181,7 +181,7 @@ describe("Export DB", () => {
   describe("getExportByName", () => {
     it("should return export by userId and name", async () => {
       const exportName = "test-export-name"
-      await prismaTest.export.create({
+      await mockPrismaTest.export.create({
         data: {
           userId: testUserId,
           name: exportName,
@@ -204,7 +204,7 @@ describe("Export DB", () => {
 
     it("should return null when export exists but for different user", async () => {
       const exportName = "test-export-name"
-      await prismaTest.export.create({
+      await mockPrismaTest.export.create({
         data: {
           userId: testUserId,
           name: exportName,
