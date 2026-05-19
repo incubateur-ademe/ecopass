@@ -68,7 +68,7 @@ export type ProductMetadataAPI = z.infer<typeof metaData> & { brandId: string; g
 const productAPIValidation = z.object({
   ...metaData.shape,
   ...product.shape,
-  mainComponent: z.undefined(),
+  mainComponent: z.undefined().optional(),
 })
 
 export const getUserProductAPIValidation = (brands: [string, ...string[]]) =>
@@ -99,7 +99,7 @@ const productsAPIValidation = z.object({
     .array(
       product
         .omit({ price: true, numberOfReferences: true })
-        .extend({ numberOfItem: z.number().min(1).max(999).optional(), mainComponent: z.undefined() }),
+        .extend({ numberOfItem: z.number().min(1).max(999).optional(), mainComponent: z.undefined().optional() }),
     )
     .min(1, { message: "Veuillez remplir au moins un produit." }),
 })

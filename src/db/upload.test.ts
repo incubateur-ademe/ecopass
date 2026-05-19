@@ -1,9 +1,9 @@
 import { v4 as uuid } from "uuid"
 import { Status, UploadType } from "@prisma/enums"
-import { prismaTest } from "../../jest.setup"
+import { prismaTest as mockPrismaTest } from "../../jest.setup"
 
 jest.mock("./prismaClient", () => ({
-  prismaClient: prismaTest,
+  prismaClient: mockPrismaTest,
 }))
 
 jest.mock("../services/upload", () => ({
@@ -57,7 +57,7 @@ describe("Upload DB integration", () => {
   beforeAll(async () => {
     await cleanDB()
 
-    const organization = await prismaTest.organization.create({
+    const organization = await mockPrismaTest.organization.create({
       data: {
         name: "TestOrg",
         displayName: "TestOrg",
@@ -74,7 +74,7 @@ describe("Upload DB integration", () => {
     })
     testOrganizationId = organization.id
 
-    testUser = await prismaTest.user.create({
+    testUser = await mockPrismaTest.user.create({
       data: {
         email: "test@example.com",
         organizationId: testOrganizationId,
@@ -89,15 +89,15 @@ describe("Upload DB integration", () => {
 
   beforeEach(async () => {
     jest.clearAllMocks()
-    await prismaTest.uploadProduct.deleteMany()
-    await prismaTest.product.deleteMany()
-    await prismaTest.upload.deleteMany()
+    await mockPrismaTest.uploadProduct.deleteMany()
+    await mockPrismaTest.product.deleteMany()
+    await mockPrismaTest.upload.deleteMany()
   })
 
   describe("getUploadById", () => {
     it("should return upload by id", async () => {
       const uploadId = uuid()
-      await prismaTest.upload.create({
+      await mockPrismaTest.upload.create({
         data: {
           id: uploadId,
           name: "test-upload.csv",
@@ -135,7 +135,7 @@ describe("Upload DB integration", () => {
       expect(result.name).toBe(uploadName)
       expect(result.createdBy.email).toBe("test@example.com")
 
-      const uploadInDb = await prismaTest.upload.findUnique({
+      const uploadInDb = await mockPrismaTest.upload.findUnique({
         where: { id: uploadId },
       })
       expect(uploadInDb).toBeDefined()
@@ -153,7 +153,7 @@ describe("Upload DB integration", () => {
   describe("updateUploadToDone", () => {
     it("should update upload status to done", async () => {
       const uploadId = uuid()
-      await prismaTest.upload.create({
+      await mockPrismaTest.upload.create({
         data: {
           id: uploadId,
           name: "test.csv",
@@ -177,7 +177,7 @@ describe("Upload DB integration", () => {
       const uploadId = uuid()
       const errorMessage = "Processing failed"
 
-      await prismaTest.upload.create({
+      await mockPrismaTest.upload.create({
         data: {
           id: uploadId,
           name: "test.csv",
@@ -199,7 +199,7 @@ describe("Upload DB integration", () => {
     it("should update upload status to error without message", async () => {
       const uploadId = uuid()
 
-      await prismaTest.upload.create({
+      await mockPrismaTest.upload.create({
         data: {
           id: uploadId,
           name: "test.csv",
@@ -221,7 +221,7 @@ describe("Upload DB integration", () => {
   describe("updateUploadToPending", () => {
     it("should update upload status to processing", async () => {
       const uploadId = uuid()
-      await prismaTest.upload.create({
+      await mockPrismaTest.upload.create({
         data: {
           id: uploadId,
           name: "test.csv",
@@ -242,7 +242,7 @@ describe("Upload DB integration", () => {
 
   describe("getuploadsCountByUserId", () => {
     it("should count uploads for a user", async () => {
-      await prismaTest.upload.createMany({
+      await mockPrismaTest.upload.createMany({
         data: [
           {
             id: uuid(),
@@ -287,7 +287,7 @@ describe("Upload DB integration", () => {
       const upload2Id = uuid()
       const upload3Id = uuid()
 
-      await prismaTest.upload.createMany({
+      await mockPrismaTest.upload.createMany({
         data: [
           {
             id: upload1Id,
@@ -325,7 +325,7 @@ describe("Upload DB integration", () => {
       const product4Id = uuid()
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: product1Id,
             hash: "test-hash",
@@ -335,7 +335,7 @@ describe("Upload DB integration", () => {
             ...baseProduct,
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: product2Id,
             hash: "test-hash",
@@ -345,7 +345,7 @@ describe("Upload DB integration", () => {
             ...baseProduct,
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: product3Id,
             hash: "test-hash",
@@ -355,7 +355,7 @@ describe("Upload DB integration", () => {
             ...baseProduct,
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: product4Id,
             hash: "test-hash",
@@ -365,7 +365,7 @@ describe("Upload DB integration", () => {
             ...baseProduct,
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             hash: "test-hash",
@@ -375,7 +375,7 @@ describe("Upload DB integration", () => {
             ...baseProduct,
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             hash: "test-hash",
@@ -387,7 +387,7 @@ describe("Upload DB integration", () => {
         }),
       ])
 
-      await prismaTest.uploadProduct.createMany({
+      await mockPrismaTest.uploadProduct.createMany({
         data: [
           { uploadId: upload3Id, productId: product1Id, uploadOrder: 1 },
           { uploadId: upload3Id, productId: product2Id, uploadOrder: 2 },
@@ -417,7 +417,7 @@ describe("Upload DB integration", () => {
     })
 
     it("should handle pagination correctly", async () => {
-      await prismaTest.upload.createMany({
+      await mockPrismaTest.upload.createMany({
         data: [
           {
             id: uuid(),
@@ -464,7 +464,7 @@ describe("Upload DB integration", () => {
       const uploadId = uuid()
 
       // Créer un upload avec tous les produits terminés
-      await prismaTest.upload.create({
+      await mockPrismaTest.upload.create({
         data: {
           id: uploadId,
           name: "complete-upload.csv",
@@ -475,7 +475,7 @@ describe("Upload DB integration", () => {
         },
       })
 
-      await prismaTest.product.create({
+      await mockPrismaTest.product.create({
         data: {
           id: uuid(),
           hash: "test-hash",
@@ -499,7 +499,7 @@ describe("Upload DB integration", () => {
     it("should fail uploads when some products have errors", async () => {
       const uploadId = uuid()
 
-      await prismaTest.upload.create({
+      await mockPrismaTest.upload.create({
         data: {
           id: uploadId,
           name: "failed-upload.csv",
@@ -511,7 +511,7 @@ describe("Upload DB integration", () => {
       })
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             hash: "test-hash",
@@ -521,7 +521,7 @@ describe("Upload DB integration", () => {
             ...baseProduct,
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             hash: "test-hash",
@@ -546,7 +546,7 @@ describe("Upload DB integration", () => {
     it("should ignore uploads with pending products", async () => {
       const uploadId = uuid()
 
-      await prismaTest.upload.create({
+      await mockPrismaTest.upload.create({
         data: {
           id: uploadId,
           name: "pending-upload.csv",
@@ -558,7 +558,7 @@ describe("Upload DB integration", () => {
       })
 
       await Promise.all([
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             hash: "test-hash",
@@ -568,7 +568,7 @@ describe("Upload DB integration", () => {
             ...baseProduct,
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             hash: "test-hash",
@@ -578,7 +578,7 @@ describe("Upload DB integration", () => {
             ...baseProduct,
           },
         }),
-        prismaTest.product.create({
+        mockPrismaTest.product.create({
           data: {
             id: uuid(),
             hash: "test-hash",
@@ -602,7 +602,7 @@ describe("Upload DB integration", () => {
       const upload1Id = uuid()
       const upload2Id = uuid()
 
-      await prismaTest.upload.createMany({
+      await mockPrismaTest.upload.createMany({
         data: [
           {
             id: upload1Id,
@@ -655,7 +655,7 @@ describe("Upload DB integration", () => {
     })
 
     it("should return null when no pending file uploads", async () => {
-      await prismaTest.upload.create({
+      await mockPrismaTest.upload.create({
         data: {
           id: uuid(),
           name: "done.csv",

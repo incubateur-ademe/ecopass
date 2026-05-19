@@ -9,7 +9,10 @@ import JSZip from "jszip"
 jest.mock("../../db/export")
 jest.mock("../../db/product")
 jest.mock("../label/svg")
-jest.mock("../s3/bucket")
+jest.mock("../s3/bucket", () => ({
+  uploadFileToS3: jest.fn(),
+  downloadFileFromS3: jest.fn(),
+}))
 jest.mock("jszip")
 
 const mockedCompleteExport = completeExport as jest.MockedFunction<typeof completeExport>
