@@ -134,7 +134,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.issues[0].message).toBe("Invalid input")
+      expect(result.error?.issues[0].message).toBe("Invalid discriminator value. Expected 'score' | 'gtin'")
     })
 
     it("should reject missing type", () => {
@@ -144,7 +144,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.issues[0].message).toBe("Invalid input")
+      expect(result.error?.issues[0].message).toBe("Invalid discriminator value. Expected 'score' | 'gtin'")
     })
   })
 })

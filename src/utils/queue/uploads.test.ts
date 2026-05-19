@@ -16,7 +16,10 @@ jest.mock("../parsing/excel/parse")
 jest.mock("../../db/product")
 jest.mock("../../services/upload")
 jest.mock("../../db/upload")
-jest.mock("../s3/bucket")
+jest.mock("../s3/bucket", () => ({
+  uploadFileToS3: jest.fn(),
+  downloadFileFromS3: jest.fn(),
+}))
 jest.mock("../encryption/encryption")
 
 const mockedChardet = chardet as jest.Mocked<typeof chardet>

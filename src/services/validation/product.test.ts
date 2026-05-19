@@ -526,7 +526,16 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       { accessories: [{ ...validProduct.accessories[0], quantity: undefined }] },
-      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être un nombre" }],
+      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être un nombre entier" }],
+    )
+  })
+
+  it("does not allow product with floating accessory quantity", () => {
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      { accessories: [{ ...validProduct.accessories[0], quantity: 1.5 }] },
+      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être un nombre entier" }],
     )
   })
 

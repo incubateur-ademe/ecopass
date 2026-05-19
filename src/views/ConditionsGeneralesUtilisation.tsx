@@ -1,6 +1,4 @@
-import Block from "../components/Block/Block"
 import LegalContainer from "../components/Mentions/LegalContainer"
-import styles from "./MentionsLegales.module.css"
 
 const ConditionsGeneralesUtilisation = () => {
   return (
