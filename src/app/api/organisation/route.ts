@@ -24,7 +24,10 @@ export async function GET(req: Request) {
           createdAt: auth.createdAt,
           name: auth.from.name,
           siret: auth.from.siret,
-          brands: auth.from.brands.filter((brand) => brand.active).map((brand) => ({ id: brand.id, name: brand.name })),
+          brands: auth.from.brands
+            .filter((brand) => brand.active)
+            .map((brand) => ({ id: brand.id, name: brand.name }))
+            .sort((a, b) => a.name.localeCompare(b.name)),
         }))
         .sort((a, b) => a.name.localeCompare(b.name)),
       authorizeOrganization: organization.authorizedOrganizations
