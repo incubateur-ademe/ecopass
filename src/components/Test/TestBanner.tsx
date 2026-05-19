@@ -1,4 +1,3 @@
-"use client"
 import Notice from "@codegouvfr/react-dsfr/Notice"
 
 const TestBanner = () => {
