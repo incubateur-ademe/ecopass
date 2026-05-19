@@ -1,5 +1,4 @@
 import { Organization } from "@prisma/client"
-import { v4 as uuid } from "uuid"
 
 export const isValidGtin = (gtin: string): boolean => {
   const digits = gtin.split("").map(Number)

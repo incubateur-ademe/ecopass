@@ -26,7 +26,7 @@ const materialValidation = z.object({
 
 const accessoryValidation = z.object({
   id: z.enum(accessoryValues),
-  quantity: z.number().min(1),
+  quantity: z.int().min(1),
 })
 
 const product = z.object({
