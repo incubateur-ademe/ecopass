@@ -1607,9 +1607,29 @@
           "brand": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Identifiant de la marque"
+              },
               "name": {
                 "type": "string",
                 "description": "Marque du produit"
+              },
+              "organization": {
+                "type": "object",
+                "description": "Organisation propriétaire de la marque",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Identifiant de l'organisation"
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "description": "Nom d'affichage de l'organisation"
+                  }
+                }
               }
             }
           },
@@ -1618,63 +1638,103 @@
             "format": "date-time",
             "description": "Date de création de la déclaration"
           },
-          "category": {
-            "type": "string",
-            "description": "Catégorie du produit"
-          },
           "score": {
-            "$ref": "#/components/schemas/ProductScore"
+            "type": "number",
+            "description": "Score environnemental total (en points)"
+          },
+          "standardized": {
+            "type": "number",
+            "description": "Score environnemental standardisé (en points pour 100g)"
+          },
+          "informations": {
+            "type": "array",
+            "description": "Informations détaillées par composant du produit",
+            "items": {
+              "$ref": "#/components/schemas/ProductInformationResponse"
+            }
           },
           "upload": {
             "$ref": "#/components/schemas/UploadInfo"
           }
         },
         "example": {
-          "id": "7a183a57-e5bc-4170-a770-66654281aab9",
+          "id": "b6f3f23a-3923-4395-bfd9-cd9dff1817a0",
           "gtins": ["8546241205910"],
-          "internalReference": "015Q8sUpK3",
-          "brand": "Emmaus",
-          "createdAt": "2025-08-08T10:17:58.231Z",
-          "category": "Chaussettes",
-          "score": {
-            "score": 1404.965599718265,
-            "standardized": 936.6437331455104,
-            "durability": 0.67,
-            "acd": 0.04195569657855826,
-            "cch": 7.74213460144599,
-            "etf": 305.9071623783734,
-            "fru": 99.54550743506823,
-            "fwe": 0.001226779343506402,
-            "ior": 9.453062345833024,
-            "ldu": 102.9176328600372,
-            "mru": 0.00002244465726084131,
-            "ozd": 1.904132357839134e-7,
-            "pco": 0.03029830439785,
-            "pma": 5.17488501906917e-7,
-            "swe": 0.0245479277707963,
-            "tre": 0.1024326352422391,
-            "wtu": 2.089747384008741,
-            "microfibers": 55.97014925373134,
-            "outOfEuropeEOL": 54.85074626865671,
-            "materials": 410.5263602338779,
-            "spinning": 42.6176992142446,
-            "fabric": 30.19844148041522,
-            "dyeing": 201.2995480190762,
-            "making": 26.750412,
-            "usage": 106.7891634,
-            "endOfLife": 41.73391728,
-            "transport": 80.60366918362402,
-            "trims": 0.8077410000000782
+          "internalReference": "LOT-457",
+          "brand": {
+            "id": "56c27d6a-a879-406a-9ab3-17c439772e57",
+            "name": "Ma marque",
+            "organization": {
+              "displayName": "Ma marque",
+              "id": "676fc42f-97a8-427d-a133-536b6592bd67"
+            }
           },
+          "createdAt": "2026-05-19T07:11:13.218Z",
+          "score": 2852.3553175613533,
+          "standardized": 407.4793310801934,
+          "informations": [
+            {
+              "categorySlug": "T-shirt / Polo",
+              "mainComponent": null,
+              "score": {
+                "score": 2852.3553175613533,
+                "standardized": 407.4793310801934,
+                "durability": 1.32,
+                "acd": 0.0508784847014782,
+                "cch": 7.9182818952003995,
+                "etf": 574.2181255410668,
+                "fru": 195.191741817777,
+                "fwe": 0.0026239044398372277,
+                "ior": 44.05572253689201,
+                "ldu": 235.42194614216976,
+                "mru": 0.00027402215054601116,
+                "ozd": 4.199735924103755e-7,
+                "pco": 0.029068450253474817,
+                "pma": 3.7585721745928127e-7,
+                "swe": 0.042774209456675975,
+                "tre": 0.08901875144528448,
+                "wtu": 4.9388405119877286,
+                "microfibers": 132.57575757575756,
+                "outOfEuropeEOL": 129.9242424242424,
+                "materials": 1861.3137610914296,
+                "spinning": 42.20859905844703,
+                "fabric": 29.843997550173004,
+                "dyeing": 348.42162835069206,
+                "making": 5.8868985,
+                "usage": 874.6179611599999,
+                "endOfLife": 194.69419728,
+                "transport": 40.92047619024546,
+                "trims": 367.2015
+              }
+            }
+          ],
           "upload": {
             "version": "7.0.0",
             "createdBy": {
               "organization": {
-                "name": "Ecopass"
-              },
-              "nom": "Dane",
-              "prenom": "Jane"
+                "displayName": "Ma marque",
+                "id": "676fc42f-97a8-427d-a133-536b6592bd67"
+              }
             }
+          }
+        }
+      },
+      "ProductInformationResponse": {
+        "type": "object",
+        "description": "Informations détaillées pour un composant de produit",
+        "properties": {
+          "categorySlug": {
+            "type": "string",
+            "nullable": true,
+            "description": "Catégorie du composant"
+          },
+          "mainComponent": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Indique s'il s'agit du composant principal"
+          },
+          "score": {
+            "$ref": "#/components/schemas/ProductScore"
           }
         }
       },
@@ -1784,19 +1844,16 @@
               "organization": {
                 "type": "object",
                 "properties": {
-                  "name": {
+                  "id": {
                     "type": "string",
-                    "description": "Nom de l'organisation"
+                    "format": "uuid",
+                    "description": "Identifiant de l'organisation"
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "description": "Nom d'affichage de l'organisation"
                   }
                 }
-              },
-              "nom": {
-                "type": "string",
-                "description": "Nom de l'utilisateur"
-              },
-              "prenom": {
-                "type": "string",
-                "description": "Prénom de l'utilisateur"
               }
             }
           }
