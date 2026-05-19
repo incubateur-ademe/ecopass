@@ -142,16 +142,16 @@ test("manage siret delegation", async ({ page }) => {
           siret: "31723624800017",
           brands: [
             {
-              id: "26ed7820-ebca-4235-b1d3-dbeab02b1768",
-              name: "Emmaus Solidarité",
+              id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
+              name: "Emmaus",
             },
             {
               id: "175570b3-59e4-40b4-89be-08a185685f78",
               name: "Emmaus Connect",
             },
             {
-              id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
-              name: "Emmaus",
+              id: "26ed7820-ebca-4235-b1d3-dbeab02b1768",
+              name: "Emmaus Solidarité",
             },
           ],
         },
@@ -307,16 +307,16 @@ test("manage unique id delegation", async ({ page }) => {
           siret: "31723624800017",
           brands: [
             {
-              id: "26ed7820-ebca-4235-b1d3-dbeab02b1768",
-              name: "Emmaus Solidarité",
+              id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
+              name: "Emmaus",
             },
             {
               id: "175570b3-59e4-40b4-89be-08a185685f78",
               name: "Emmaus Connect",
             },
             {
-              id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
-              name: "Emmaus",
+              id: "26ed7820-ebca-4235-b1d3-dbeab02b1768",
+              name: "Emmaus Solidarité",
             },
           ],
         },
