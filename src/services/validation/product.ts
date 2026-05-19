@@ -21,7 +21,7 @@ const accessoryValidation = z.object({
   productId: z.string(),
   slug: z.enum(AccessoryType, { message: "Type d'accessoire invalide" }),
   quantity: z
-    .number({ message: "La quantité de l'accessoire doit être un nombre" })
+    .int({ message: "La quantité de l'accessoire doit être un nombre entier" })
     .min(0, "La quantité de l'accessoire doit être supérieure à 0"),
 })
 

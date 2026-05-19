@@ -370,6 +370,20 @@ describe("productAPIValidation", () => {
     )
   })
 
+  it("does not allow product with floating trim quantity", () => {
+    expectZodValidationToFail(
+      productAPIValidation,
+      validProduct,
+      { trims: [{ ...validProduct.trims[0], quantity: 1.5 }] },
+      [
+        {
+          path: ["trims", "0", "quantity"],
+          message: "Invalid input: expected int, received number",
+        },
+      ],
+    )
+  })
+
   it("does not allow product with invalid trim quantity", () => {
     expectZodValidationToFail(
       productAPIValidation,
