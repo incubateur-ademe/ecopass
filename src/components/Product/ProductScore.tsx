@@ -1,6 +1,6 @@
 "use client"
 import { Score } from "@prisma/client"
-import { getSVG } from "../../utils/label/svg"
+import { getSVG } from "../../utils/label/simple"
 import Label from "../Label/Label"
 import Button from "@codegouvfr/react-dsfr/Button"
 

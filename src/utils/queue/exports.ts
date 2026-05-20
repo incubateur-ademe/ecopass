@@ -1,7 +1,7 @@
 import { completeExport, getFirstExport } from "../../db/export"
 import { getProductsByOrganizationIdAndBrandBefore, ProductWithScore } from "../../db/product"
 import JSZip from "jszip"
-import { getSVG } from "../label/svg"
+import { getSVG } from "../label/simple"
 import { uploadFileToS3 } from "../s3/bucket"
 
 const renderLabelSVG = (product: ProductWithScore) => {
