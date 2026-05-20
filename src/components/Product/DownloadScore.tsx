@@ -1,7 +1,7 @@
 "use client"
 
 import Button from "@codegouvfr/react-dsfr/Button"
-import { getSVG } from "../../utils/label/svg"
+import { getSVG } from "../../utils/label/simple"
 import { Score } from "@prisma/client"
 
 const DownloadScore = ({

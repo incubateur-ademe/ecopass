@@ -1,8 +1,8 @@
-import { getSVG } from "../../../utils/label/svg"
+import { getSVG } from "../../../utils/label/simple"
 import { GET } from "./route"
 import { NextRequest } from "next/server"
 
-jest.mock("../../../utils/label/svg", () => ({
+jest.mock("../../../utils/label/simple", () => ({
   getSVG: jest.fn(() => "<svg>test svg content</svg>"),
 }))
 
