@@ -1,4 +1,4 @@
-import { getSVG } from "../../../utils/label/simple"
+import { getSVG } from "../../../utils/label/svg"
 import { GET } from "./route"
 import { NextRequest } from "next/server"
 

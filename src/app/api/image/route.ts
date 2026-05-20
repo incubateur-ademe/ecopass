@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSVG } from "../../../utils/label/simple"
-import { getEtiquetteSVG } from "../../../utils/label/withComparison"
+import { getSVG } from "../../../utils/label/svg"
 import { imageValidation } from "../../../services/validation/image"
 import { getProductWithScore } from "../../../db/product"
 
@@ -14,8 +13,6 @@ export async function GET(request: NextRequest) {
       masse: searchParams.get("masse"),
       gtin: searchParams.get("gtin"),
       internalreference: searchParams.get("internalreference"),
-      model: searchParams.get("model"),
-      category: searchParams.get("category"),
     })
 
     if (!validationResult.success) {
@@ -45,13 +42,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    let svgContent: string
-    if (validatedData.model === "withComparison") {
-      svgContent = getEtiquetteSVG(productScore, productStandardized, validatedData.category, false)
-    } else {
-      svgContent = getSVG(productScore, productStandardized)
-    }
-
+    const svgContent = getSVG(productScore, productStandardized)
     return new NextResponse(svgContent, {
       status: 200,
       headers: {
