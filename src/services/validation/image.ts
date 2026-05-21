@@ -5,10 +5,10 @@ const categorySlugs = Object.values(productMapping) as [string, ...string[]]
 
 const gtinRegex = /^\d{8}$|^\d{13}$/
 
-const modelSchema = z.discriminatedUnion("model", [
-  z.object({ model: z.literal("withComparison"), category: z.enum(categorySlugs) }),
-  z.object({ model: z.literal("withSimpleComparison"), category: z.enum(categorySlugs) }),
-  z.object({ model: z.literal("simple") }),
+const modelSchema = z.discriminatedUnion("modele", [
+  z.object({ modele: z.literal("avecComparaison"), categorie: z.enum(categorySlugs).nullable().optional() }),
+  z.object({ modele: z.literal("avecComparaisonSimple"), categorie: z.enum(categorySlugs).nullable().optional() }),
+  z.object({ modele: z.literal("simple") }),
 ])
 
 const scoreBase = z.object({
@@ -24,4 +24,14 @@ const gtinBase = z.object({
 
 const typeSchema = z.discriminatedUnion("type", [scoreBase, gtinBase])
 
-export const imageValidation = z.intersection(typeSchema, modelSchema)
+export const imageValidation = z.intersection(typeSchema, modelSchema).superRefine((data, ctx) => {
+  const isComparisonModel = data.modele === "avecComparaison" || data.modele === "avecComparaisonSimple"
+
+  if (data.type === "score" && isComparisonModel && !data.categorie) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["categorie"],
+      message: "La catégorie est requise pour les modèles de comparaison avec un score.",
+    })
+  }
+})
