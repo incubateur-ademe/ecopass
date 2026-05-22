@@ -7,7 +7,7 @@ describe("imageValidation", () => {
         type: "score",
         score: 85.5,
         masse: 250,
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(true)
@@ -23,7 +23,7 @@ describe("imageValidation", () => {
         type: "score",
         score: "85.5",
         masse: "250",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(true)
@@ -41,7 +41,7 @@ describe("imageValidation", () => {
         type: "score",
         score: "-10",
         masse: "250",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(false)
@@ -53,7 +53,7 @@ describe("imageValidation", () => {
         type: "score",
         score: "85.5",
         masse: "0",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(false)
@@ -65,7 +65,7 @@ describe("imageValidation", () => {
         type: "score",
         score: "invalid",
         masse: "250",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(false)
@@ -76,7 +76,7 @@ describe("imageValidation", () => {
       const result = imageValidation.safeParse({
         type: "score",
         score: "85.5",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(false)
@@ -89,7 +89,7 @@ describe("imageValidation", () => {
       const result = imageValidation.safeParse({
         type: "gtin",
         gtin: "12345678",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(true)
@@ -103,7 +103,7 @@ describe("imageValidation", () => {
       const result = imageValidation.safeParse({
         type: "gtin",
         gtin: "1234567890123",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(true)
@@ -117,7 +117,7 @@ describe("imageValidation", () => {
       const result = imageValidation.safeParse({
         type: "gtin",
         gtin: "12345",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(false)
@@ -128,7 +128,7 @@ describe("imageValidation", () => {
       const result = imageValidation.safeParse({
         type: "gtin",
         gtin: "1234567A",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(false)
@@ -141,7 +141,7 @@ describe("imageValidation", () => {
       const result = imageValidation.safeParse({
         type: "invalid",
         score: "85.5",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(false)
@@ -152,7 +152,7 @@ describe("imageValidation", () => {
       const result = imageValidation.safeParse({
         score: "85.5",
         masse: "250",
-        model: "simple",
+        modele: "simple",
       })
 
       expect(result.success).toBe(false)
@@ -164,15 +164,15 @@ describe("imageValidation", () => {
         type: "score",
         score: "85.5",
         masse: "250",
-        model: "withComparison",
-        category: "jean",
+        modele: "avecComparaison",
+        categorie: "jean",
       })
 
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.model).toBe("withComparison")
-        if (result.data.model === "withComparison") {
-          expect(result.data.category).toBe("jean")
+        expect(result.data.modele).toBe("avecComparaison")
+        if (result.data.modele === "avecComparaison") {
+          expect(result.data.categorie).toBe("jean")
         }
       }
     })
@@ -182,10 +182,30 @@ describe("imageValidation", () => {
         type: "score",
         score: "85.5",
         masse: "250",
-        model: "withSimpleComparison",
+        modele: "avecComparaisonSimple",
       })
 
       expect(result.success).toBe(false)
+    })
+
+    it("should validate gtin comparison model without category", () => {
+      const result = imageValidation.safeParse({
+        type: "gtin",
+        gtin: "12345678",
+        modele: "avecComparaison",
+      })
+
+      expect(result.success).toBe(true)
+    })
+
+    it("should validate gtin simple comparison model without category", () => {
+      const result = imageValidation.safeParse({
+        type: "gtin",
+        gtin: "1234567890123",
+        modele: "avecComparaisonSimple",
+      })
+
+      expect(result.success).toBe(true)
     })
   })
 })

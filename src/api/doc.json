@@ -673,6 +673,15 @@
             "description": "Type des paramètres pour l'image à générer, soit `score` pour l'image avec le score, soit `gtin` pour l'image avec le GTIN du produit"
           },
           {
+            "name": "modele",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["simple", "avecComparaison", "avecComparaisonSimple"]
+            },
+            "description": "Modèle de l'image à générer, soit `simple` pour une image simple, soit `avecComparaison` ou `avecComparaisonSimple` pour une image avec jauge de comparaison"
+          },
+          {
             "name": "gtin",
             "in": "query",
             "schema": {
@@ -696,6 +705,27 @@
               "type": "number"
             },
             "description": "La masse du produit (en kg), doit être fournie si `type` est `score`"
+          },
+          {
+            "name": "categorie",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "chemise",
+                "jean",
+                "jupe",
+                "manteau",
+                "pantalon",
+                "pull",
+                "tshirt",
+                "chaussettes",
+                "calecon",
+                "slip",
+                "maillot-de-bain"
+              ]
+            },
+            "description": "La catégorie du produit, doit être fournie si `type` est `score` et que le modele est `avecComparaison` ou `avecComparaisonSimple`"
           }
         ],
         "responses": {
