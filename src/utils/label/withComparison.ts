@@ -70,22 +70,24 @@ const getSize = (value: number, large: boolean) => {
   }
 }
 
-const getColors = (value: number, outside: boolean) => {
-  if (outside) {
-    return value > 0
-      ? { cursor: "#CE0500", background: "#FBE0E1", text: "#CE0500" }
-      : { cursor: "#197B3F", background: "#C9F8DC", text: "#197B3F" }
+const getColors = (value: number) => {
+  if (value <= -50) {
+    return { cursor: "#197B3F", background: "#C9F8DC", text: "#197B3F" }
   }
 
-  if (value < -25) {
+  if (value <= -25) {
     return { cursor: "#6A6E21", background: "#E4F38E", text: "#6A6E21" }
   }
 
-  if (value > 25) {
+  if (value < 25) {
+    return { cursor: "#ffcc4a", background: "#FFF3C1", text: "#8A6815" }
+  }
+
+  if (value < 100) {
     return { cursor: "#FF864A", background: "#FFE5DA", text: "#D8520F" }
   }
 
-  return { cursor: "#ffcc4a", background: "#FFF3C1", text: "#8A6815" }
+  return { cursor: "#CE0500", background: "#FBE0E1", text: "#CE0500" }
 }
 
 const valuesByCategory: Record<string, { min: number; max: number; median: number }> = {
@@ -105,13 +107,11 @@ export const getEtiquetteSVG = (score: number, standardizedScore: number, catego
   const deltaPercent = Math.round(
     ((standardizedScore - valuesByCategory[category].median) / valuesByCategory[category].median) * 100,
   )
-  const outside =
-    standardizedScore > valuesByCategory[category].max || standardizedScore < valuesByCategory[category].min
 
   const absValue = Math.abs(deltaPercent)
   const comparisonText = getComparisonText(deltaPercent, large)
   const size = getSize(deltaPercent, large)
-  const colors = getColors(deltaPercent, outside)
+  const colors = getColors(deltaPercent)
 
   const yCenter = 60
   const maxSize = yCenter - 4 + 1 - 6
