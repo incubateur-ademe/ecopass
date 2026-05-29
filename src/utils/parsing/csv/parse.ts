@@ -14,7 +14,7 @@ import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
 import { checkHeaders, ColumnType, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
-import { hashProduct } from "../../encryption/hash"
+import { hashProduct, ProductInformationForHash } from "../../encryption/hash"
 
 type CSVRow = {
   info: { records: number }
@@ -87,6 +87,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
   let hasAccessoire1 = false
 
   const now = new Date()
+  const productsByGtins = {} as Record<string, { product: Product; raw: ProductInformationForHash[] }>
   await new Promise<void>((resolve, reject) => {
     const parser = parse({
       columns: (headers: string[]) => {
@@ -105,9 +106,6 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
     stream.pipe(parser)
 
     parser.on("data", (row: CSVRow) => {
-      const id = uuid()
-      const productId = uuid()
-
       const gtins = (row.record["gtinseans"] || "").split(";").map((gtin) => gtin.trim())
       const internalReference = row.record["referenceinterne"] || ""
       const brand = (
@@ -116,6 +114,12 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         ""
       ).trim()
       const declaredScore = getNumberValue(row.record["score"], 1, -1) as number | undefined
+
+      const gtin = gtins.sort((a, b) => a.localeCompare(b)).join(",")
+      const existingProduct = productsByGtins[gtin]
+
+      const id = uuid()
+      const productId = existingProduct ? existingProduct.product.id : uuid()
 
       const rawProduct = {
         product: getValue<ProductCategory>(productCategories, row.record["categorie"]),
@@ -190,7 +194,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         ? getAuthorizedBrands(upload.createdBy.organization)
         : ([] as string[])
 
-      products.push({
+      const product = {
         error: null,
         id: productId,
         score: null,
@@ -214,7 +218,46 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         brandName: brand,
         brandId: authorizedBrands.includes(brand) ? brand : null,
         declaredScore: declaredScore || null,
-      })
+      }
+
+      if (existingProduct) {
+        existingProduct.raw.push(rawProduct)
+        existingProduct.product.hash = hashProduct(
+          {
+            gtins: product.gtins,
+            internalReference: product.internalReference,
+            brandId: product.brandId || "",
+            declaredScore: product.declaredScore || undefined,
+          },
+          existingProduct.raw,
+          authorizedBrands,
+        )
+
+        const errors = []
+        if (existingProduct.product.internalReference !== product.internalReference) {
+          errors.push("La référence interne doit être identique pour toutes les composantes du produit")
+        }
+        if (existingProduct.product.declaredScore !== product.declaredScore) {
+          errors.push("Le score déclaré doit être identique pour toutes les composantes du produit")
+        }
+        if (existingProduct.product.brandName !== product.brandName) {
+          errors.push("La marque doit être identique pour toutes les composantes du produit")
+        }
+        if (existingProduct.raw[0].price !== rawProduct.price) {
+          errors.push("Le prix doit être identique pour toutes les composantes du produit")
+        }
+        if (existingProduct.raw[0].numberOfReferences !== rawProduct.numberOfReferences) {
+          errors.push("Le nombre de références doit être identique pour toutes les composantes du produit")
+        }
+
+        if (errors.length > 0) {
+          existingProduct.product.status = Status.Error
+          existingProduct.product.error = errors.join(", ")
+        }
+      } else {
+        productsByGtins[gtin] = { product, raw: [rawProduct] }
+        products.push(product)
+      }
 
       informations.push({
         id,

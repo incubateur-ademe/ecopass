@@ -270,7 +270,9 @@ describe("parseCSV", () => {
   })
 
   it("parse a valid CSV with multiples products", async () => {
-    const csv = Buffer.from(`${header}\n${defaultProducts}\n${defaultProducts}`)
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts}\n${defaultProducts.replace("2234567891001;3234567891000", "4234567891001;5234567891000")}`,
+    )
     const { products, materials, accessories } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(2)
     expect(materials).toHaveLength(4)
@@ -356,5 +358,113 @@ describe("parseCSV", () => {
     expect(informations).toHaveLength(1)
 
     expect(decryptNumber(informations[0].airTransportRatio)).toBe(0.75)
+  })
+
+  it("should regroup products with same gtins", async () => {
+    const initialCSV = Buffer.from(`${header}\n${defaultProducts}`)
+    const { products: initialProducts } = await parseCSV(initialCSV, null, upload)
+    expect(initialProducts).toHaveLength(1)
+
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts}\n${defaultProducts.replace("2234567891001;3234567891000", "3234567891000;2234567891001")}`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(informations[0].productId).toBe(products[0].id)
+    expect(informations[1].productId).toBe(products[0].id)
+
+    expect(initialProducts[0].hash).not.toBe(products[0].hash)
+  })
+
+  it("should fail product with same gtins but different internal reference", async () => {
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts}\n${defaultProducts
+        .replace("2234567891001;3234567891000", "3234567891000;2234567891001")
+        .replace("REF-123", "REF-456")}`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("La référence interne doit être identique pour toutes les composantes du produit")
+  })
+
+  it("should fail product with same gtins but different declared score", async () => {
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts}\n${defaultProducts
+        .replace("2234567891001;3234567891000", "3234567891000;2234567891001")
+        .replace("2222.63", "3333.64")}`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Le score déclaré doit être identique pour toutes les composantes du produit")
+  })
+
+  it("should fail product with same gtins but different brand name", async () => {
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts}\n${defaultProducts
+        .replace("2234567891001;3234567891000", "3234567891000;2234567891001")
+        .replace("781c0fcd-372e-4032-8088-d83e103726f2", "Other Brand")}`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("La marque doit être identique pour toutes les composantes du produit")
+  })
+
+  it("should fail product with same gtins but different price", async () => {
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts}\n${defaultProducts
+        .replace("2234567891001;3234567891000", "3234567891000;2234567891001")
+        .replace('"100"', '"200"')}`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Le prix doit être identique pour toutes les composantes du produit")
+  })
+
+  it("should fail product with same gtins but different number of references", async () => {
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts}\n${defaultProducts
+        .replace("2234567891001;3234567891000", "3234567891000;2234567891001")
+        .replace('"9000"', '"9999"')}`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Le nombre de références doit être identique pour toutes les composantes du produit")
+  })
+
+  it("should fail product with combined error whensame gtins but different values", async () => {
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts}\n${defaultProducts
+        .replace("2234567891001;3234567891000", "3234567891000;2234567891001")
+        .replace("REF-123", "REF-456")
+        .replace("2222.63", "3333.64")
+        .replace("781c0fcd-372e-4032-8088-d83e103726f2", "Other Brand")
+        .replace('"100"', '"200"')
+        .replace('"9000"', '"9999"')}`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe(
+      "La référence interne doit être identique pour toutes les composantes du produit, Le score déclaré doit être identique pour toutes les composantes du produit, La marque doit être identique pour toutes les composantes du produit, Le prix doit être identique pour toutes les composantes du produit, Le nombre de références doit être identique pour toutes les composantes du produit",
+    )
   })
 })

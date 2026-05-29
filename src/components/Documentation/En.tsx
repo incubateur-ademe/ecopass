@@ -142,6 +142,13 @@ const En = () => {
         2…).
       </p>
       <br />
+      <h3>Declare a batch</h3>
+      <p>To declare a batch of products, indicate one line per product in the batch.</p>
+      <p>
+        Make sure to provide the same common information (GTINs/EANs, Internal Reference, Brand ID, Score, Price, and
+        Number of References) on each line.
+      </p>
+      <br />
       <h3>Accessory information</h3>
       <p>
         <b>Warning</b>: if you don't have any accessories, you must fill these fields with the value 0.

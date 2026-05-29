@@ -13,7 +13,7 @@ import { Status } from "@prisma/enums"
 import { ProductInformationAPI } from "../../services/validation/api"
 import { runElmFunction } from "./elm"
 import { scoreIsValid } from "../validation/score"
-import { ParsedProductValidation } from "../../services/validation/product"
+import { ParsedProductInformationValidation, ParsedProductValidation } from "../../services/validation/product"
 
 const removeUndefined = <T>(obj: T): T => {
   if (obj === null || obj === undefined) {
@@ -39,7 +39,9 @@ const removeUndefined = <T>(obj: T): T => {
   return obj
 }
 
-const convertProductToEcobalyse = (product: ParsedProductValidation) => {
+const convertProductToEcobalyse = (
+  product: ParsedProductInformationValidation & { price?: number; numberOfReferences?: number; emptyTrims?: boolean },
+) => {
   const result = {
     airTransportRatio: product.airTransportRatio,
     business: product.business ? businessesMapping[product.business] : undefined,
@@ -178,22 +180,28 @@ export const saveEcobalyseResults = async (products: ParsedProductValidation[]) 
   Promise.all(
     products.map(async (product) => {
       try {
-        const result = await computeEcobalyseScore(convertProductToEcobalyse(product))
+        const informations = computeBatchInformations(
+          product.informations[0].price,
+          product.informations[0].numberOfReferences,
+          product.informations,
+        )
 
-        if (product.declaredScore && !scoreIsValid(product.declaredScore, result.score)) {
+        const scores = await Promise.all(
+          informations.map((information) => computeEcobalyseScore(convertProductToEcobalyse(information))),
+        )
+
+        const totalScore = scores.reduce((acc, score) => acc + score.score, 0)
+        if (product.declaredScore && !scoreIsValid(product.declaredScore, totalScore)) {
           return failProducts([
             {
-              productId: product.productId,
-              error: `Le score déclaré (${product.declaredScore}) ne correspond pas au score calculé (${result.score})`,
+              id: product.id,
+              error: `Le score déclaré (${product.declaredScore}) ne correspond pas au score calculé (${totalScore})`,
             },
           ])
         }
-        await createProductScore(result, product)
 
-        return {
-          id: product.id,
-          ...result,
-        }
+        await createProductScore(scores, product)
+        return scores.map((score, index) => ({ ...score, id: product.informations[index].id }))
       } catch (error) {
         console.error("Error fetching Ecobalyse result:", error)
         await prismaClient.product.update({
@@ -217,23 +225,26 @@ const reparationCosts: Record<string, number> = {
   slip: 4,
   "maillot-de-bain": 15,
 }
-export const computeBatchInformations = (
+
+export const computeBatchInformations = <T extends ProductInformationAPI | ParsedProductInformationValidation>(
   price: number | undefined,
   numberOfReferences: number | undefined,
-  products: ProductInformationAPI[],
+  products: T[],
 ) => {
-  const allProducts = products.flatMap((produit) =>
-    produit.numberOfItem === undefined ? produit : Array.from({ length: produit.numberOfItem }).map(() => produit),
+  const allProducts = products.flatMap((product) =>
+    product.numberOfItem === undefined ? [product] : Array.from({ length: product.numberOfItem }, () => product),
   )
+
   if (price === undefined) {
     return allProducts.map((product) => ({
       ...product,
+      price: undefined,
       numberOfReferences,
     }))
   }
 
   const ratios = allProducts.map((p) => {
-    const ratio = reparationCosts[p.product] ?? 1
+    const ratio = reparationCosts["product" in p ? p.product : productMapping[p.category]] ?? 1
     return ratio
   })
 

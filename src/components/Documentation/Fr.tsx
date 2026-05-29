@@ -109,6 +109,13 @@ const Fr = () => {
         </li>
       </ul>
       <br />
+      <h3>Déclarer un lot</h3>
+      <p>Pour déclarer un lot de produits, indiquez une ligne par produit du lot.</p>
+      <p>
+        Attention à bien indiquer les mêmes informations communes (GTINs/EANs, Référence interne, Marque ID, Score, Prix
+        et Nombre de références) sur chaque ligne.
+      </p>
+      <br />
       <h3>Information sur les matières</h3>
       <p>Pour chaque matière utilisée, ajoutez les colonnes suivantes (jusqu’à 16 matières) :</p>
       <ul>
