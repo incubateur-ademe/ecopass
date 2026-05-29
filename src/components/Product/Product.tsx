@@ -7,7 +7,6 @@ import Image from "next/image"
 import Label from "../Label/Label"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import ProductHistory from "./ProductHistory"
-import PublicProductScoreImpact from "./PublicProductScoreImpact"
 import InformationBanner from "../Home/InformationBanner"
 import DownloadScore from "./DownloadScore"
 import ProductScoreImpacts from "./ProductScoreImpacts"
@@ -92,7 +91,7 @@ const Product = ({
         </div>
       </Block>
       <Block>
-        {isPro ? <ProductScoreImpacts score={totalScore} /> : <PublicProductScoreImpact score={totalScore} />}
+        <ProductScoreImpacts score={totalScore} />
         <ProductHistory gtin={gtin} brandId={brandId} />
       </Block>
       {!isPro && (
