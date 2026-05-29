@@ -12,8 +12,13 @@ const csp = {
     `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.js`,
     "https://quefairedemesdechets.ademe.fr/infotri/configurateur.js",
     "https://ecobalyse-ecopass-metabase.osc-fr1.scalingo.io/app/embed.js",
+    "https://impactco2.fr/iframe.js",
   ],
-  "frame-src": ["https://quefairedemesdechets.ademe.fr", "https://ecobalyse-ecopass-metabase.osc-fr1.scalingo.io/"],
+  "frame-src": [
+    "https://quefairedemesdechets.ademe.fr",
+    "https://ecobalyse-ecopass-metabase.osc-fr1.scalingo.io/",
+    "https://impactco2.fr/",
+  ],
 }
 
 if (process.env.NODE_ENV === "development") {

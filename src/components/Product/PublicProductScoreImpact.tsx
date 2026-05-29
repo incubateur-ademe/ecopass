@@ -5,6 +5,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge"
 import { impactCategories, ponderations } from "../../utils/product/impacts"
 import Image from "next/image"
 import ProductLifeCycleImpacts from "./ProductLifeCycleImpacts"
+import ImpactCo2Script from "./ImpactCo2Script"
 
 type ScoreKey = keyof Omit<NonNullable<ProductWithScore["informations"][number]["score"]>, "id" | "productId">
 
@@ -56,7 +57,6 @@ const PublicProductScoreImpact = ({
               }
             })
             .filter((impact) => impact.baseValue > 0)
-
           return (
             <div key={categoryKey} className={styles.category}>
               <Table
@@ -75,17 +75,24 @@ const PublicProductScoreImpact = ({
                 }
                 fixed
                 headers={["Nom", "Valeur", "Pourcentage", "Définition"]}
-                data={impacts.map((impact) => [
-                  impact.label,
-                  <Badge key={impact.label} severity='info' noIcon>
-                    {Math.round(impact.value)} pts
-                  </Badge>,
-                  <Badge key={impact.label} severity='info' noIcon>
-                    {((impact.value / score.score) * 100).toFixed(2)}%
-                  </Badge>,
-                  impact.definition,
-                ])}
+                data={[
+                  ...impacts.map((impact) => [
+                    <>{impact.label}</>,
+                    <Badge key={impact.label} severity='info' noIcon>
+                      {Math.round(impact.value)} pts
+                    </Badge>,
+                    <Badge key={impact.label} severity='info' noIcon>
+                      {((impact.value / score.score) * 100).toFixed(2)}%
+                    </Badge>,
+                    impact.definition,
+                  ]),
+                ]}
               />
+              {categoryKey === "climat" && (
+                <div className={styles.iframe}>
+                  <ImpactCo2Script value={score.cch} key='impact-co2-script' />
+                </div>
+              )}
             </div>
           )
         })}
