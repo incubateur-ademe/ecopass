@@ -27,8 +27,8 @@ Composants techniques :
 
 ## Prerequis
 
-- Node.js 22+
-- pnpm 10+
+- Node.js 24+
+- pnpm 11+
 - Docker + Docker Compose
 
 ## Installation locale
@@ -48,12 +48,23 @@ cp .env.dist .env
 
 Variables importantes a renseigner :
 
+Pour pouvoir utiliser la connection au proconnect de test (disponible sur https://dashboard.scalingo.com/apps/osc-fr1/ecobalyse-ecopass-preprod/environment)
+
 - PROCONNECT_CLIENT_ID
 - PROCONNECT_CLIENT_SECRET
 - NEXT_PUBLIC_PROCONNECT_DOMAIN
+
+Pour pouvoir récupérer les infos des organisations lorsque l'on se connect (disponible sur https://dashboard.scalingo.com/apps/osc-fr1/ecobalyse-ecopass-preprod/environment)
+
 - INSEE_API_KEY
-- ECOBALYSE_ENCRYPTION_KEY (necessaire pour decrypter les donnees Ecobalyse)
-- ENCRYPTION_KEY et STORAGE_ENCRYPTION_KEY (exemple de generation : openssl rand -hex 32)
+
+Pour pouvoir décrypter les données Ecobalyse (à demander à l'équipe)
+
+- ECOBALYSE_ENCRYPTION_KEY
+
+A générer soit même (par exemple openssl rand -hex 32)
+
+- ENCRYPTION_KEY et STORAGE_ENCRYPTION_KEY
 
 3. Demarrer les services techniques
 
