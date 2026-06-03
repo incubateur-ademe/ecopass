@@ -10,6 +10,7 @@ import { prismaClient } from "../db/prismaClient"
 import { formatDate } from "../services/format"
 import { BATCH_CATEGORY } from "../utils/product/category"
 import { canExportFullProducts } from "../utils/authorization/authorizations"
+import { computeBatchScore } from "../utils/ecobalyse/batches"
 
 const formatBoolean = (value: boolean | string | undefined) => {
   if (value === undefined || value === null || value === "") {
@@ -56,6 +57,7 @@ const headers = [
   "Score déclaré par la marque",
   "Score calculé pour la marque",
   "Score standardisé",
+  "Coefficient de durabilité",
   "Catégorie",
   "Élément",
   "Masse (en kg)",
@@ -111,6 +113,7 @@ export const exportDgccrfBrandProducts = async (brandId?: string, category?: str
         const total = sortedInformations.length
         const hasMainComponent = sortedInformations.some((info) => info.mainComponent)
 
+        const totalScore = computeBatchScore(product)
         return sortedInformations.map((information, index) => {
           const decryptedProduct = decryptProductFields({
             ...information,
@@ -159,8 +162,9 @@ export const exportDgccrfBrandProducts = async (brandId?: string, category?: str
             product.internalReference,
             product.brand?.name || "",
             formatNumber(product.declaredScore !== null ? Math.round(product.declaredScore) : ""),
-            formatNumber(product.score !== null ? Math.round(product.score) : ""),
-            formatNumber(product.standardized !== null ? Math.round(product.standardized) : ""),
+            formatNumber(Math.round(totalScore.score)),
+            formatNumber(Math.round(totalScore.standardized)),
+            formatNumber(Math.round(totalScore.durability * 100) / 100),
             total > 1 && !hasMainComponent
               ? BATCH_CATEGORY
               : decryptedProduct.categorySlug || decryptedProduct.category,
