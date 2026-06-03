@@ -1,3 +1,4 @@
+import "dotenv/config"
 import fs from "fs"
 import { faker } from "@faker-js/faker"
 import { stringify } from "csv-stringify/sync"

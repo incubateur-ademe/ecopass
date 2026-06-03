@@ -1,4 +1,4 @@
-import { Status } from "../../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 import { getUserProductValidation } from "./product"
 import { expectZodValidationToFail } from "./zodValidationTest"
@@ -16,7 +16,6 @@ describe("productValidation", () => {
     createdAt: new Date("2023-01-01"),
     error: null,
     brandId: "58ca7f37-0c8d-4463-ba40-c244c130192b",
-    gtins: ["1234567890128"],
     internalReference: "TestRef",
     declaredScore: null,
     category: ProductCategory.Jean,
@@ -173,30 +172,6 @@ describe("productValidation", () => {
         },
       ],
     )
-  })
-
-  it("does not allow product with invalid GTINs", () => {
-    expectZodValidationToFail(productValidation, validProduct, { gtins: ["123"] }, [
-      { path: ["gtins", "0"], message: "Le code GTIN doit contenir 8 ou 13 chiffres" },
-    ])
-  })
-
-  it("does not allow product without GTINs", () => {
-    expectZodValidationToFail(productValidation, validProduct, { gtins: undefined }, [
-      { path: ["gtins"], message: "Il doit y avoir au moins un GTIN" },
-    ])
-  })
-
-  it("does not allow product with empty GTINs", () => {
-    expectZodValidationToFail(productValidation, validProduct, { gtins: [] }, [
-      { path: ["gtins"], message: "Il doit y avoir au moins un GTIN" },
-    ])
-  })
-
-  it("does not allow product with invalid gtin code control", () => {
-    expectZodValidationToFail(productValidation, validProduct, { gtins: ["1234567891012"] }, [
-      { path: ["gtins", "0"], message: "Le code GTIN n'est pas valide (somme de contrôle incorrecte)" },
-    ])
   })
 
   it("does not allow product without internal reference", () => {
@@ -551,7 +526,16 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       { accessories: [{ ...validProduct.accessories[0], quantity: undefined }] },
-      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être un nombre" }],
+      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être un nombre entier" }],
+    )
+  })
+
+  it("does not allow product with floating accessory quantity", () => {
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      { accessories: [{ ...validProduct.accessories[0], quantity: 1.5 }] },
+      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être un nombre entier" }],
     )
   })
 

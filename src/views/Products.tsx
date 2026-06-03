@@ -27,7 +27,7 @@ const ProductsPage = ({
         ) : (
           <p>
             Vous avez <b>{productsCount}</b>{" "}
-            {productsCount > 1 ? <span>produits déclarés</span> : <span>produit déclaré</span>}
+            {productsCount > 1 ? <span>références produit déclarées</span> : <span>référence produit déclarée</span>}
             {brand && (
               <span>
                 {" "}

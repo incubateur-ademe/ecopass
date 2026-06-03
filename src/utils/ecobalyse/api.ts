@@ -9,13 +9,11 @@ import {
 } from "./mappings"
 import { createProductScore, failProducts } from "../../db/product"
 import { prismaClient } from "../../db/prismaClient"
-import { Status } from "../../../prisma/src/prisma"
-import { ProductAPIValidation, ProductInformationAPI } from "../../services/validation/api"
+import { Status } from "@prisma/enums"
+import { ProductInformationAPI } from "../../services/validation/api"
 import { runElmFunction } from "./elm"
 import { scoreIsValid } from "../validation/score"
 import { ParsedProductValidation } from "../../services/validation/product"
-
-type EcobalyseProduct = Omit<ProductAPIValidation, "brandId" | "gtins" | "internalReference" | "declaredScore">
 
 const removeUndefined = <T>(obj: T): T => {
   if (obj === null || obj === undefined) {
@@ -41,7 +39,7 @@ const removeUndefined = <T>(obj: T): T => {
   return obj
 }
 
-const convertProductToEcobalyse = (product: ParsedProductValidation): EcobalyseProduct => {
+const convertProductToEcobalyse = (product: ParsedProductValidation) => {
   const result = {
     airTransportRatio: product.airTransportRatio,
     business: product.business ? businessesMapping[product.business] : undefined,
@@ -94,10 +92,20 @@ export const getEcobalyseIds = async (type: "materials" | "products" | "trims") 
   return result
 }
 
-export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
+const lifeCycles = {
+  materials: "Matières premières",
+  spinning: "Filature",
+  fabric: "Tissage & Tricotage",
+  dyeing: "Ennoblissement",
+  making: "Confection",
+  usage: "Utilisation",
+  endOfLife: "Fin de vie",
+}
+
+export const computeEcobalyseScore = async (product: ProductInformationAPI) => {
   const productData = {
     ...product,
-    price: product.price === undefined ? undefined : Math.min(product.price, 1000),
+    price: product.price === undefined ? undefined : Math.max(Math.min(product.price, 1000), 1),
     brandId: undefined,
     gtins: undefined,
     internalReference: undefined,
@@ -110,9 +118,40 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     body: removeUndefined(productData),
   })
 
+  const lifeCycleValues: Record<keyof typeof lifeCycles | "transport" | "trims", number> = {
+    transport: result.transport.impacts.ecs,
+    trims: result.trimsImpacts.ecs,
+    materials: 0,
+    spinning: 0,
+    fabric: 0,
+    dyeing: 0,
+    making: 0,
+    usage: 0,
+    endOfLife: 0,
+  }
+
+  Object.entries(lifeCycles).forEach(([key, label]) => {
+    lifeCycleValues[key as keyof typeof lifeCycles] =
+      result.lifeCycle.find((stage) => stage.label === label)?.impacts.ecs || 0
+  })
+
+  if (product.mainComponent === false) {
+    const confection = result.lifeCycle.find((stage) => stage.label === "Confection")
+    if (confection) {
+      lifeCycleValues.making = 0
+      ;(Object.keys(result.impacts) as (keyof typeof result.impacts)[]).forEach((key) => {
+        const confectionValue = confection.impacts[key]
+        if (confectionValue) {
+          result.impacts[key] = result.impacts[key] - confectionValue
+        }
+      })
+    }
+  }
+
   return {
     score: result.impacts.ecs,
     durability: result.durability,
+
     acd: result.impacts.acd,
     cch: result.impacts.cch,
     etf: result.impacts["etf-c"],
@@ -131,6 +170,7 @@ export const computeEcobalyseScore = async (product: EcobalyseProduct) => {
     wtu: result.impacts.wtu,
     microfibers: result.complementsImpacts.microfibers,
     outOfEuropeEOL: result.complementsImpacts.outOfEuropeEOL,
+    ...lifeCycleValues,
   }
 }
 
@@ -165,17 +205,17 @@ export const saveEcobalyseResults = async (products: ParsedProductValidation[]) 
   )
 
 const reparationCosts: Record<string, number> = {
-  chemise: 10,
-  jean: 14,
-  jupe: 19,
-  manteau: 31,
-  pantalon: 14,
-  pull: 15,
+  chemise: 15,
+  jean: 20,
+  jupe: 15,
+  manteau: 40,
+  pantalon: 20,
+  pull: 20,
   tshirt: 10,
-  chaussettes: 9,
-  calecon: 9,
-  slip: 9,
-  "maillot-de-bain": 9,
+  chaussettes: 4,
+  calecon: 4,
+  slip: 4,
+  "maillot-de-bain": 15,
 }
 export const computeBatchInformations = (
   price: number | undefined,

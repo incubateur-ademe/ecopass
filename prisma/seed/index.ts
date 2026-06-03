@@ -1,75 +1,300 @@
-import { OrganizationType, PrismaClient, UserRole } from "../src/prisma"
+import { OrganizationType, Status, UploadType, UserRole } from "@prisma/enums"
+import { prismaClient } from "../../src/db/prismaClient"
+import { signPassword } from "../../src/services/auth/user"
+import { encryptProductFields } from "../../src/utils/encryption/encryption"
+import { Business, Country, Impression, ProductCategory } from "../../src/types/Product"
 
-const prisma = new PrismaClient()
-
-const products = async () => {
-  await prisma.score.deleteMany()
-  await prisma.material.deleteMany()
-  await prisma.accessory.deleteMany()
-  await prisma.uploadProduct.deleteMany()
-  await prisma.product.deleteMany()
-  await prisma.upload.deleteMany()
+const clean = async () => {
+  await prismaClient.score.deleteMany()
+  await prismaClient.material.deleteMany()
+  await prismaClient.accessory.deleteMany()
+  await prismaClient.uploadProduct.deleteMany()
+  await prismaClient.product.deleteMany()
+  await prismaClient.upload.deleteMany()
+  await prismaClient.brand.deleteMany({})
+  await prismaClient.authorizedOrganization.deleteMany({})
+  await prismaClient.organization.deleteMany({})
+  await prismaClient.aPIKey.deleteMany({})
+  await prismaClient.export.deleteMany({})
+  await prismaClient.user.deleteMany({})
 }
 
 const users = async () => {
-  await prisma.brand.deleteMany({})
-  await prisma.authorizedOrganization.deleteMany({})
-  await prisma.organization.deleteMany({})
-  await prisma.aPIKey.deleteMany({})
-  await prisma.export.deleteMany({})
-  await prisma.user.deleteMany({})
-
-  await prisma.organization.create({
-    data: {
-      siret: "31723624800017",
-      name: "EMMAUS",
-      displayName: "Emmaus",
-      effectif: "41",
-      naf: "87.90B",
-      type: OrganizationType.Brand,
-      brands: {
-        createMany: {
-          data: [
-            { name: "Emmaus Solidarité", id: "26ed7820-ebca-4235-b1d3-dbeab02b1768" },
-            { name: "Emmaus Connect", id: "175570b3-59e4-40b4-89be-08a185685f78" },
-            { name: "Emmaus", default: true, id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56" },
-          ],
+  await Promise.all([
+    prismaClient.organization.create({
+      data: {
+        id: "4e2d3027-de21-4a54-9e57-9128755bfa09",
+        siret: "31723624800017",
+        name: "EMMAUS",
+        displayName: "Emmaus",
+        effectif: "41",
+        naf: "87.90B",
+        type: OrganizationType.Brand,
+        brands: {
+          createMany: {
+            data: [
+              { name: "Emmaus Solidarité", id: "26ed7820-ebca-4235-b1d3-dbeab02b1768" },
+              { name: "Emmaus Connect", id: "175570b3-59e4-40b4-89be-08a185685f78" },
+              { name: "Emmaus", default: true, id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56" },
+            ],
+          },
         },
       },
-    },
-  })
-  const user = await prisma.user.create({
-    data: {
-      email: "ecopass-admin-dev@yopmail.com",
-      role: UserRole.ADMIN,
-      nom: "Ecopass",
-      prenom: "Admin",
-      organization: {
-        connect: { siret: "31723624800017" },
+    }),
+    prismaClient.organization.create({
+      data: {
+        uniqueId: "5310fbe6-5975-458b-a5d2-53fd5ddb5ce0",
+        name: "DGCCRF",
+        displayName: "DGCCRF",
+        type: OrganizationType.Other,
+        brands: {
+          createMany: {
+            data: [{ name: "DGCCRF", default: true, id: "9b4cf6b0-9eb0-4b57-9b6c-03a1e37c7064" }],
+          },
+        },
       },
-    },
-  })
+    }),
+    prismaClient.organization.create({
+      data: {
+        id: "676fc42f-97a8-427d-a133-536b6592bd67",
+        uniqueId: "d20f3e00-cd02-4364-8063-0b141828464b",
+        name: "NO GTIN",
+        displayName: "NO GTIN",
+        type: OrganizationType.Brand,
+        noGTIN: true,
+        brands: {
+          createMany: {
+            data: [{ name: "NO GTIN", default: true, id: "56c27d6a-a879-406a-9ab3-17c439772e57" }],
+          },
+        },
+      },
+    }),
+    prismaClient.organization.create({
+      data: {
+        id: "74b49447-2a89-4056-a112-24ba4597ffc8",
+        name: "Textile Premium",
+        displayName: "Textile Premium",
+        type: OrganizationType.Consultancy,
+        uniqueId: "350b9fc6-0d05-496b-b429-cc66064e98e8",
+        brands: {
+          createMany: {
+            data: [{ name: "Premium Wear", id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d", default: true }],
+          },
+        },
+      },
+    }),
+  ])
 
-  await prisma.aPIKey.create({
+  await Promise.all([
+    prismaClient.user.create({
+      data: {
+        email: "ecopass-password@yopmail.com",
+        nom: "Ecopass",
+        prenom: "Password",
+        organization: {
+          connect: { siret: "31723624800017" },
+        },
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "ecopass-password@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "ecopass-dgccrf@yopmail.com",
+        nom: "Ecopass",
+        prenom: "DGCCRF",
+        organization: {
+          connect: { uniqueId: "5310fbe6-5975-458b-a5d2-53fd5ddb5ce0" },
+        },
+        role: UserRole.DGCCRF,
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "ecopass-dgccrf@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "ecopass-admin-dev@yopmail.com",
+        role: UserRole.ADMIN,
+        nom: "Ecopass",
+        prenom: "Admin",
+        organization: {
+          connect: { siret: "31723624800017" },
+        },
+        apiKeys: {
+          create: {
+            key: "ce4a461a-ae00-49a9-8fbc-d342dc635da6",
+            name: "API Key for development",
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        id: "0eb6fb02-edcd-4efe-9b8e-49a6fc61307a",
+        email: "textile@yopmail.com",
+        nom: "Textile",
+        prenom: "Admin",
+        organization: {
+          connect: { id: "74b49447-2a89-4056-a112-24ba4597ffc8" },
+        },
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "textile@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "nogtin@yopmail.com",
+        nom: "No",
+        prenom: "GTIN",
+        organization: {
+          connect: { id: "676fc42f-97a8-427d-a133-536b6592bd67" },
+        },
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "nogtin@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+        apiKeys: {
+          create: {
+            key: "7e729ca5-2c60-4755-8ca2-6d3c818ca8e8",
+            name: "API Key for development",
+          },
+        },
+      },
+    }),
+  ])
+}
+
+const defaultProduct = async () => {
+  const { product, materials, accessories } = encryptProductFields({
+    product: ProductCategory.MaillotDeBain,
+    airTransportRatio: 0,
+    business: Business.Small,
+    fading: true,
+    mass: 0.15,
+    numberOfReferences: 1,
+    price: 45,
+    countryDyeing: Country.France,
+    countryFabric: Country.Chine,
+    countryMaking: Country.Cambodge,
+    countrySpinning: Country.Myanmar,
+    printing: {
+      kind: Impression.FixéLavé,
+      ratio: 0.2,
+    },
+    upcycled: false,
+    materials: [
+      {
+        id: "polyester",
+        country: Country.France,
+        share: 0.85,
+      },
+      {
+        id: "elasthane",
+        country: Country.Maroc,
+        share: 0.15,
+      },
+    ],
+  })
+  await prismaClient.product.create({
     data: {
-      key: "ce4a461a-ae00-49a9-8fbc-d342dc635da6",
-      userId: user.id,
-      name: "API Key for development",
+      hash: "default-product-hash",
+      gtins: ["0000000000000"],
+      internalReference: "MAILLOT-001",
+      brandName: "Premium Wear",
+      brand: {
+        connect: { id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d" },
+      },
+      status: Status.Done,
+      upload: {
+        create: {
+          type: UploadType.API,
+          organization: { connect: { id: "74b49447-2a89-4056-a112-24ba4597ffc8" } },
+          createdBy: { connect: { id: "0eb6fb02-edcd-4efe-9b8e-49a6fc61307a" } },
+          version: "7.0.0",
+          status: Status.Done,
+        },
+      },
+      informations: {
+        create: {
+          ...product,
+          materials: { create: materials },
+          accessories: { create: accessories },
+          score: {
+            create: {
+              score: 200,
+              standardized: 20,
+              acd: 3.47,
+              cch: 1834.6,
+              etf: 24567.1,
+              fru: 5892.3,
+              fwe: 0.187,
+              htc: 0.00000189,
+              htn: 0.0000967,
+              ior: 203.4,
+              ldu: 67432.9,
+              mru: 0.00567,
+              ozd: 0.00389,
+              pco: 2.156,
+              pma: 0.0000678,
+              swe: 0.634,
+              tre: 7.823,
+              wtu: 982.4,
+              durability: 0.45,
+              microfibers: 18.2,
+              outOfEuropeEOL: 2.1,
+              trims: 0.00034,
+              materials: 150,
+              transport: 30,
+              spinning: 10,
+              fabric: 5,
+              dyeing: 3,
+              making: 1,
+              usage: 0.5,
+              endOfLife: 0.2,
+            },
+          },
+        },
+      },
+      score: 200,
+      standardized: 20,
     },
   })
 }
 
 const seeds = async () => {
-  await products()
+  await clean()
   await users()
+  await defaultProduct()
 }
 
 seeds()
   .then(async () => {
-    await prisma.$disconnect()
+    await prismaClient.$disconnect()
   })
   .catch(async (e) => {
     console.error(e)
-    await prisma.$disconnect()
+    await prismaClient.$disconnect()
     process.exit(1)
   })

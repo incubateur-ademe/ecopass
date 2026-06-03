@@ -1,14 +1,15 @@
 "use client"
 import { useCallback, useState } from "react"
 import { ProductWithScore } from "../../db/product"
-import { formatDate } from "../../services/format"
+import { formatDate, formatNumber } from "../../services/format"
 import Table from "../Table/Table"
 import { getProductHistory } from "../../serverFunctions/product"
 import LoadingButton from "../Button/LoadingButton"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
-import Button from "@codegouvfr/react-dsfr/Button"
+import Badge from "@codegouvfr/react-dsfr/Badge"
+import ProductLink from "./ProductLink"
 
-const ProductHistory = ({ gtin }: { gtin: string }) => {
+const ProductHistory = ({ brandId, gtin }: { brandId?: string; gtin: string }) => {
   const [history, setHistory] = useState<ProductWithScore[] | null>(null)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -38,19 +39,20 @@ const ProductHistory = ({ gtin }: { gtin: string }) => {
   }
 
   return (
-    <div data-testid='history-table'>
+    <div data-testid='history-table' className='fr-mt-8w'>
+      <h2>Historique des versions</h2>
       <Table
-        caption='Historique des versions'
+        noCaption
         fixed
         headers={["Déposé le", "Par", "Version Ecobalyse", "Score", ""]}
         data={history.map((version) => [
           formatDate(version.createdAt),
           version.upload.createdBy.organization?.displayName,
           version.upload.version,
-          version.score === null ? "" : Math.round(version.score),
-          <Button linkProps={{ href: `/produits/${version.gtins[0]}/${version.id}` }} key={version.id}>
-            Voir le détail
-          </Button>,
+          <Badge severity='info' noIcon key={version.id}>
+            {version.score ? formatNumber(version.score) : "-"}
+          </Badge>,
+          <ProductLink product={version} brandId={brandId} key={version.id} />,
         ])}
       />
       {total > 10 && (

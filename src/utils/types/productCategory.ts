@@ -1,7 +1,5 @@
 import { ProductCategory } from "../../types/Product"
 
-export const BATCH_CATEGORY = "Lot de produits"
-
 export const productCategories: Record<string, ProductCategory> = {
   // Chemise
   chemise: ProductCategory.Chemise,
@@ -49,6 +47,7 @@ export const productCategories: Record<string, ProductCategory> = {
 
   // Boxer / Slip (tricoté)
   boxersliptricote: ProductCategory.BoxerSlipTricoté,
+  boxerslip: ProductCategory.BoxerSlipTricoté,
   slip: ProductCategory.BoxerSlipTricoté,
   knittedboxer: ProductCategory.BoxerSlipTricoté,
 

@@ -6,14 +6,15 @@ import { productCategories } from "../../types/productCategory"
 import { businesses } from "../../types/business"
 import { materials as allMaterials } from "../../types/material"
 import { accessories as allAccessories } from "../../types/accessory"
-import { Accessory, Material, Product, ProductInformation, Status } from "../../../../prisma/src/prisma"
+import { Accessory, Material, Product, ProductInformation } from "@prisma/client"
+import { Status } from "@prisma/enums"
 import { impressions } from "../../types/impression"
 import { Readable } from "stream"
 import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
 import { checkHeaders, ColumnType, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
-import { hashParsedProduct } from "../../encryption/hash"
+import { hashProduct } from "../../encryption/hash"
 
 type CSVRow = {
   info: { records: number }
@@ -194,14 +195,14 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         id: productId,
         score: null,
         standardized: null,
-        hash: hashParsedProduct(
+        hash: hashProduct(
           {
             gtins: gtins,
             internalReference: internalReference,
             brandId: brand,
             declaredScore: declaredScore,
           },
-          rawProduct,
+          [rawProduct],
           authorizedBrands,
         ),
         createdAt: now,

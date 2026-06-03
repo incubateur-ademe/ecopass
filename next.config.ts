@@ -5,8 +5,15 @@ const csp = {
   ...helmet.contentSecurityPolicy.getDefaultDirectives(),
   "default-src": ["'none'"],
   "img-src": ["'self'", "data:"],
-  "connect-src": ["'self'", process.env.NEXT_PUBLIC_MATOMO_SITE_URL],
-  "script-src": ["'self'", "'unsafe-inline'", `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.js`],
+  "connect-src": ["'self'", process.env.NEXT_PUBLIC_MATOMO_SITE_URL, "https://quefairedemesdechets.ademe.fr"],
+  "script-src": [
+    "'self'",
+    "'unsafe-inline'",
+    `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.js`,
+    "https://quefairedemesdechets.ademe.fr/infotri/configurateur.js",
+    "https://ecobalyse-ecopass-metabase.osc-fr1.scalingo.io/app/embed.js",
+  ],
+  "frame-src": ["https://quefairedemesdechets.ademe.fr", "https://ecobalyse-ecopass-metabase.osc-fr1.scalingo.io/"],
 }
 
 if (process.env.NODE_ENV === "development") {

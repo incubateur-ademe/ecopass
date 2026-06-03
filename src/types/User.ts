@@ -1,5 +1,5 @@
 import "next-auth"
-import { UserRole } from "../../prisma/src/prisma"
+import { UserRole } from "@prisma/enums"
 
 declare module "next-auth" {
   interface User {

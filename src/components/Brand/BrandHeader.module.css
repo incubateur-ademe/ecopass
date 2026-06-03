@@ -1,0 +1,65 @@
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 2.1rem;
+  line-height: 1.25;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--text-mention-grey);
+  font-size: 1rem;
+}
+
+.categoriesPreview {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border-default-grey);
+  border-bottom: 1px solid var(--border-default-grey);
+  color: var(--text-title-grey);
+}
+
+.categoryPreviewItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 5rem;
+}
+
+.categoryPreviewIcon {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.categoryPreviewLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.categoryPreviewCount {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+@media screen and (max-width: 50rem) {
+  .title {
+    font-size: 1.7rem;
+  }
+}

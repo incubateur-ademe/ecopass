@@ -15,6 +15,7 @@ export function proxy(request: NextRequest) {
         `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.php?idsite=${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}&rec=1&${param}`,
         {
           method: "POST",
+          signal: AbortSignal.timeout(30000),
         },
       )
       return resolve()

@@ -1,9 +1,7 @@
 import z from "zod"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
-import { Status } from "../../../prisma/src/prisma"
 import { PrintingRatio } from "./printing"
-import { isValidGtin } from "../../utils/validation/gtin"
-import { Return } from "@prisma/client/runtime/library"
+import { Status } from "@prisma/enums"
 
 const epsilon = 1e-10
 
@@ -23,7 +21,7 @@ const accessoryValidation = z.object({
   productId: z.string(),
   slug: z.enum(AccessoryType, { message: "Type d'accessoire invalide" }),
   quantity: z
-    .number({ message: "La quantité de l'accessoire doit être un nombre" })
+    .int({ message: "La quantité de l'accessoire doit être un nombre entier" })
     .min(0, "La quantité de l'accessoire doit être supérieure à 0"),
 })
 
@@ -35,17 +33,6 @@ const productValidation = z.object({
   createdAt: z.date(),
   error: z.string().nullable(),
   emptyTrims: z.boolean().optional(),
-  gtins: z
-    .array(
-      z
-        .string()
-        .regex(/^\d{8}$|^\d{13}$/, "Le code GTIN doit contenir 8 ou 13 chiffres")
-        .refine(isValidGtin, "Le code GTIN n'est pas valide (somme de contrôle incorrecte)"),
-      {
-        message: "Il doit y avoir au moins un GTIN",
-      },
-    )
-    .min(1, "Il doit y avoir au moins un GTIN"),
   internalReference: z.string({ message: "La référence interne est obligatoire" }),
   declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
   category: z.enum(ProductCategory, { message: "Catégorie de produit invalide" }),
@@ -103,4 +90,4 @@ export const getUserProductValidation = (brands: [string, ...string[]]) =>
       return true
     }, "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé")
 
-export type ParsedProductValidation = z.infer<Return<typeof getUserProductValidation>>
+export type ParsedProductValidation = z.infer<ReturnType<typeof getUserProductValidation>>

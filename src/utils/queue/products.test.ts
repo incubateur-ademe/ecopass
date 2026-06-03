@@ -1,18 +1,30 @@
 import { processProductsQueue } from "./products"
 import { failProducts, getProductsToProcess } from "../../db/product"
+import { getBrandsByIds } from "../../db/brands"
 import { checkUploadsStatus } from "../../db/upload"
 import { saveEcobalyseResults } from "../ecobalyse/api"
-import { Status, UploadType } from "../../../prisma/src/prisma"
+import { prismaClient } from "../../db/prismaClient"
+import { Status, UploadType } from "@prisma/enums"
 import { Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 
 jest.mock("../../db/product")
 jest.mock("../../db/upload")
+jest.mock("../../db/brands")
 jest.mock("../ecobalyse/api")
+jest.mock("../../db/prismaClient", () => ({
+  prismaClient: {
+    product: {
+      update: jest.fn(),
+    },
+  },
+}))
 
 const mockedFailProducts = failProducts as jest.MockedFunction<typeof failProducts>
 const mockedGetProductsToProcess = getProductsToProcess as jest.MockedFunction<typeof getProductsToProcess>
 const mockedCheckUploadsStatus = checkUploadsStatus as jest.MockedFunction<typeof checkUploadsStatus>
+const mockedGetBrandsByIds = getBrandsByIds as jest.MockedFunction<typeof getBrandsByIds>
 const mockedSaveEcobalyseResults = saveEcobalyseResults as jest.MockedFunction<typeof saveEcobalyseResults>
+const mockedPrismaUpdate = prismaClient.product.update as jest.MockedFunction<typeof prismaClient.product.update>
 
 describe("processProductsQueue", () => {
   beforeEach(() => {
@@ -64,6 +76,7 @@ describe("processProductsQueue", () => {
       {
         id: "info-1",
         productId: "product-1",
+        mainComponent: null,
         business: Business.Small,
         countrySpinning: Country.Chine,
         countryDyeing: Country.Chine,
@@ -73,6 +86,7 @@ describe("processProductsQueue", () => {
         numberOfReferences: 100000,
         price: 10,
         category: ProductCategory.TShirtPolo,
+        categorySlug: ProductCategory.TShirtPolo,
         upcycled: false,
         impression: Impression.Pigmentaire,
         impressionPercentage: 0.2,
@@ -95,6 +109,12 @@ describe("processProductsQueue", () => {
 
   it("should process products successfully when validation passes", async () => {
     mockedGetProductsToProcess.mockResolvedValue([mockProduct])
+    mockedGetBrandsByIds.mockResolvedValue([
+      {
+        id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: false },
+      },
+    ])
 
     await processProductsQueue()
 
@@ -141,6 +161,133 @@ describe("processProductsQueue", () => {
       },
     ])
     expect(mockedFailProducts).toHaveBeenCalledWith([])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
+    expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
+  })
+
+  it("should process products without gtin successfully when validation passes and no gtin organization", async () => {
+    mockedGetProductsToProcess.mockResolvedValue([{ ...mockProduct, gtins: [] }])
+    mockedGetBrandsByIds.mockResolvedValue([
+      {
+        id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: true },
+      },
+    ])
+
+    await processProductsQueue()
+
+    expect(mockedGetProductsToProcess).toHaveBeenCalledWith(
+      process.env.BATCH_SIZE ? parseInt(process.env.BATCH_SIZE) : 10,
+    )
+    expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([
+      {
+        accessories: [],
+        airTransportRatio: 0.1,
+        brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        business: "TPE/PME",
+        category: "T-shirt / Polo",
+        countryDyeing: "Chine",
+        countryFabric: "Chine",
+        countryMaking: "Chine",
+        countrySpinning: "Chine",
+        createdAt: expect.any(Date),
+        declaredScore: 123,
+        error: null,
+        fading: false,
+        gtins: ["My-ref-123456789"],
+        id: "info-1",
+        productId: "product-1",
+        impression: "Pigmentaire",
+        impressionPercentage: 0.2,
+        internalReference: "My-ref",
+        mass: 0.15,
+        materials: [
+          {
+            country: "Chine",
+            id: "mat-1",
+            productId: "info-1",
+            share: 1,
+            slug: "Coton",
+          },
+        ],
+        emptyTrims: false,
+        numberOfReferences: 100000,
+        price: 10,
+        status: "Pending",
+        upcycled: false,
+        uploadId: "test-upload-id",
+      },
+    ])
+    expect(mockedFailProducts).toHaveBeenCalledWith([])
+    expect(mockedPrismaUpdate).toHaveBeenCalledWith({
+      where: { id: "product-1" },
+      data: {
+        gtins: ["My-ref-123456789"],
+      },
+    })
+    expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
+  })
+
+  it("should process products with empty gtin successfully when validation passes and no gtin organization", async () => {
+    mockedGetProductsToProcess.mockResolvedValue([{ ...mockProduct, gtins: [""] }])
+    mockedGetBrandsByIds.mockResolvedValue([
+      {
+        id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        organization: { id: "organization-id", siret: null, uniqueId: "unique-id", noGTIN: true },
+      },
+    ])
+
+    await processProductsQueue()
+
+    expect(mockedGetProductsToProcess).toHaveBeenCalledWith(
+      process.env.BATCH_SIZE ? parseInt(process.env.BATCH_SIZE) : 10,
+    )
+    expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([
+      {
+        accessories: [],
+        airTransportRatio: 0.1,
+        brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        business: "TPE/PME",
+        category: "T-shirt / Polo",
+        countryDyeing: "Chine",
+        countryFabric: "Chine",
+        countryMaking: "Chine",
+        countrySpinning: "Chine",
+        createdAt: expect.any(Date),
+        declaredScore: 123,
+        error: null,
+        fading: false,
+        gtins: ["My-ref-unique-i"],
+        id: "info-1",
+        productId: "product-1",
+        impression: "Pigmentaire",
+        impressionPercentage: 0.2,
+        internalReference: "My-ref",
+        mass: 0.15,
+        materials: [
+          {
+            country: "Chine",
+            id: "mat-1",
+            productId: "info-1",
+            share: 1,
+            slug: "Coton",
+          },
+        ],
+        emptyTrims: false,
+        numberOfReferences: 100000,
+        price: 10,
+        status: "Pending",
+        upcycled: false,
+        uploadId: "test-upload-id",
+      },
+    ])
+    expect(mockedFailProducts).toHaveBeenCalledWith([])
+    expect(mockedPrismaUpdate).toHaveBeenCalledWith({
+      where: { id: "product-1" },
+      data: {
+        gtins: ["My-ref-unique-i"],
+      },
+    })
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -158,14 +305,84 @@ describe("processProductsQueue", () => {
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
         productId: "product-1",
-        error: "Organization not found for product upload.",
+        error: "Organisation non trouvée",
       },
     ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
+    expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
+  })
+
+  it("should handle products without brand", async () => {
+    mockedGetProductsToProcess.mockResolvedValue([mockProduct])
+    mockedGetBrandsByIds.mockResolvedValue([])
+
+    await processProductsQueue()
+
+    expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([])
+    expect(mockedFailProducts).toHaveBeenCalledWith([
+      {
+        productId: "product-1",
+        error: 'Marque invalide. Voici la liste de vos marques : "2c3be047-4388-459a-80e1-0ce2bbd0e9d4"',
+      },
+    ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
+    expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
+  })
+
+  it("should handle products with gtin and no gtin organization", async () => {
+    mockedGetProductsToProcess.mockResolvedValue([mockProduct])
+    mockedGetBrandsByIds.mockResolvedValue([
+      {
+        id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: true },
+      },
+    ])
+
+    await processProductsQueue()
+
+    expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([])
+    expect(mockedFailProducts).toHaveBeenCalledWith([
+      {
+        productId: "product-1",
+        error: "Votre organisation n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
+      },
+    ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
   it("should handle validation failures", async () => {
+    mockedGetProductsToProcess.mockResolvedValue([
+      { ...mockProduct, informations: [{ ...mockProduct.informations[0], mass: undefined }] },
+    ])
+    mockedGetBrandsByIds.mockResolvedValue([
+      {
+        id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: false },
+      },
+    ])
+
+    await processProductsQueue()
+
+    expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([])
+    expect(mockedFailProducts).toHaveBeenCalledWith([
+      {
+        productId: "product-1",
+        error: "Le poids est obligatoire",
+      },
+    ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
+    expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
+  })
+
+  it("should handle gtins validation failures", async () => {
     mockedGetProductsToProcess.mockResolvedValue([{ ...mockProduct, gtins: ["invalid-gtin"] }])
+    mockedGetBrandsByIds.mockResolvedValue([
+      {
+        id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: false },
+      },
+    ])
 
     await processProductsQueue()
 
@@ -177,6 +394,32 @@ describe("processProductsQueue", () => {
           "Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
     ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
+    expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
+  })
+
+  it("should handle both validation failures", async () => {
+    mockedGetProductsToProcess.mockResolvedValue([
+      { ...mockProduct, gtins: ["invalid-gtin"], informations: [{ ...mockProduct.informations[0], mass: undefined }] },
+    ])
+    mockedGetBrandsByIds.mockResolvedValue([
+      {
+        id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: false },
+      },
+    ])
+
+    await processProductsQueue()
+
+    expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([])
+    expect(mockedFailProducts).toHaveBeenCalledWith([
+      {
+        productId: "product-1",
+        error:
+          "Le poids est obligatoire, Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
+      },
+    ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
@@ -234,6 +477,7 @@ describe("processProductsQueue", () => {
           "Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
     ])
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id", "test-upload-id-2"])
   })
 
@@ -243,5 +487,6 @@ describe("processProductsQueue", () => {
     mockedFailProducts.mockResolvedValue(undefined)
 
     await expect(processProductsQueue()).rejects.toThrow("Ecobalyse API error")
+    expect(mockedPrismaUpdate).not.toHaveBeenCalled()
   })
 })

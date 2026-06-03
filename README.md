@@ -1,112 +1,172 @@
 # Ecopass
 
-Projet **Ecopass** — Plateforme Next.js (en version beta) pour la déclaration et la gestion du coût environnemental des produits textiles.
+Ecopass est une plateforme Next.js pour la declaration et la gestion du coût environnemental des produits textiles.
 
-## Prérequis
+Le projet fonctionne avec 2 processus applicatifs distincts :
 
-- Node.js (>= 22)
-- Docker (pour PostgreSQL et Maildev)
-- Yarn
+- le serveur web Next.js
+- la queue
 
-## Installation
+## Vue d'ensemble
 
-1. **Cloner le dépôt**
+Flux principal :
 
-   ```sh
-   git clone git@github.com:incubateur-ademe/ecopass.git
-   cd ecopass
-   ```
+1. Un utilisateur charge un fichier (CSV ou XLSX) sur la plateforme.
+2. Le worker lit la queue des uploads, parse le fichier, puis cree les produits.
+3. Le worker traite les produits en attente : validation des produits, puis calculs Ecobalyse et mise a jour des statuts.
+4. Le worker traite aussi les exports et genere des zips des étiquettes.
 
-2. **Configurer les variables d'environnement**
+Composants techniques :
 
-   Copiez le fichier `.env.dist` en `.env` et adaptez les valeurs `secret` si besoin :
+- Front/API : Next.js (App Router)
+- Base de donnees : PostgreSQL
+- ORM : Prisma
+- Worker : script TypeScript boucle infinie (queue.ts)
+- Email local : Maildev
+- Stockage fichiers : local en dev (LOCAL_STORAGE=true), S3 en preprod/prod
 
-   ```sh
-   cp .env.dist .env
-   ```
+## Prerequis
 
-   Pour correctement faire fonctionner le projet en local vous aurez besoin de specifier les secrets ProConnect (`PROCONNECT_CLIENT_ID`, `PROCONNECT_CLIENT_SECRET` et `PROCONNECT_DOMAIN`, à recuperer depuis l'env preprod scalingo ou demander à un dev), la clé d'encryption Ecobalyse (`ECOBALYSE_ENCRYPTION_KEY`) et une clé INSEE (`INSEE_API_KEY`, disponible sur https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3.11&provider=insee). Vous pourrez enfin generer `ENCRYPTION_KEY`et `STORAGE_ENCRYPTION_KEY`avec la commande `openssl rand -hex 32`
+- Node.js 22+
+- pnpm 10+
+- Docker + Docker Compose
 
-3. **Lancer les services Docker**
+## Installation locale
 
-   ```sh
-   docker compose up -d
-   ```
+1. Cloner le depot
 
-   Cela démarre :
+```sh
+git clone git@github.com:incubateur-ademe/ecopass.git
+cd ecopass
+```
 
-   - PostgreSQL (bases de données, une pour le dev, port 5432 et une pour les tests unitaires, port 5433)
-   - Maildev (serveur mail pour tests)
+2. Creer le fichier d'environnement
 
-4. **Installer les dépendances**
+```sh
+cp .env.dist .env
+```
 
-   ```sh
-   yarn install
-   ```
+Variables importantes a renseigner :
 
-5. **Initialiser Prisma**
+- PROCONNECT_CLIENT_ID
+- PROCONNECT_CLIENT_SECRET
+- NEXT_PUBLIC_PROCONNECT_DOMAIN
+- INSEE_API_KEY
+- ECOBALYSE_ENCRYPTION_KEY (necessaire pour decrypter les donnees Ecobalyse)
+- ENCRYPTION_KEY et STORAGE_ENCRYPTION_KEY (exemple de generation : openssl rand -hex 32)
 
-   Le projet utilise Prisma comme ORM. Les scripts suivants initialisent le schema de la base et ajoute des fixtures.
+3. Demarrer les services techniques
 
-   ```sh
-   npx prisma generate
-   npx prisma migrate deploy
-   npx prisma db seed
-   ```
+```sh
+docker compose up -d
+```
 
-6. **Lancer le site**
+Services lances :
 
-   Pour lancer le site web vous pouvez utilisez :
-   ```sh
-   yarn dev
-   ```
+- PostgreSQL dev sur le port 5432
+- PostgreSQL test sur le port 5433
+- Maildev sur les ports 1080 (UI) et 1025 (SMTP)
 
-7. **Générer les données ecobalyse**
+4. Installer les dependances
 
-   Pour calculer le coût environnemental des produits, on utilise une version en local d'Ecobalyse avec le `server-app.js` ce dernier à besoin des `processes_impacts.json` pour fonctionner. Ils sont décryptés à partir de `processes_impacts.json.enc` et de la variable d'environnement `ECOBALYSE_ENCRYPTION_KEY` :
+```sh
+pnpm install
+```
 
-   ```sh
-   yarn ecobalyse:data
-   ```
+5. Initialiser la base
 
-8. **Lancer la queue**
+```sh
+pnpm prisma:generate
+pnpm prisma migrate deploy
+pnpm prisma db seed
+```
 
+6. Generer les donnees Ecobalyse locales
 
-   Pour processer les téléchargements de zip et les produits déposés sur la plateforme vous devez lancer la queue :
-   ```sh
-   yarn queue:watch
-   ```
+```sh
+pnpm ecobalyse:data
+```
 
-9. **Tests unitaires**
+## Lancement du projet
 
-   Les tests unitaires sont lancés avec Jest. La plupart des tests utilises des fonctions de mocks pour limiter leur scope. Les fonctions de db sont testés directement avec une vraie base.
+Terminal 1 - Next.js :
 
-   ```sh
-   npx jest
-   ```
+```sh
+pnpm dev
+```
 
-10. **Tests e2e**
+Terminal 2 - Queue worker (optionnel si pas d'upload de fichier) :
 
-   Les tests e2e sont lancés avec playwright, attention de bien lancé au préalable le serveur web et la queue.
+```sh
+pnpm queue:watch
+```
 
-   ```sh
-   npx playwright test
-   ```
+## Tests
 
-11. **S3**
+Le projet contient 2 types de tests :
 
-   En production et preprod, les fichiers CSV envoyés sont encryptés puis stocké sur un S3 scaleway (variables d'environnement `S3_ACCESS_KEY` et `S3_SECRET_KEY`). En local il est recommandé de stocker les fichiers en local (variable d'environnement `LOCAL_STORAGE=true`, par defaut dans le `.env.dist`)
-   
-## Accès
+- tests unitaires/integration avec Jest
+- tests e2e avec Playwright
 
-- Application : [http://localhost:3000](http://localhost:3000)
-- Maildev : [http://localhost:1080](http://localhost:1080)
+### Tests unitaires (Jest)
 
-## Statut
+Les tests unitaires couvrent les fonctions metier, les services, les parsers et une partie des acces à la base.
 
-_Beta_ — Merci de remonter tout bug ou suggestion via les issues du dépôt.
+Commande :
 
----
+```sh
+npx jest --runInBand
+```
 
-**Note :**  
-Ce projet utilise Next.js (App Router), Prisma, PostgreSQL, Maildev et des variables d'environnement pour la configuration.
+Prerequis recommandes :
+
+- docker compose up -d (pour avoir la base de test disponible)
+- base de test sur le port 5433
+
+Si besoin de reinitialiser la base de test :
+
+```sh
+pnpm reset:test
+```
+
+### Tests e2e (Playwright)
+
+Les scenarios e2e sont dans le dossier e2e et verifient les parcours utilisateurs complets (auth, API, administration, etc.).
+Ces tests utilisent le proconnect de test pour se connecter. Il est possible qu'ils demandent de confirmer l'adresse mail via un code et ce cas n'est pas géré par les tests. Si cela arrive il faut se connecter avec l'adresse mail en question et rentrer le code (recu sur yopmail) à la main.
+
+Commande :
+
+```sh
+npx playwright test --ui
+```
+
+Prerequis avant de lancer les e2e :
+
+1. Demarrer le serveur web : `pnpm dev`
+2. Demarrer la queue : `pnpm queue:watch`
+3. Verifier que PostgreSQL et Maildev tournent : `docker compose up -d`
+
+## S3
+
+Sur les differents environnements deployes (si la variable d'environnement LOCAL_STORAGE n'est pas égale à true), les fichiers uploadés ainsi que les zips contenant les étiquettes sont stockés sur le S3 Scaleway.
+https://console.scaleway.com/object-storage/buckets
+
+En local (LOCAL_STORAGE=true), les fichiers sont stockés dans le dossier `s3`.
+
+## Deploiement
+
+Il y a 3 environnements, tous sur Scalingo avec une base PostgreSQL :
+
+- l'environnement de preprod, deployee automatiquement avec la branche develop (une fois que la CI est passée). Il est utilisé principalement pour des demos.
+  https://dashboard.scalingo.com/apps/osc-fr1/ecobalyse-ecopass-preprod
+  https://ecobalyse-ecopass-preprod.osc-fr1.scalingo.io/
+
+- l'environnement de test, deploye automatiquement avec la branche main (une fois que la CI est passée). Il est utilisé principalement pour des demos. Il est utilisé par les clients pour leurs tests d'integration ou pour simuler des declarations.
+  https://dashboard.scalingo.com/apps/osc-fr1/ecobalyse-ecopass-test
+  https://ecobalyse-ecopass-test.osc-fr1.scalingo.io/
+
+- l'environnement de prod, deploye automatiquement avec la branche main (une fois que la CI est passée).
+  https://dashboard.scalingo.com/apps/osc-secnum-fr1/ecobalyse-ecopass-secnum
+  https://affichage-environnemental.ecobalyse.beta.gouv.fr/
+
+Note : pour les deux premiers environnements, il n'y a pas de serveur mail (pour eviter les spams) et le ProConnect utilise est celui de test (comme en local). Il est conseillé d'utiliser des adresses yopmail pour tester.

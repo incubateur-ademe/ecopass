@@ -3147,67 +3147,17 @@ var $author$project$Data$Scope$anyOf = function (scopes) {
 					return A2($elm$core$List$member, scope, scopes);
 				})));
 };
-var $author$project$Data$Impact$Definition$get = F2(
-	function (trigram, definitions) {
-		switch (trigram) {
-			case 0:
-				return definitions.a6;
-			case 1:
-				return definitions.a9;
-			case 2:
-				return definitions.bg;
-			case 3:
-				return definitions.bh;
-			case 4:
-				return definitions.bm;
-			case 5:
-				return definitions.bn;
-			case 6:
-				return definitions.bp;
-			case 7:
-				return definitions.bq;
-			case 8:
-				return definitions.br;
-			case 9:
-				return definitions.bs;
-			case 10:
-				return definitions.bt;
-			case 11:
-				return definitions.bu;
-			case 12:
-				return definitions.by;
-			case 13:
-				return definitions.bA;
-			case 14:
-				return definitions.bD;
-			case 15:
-				return definitions.bF;
-			case 16:
-				return definitions.bK;
-			case 17:
-				return definitions.bR;
-			case 18:
-				return definitions.bW;
-			case 19:
-				return definitions.be;
-			default:
-				return definitions.bE;
-		}
-	});
-var $elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						$elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
+var $NoRedInk$elm_uuid$Prng$Uuid$toString = function (_v0) {
+	var internalString = _v0;
+	return internalString;
+};
+var $author$project$Data$Uuid$toString = $NoRedInk$elm_uuid$Prng$Uuid$toString;
+var $author$project$Data$Component$idToString = function (_v0) {
+	var uuid = _v0;
+	return $author$project$Data$Uuid$toString(uuid);
+};
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Data$Component$encodeId = A2($elm$core$Basics$composeR, $author$project$Data$Component$idToString, $elm$json$Json$Encode$string);
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
 		A3(
@@ -3221,1569 +3171,6 @@ var $elm$json$Json$Encode$object = function (pairs) {
 			_Json_emptyObject(0),
 			pairs));
 };
-var $author$project$Data$Impact$Definition$toString = function (trigram) {
-	switch (trigram) {
-		case 0:
-			return 'acd';
-		case 1:
-			return 'cch';
-		case 2:
-			return 'etf';
-		case 3:
-			return 'etf-c';
-		case 4:
-			return 'fru';
-		case 5:
-			return 'fwe';
-		case 6:
-			return 'htc';
-		case 7:
-			return 'htc-c';
-		case 8:
-			return 'htn';
-		case 9:
-			return 'htn-c';
-		case 10:
-			return 'ior';
-		case 11:
-			return 'ldu';
-		case 12:
-			return 'mru';
-		case 13:
-			return 'ozd';
-		case 14:
-			return 'pco';
-		case 15:
-			return 'pma';
-		case 16:
-			return 'swe';
-		case 17:
-			return 'tre';
-		case 18:
-			return 'wtu';
-		case 19:
-			return 'ecs';
-		default:
-			return 'pef';
-	}
-};
-var $author$project$Data$Impact$Definition$Acd = 0;
-var $author$project$Data$Impact$Definition$Cch = 1;
-var $author$project$Data$Impact$Definition$Ecs = 19;
-var $author$project$Data$Impact$Definition$Etf = 2;
-var $author$project$Data$Impact$Definition$EtfC = 3;
-var $author$project$Data$Impact$Definition$Fru = 4;
-var $author$project$Data$Impact$Definition$Fwe = 5;
-var $author$project$Data$Impact$Definition$Htc = 6;
-var $author$project$Data$Impact$Definition$HtcC = 7;
-var $author$project$Data$Impact$Definition$Htn = 8;
-var $author$project$Data$Impact$Definition$HtnC = 9;
-var $author$project$Data$Impact$Definition$Ior = 10;
-var $author$project$Data$Impact$Definition$Ldu = 11;
-var $author$project$Data$Impact$Definition$Mru = 12;
-var $author$project$Data$Impact$Definition$Ozd = 13;
-var $author$project$Data$Impact$Definition$Pco = 14;
-var $author$project$Data$Impact$Definition$Pef = 20;
-var $author$project$Data$Impact$Definition$Pma = 15;
-var $author$project$Data$Impact$Definition$Swe = 16;
-var $author$project$Data$Impact$Definition$Tre = 17;
-var $author$project$Data$Impact$Definition$Wtu = 18;
-var $author$project$Data$Impact$Definition$trigrams = _List_fromArray(
-	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
-var $author$project$Data$Impact$Definition$encodeBase = F2(
-	function (encoder, base) {
-		return $elm$json$Json$Encode$object(
-			A2(
-				$elm$core$List$map,
-				function (trigram) {
-					return _Utils_Tuple2(
-						$author$project$Data$Impact$Definition$toString(trigram),
-						encoder(
-							A2($author$project$Data$Impact$Definition$get, trigram, base)));
-				},
-				$author$project$Data$Impact$Definition$trigrams));
-	});
-var $elm$json$Json$Encode$float = _Json_wrap;
-var $author$project$Data$Unit$impactToFloat = function (_v0) {
-	var value = _v0;
-	return value;
-};
-var $author$project$Data$Unit$encodeImpact = A2($elm$core$Basics$composeR, $author$project$Data$Unit$impactToFloat, $elm$json$Json$Encode$float);
-var $author$project$Data$Impact$encode = function (_v0) {
-	var impacts = _v0;
-	return A2($author$project$Data$Impact$Definition$encodeBase, $author$project$Data$Unit$encodeImpact, impacts);
-};
-var $elm$json$Json$Encode$bool = _Json_wrap;
-var $author$project$Data$Country$aquaticPollutionScenarioToString = function (scenario) {
-	switch (scenario) {
-		case 0:
-			return 'Average';
-		case 1:
-			return 'Best';
-		default:
-			return 'Worst';
-	}
-};
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $author$project$Data$Scope$toString = function (scope) {
-	switch (scope) {
-		case 0:
-			return 'food';
-		case 1:
-			return 'object';
-		case 2:
-			return 'textile';
-		default:
-			return 'veli';
-	}
-};
-var $author$project$Data$Scope$encode = A2($elm$core$Basics$composeR, $author$project$Data$Scope$toString, $elm$json$Json$Encode$string);
-var $author$project$Data$Country$codeToString = function (_v0) {
-	var string = _v0;
-	return string;
-};
-var $author$project$Data$Country$encodeCode = A2($elm$core$Basics$composeR, $author$project$Data$Country$codeToString, $elm$json$Json$Encode$string);
-var $NoRedInk$elm_uuid$Prng$Uuid$toString = function (_v0) {
-	var internalString = _v0;
-	return internalString;
-};
-var $author$project$Data$Uuid$toString = $NoRedInk$elm_uuid$Prng$Uuid$toString;
-var $author$project$Data$Process$idToString = function (_v0) {
-	var uuid = _v0;
-	return $author$project$Data$Uuid$toString(uuid);
-};
-var $elm$json$Json$Encode$list = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$List$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(0),
-				entries));
-	});
-var $author$project$Data$Country$encode = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'aquaticPollutionScenario',
-				$elm$json$Json$Encode$string(
-					$author$project$Data$Country$aquaticPollutionScenarioToString(v.ft))),
-				_Utils_Tuple2(
-				'code',
-				$author$project$Data$Country$encodeCode(v.cK)),
-				_Utils_Tuple2(
-				'electricityProcessUuid',
-				$elm$json$Json$Encode$string(
-					$author$project$Data$Process$idToString(v.fX.H))),
-				_Utils_Tuple2(
-				'heatProcessUuid',
-				$elm$json$Json$Encode$string(
-					$author$project$Data$Process$idToString(v.f6.H))),
-				_Utils_Tuple2(
-				'name',
-				$elm$json$Json$Encode$string(v.L)),
-				_Utils_Tuple2(
-				'scopes',
-				A2($elm$json$Json$Encode$list, $author$project$Data$Scope$encode, v.M))
-			]));
-};
-var $author$project$Data$Textile$Dyeing$toString = function (processType) {
-	switch (processType) {
-		case 0:
-			return 'average';
-		case 1:
-			return 'continuous';
-		default:
-			return 'discontinuous';
-	}
-};
-var $author$project$Data$Textile$Dyeing$encode = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Dyeing$toString, $elm$json$Json$Encode$string);
-var $author$project$Data$Textile$Fabric$toString = function (fabricProcess) {
-	switch (fabricProcess) {
-		case 0:
-			return 'knitting-circular';
-		case 1:
-			return 'knitting-fully-fashioned';
-		case 2:
-			return 'knitting-integral';
-		case 3:
-			return 'knitting-mix';
-		case 4:
-			return 'knitting-straight';
-		default:
-			return 'weaving';
-	}
-};
-var $author$project$Data$Textile$Fabric$encode = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Fabric$toString, $elm$json$Json$Encode$string);
-var $author$project$Data$Split$toFloat = function (_v0) {
-	var _float = _v0;
-	return _float / 100;
-};
-var $author$project$Data$Split$encodeFloat = A2($elm$core$Basics$composeR, $author$project$Data$Split$toFloat, $elm$json$Json$Encode$float);
-var $author$project$Data$Textile$Printing$toString = function (printing) {
-	if (!printing) {
-		return 'pigment';
-	} else {
-		return 'substantive';
-	}
-};
-var $author$project$Data$Textile$Printing$encodeKind = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Printing$toString, $elm$json$Json$Encode$string);
-var $author$project$Data$Textile$Printing$encode = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'kind',
-				$author$project$Data$Textile$Printing$encodeKind(v.eF)),
-				_Utils_Tuple2(
-				'ratio',
-				$author$project$Data$Split$encodeFloat(v.jR))
-			]));
-};
-var $ianmackenzie$elm_units$Volume$inCubicMeters = function (_v0) {
-	var numCubicMeters = _v0;
-	return numCubicMeters;
-};
-var $author$project$Data$Textile$Product$encodeEndOfLifeOptions = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'volume',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Volume$inCubicMeters(v.kB)))
-			]));
-};
-var $author$project$Data$Textile$Product$idToString = function (_v0) {
-	var string = _v0;
-	return string;
-};
-var $author$project$Data$Textile$Product$encodeId = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Product$idToString, $elm$json$Json$Encode$string);
-var $elm$core$Maybe$andThen = F2(
-	function (callback, maybeValue) {
-		if (!maybeValue.$) {
-			var value = maybeValue.a;
-			return callback(value);
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $author$project$Data$Component$amountToFloat = function (_v0) {
-	var _float = _v0;
-	return _float;
-};
-var $NoRedInk$elm_uuid$Prng$Uuid$encode = A2($elm$core$Basics$composeR, $NoRedInk$elm_uuid$Prng$Uuid$toString, $elm$json$Json$Encode$string);
-var $author$project$Data$Uuid$encoder = $NoRedInk$elm_uuid$Prng$Uuid$encode;
-var $author$project$Data$Process$encodeId = function (_v0) {
-	var uuid = _v0;
-	return $author$project$Data$Uuid$encoder(uuid);
-};
-var $author$project$Data$Component$encodeElement = function (element) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'amount',
-				$elm$json$Json$Encode$float(
-					$author$project$Data$Component$amountToFloat(element.aQ))),
-				_Utils_Tuple2(
-				'material',
-				$author$project$Data$Process$encodeId(element.aa)),
-				_Utils_Tuple2(
-				'transforms',
-				A2($elm$json$Json$Encode$list, $author$project$Data$Process$encodeId, element.au))
-			]));
-};
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
-var $elm$core$List$maybeCons = F3(
-	function (f, mx, xs) {
-		var _v0 = f(mx);
-		if (!_v0.$) {
-			var x = _v0.a;
-			return A2($elm$core$List$cons, x, xs);
-		} else {
-			return xs;
-		}
-	});
-var $elm$core$List$filterMap = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			$elm$core$List$maybeCons(f),
-			_List_Nil,
-			xs);
-	});
-var $author$project$Data$Common$EncodeUtils$optionalPropertiesObject = A2(
-	$elm$core$Basics$composeL,
-	$elm$json$Json$Encode$object,
-	$elm$core$List$filterMap(
-		function (_v0) {
-			var key = _v0.a;
-			var maybeVal = _v0.b;
-			return A2(
-				$elm$core$Maybe$map,
-				function (val) {
-					return _Utils_Tuple2(key, val);
-				},
-				maybeVal);
-		}));
-var $elm$core$String$trim = _String_trim;
-var $author$project$Data$Component$encodeCustom = function (custom) {
-	return $author$project$Data$Common$EncodeUtils$optionalPropertiesObject(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'name',
-				A2(
-					$elm$core$Maybe$map,
-					$elm$json$Json$Encode$string,
-					A2(
-						$elm$core$Maybe$andThen,
-						function (name) {
-							return (name === '') ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(name);
-						},
-						A2($elm$core$Maybe$map, $elm$core$String$trim, custom.L)))),
-				_Utils_Tuple2(
-				'elements',
-				$elm$core$Maybe$Just(
-					A2($elm$json$Json$Encode$list, $author$project$Data$Component$encodeElement, custom.o)))
-			]));
-};
-var $author$project$Data$Component$idToString = function (_v0) {
-	var uuid = _v0;
-	return $author$project$Data$Uuid$toString(uuid);
-};
-var $elm$json$Json$Encode$int = _Json_wrap;
-var $author$project$Data$Component$quantityToInt = function (_v0) {
-	var _int = _v0;
-	return _int;
-};
-var $author$project$Data$Component$encodeItem = function (item) {
-	return $author$project$Data$Common$EncodeUtils$optionalPropertiesObject(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'id',
-				$elm$core$Maybe$Just(
-					$elm$json$Json$Encode$string(
-						$author$project$Data$Component$idToString(item.H)))),
-				_Utils_Tuple2(
-				'quantity',
-				$elm$core$Maybe$Just(
-					$elm$json$Json$Encode$int(
-						$author$project$Data$Component$quantityToInt(item.bG)))),
-				_Utils_Tuple2(
-				'custom',
-				A2($elm$core$Maybe$map, $author$project$Data$Component$encodeCustom, item.P))
-			]));
-};
-var $author$project$Data$Textile$MakingComplexity$toString = function (makingComplexity) {
-	switch (makingComplexity) {
-		case 0:
-			return 'high';
-		case 1:
-			return 'low';
-		case 2:
-			return 'medium';
-		case 3:
-			return 'non-applicable';
-		case 4:
-			return 'very-high';
-		default:
-			return 'very-low';
-	}
-};
-var $author$project$Data$Textile$Product$encodeMakingOptions = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'pcrWaste',
-				$author$project$Data$Split$encodeFloat(v.gG)),
-				_Utils_Tuple2(
-				'complexity',
-				$elm$json$Json$Encode$string(
-					$author$project$Data$Textile$MakingComplexity$toString(v.ef)))
-			]));
-};
-var $ianmackenzie$elm_units$Constants$second = 1;
-var $ianmackenzie$elm_units$Constants$minute = 60 * $ianmackenzie$elm_units$Constants$second;
-var $ianmackenzie$elm_units$Constants$hour = 60 * $ianmackenzie$elm_units$Constants$minute;
-var $ianmackenzie$elm_units$Constants$day = 24 * $ianmackenzie$elm_units$Constants$hour;
-var $ianmackenzie$elm_units$Duration$inSeconds = function (_v0) {
-	var numSeconds = _v0;
-	return numSeconds;
-};
-var $ianmackenzie$elm_units$Duration$inDays = function (duration) {
-	return $ianmackenzie$elm_units$Duration$inSeconds(duration) / $ianmackenzie$elm_units$Constants$day;
-};
-var $ianmackenzie$elm_units$Duration$inHours = function (duration) {
-	return $ianmackenzie$elm_units$Duration$inSeconds(duration) / $ianmackenzie$elm_units$Constants$hour;
-};
-var $author$project$Data$Textile$Product$encodeUseOptions = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'nonIroningProcessUuid',
-				$author$project$Data$Process$encodeId(v.jt.H)),
-				_Utils_Tuple2(
-				'wearsPerCycle',
-				$elm$json$Json$Encode$int(v.fn)),
-				_Utils_Tuple2(
-				'defaultNbCycles',
-				$elm$json$Json$Encode$int(v.fQ)),
-				_Utils_Tuple2(
-				'ratioDryer',
-				$author$project$Data$Split$encodeFloat(v.gS)),
-				_Utils_Tuple2(
-				'ratioIroning',
-				$author$project$Data$Split$encodeFloat(v.gT)),
-				_Utils_Tuple2(
-				'timeIroning',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Duration$inHours(v.hl))),
-				_Utils_Tuple2(
-				'daysOfWear',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Duration$inDays(v.ek)))
-			]));
-};
-var $author$project$Data$Textile$Product$encode = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'id',
-				$author$project$Data$Textile$Product$encodeId(v.H)),
-				_Utils_Tuple2(
-				'name',
-				$elm$json$Json$Encode$string(v.L)),
-				_Utils_Tuple2(
-				'fabric',
-				$author$project$Data$Textile$Fabric$encode(v.f_)),
-				_Utils_Tuple2(
-				'making',
-				$author$project$Data$Textile$Product$encodeMakingOptions(v.eI)),
-				_Utils_Tuple2(
-				'trims',
-				A2($elm$json$Json$Encode$list, $author$project$Data$Component$encodeItem, v.kv)),
-				_Utils_Tuple2(
-				'use',
-				$author$project$Data$Textile$Product$encodeUseOptions(v.hu)),
-				_Utils_Tuple2(
-				'endOfLife',
-				$author$project$Data$Textile$Product$encodeEndOfLifeOptions(v.ix))
-			]));
-};
-var $author$project$Data$Textile$Step$Label$toCodeString = function (label) {
-	switch (label) {
-		case 0:
-			return 'distribution';
-		case 1:
-			return 'eol';
-		case 2:
-			return 'ennobling';
-		case 3:
-			return 'fabric';
-		case 4:
-			return 'making';
-		case 5:
-			return 'material';
-		case 6:
-			return 'spinning';
-		default:
-			return 'use';
-	}
-};
-var $author$project$Data$Textile$Step$Label$encode = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Step$Label$toCodeString, $elm$json$Json$Encode$string);
-var $author$project$Data$Textile$Economics$businessToString = function (business) {
-	switch (business) {
-		case 0:
-			return 'large-business-with-services';
-		case 1:
-			return 'large-business-without-services';
-		default:
-			return 'small-business';
-	}
-};
-var $author$project$Data$Textile$Economics$encodeBusiness = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Economics$businessToString, $elm$json$Json$Encode$string);
-var $author$project$Data$Textile$Material$idToString = function (_v0) {
-	var string = _v0;
-	return string;
-};
-var $author$project$Data$Textile$Material$encodeId = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Material$idToString, $elm$json$Json$Encode$string);
-var $elm$json$Json$Encode$null = _Json_encodeNull;
-var $author$project$Data$Textile$Material$Origin$toString = function (origin) {
-	switch (origin) {
-		case 0:
-			return 'ArtificialFromOrganic';
-		case 1:
-			return 'NaturalFromAnimal';
-		case 2:
-			return 'NaturalFromVegetal';
-		default:
-			return 'Synthetic';
-	}
-};
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
-var $author$project$Data$Textile$Material$encode = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'id',
-				$author$project$Data$Textile$Material$encodeId(v.H)),
-				_Utils_Tuple2(
-				'name',
-				$elm$json$Json$Encode$string(v.L)),
-				_Utils_Tuple2(
-				'shortName',
-				$elm$json$Json$Encode$string(v.ka)),
-				_Utils_Tuple2(
-				'origin',
-				$elm$json$Json$Encode$string(
-					$author$project$Data$Textile$Material$Origin$toString(v.gD))),
-				_Utils_Tuple2(
-				'materialProcessUuid',
-				$author$project$Data$Process$encodeId(v.gq.H)),
-				_Utils_Tuple2(
-				'recycledProcessUuid',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2(
-						$elm$core$Maybe$map,
-						A2(
-							$elm$core$Basics$composeR,
-							function ($) {
-								return $.H;
-							},
-							$author$project$Data$Process$encodeId),
-						v.jV))),
-				_Utils_Tuple2(
-				'recycledFrom',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Textile$Material$encodeId, v.eW))),
-				_Utils_Tuple2(
-				'geographicOrigin',
-				$elm$json$Json$Encode$string(v.iI)),
-				_Utils_Tuple2(
-				'defaultCountry',
-				$elm$json$Json$Encode$string(
-					$author$project$Data$Country$codeToString(v.fO)))
-			]));
-};
-var $author$project$Data$Textile$Material$Spinning$toString = function (spinning) {
-	switch (spinning) {
-		case 0:
-			return 'ConventionalSpinning';
-		case 1:
-			return 'SyntheticSpinning';
-		default:
-			return 'UnconventionalSpinning';
-	}
-};
-var $author$project$Data$Textile$Material$Spinning$encode = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Material$Spinning$toString, $elm$json$Json$Encode$string);
-var $author$project$Data$Textile$Inputs$encodeMaterialInput = function (v) {
-	return $author$project$Data$Common$EncodeUtils$optionalPropertiesObject(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'country',
-				A2(
-					$elm$core$Maybe$map,
-					A2(
-						$elm$core$Basics$composeR,
-						function ($) {
-							return $.cK;
-						},
-						$author$project$Data$Country$encodeCode),
-					v.fL)),
-				_Utils_Tuple2(
-				'material',
-				$elm$core$Maybe$Just(
-					$author$project$Data$Textile$Material$encode(v.aa))),
-				_Utils_Tuple2(
-				'share',
-				$elm$core$Maybe$Just(
-					$author$project$Data$Split$encodeFloat(v.ac))),
-				_Utils_Tuple2(
-				'spinning',
-				A2($elm$core$Maybe$map, $author$project$Data$Textile$Material$Spinning$encode, v.cu))
-			]));
-};
-var $author$project$Data$Unit$encodePhysicalDurability = function (_v0) {
-	var _float = _v0;
-	return $elm$json$Json$Encode$float(_float);
-};
-var $author$project$Data$Textile$Economics$priceToFloat = function (_v0) {
-	var _float = _v0;
-	return _float;
-};
-var $author$project$Data$Textile$Economics$encodePrice = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Economics$priceToFloat, $elm$json$Json$Encode$float);
-var $ianmackenzie$elm_units$Quantity$Quantity = $elm$core$Basics$identity;
-var $ianmackenzie$elm_units$Quantity$at = F2(
-	function (_v0, _v1) {
-		var rateOfChange = _v0;
-		var independentValue = _v1;
-		return rateOfChange * independentValue;
-	});
-var $ianmackenzie$elm_units$Mass$inKilograms = function (_v0) {
-	var numKilograms = _v0;
-	return numKilograms;
-};
-var $ianmackenzie$elm_units$Mass$inGrams = function (mass) {
-	return 1000 * $ianmackenzie$elm_units$Mass$inKilograms(mass);
-};
-var $elm$core$Basics$round = _Basics_round;
-var $ianmackenzie$elm_units$Area$squareMeters = function (numSquareMeters) {
-	return numSquareMeters;
-};
-var $ianmackenzie$elm_units$Area$squareMeter = $ianmackenzie$elm_units$Area$squareMeters(1);
-var $author$project$Data$Unit$surfaceMassInGramsPerSquareMeters = function (surfaceMass) {
-	return $elm$core$Basics$round(
-		$ianmackenzie$elm_units$Mass$inGrams(
-			A2($ianmackenzie$elm_units$Quantity$at, surfaceMass, $ianmackenzie$elm_units$Area$squareMeter)));
-};
-var $author$project$Data$Unit$encodeSurfaceMass = function (surfaceMass) {
-	return $elm$json$Json$Encode$int(
-		$author$project$Data$Unit$surfaceMassInGramsPerSquareMeters(surfaceMass));
-};
-var $ianmackenzie$elm_units$Length$inMeters = function (_v0) {
-	var numMeters = _v0;
-	return numMeters;
-};
-var $ianmackenzie$elm_units$Length$inKilometers = function (length) {
-	return 0.001 * $ianmackenzie$elm_units$Length$inMeters(length);
-};
-var $ianmackenzie$elm_units$Mass$kilograms = function (numKilograms) {
-	return numKilograms;
-};
-var $ianmackenzie$elm_units$Mass$kilogram = $ianmackenzie$elm_units$Mass$kilograms(1);
-var $author$project$Data$Unit$yarnSizeInKilometers = function (yarnSize) {
-	return $ianmackenzie$elm_units$Length$inKilometers(
-		A2($ianmackenzie$elm_units$Quantity$at, yarnSize, $ianmackenzie$elm_units$Mass$kilogram));
-};
-var $author$project$Data$Unit$encodeYarnSize = A2($elm$core$Basics$composeR, $author$project$Data$Unit$yarnSizeInKilometers, $elm$json$Json$Encode$float);
-var $author$project$Data$Textile$Inputs$encode = function (inputs) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'airTransportRatio',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, inputs.bY))),
-				_Utils_Tuple2(
-				'business',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Textile$Economics$encodeBusiness, inputs.fC))),
-				_Utils_Tuple2(
-				'countryDyeing',
-				$author$project$Data$Country$encode(inputs.aW)),
-				_Utils_Tuple2(
-				'countryFabric',
-				$author$project$Data$Country$encode(inputs.bb)),
-				_Utils_Tuple2(
-				'countryMaking',
-				$author$project$Data$Country$encode(inputs.bc)),
-				_Utils_Tuple2(
-				'disabledSteps',
-				A2($elm$json$Json$Encode$list, $author$project$Data$Textile$Step$Label$encode, inputs.b6)),
-				_Utils_Tuple2(
-				'dyeingProcessType',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Textile$Dyeing$encode, inputs.b7))),
-				_Utils_Tuple2(
-				'fabricProcess',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Textile$Fabric$encode, inputs.bj))),
-				_Utils_Tuple2(
-				'fading',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $elm$json$Json$Encode$bool, inputs.cb))),
-				_Utils_Tuple2(
-				'makingComplexity',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2(
-						$elm$core$Maybe$map,
-						A2($elm$core$Basics$composeR, $author$project$Data$Textile$MakingComplexity$toString, $elm$json$Json$Encode$string),
-						inputs.i9))),
-				_Utils_Tuple2(
-				'makingDeadStock',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, inputs.cl))),
-				_Utils_Tuple2(
-				'makingWaste',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, inputs.cm))),
-				_Utils_Tuple2(
-				'mass',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Mass$inKilograms(inputs.T))),
-				_Utils_Tuple2(
-				'materials',
-				A2($elm$json$Json$Encode$list, $author$project$Data$Textile$Inputs$encodeMaterialInput, inputs.jc)),
-				_Utils_Tuple2(
-				'numberOfReferences',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $elm$json$Json$Encode$int, inputs.gB))),
-				_Utils_Tuple2(
-				'physicalDurability',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodePhysicalDurability, inputs.co))),
-				_Utils_Tuple2(
-				'price',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Textile$Economics$encodePrice, inputs.gM))),
-				_Utils_Tuple2(
-				'printing',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Textile$Printing$encode, inputs.cp))),
-				_Utils_Tuple2(
-				'product',
-				$author$project$Data$Textile$Product$encode(inputs.aC)),
-				_Utils_Tuple2(
-				'surfaceMass',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeSurfaceMass, inputs.e5))),
-				_Utils_Tuple2(
-				'trims',
-				A2($elm$json$Json$Encode$list, $author$project$Data$Component$encodeItem, inputs.kv)),
-				_Utils_Tuple2(
-				'upcycled',
-				$elm$json$Json$Encode$bool(inputs.cz)),
-				_Utils_Tuple2(
-				'yarnSize',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeYarnSize, inputs.kF)))
-			]));
-};
-var $elm$core$Elm$JsArray$foldl = _JsArray_foldl;
-var $elm$core$Array$foldl = F3(
-	function (func, baseCase, _v0) {
-		var tree = _v0.c;
-		var tail = _v0.d;
-		var helper = F2(
-			function (node, acc) {
-				if (!node.$) {
-					var subTree = node.a;
-					return A3($elm$core$Elm$JsArray$foldl, helper, acc, subTree);
-				} else {
-					var values = node.a;
-					return A3($elm$core$Elm$JsArray$foldl, func, acc, values);
-				}
-			});
-		return A3(
-			$elm$core$Elm$JsArray$foldl,
-			func,
-			A3($elm$core$Elm$JsArray$foldl, helper, baseCase, tree),
-			tail);
-	});
-var $elm$json$Json$Encode$array = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$Array$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(0),
-				entries));
-	});
-var $ianmackenzie$elm_units$Quantity$difference = F2(
-	function (_v0, _v1) {
-		var x = _v0;
-		var y = _v1;
-		return x - y;
-	});
-var $author$project$Data$Impact$getImpact = F2(
-	function (trigram, _v0) {
-		var impacts = _v0;
-		return A2($author$project$Data$Impact$Definition$get, trigram, impacts);
-	});
-var $author$project$Data$Impact$Impacts = $elm$core$Basics$identity;
-var $author$project$Data$Impact$Definition$update = F3(
-	function (trigram, updateFunc, definitions) {
-		switch (trigram) {
-			case 0:
-				return _Utils_update(
-					definitions,
-					{
-						a6: updateFunc(definitions.a6)
-					});
-			case 1:
-				return _Utils_update(
-					definitions,
-					{
-						a9: updateFunc(definitions.a9)
-					});
-			case 2:
-				return _Utils_update(
-					definitions,
-					{
-						bg: updateFunc(definitions.bg)
-					});
-			case 3:
-				return _Utils_update(
-					definitions,
-					{
-						bh: updateFunc(definitions.bh)
-					});
-			case 4:
-				return _Utils_update(
-					definitions,
-					{
-						bm: updateFunc(definitions.bm)
-					});
-			case 5:
-				return _Utils_update(
-					definitions,
-					{
-						bn: updateFunc(definitions.bn)
-					});
-			case 6:
-				return _Utils_update(
-					definitions,
-					{
-						bp: updateFunc(definitions.bp)
-					});
-			case 7:
-				return _Utils_update(
-					definitions,
-					{
-						bq: updateFunc(definitions.bq)
-					});
-			case 8:
-				return _Utils_update(
-					definitions,
-					{
-						br: updateFunc(definitions.br)
-					});
-			case 9:
-				return _Utils_update(
-					definitions,
-					{
-						bs: updateFunc(definitions.bs)
-					});
-			case 10:
-				return _Utils_update(
-					definitions,
-					{
-						bt: updateFunc(definitions.bt)
-					});
-			case 11:
-				return _Utils_update(
-					definitions,
-					{
-						bu: updateFunc(definitions.bu)
-					});
-			case 12:
-				return _Utils_update(
-					definitions,
-					{
-						by: updateFunc(definitions.by)
-					});
-			case 13:
-				return _Utils_update(
-					definitions,
-					{
-						bA: updateFunc(definitions.bA)
-					});
-			case 14:
-				return _Utils_update(
-					definitions,
-					{
-						bD: updateFunc(definitions.bD)
-					});
-			case 15:
-				return _Utils_update(
-					definitions,
-					{
-						bF: updateFunc(definitions.bF)
-					});
-			case 16:
-				return _Utils_update(
-					definitions,
-					{
-						bK: updateFunc(definitions.bK)
-					});
-			case 17:
-				return _Utils_update(
-					definitions,
-					{
-						bR: updateFunc(definitions.bR)
-					});
-			case 18:
-				return _Utils_update(
-					definitions,
-					{
-						bW: updateFunc(definitions.bW)
-					});
-			case 19:
-				return _Utils_update(
-					definitions,
-					{
-						be: updateFunc(definitions.be)
-					});
-			default:
-				return _Utils_update(
-					definitions,
-					{
-						bE: updateFunc(definitions.bE)
-					});
-		}
-	});
-var $author$project$Data$Impact$insertWithoutAggregateComputation = F3(
-	function (trigram, impact, _v0) {
-		var impacts = _v0;
-		return A3(
-			$author$project$Data$Impact$Definition$update,
-			trigram,
-			$elm$core$Basics$always(impact),
-			impacts);
-	});
-var $author$project$Data$Impact$applyComplements = F2(
-	function (complement, impacts) {
-		var ecoScore = A2($author$project$Data$Impact$getImpact, 19, impacts);
-		return A3(
-			$author$project$Data$Impact$insertWithoutAggregateComputation,
-			19,
-			A2($ianmackenzie$elm_units$Quantity$difference, ecoScore, complement),
-			impacts);
-	});
-var $author$project$Data$Transport$encodeKm = A2($elm$core$Basics$composeR, $ianmackenzie$elm_units$Length$inKilometers, $elm$json$Json$Encode$float);
-var $author$project$Data$Transport$encode = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'air',
-				$author$project$Data$Transport$encodeKm(v.hK)),
-				_Utils_Tuple2(
-				'impacts',
-				$author$project$Data$Impact$encode(v.z)),
-				_Utils_Tuple2(
-				'road',
-				$author$project$Data$Transport$encodeKm(v.dP)),
-				_Utils_Tuple2(
-				'roadCooled',
-				$author$project$Data$Transport$encodeKm(v.j2)),
-				_Utils_Tuple2(
-				'sea',
-				$author$project$Data$Transport$encodeKm(v.g4)),
-				_Utils_Tuple2(
-				'seaCooled',
-				$author$project$Data$Transport$encodeKm(v.j7))
-			]));
-};
-var $author$project$Data$Unit$impact = function (value) {
-	return value;
-};
-var $author$project$Data$Impact$mapComplementsImpacts = F2(
-	function (fn, ci) {
-		return {
-			dj: fn(ci.dj),
-			du: fn(ci.du),
-			dz: fn(ci.dz),
-			jf: fn(ci.jf),
-			jD: fn(ci.jD),
-			dG: fn(ci.dG),
-			dH: fn(ci.dH)
-		};
-	});
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var $author$project$Data$Impact$negateComplementsImpacts = $author$project$Data$Impact$mapComplementsImpacts(
-	A2(
-		$elm$core$Basics$composeR,
-		$author$project$Data$Unit$impactToFloat,
-		A2($elm$core$Basics$composeR, $elm$core$Basics$negate, $author$project$Data$Unit$impact)));
-var $author$project$Data$Impact$encodeComplementsImpacts = function (complementsImpact) {
-	var negated = $author$project$Data$Impact$negateComplementsImpacts(complementsImpact);
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'cropDiversity',
-				$author$project$Data$Unit$encodeImpact(negated.dj)),
-				_Utils_Tuple2(
-				'hedges',
-				$author$project$Data$Unit$encodeImpact(negated.du)),
-				_Utils_Tuple2(
-				'livestockDensity',
-				$author$project$Data$Unit$encodeImpact(negated.dz)),
-				_Utils_Tuple2(
-				'microfibers',
-				$author$project$Data$Unit$encodeImpact(negated.jf)),
-				_Utils_Tuple2(
-				'outOfEuropeEOL',
-				$author$project$Data$Unit$encodeImpact(negated.jD)),
-				_Utils_Tuple2(
-				'permanentPasture',
-				$author$project$Data$Unit$encodeImpact(negated.dG)),
-				_Utils_Tuple2(
-				'plotSize',
-				$author$project$Data$Unit$encodeImpact(negated.dH))
-			]));
-};
-var $author$project$Data$Unit$encodeNonPhysicalDurability = function (_v0) {
-	var _float = _v0;
-	return $elm$json$Json$Encode$float(_float);
-};
-var $author$project$Data$Unit$encodePickPerMeter = function (_v0) {
-	var _int = _v0;
-	return $elm$json$Json$Encode$int(_int);
-};
-var $author$project$Data$Process$sourceIdToString = function (_v0) {
-	var string = _v0;
-	return string;
-};
-var $author$project$Data$Process$getTechnicalName = function (_v0) {
-	var sourceId = _v0.e0;
-	return $author$project$Data$Process$sourceIdToString(sourceId);
-};
-var $author$project$Data$Process$getDisplayName = function (process) {
-	var _v0 = process.em;
-	if (!_v0.$) {
-		var displayName = _v0.a;
-		return displayName;
-	} else {
-		return $author$project$Data$Process$getTechnicalName(process);
-	}
-};
-var $ianmackenzie$elm_units$Energy$inJoules = function (_v0) {
-	var numJoules = _v0;
-	return numJoules;
-};
-var $ianmackenzie$elm_units$Energy$inKilowattHours = function (energy) {
-	return $ianmackenzie$elm_units$Energy$inJoules(energy) / 3.6e6;
-};
-var $ianmackenzie$elm_units$Energy$inMegajoules = function (energy) {
-	return $ianmackenzie$elm_units$Energy$inJoules(energy) / 1.0e6;
-};
-var $author$project$Data$Impact$Definition$init = function (a) {
-	return {a6: a, a9: a, be: a, bg: a, bh: a, bm: a, bn: a, bp: a, bq: a, br: a, bs: a, bt: a, bu: a, by: a, bA: a, bD: a, bE: a, bF: a, bK: a, bR: a, bW: a};
-};
-var $ianmackenzie$elm_units$Quantity$zero = 0;
-var $author$project$Data$Impact$empty = $author$project$Data$Impact$Definition$init($ianmackenzie$elm_units$Quantity$zero);
-var $author$project$Data$Impact$Definition$map = F2(
-	function (func, definitions) {
-		return {
-			a6: A2(func, 0, definitions.a6),
-			a9: A2(func, 1, definitions.a9),
-			be: A2(func, 19, definitions.be),
-			bg: A2(func, 2, definitions.bg),
-			bh: A2(func, 3, definitions.bh),
-			bm: A2(func, 4, definitions.bm),
-			bn: A2(func, 5, definitions.bn),
-			bp: A2(func, 6, definitions.bp),
-			bq: A2(func, 7, definitions.bq),
-			br: A2(func, 8, definitions.br),
-			bs: A2(func, 9, definitions.bs),
-			bt: A2(func, 10, definitions.bt),
-			bu: A2(func, 11, definitions.bu),
-			by: A2(func, 12, definitions.by),
-			bA: A2(func, 13, definitions.bA),
-			bD: A2(func, 14, definitions.bD),
-			bE: A2(func, 20, definitions.bE),
-			bF: A2(func, 15, definitions.bF),
-			bK: A2(func, 16, definitions.bK),
-			bR: A2(func, 17, definitions.bR),
-			bW: A2(func, 18, definitions.bW)
-		};
-	});
-var $author$project$Data$Impact$mapImpacts = F2(
-	function (fn, _v0) {
-		var impacts = _v0;
-		return A2($author$project$Data$Impact$Definition$map, fn, impacts);
-	});
-var $ianmackenzie$elm_units$Quantity$plus = F2(
-	function (_v0, _v1) {
-		var y = _v0;
-		var x = _v1;
-		return x + y;
-	});
-var $ianmackenzie$elm_units$Quantity$sum = function (quantities) {
-	return A3($elm$core$List$foldl, $ianmackenzie$elm_units$Quantity$plus, $ianmackenzie$elm_units$Quantity$zero, quantities);
-};
-var $author$project$Data$Impact$sumImpacts = A2(
-	$elm$core$List$foldl,
-	function (impacts) {
-		return $author$project$Data$Impact$mapImpacts(
-			F2(
-				function (trigram, impact) {
-					return $ianmackenzie$elm_units$Quantity$sum(
-						_List_fromArray(
-							[
-								A2($author$project$Data$Impact$getImpact, trigram, impacts),
-								impact
-							]));
-				}));
-	},
-	$author$project$Data$Impact$empty);
-var $author$project$Data$Textile$Step$encodePreTreatments = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'elecKWh',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Energy$inKilowattHours(v.ax))),
-				_Utils_Tuple2(
-				'heatMJ',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Energy$inMegajoules(v.ez))),
-				_Utils_Tuple2(
-				'energy',
-				$author$project$Data$Impact$encode(v.b9)),
-				_Utils_Tuple2(
-				'impacts',
-				$author$project$Data$Impact$encode(
-					$author$project$Data$Impact$sumImpacts(
-						_List_fromArray(
-							[v.b9, v.kp])))),
-				_Utils_Tuple2(
-				'toxicity',
-				$author$project$Data$Impact$encode(v.kp)),
-				_Utils_Tuple2(
-				'operations',
-				A2(
-					$elm$json$Json$Encode$list,
-					$elm$json$Json$Encode$string,
-					A2($elm$core$List$map, $author$project$Data$Process$getDisplayName, v.bz)))
-			]));
-};
-var $author$project$Data$Textile$Step$encodeProcessInfo = function (v) {
-	var encodeMaybeString = A2(
-		$elm$core$Basics$composeR,
-		$elm$core$Maybe$map($elm$json$Json$Encode$string),
-		$elm$core$Maybe$withDefault($elm$json$Json$Encode$null));
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'airTransport',
-				encodeMaybeString(v.bX)),
-				_Utils_Tuple2(
-				'airTransportRatio',
-				encodeMaybeString(v.bY)),
-				_Utils_Tuple2(
-				'countryElec',
-				encodeMaybeString(v.aF)),
-				_Utils_Tuple2(
-				'countryHeat',
-				encodeMaybeString(v.cM)),
-				_Utils_Tuple2(
-				'distribution',
-				encodeMaybeString(v.cO)),
-				_Utils_Tuple2(
-				'endOfLife',
-				encodeMaybeString(v.ix)),
-				_Utils_Tuple2(
-				'fabric',
-				encodeMaybeString(v.f_)),
-				_Utils_Tuple2(
-				'fading',
-				encodeMaybeString(v.cb)),
-				_Utils_Tuple2(
-				'making',
-				encodeMaybeString(v.eI)),
-				_Utils_Tuple2(
-				'passengerCar',
-				encodeMaybeString(v.jF)),
-				_Utils_Tuple2(
-				'roadTransport',
-				encodeMaybeString(v.bI)),
-				_Utils_Tuple2(
-				'seaTransport',
-				encodeMaybeString(v.cr)),
-				_Utils_Tuple2(
-				'useIroning',
-				encodeMaybeString(v.d2)),
-				_Utils_Tuple2(
-				'useNonIroning',
-				encodeMaybeString(v.d3))
-			]));
-};
-var $author$project$Data$Unit$encodeThreadDensity = function (_v0) {
-	var _float = _v0;
-	return $elm$json$Json$Encode$float(_float);
-};
-var $author$project$Data$Impact$getTotalComplementsImpacts = function (complementsImpacts) {
-	return $ianmackenzie$elm_units$Quantity$sum(
-		_List_fromArray(
-			[complementsImpacts.dj, complementsImpacts.du, complementsImpacts.dz, complementsImpacts.jf, complementsImpacts.jD, complementsImpacts.dG, complementsImpacts.dH]));
-};
-var $author$project$Data$Textile$Step$Label$toString = function (label) {
-	switch (label) {
-		case 0:
-			return 'Distribution';
-		case 1:
-			return 'Fin de vie';
-		case 2:
-			return 'Ennoblissement';
-		case 3:
-			return 'Tissage & Tricotage';
-		case 4:
-			return 'Confection';
-		case 5:
-			return 'Matières premières';
-		case 6:
-			return 'Filature';
-		default:
-			return 'Utilisation';
-	}
-};
-var $author$project$Data$Textile$Step$encode = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'airTransportRatio',
-				$author$project$Data$Split$encodeFloat(v.bY)),
-				_Utils_Tuple2(
-				'complementsImpacts',
-				$author$project$Data$Impact$encodeComplementsImpacts(v.h1)),
-				_Utils_Tuple2(
-				'country',
-				$author$project$Data$Country$encode(v.fL)),
-				_Utils_Tuple2(
-				'deadstock',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Mass$inKilograms(v.h8))),
-				_Utils_Tuple2(
-				'durability',
-				$author$project$Data$Unit$encodeNonPhysicalDurability(v.aj)),
-				_Utils_Tuple2(
-				'editable',
-				$elm$json$Json$Encode$bool(v.iu)),
-				_Utils_Tuple2(
-				'elecKWh',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Energy$inKilowattHours(v.ax))),
-				_Utils_Tuple2(
-				'enabled',
-				$elm$json$Json$Encode$bool(v.cP)),
-				_Utils_Tuple2(
-				'heatMJ',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Energy$inMegajoules(v.ez))),
-				_Utils_Tuple2(
-				'impacts',
-				$author$project$Data$Impact$encode(
-					A2(
-						$author$project$Data$Impact$applyComplements,
-						$author$project$Data$Impact$getTotalComplementsImpacts(v.h1),
-						v.z))),
-				_Utils_Tuple2(
-				'inputMass',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Mass$inKilograms(v.cg))),
-				_Utils_Tuple2(
-				'label',
-				$elm$json$Json$Encode$string(
-					$author$project$Data$Textile$Step$Label$toString(v._))),
-				_Utils_Tuple2(
-				'makingDeadStock',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, v.cl))),
-				_Utils_Tuple2(
-				'makingWaste',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, v.cm))),
-				_Utils_Tuple2(
-				'outputMass',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Mass$inKilograms(v.jE))),
-				_Utils_Tuple2(
-				'picking',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodePickPerMeter, v.gH))),
-				_Utils_Tuple2(
-				'preTreatments',
-				$author$project$Data$Textile$Step$encodePreTreatments(v.jK)),
-				_Utils_Tuple2(
-				'processInfo',
-				$author$project$Data$Textile$Step$encodeProcessInfo(v.ab)),
-				_Utils_Tuple2(
-				'surfaceMass',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeSurfaceMass, v.e5))),
-				_Utils_Tuple2(
-				'threadDensity',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeThreadDensity, v.hk))),
-				_Utils_Tuple2(
-				'transport',
-				$author$project$Data$Transport$encode(v.c5)),
-				_Utils_Tuple2(
-				'waste',
-				$elm$json$Json$Encode$float(
-					$ianmackenzie$elm_units$Mass$inKilograms(v.hz))),
-				_Utils_Tuple2(
-				'yarnSize',
-				A2(
-					$elm$core$Maybe$withDefault,
-					$elm$json$Json$Encode$null,
-					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeYarnSize, v.kF)))
-			]));
-};
-var $author$project$Data$Textile$LifeCycle$encode = $elm$json$Json$Encode$array($author$project$Data$Textile$Step$encode);
-var $elm$core$Basics$min = F2(
-	function (x, y) {
-		return (_Utils_cmp(x, y) < 0) ? x : y;
-	});
-var $author$project$Data$Unit$nonPhysicalDurabilityToFloat = function (_v0) {
-	var _float = _v0;
-	return _float;
-};
-var $author$project$Data$Unit$physicalDurabilityToFloat = function (_v0) {
-	var _float = _v0;
-	return _float;
-};
-var $author$project$Data$Unit$floatDurabilityFromHolistic = function (_v0) {
-	var nonPhysical = _v0.gz;
-	var physical = _v0.eT;
-	return A2(
-		$elm$core$Basics$min,
-		$author$project$Data$Unit$physicalDurabilityToFloat(physical),
-		$author$project$Data$Unit$nonPhysicalDurabilityToFloat(nonPhysical));
-};
-var $author$project$Data$Textile$LifeCycle$computeFinalImpacts = A2(
-	$elm$core$Array$foldl,
-	F2(
-		function (_v0, finalImpacts) {
-			var enabled = _v0.cP;
-			var impacts = _v0.z;
-			var transport = _v0.c5;
-			return enabled ? A2(
-				$author$project$Data$Impact$mapImpacts,
-				F2(
-					function (trigram, impact) {
-						return $ianmackenzie$elm_units$Quantity$sum(
-							_List_fromArray(
-								[
-									A2($author$project$Data$Impact$getImpact, trigram, impacts),
-									impact,
-									A2($author$project$Data$Impact$getImpact, trigram, transport.z)
-								]));
-					}),
-				finalImpacts) : finalImpacts;
-		}),
-	$author$project$Data$Impact$empty);
-var $elm$core$Array$fromListHelp = F3(
-	function (list, nodeList, nodeListSize) {
-		fromListHelp:
-		while (true) {
-			var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
-			var jsArray = _v0.a;
-			var remainingItems = _v0.b;
-			if (_Utils_cmp(
-				$elm$core$Elm$JsArray$length(jsArray),
-				$elm$core$Array$branchFactor) < 0) {
-				return A2(
-					$elm$core$Array$builderToArray,
-					true,
-					{E: nodeList, A: nodeListSize, C: jsArray});
-			} else {
-				var $temp$list = remainingItems,
-					$temp$nodeList = A2(
-					$elm$core$List$cons,
-					$elm$core$Array$Leaf(jsArray),
-					nodeList),
-					$temp$nodeListSize = nodeListSize + 1;
-				list = $temp$list;
-				nodeList = $temp$nodeList;
-				nodeListSize = $temp$nodeListSize;
-				continue fromListHelp;
-			}
-		}
-	});
-var $elm$core$Array$fromList = function (list) {
-	if (!list.b) {
-		return $elm$core$Array$empty;
-	} else {
-		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
-	}
-};
-var $elm$core$Array$filter = F2(
-	function (isGood, array) {
-		return $elm$core$Array$fromList(
-			A3(
-				$elm$core$Array$foldr,
-				F2(
-					function (x, xs) {
-						return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-					}),
-				_List_Nil,
-				array));
-	});
-var $ianmackenzie$elm_units$Quantity$minus = F2(
-	function (_v0, _v1) {
-		var y = _v0;
-		var x = _v1;
-		return x - y;
-	});
-var $author$project$Data$Impact$impactsWithComplements = F2(
-	function (complementsImpacts, impacts) {
-		var complementsImpact = $author$project$Data$Impact$getTotalComplementsImpacts(complementsImpacts);
-		var ecsWithComplements = A2(
-			$ianmackenzie$elm_units$Quantity$minus,
-			complementsImpact,
-			A2($author$project$Data$Impact$getImpact, 19, impacts));
-		return A3($author$project$Data$Impact$insertWithoutAggregateComputation, 19, ecsWithComplements, impacts);
-	});
-var $author$project$Data$Impact$addComplementsImpacts = F2(
-	function (a, b) {
-		return {
-			dj: A2($ianmackenzie$elm_units$Quantity$plus, a.dj, b.dj),
-			du: A2($ianmackenzie$elm_units$Quantity$plus, a.du, b.du),
-			dz: A2($ianmackenzie$elm_units$Quantity$plus, a.dz, b.dz),
-			jf: A2($ianmackenzie$elm_units$Quantity$plus, a.jf, b.jf),
-			jD: A2($ianmackenzie$elm_units$Quantity$plus, a.jD, b.jD),
-			dG: A2($ianmackenzie$elm_units$Quantity$plus, a.dG, b.dG),
-			dH: A2($ianmackenzie$elm_units$Quantity$plus, a.dH, b.dH)
-		};
-	});
-var $author$project$Data$Unit$noImpacts = $author$project$Data$Unit$impact(0);
-var $author$project$Data$Impact$noComplementsImpacts = {dj: $author$project$Data$Unit$noImpacts, du: $author$project$Data$Unit$noImpacts, dz: $author$project$Data$Unit$noImpacts, jf: $author$project$Data$Unit$noImpacts, jD: $author$project$Data$Unit$noImpacts, dG: $author$project$Data$Unit$noImpacts, dH: $author$project$Data$Unit$noImpacts};
-var $author$project$Data$Textile$LifeCycle$sumComplementsImpacts = A2(
-	$elm$core$Basics$composeR,
-	$elm$core$Array$toList,
-	A2(
-		$elm$core$Basics$composeR,
-		$elm$core$List$filter(
-			function ($) {
-				return $.cP;
-			}),
-		A2(
-			$elm$core$Basics$composeR,
-			$elm$core$List$map(
-				function ($) {
-					return $.h1;
-				}),
-			A2($elm$core$List$foldl, $author$project$Data$Impact$addComplementsImpacts, $author$project$Data$Impact$noComplementsImpacts))));
-var $author$project$Data$Textile$Simulator$getTotalImpactsWithoutDurability = function (_v0) {
-	var lifeCycle = _v0.J;
-	var trimsImpacts = _v0.c7;
-	var complementsImpactsWithoutDurability = $author$project$Data$Textile$LifeCycle$sumComplementsImpacts(
-		A2(
-			$elm$core$Array$filter,
-			function ($) {
-				return $.cP;
-			},
-			lifeCycle));
-	return $author$project$Data$Impact$sumImpacts(
-		_List_fromArray(
-			[
-				A2(
-				$author$project$Data$Impact$impactsWithComplements,
-				complementsImpactsWithoutDurability,
-				$author$project$Data$Textile$LifeCycle$computeFinalImpacts(lifeCycle)),
-				trimsImpacts
-			]));
-};
-var $author$project$Data$Textile$Simulator$encode = function (v) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'complementsImpacts',
-				$author$project$Data$Impact$encodeComplementsImpacts(v.h1)),
-				_Utils_Tuple2(
-				'daysOfWear',
-				$elm$json$Json$Encode$int(
-					$elm$core$Basics$round(
-						$ianmackenzie$elm_units$Duration$inDays(v.ek)))),
-				_Utils_Tuple2(
-				'durability',
-				$elm$json$Json$Encode$float(
-					$author$project$Data$Unit$floatDurabilityFromHolistic(v.aj))),
-				_Utils_Tuple2(
-				'impacts',
-				$author$project$Data$Impact$encode(v.z)),
-				_Utils_Tuple2(
-				'impactsWithoutDurability',
-				$author$project$Data$Impact$encode(
-					$author$project$Data$Textile$Simulator$getTotalImpactsWithoutDurability(v))),
-				_Utils_Tuple2(
-				'inputs',
-				$author$project$Data$Textile$Inputs$encode(v.u)),
-				_Utils_Tuple2(
-				'lifeCycle',
-				$author$project$Data$Textile$LifeCycle$encode(v.J)),
-				_Utils_Tuple2(
-				'transport',
-				$author$project$Data$Transport$encode(v.c5)),
-				_Utils_Tuple2(
-				'useNbCycles',
-				$elm$json$Json$Encode$int(v.kz))
-			]));
-};
-var $author$project$Data$Component$encodeId = A2($elm$core$Basics$composeR, $author$project$Data$Component$idToString, $elm$json$Json$Encode$string);
 var $author$project$Server$encodeComponent = function (_v0) {
 	var id = _v0.H;
 	var name = _v0.L;
@@ -4798,6 +3185,11 @@ var $author$project$Server$encodeComponent = function (_v0) {
 				$elm$json$Json$Encode$string(name))
 			]));
 };
+var $author$project$Data$Country$codeToString = function (_v0) {
+	var string = _v0;
+	return string;
+};
+var $author$project$Data$Country$encodeCode = A2($elm$core$Basics$composeR, $author$project$Data$Country$codeToString, $elm$json$Json$Encode$string);
 var $author$project$Server$encodeCountry = function (_v0) {
 	var code = _v0.cK;
 	var name = _v0.L;
@@ -4845,9 +3237,23 @@ var $author$project$Server$encodeIngredient = function (ingredient) {
 					$author$project$Data$Food$Origin$toLabel(ingredient.fR)))
 			]));
 };
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(0),
+				entries));
+	});
 var $author$project$Server$encodeIngredients = function (ingredients) {
 	return A2($elm$json$Json$Encode$list, $author$project$Server$encodeIngredient, ingredients);
 };
+var $author$project$Data$Textile$Material$idToString = function (_v0) {
+	var string = _v0;
+	return string;
+};
+var $author$project$Data$Textile$Material$encodeId = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Material$idToString, $elm$json$Json$Encode$string);
 var $author$project$Server$encodeMaterial = function (_v0) {
 	var id = _v0.H;
 	var name = _v0.L;
@@ -4861,6 +3267,27 @@ var $author$project$Server$encodeMaterial = function (_v0) {
 				'name',
 				$elm$json$Json$Encode$string(name))
 			]));
+};
+var $author$project$Data$Process$sourceIdToString = function (_v0) {
+	var string = _v0;
+	return string;
+};
+var $author$project$Data$Process$getTechnicalName = function (_v0) {
+	var sourceId = _v0.e0;
+	return $author$project$Data$Process$sourceIdToString(sourceId);
+};
+var $author$project$Data$Process$getDisplayName = function (process) {
+	var _v0 = process.em;
+	if (!_v0.$) {
+		var displayName = _v0.a;
+		return displayName;
+	} else {
+		return $author$project$Data$Process$getTechnicalName(process);
+	}
+};
+var $author$project$Data$Process$idToString = function (_v0) {
+	var uuid = _v0;
+	return $author$project$Data$Uuid$toString(uuid);
 };
 var $author$project$Server$encodeProcess = function (process) {
 	return $elm$json$Json$Encode$object(
@@ -4877,6 +3304,11 @@ var $author$project$Server$encodeProcess = function (process) {
 			]));
 };
 var $author$project$Server$encodeProcessList = $elm$json$Json$Encode$list($author$project$Server$encodeProcess);
+var $author$project$Data$Textile$Product$idToString = function (_v0) {
+	var string = _v0;
+	return string;
+};
+var $author$project$Data$Textile$Product$encodeId = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Product$idToString, $elm$json$Json$Encode$string);
 var $author$project$Server$encodeProduct = function (_v0) {
 	var id = _v0.H;
 	var name = _v0.L;
@@ -4947,6 +3379,15 @@ var $author$project$Server$encodeValidationErrors = function (errors) {
 				$elm$json$Json$Encode$string($author$project$Server$apiDocUrl))
 			]));
 };
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (!maybeValue.$) {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
 var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
@@ -5760,6 +4201,7 @@ var $author$project$Data$Food$Retail$Distribution = F2(
 	function (a, b) {
 		return {$: 0, a: a, b: b};
 	});
+var $ianmackenzie$elm_units$Quantity$Quantity = $elm$core$Basics$identity;
 var $ianmackenzie$elm_units$Volume$cubicMeters = function (numCubicMeters) {
 	return numCubicMeters;
 };
@@ -5958,6 +4400,20 @@ var $author$project$Data$Food$Preparation$idToString = function (_v0) {
 	var string = _v0;
 	return string;
 };
+var $elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						$elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
 var $author$project$Data$Food$Preparation$notFoundError = function (str) {
 	return 'Préparation inconnue: ' + str;
 };
@@ -6003,6 +4459,15 @@ var $elm$regex$Regex$fromString = function (string) {
 		string);
 };
 var $elm$regex$Regex$never = _Regex_never;
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
 var $NoRedInk$elm_uuid$Prng$Uuid$Barebones$uuidRegex = A2(
 	$elm$core$Maybe$withDefault,
 	$elm$regex$Regex$never,
@@ -6031,6 +4496,9 @@ var $NoRedInk$elm_uuid$Prng$Uuid$decoder = A2(
 var $author$project$Data$Uuid$decoder = $NoRedInk$elm_uuid$Prng$Uuid$decoder;
 var $author$project$Data$Food$Ingredient$decodeId = A2($elm$json$Json$Decode$map, $elm$core$Basics$identity, $author$project$Data$Uuid$decoder);
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
+var $ianmackenzie$elm_units$Mass$kilograms = function (numKilograms) {
+	return numKilograms;
+};
 var $ianmackenzie$elm_units$Mass$grams = function (numGrams) {
 	return $ianmackenzie$elm_units$Mass$kilograms(0.001 * numGrams);
 };
@@ -6255,6 +4723,7 @@ var $elm$core$Result$mapError = F2(
 				f(e));
 		}
 	});
+var $elm$core$Basics$round = _Basics_round;
 var $author$project$Data$Validation$infinity = $elm$core$Basics$round(1 / 0);
 var $elm$core$Result$map = F2(
 	function (func, ra) {
@@ -6320,6 +4789,11 @@ var $elm_community$result_extra$Result$Extra$combine = A2(
 	$elm$core$List$foldr,
 	$elm$core$Result$map2($elm$core$List$cons),
 	$elm$core$Result$Ok(_List_Nil));
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
 var $elm_community$result_extra$Result$Extra$combineMap = function (f) {
 	return A2(
 		$elm$core$Basics$composeL,
@@ -6347,6 +4821,16 @@ var $author$project$Data$Validation$boundedList = F5(
 				$elm$core$Dict$singleton,
 				key,
 				'La liste \'' + (key + ('\' doit contenir ' + ((!_Utils_eq(max, $author$project$Data$Validation$infinity)) ? (((!(!min)) ? ('entre ' + ($elm$core$String$fromInt(min) + ' et ')) : '') + ($elm$core$String$fromInt(max) + ' élément(s) maximum.')) : ($elm$core$String$fromInt(min) + ' élément(s) minimum.')))))) : A4($author$project$Data$Validation$list, key, items, validator, accumulator);
+	});
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
 	});
 var $author$project$Data$Validation$maybe = F3(
 	function (key, maybeValue, validator) {
@@ -6456,6 +4940,10 @@ var $author$project$Data$Country$validateForScope = F3(
 			},
 			A2($author$project$Data$Country$findByCode, countryCode, countries));
 	});
+var $ianmackenzie$elm_units$Mass$inKilograms = function (_v0) {
+	var numKilograms = _v0;
+	return numKilograms;
+};
 var $author$project$Data$Food$Validation$validateMass = function (mass) {
 	return ($ianmackenzie$elm_units$Mass$inKilograms(mass) <= 0) ? $elm$core$Result$Err('La masse doit être supérieure ou égale à zéro') : $elm$core$Result$Ok(mass);
 };
@@ -6854,7 +5342,7 @@ var $author$project$Data$Scope$decode = A2(
 var $author$project$Data$Component$Amount = $elm$core$Basics$identity;
 var $author$project$Data$Component$Element = F3(
 	function (amount, material, transforms) {
-		return {aQ: amount, aa: material, au: transforms};
+		return {aQ: amount, aa: material, at: transforms};
 	});
 var $author$project$Data$Component$decodeElement = A4(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
@@ -6958,6 +5446,10 @@ var $author$project$Data$Unit$decodePhysicalDurability = A2($elm$json$Json$Decod
 var $author$project$Data$Textile$Economics$Price = $elm$core$Basics$identity;
 var $author$project$Data$Textile$Economics$priceFromFloat = $elm$core$Basics$identity;
 var $author$project$Data$Textile$Economics$decodePrice = A2($elm$json$Json$Decode$map, $author$project$Data$Textile$Economics$priceFromFloat, $elm$json$Json$Decode$float);
+var $ianmackenzie$elm_units$Area$squareMeters = function (numSquareMeters) {
+	return numSquareMeters;
+};
+var $ianmackenzie$elm_units$Area$squareMeter = $ianmackenzie$elm_units$Area$squareMeters(1);
 var $author$project$Data$Unit$gramsPerSquareMeter = function (_int) {
 	return A2(
 		$ianmackenzie$elm_units$Quantity$rate,
@@ -6973,6 +5465,7 @@ var $author$project$Data$Unit$yarnSizeGramsPer10km = function (weight) {
 		$ianmackenzie$elm_units$Length$meters(10000),
 		$ianmackenzie$elm_units$Mass$grams(weight));
 };
+var $ianmackenzie$elm_units$Mass$kilogram = $ianmackenzie$elm_units$Mass$kilograms(1);
 var $author$project$Data$Unit$yarnSizeKilometersPerKg = function (kilometers) {
 	return A2(
 		$ianmackenzie$elm_units$Quantity$rate,
@@ -7158,6 +5651,10 @@ var $author$project$Data$Component$findById = function (id) {
 			$elm$core$Result$fromMaybe(
 				'Aucun composant avec id=' + $author$project$Data$Component$idToString(id))));
 };
+var $author$project$Data$Component$quantityToInt = function (_v0) {
+	var _int = _v0;
+	return _int;
+};
 var $author$project$Data$Component$validateItem = F2(
 	function (components, item) {
 		return A2(
@@ -7169,6 +5666,10 @@ var $author$project$Data$Component$validateItem = F2(
 var $author$project$Data$Split$thirty = 30;
 var $author$project$Data$Env$maxMakingDeadStockRatio = $author$project$Data$Split$thirty;
 var $author$project$Data$Env$minMakingDeadStockRatio = $author$project$Data$Split$zero;
+var $author$project$Data$Split$toFloat = function (_v0) {
+	var _float = _v0;
+	return _float / 100;
+};
 var $author$project$Data$Split$toFloatString = A2($elm$core$Basics$composeR, $author$project$Data$Split$toFloat, $elm$core$String$fromFloat);
 var $author$project$Data$Validation$validateWithin = F3(
 	function (what, _v0, value) {
@@ -7259,6 +5760,10 @@ var $author$project$Data$Unit$maxDurability = function (dur) {
 var $author$project$Data$Unit$minDurability = function (dur) {
 	return dur(0.67);
 };
+var $author$project$Data$Unit$physicalDurabilityToFloat = function (_v0) {
+	var _float = _v0;
+	return _float;
+};
 var $author$project$Data$Textile$Validation$validatePhysicalDurability = A2(
 	$author$project$Data$Validation$validateWithin,
 	'Le coefficient de durabilité physique',
@@ -7270,6 +5775,10 @@ var $author$project$Data$Textile$Validation$validatePhysicalDurability = A2(
 	});
 var $author$project$Data$Textile$Economics$maxPrice = 1000;
 var $author$project$Data$Textile$Economics$minPrice = 1;
+var $author$project$Data$Textile$Economics$priceToFloat = function (_v0) {
+	var _float = _v0;
+	return _float;
+};
 var $author$project$Data$Textile$Validation$validatePrice = A2(
 	$author$project$Data$Validation$validateWithin,
 	'Le prix unitaire',
@@ -7306,6 +5815,20 @@ var $author$project$Data$Textile$Validation$validateProduct = F2(
 	});
 var $author$project$Data$Unit$maxSurfaceMass = $author$project$Data$Unit$gramsPerSquareMeter(500);
 var $author$project$Data$Unit$minSurfaceMass = $author$project$Data$Unit$gramsPerSquareMeter(80);
+var $ianmackenzie$elm_units$Quantity$at = F2(
+	function (_v0, _v1) {
+		var rateOfChange = _v0;
+		var independentValue = _v1;
+		return rateOfChange * independentValue;
+	});
+var $ianmackenzie$elm_units$Mass$inGrams = function (mass) {
+	return 1000 * $ianmackenzie$elm_units$Mass$inKilograms(mass);
+};
+var $author$project$Data$Unit$surfaceMassInGramsPerSquareMeters = function (surfaceMass) {
+	return $elm$core$Basics$round(
+		$ianmackenzie$elm_units$Mass$inGrams(
+			A2($ianmackenzie$elm_units$Quantity$at, surfaceMass, $ianmackenzie$elm_units$Area$squareMeter)));
+};
 var $author$project$Data$Textile$Validation$validateSurfaceMass = A2(
 	$author$project$Data$Validation$validateWithin,
 	'La masse surfacique',
@@ -7317,6 +5840,17 @@ var $author$project$Data$Textile$Validation$validateSurfaceMass = A2(
 	});
 var $author$project$Data$Unit$maxYarnSize = $author$project$Data$Unit$yarnSizeKilometersPerKg(200);
 var $author$project$Data$Unit$minYarnSize = $author$project$Data$Unit$yarnSizeKilometersPerKg(9);
+var $ianmackenzie$elm_units$Length$inMeters = function (_v0) {
+	var numMeters = _v0;
+	return numMeters;
+};
+var $ianmackenzie$elm_units$Length$inKilometers = function (length) {
+	return 0.001 * $ianmackenzie$elm_units$Length$inMeters(length);
+};
+var $author$project$Data$Unit$yarnSizeInKilometers = function (yarnSize) {
+	return $ianmackenzie$elm_units$Length$inKilometers(
+		A2($ianmackenzie$elm_units$Quantity$at, yarnSize, $ianmackenzie$elm_units$Mass$kilogram));
+};
 var $author$project$Data$Textile$Validation$validateYarnSize = A2(
 	$author$project$Data$Validation$validateWithin,
 	'Le titrage',
@@ -7552,6 +6086,27 @@ var $elm$core$Result$toMaybe = function (result) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
+var $author$project$Data$Impact$Definition$Acd = 0;
+var $author$project$Data$Impact$Definition$Cch = 1;
+var $author$project$Data$Impact$Definition$Ecs = 19;
+var $author$project$Data$Impact$Definition$Etf = 2;
+var $author$project$Data$Impact$Definition$EtfC = 3;
+var $author$project$Data$Impact$Definition$Fru = 4;
+var $author$project$Data$Impact$Definition$Fwe = 5;
+var $author$project$Data$Impact$Definition$Htc = 6;
+var $author$project$Data$Impact$Definition$HtcC = 7;
+var $author$project$Data$Impact$Definition$Htn = 8;
+var $author$project$Data$Impact$Definition$HtnC = 9;
+var $author$project$Data$Impact$Definition$Ior = 10;
+var $author$project$Data$Impact$Definition$Ldu = 11;
+var $author$project$Data$Impact$Definition$Mru = 12;
+var $author$project$Data$Impact$Definition$Ozd = 13;
+var $author$project$Data$Impact$Definition$Pco = 14;
+var $author$project$Data$Impact$Definition$Pef = 20;
+var $author$project$Data$Impact$Definition$Pma = 15;
+var $author$project$Data$Impact$Definition$Swe = 16;
+var $author$project$Data$Impact$Definition$Tre = 17;
+var $author$project$Data$Impact$Definition$Wtu = 18;
 var $author$project$Data$Impact$Definition$toTrigram = function (str) {
 	switch (str) {
 		case 'acd':
@@ -7789,10 +6344,140 @@ var $author$project$Server$Route$endpoint = F2(
 			$elm$url$Url$fromString('http://x/' + (method + url)));
 	});
 var $author$project$Data$Food$Ingredient$NoCooling = 2;
+var $author$project$Data$Unit$impact = function (value) {
+	return value;
+};
+var $author$project$Data$Unit$impactToFloat = function (_v0) {
+	var value = _v0;
+	return value;
+};
+var $ianmackenzie$elm_units$Energy$inJoules = function (_v0) {
+	var numJoules = _v0;
+	return numJoules;
+};
+var $ianmackenzie$elm_units$Energy$inKilowattHours = function (energy) {
+	return $ianmackenzie$elm_units$Energy$inJoules(energy) / 3.6e6;
+};
+var $ianmackenzie$elm_units$Energy$inMegajoules = function (energy) {
+	return $ianmackenzie$elm_units$Energy$inJoules(energy) / 1.0e6;
+};
+var $author$project$Data$Impact$Impacts = $elm$core$Basics$identity;
+var $author$project$Data$Impact$Definition$map = F2(
+	function (func, definitions) {
+		return {
+			a6: A2(func, 0, definitions.a6),
+			a9: A2(func, 1, definitions.a9),
+			be: A2(func, 19, definitions.be),
+			bg: A2(func, 2, definitions.bg),
+			bh: A2(func, 3, definitions.bh),
+			bm: A2(func, 4, definitions.bm),
+			bn: A2(func, 5, definitions.bn),
+			bp: A2(func, 6, definitions.bp),
+			bq: A2(func, 7, definitions.bq),
+			br: A2(func, 8, definitions.br),
+			bs: A2(func, 9, definitions.bs),
+			bt: A2(func, 10, definitions.bt),
+			bu: A2(func, 11, definitions.bu),
+			by: A2(func, 12, definitions.by),
+			bA: A2(func, 13, definitions.bA),
+			bD: A2(func, 14, definitions.bD),
+			bE: A2(func, 20, definitions.bE),
+			bF: A2(func, 15, definitions.bF),
+			bK: A2(func, 16, definitions.bK),
+			bR: A2(func, 17, definitions.bR),
+			bW: A2(func, 18, definitions.bW)
+		};
+	});
+var $author$project$Data$Impact$mapImpacts = F2(
+	function (fn, _v0) {
+		var impacts = _v0;
+		return A2($author$project$Data$Impact$Definition$map, fn, impacts);
+	});
 var $elm$core$Tuple$second = function (_v0) {
 	var y = _v0.b;
 	return y;
 };
+var $author$project$Data$Impact$Definition$init = function (a) {
+	return {a6: a, a9: a, be: a, bg: a, bh: a, bm: a, bn: a, bp: a, bq: a, br: a, bs: a, bt: a, bu: a, by: a, bA: a, bD: a, bE: a, bF: a, bK: a, bR: a, bW: a};
+};
+var $ianmackenzie$elm_units$Quantity$zero = 0;
+var $author$project$Data$Impact$empty = $author$project$Data$Impact$Definition$init($ianmackenzie$elm_units$Quantity$zero);
+var $author$project$Data$Impact$Definition$get = F2(
+	function (trigram, definitions) {
+		switch (trigram) {
+			case 0:
+				return definitions.a6;
+			case 1:
+				return definitions.a9;
+			case 2:
+				return definitions.bg;
+			case 3:
+				return definitions.bh;
+			case 4:
+				return definitions.bm;
+			case 5:
+				return definitions.bn;
+			case 6:
+				return definitions.bp;
+			case 7:
+				return definitions.bq;
+			case 8:
+				return definitions.br;
+			case 9:
+				return definitions.bs;
+			case 10:
+				return definitions.bt;
+			case 11:
+				return definitions.bu;
+			case 12:
+				return definitions.by;
+			case 13:
+				return definitions.bA;
+			case 14:
+				return definitions.bD;
+			case 15:
+				return definitions.bF;
+			case 16:
+				return definitions.bK;
+			case 17:
+				return definitions.bR;
+			case 18:
+				return definitions.bW;
+			case 19:
+				return definitions.be;
+			default:
+				return definitions.bE;
+		}
+	});
+var $author$project$Data$Impact$getImpact = F2(
+	function (trigram, _v0) {
+		var impacts = _v0;
+		return A2($author$project$Data$Impact$Definition$get, trigram, impacts);
+	});
+var $ianmackenzie$elm_units$Quantity$plus = F2(
+	function (_v0, _v1) {
+		var y = _v0;
+		var x = _v1;
+		return x + y;
+	});
+var $ianmackenzie$elm_units$Quantity$sum = function (quantities) {
+	return A3($elm$core$List$foldl, $ianmackenzie$elm_units$Quantity$plus, $ianmackenzie$elm_units$Quantity$zero, quantities);
+};
+var $author$project$Data$Impact$sumImpacts = A2(
+	$elm$core$List$foldl,
+	function (impacts) {
+		return $author$project$Data$Impact$mapImpacts(
+			F2(
+				function (trigram, impact) {
+					return $ianmackenzie$elm_units$Quantity$sum(
+						_List_fromArray(
+							[
+								A2($author$project$Data$Impact$getImpact, trigram, impacts),
+								impact
+							]));
+				}));
+	},
+	$author$project$Data$Impact$empty);
 var $author$project$Data$Food$Preparation$apply = F3(
 	function (wellKnown, mass, preparation) {
 		return $author$project$Data$Impact$sumImpacts(
@@ -7842,6 +6527,163 @@ var $author$project$Data$Food$Preparation$apply = F3(
 					wellKnown.ij.z)
 				]));
 	});
+var $ianmackenzie$elm_units$Quantity$difference = F2(
+	function (_v0, _v1) {
+		var x = _v0;
+		var y = _v1;
+		return x - y;
+	});
+var $author$project$Data$Impact$Definition$update = F3(
+	function (trigram, updateFunc, definitions) {
+		switch (trigram) {
+			case 0:
+				return _Utils_update(
+					definitions,
+					{
+						a6: updateFunc(definitions.a6)
+					});
+			case 1:
+				return _Utils_update(
+					definitions,
+					{
+						a9: updateFunc(definitions.a9)
+					});
+			case 2:
+				return _Utils_update(
+					definitions,
+					{
+						bg: updateFunc(definitions.bg)
+					});
+			case 3:
+				return _Utils_update(
+					definitions,
+					{
+						bh: updateFunc(definitions.bh)
+					});
+			case 4:
+				return _Utils_update(
+					definitions,
+					{
+						bm: updateFunc(definitions.bm)
+					});
+			case 5:
+				return _Utils_update(
+					definitions,
+					{
+						bn: updateFunc(definitions.bn)
+					});
+			case 6:
+				return _Utils_update(
+					definitions,
+					{
+						bp: updateFunc(definitions.bp)
+					});
+			case 7:
+				return _Utils_update(
+					definitions,
+					{
+						bq: updateFunc(definitions.bq)
+					});
+			case 8:
+				return _Utils_update(
+					definitions,
+					{
+						br: updateFunc(definitions.br)
+					});
+			case 9:
+				return _Utils_update(
+					definitions,
+					{
+						bs: updateFunc(definitions.bs)
+					});
+			case 10:
+				return _Utils_update(
+					definitions,
+					{
+						bt: updateFunc(definitions.bt)
+					});
+			case 11:
+				return _Utils_update(
+					definitions,
+					{
+						bu: updateFunc(definitions.bu)
+					});
+			case 12:
+				return _Utils_update(
+					definitions,
+					{
+						by: updateFunc(definitions.by)
+					});
+			case 13:
+				return _Utils_update(
+					definitions,
+					{
+						bA: updateFunc(definitions.bA)
+					});
+			case 14:
+				return _Utils_update(
+					definitions,
+					{
+						bD: updateFunc(definitions.bD)
+					});
+			case 15:
+				return _Utils_update(
+					definitions,
+					{
+						bF: updateFunc(definitions.bF)
+					});
+			case 16:
+				return _Utils_update(
+					definitions,
+					{
+						bK: updateFunc(definitions.bK)
+					});
+			case 17:
+				return _Utils_update(
+					definitions,
+					{
+						bR: updateFunc(definitions.bR)
+					});
+			case 18:
+				return _Utils_update(
+					definitions,
+					{
+						bW: updateFunc(definitions.bW)
+					});
+			case 19:
+				return _Utils_update(
+					definitions,
+					{
+						be: updateFunc(definitions.be)
+					});
+			default:
+				return _Utils_update(
+					definitions,
+					{
+						bE: updateFunc(definitions.bE)
+					});
+		}
+	});
+var $author$project$Data$Impact$insertWithoutAggregateComputation = F3(
+	function (trigram, impact, _v0) {
+		var impacts = _v0;
+		return A3(
+			$author$project$Data$Impact$Definition$update,
+			trigram,
+			$elm$core$Basics$always(impact),
+			impacts);
+	});
+var $author$project$Data$Impact$applyComplements = F2(
+	function (complement, impacts) {
+		var ecoScore = A2($author$project$Data$Impact$getImpact, 19, impacts);
+		return A3(
+			$author$project$Data$Impact$insertWithoutAggregateComputation,
+			19,
+			A2($ianmackenzie$elm_units$Quantity$difference, ecoScore, complement),
+			impacts);
+	});
+var $author$project$Data$Impact$Definition$trigrams = _List_fromArray(
+	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
 var $author$project$Data$Impact$Definition$foldl = F3(
 	function (func, acc, base) {
 		return A3(
@@ -7980,6 +6822,10 @@ var $author$project$Data$Food$Retail$elecImpact = F2(
 								A2($ianmackenzie$elm_units$Quantity$at, elecNeeds, volume)) * $author$project$Data$Unit$impactToFloat(impact));
 					})));
 	});
+var $ianmackenzie$elm_units$Volume$inCubicMeters = function (_v0) {
+	var numCubicMeters = _v0;
+	return numCubicMeters;
+};
 var $ianmackenzie$elm_units$Volume$inLiters = function (volume) {
 	return 1000 * $ianmackenzie$elm_units$Volume$inCubicMeters(volume);
 };
@@ -8254,6 +7100,18 @@ var $author$project$Data$Food$Recipe$computeIngredientTransport = F2(
 			toTransformation(baseTransport));
 		return A3($author$project$Data$Transport$computeImpacts, db.dt, mass, transport);
 	});
+var $author$project$Data$Impact$addComplementsImpacts = F2(
+	function (a, b) {
+		return {
+			dj: A2($ianmackenzie$elm_units$Quantity$plus, a.dj, b.dj),
+			du: A2($ianmackenzie$elm_units$Quantity$plus, a.du, b.du),
+			dz: A2($ianmackenzie$elm_units$Quantity$plus, a.dz, b.dz),
+			jf: A2($ianmackenzie$elm_units$Quantity$plus, a.jf, b.jf),
+			jD: A2($ianmackenzie$elm_units$Quantity$plus, a.jD, b.jD),
+			dG: A2($ianmackenzie$elm_units$Quantity$plus, a.dG, b.dG),
+			dH: A2($ianmackenzie$elm_units$Quantity$plus, a.dH, b.dH)
+		};
+	});
 var $author$project$Data$Unit$Ratio = $elm$core$Basics$identity;
 var $author$project$Data$Unit$ratio = function (_float) {
 	return _float;
@@ -8265,6 +7123,7 @@ var $author$project$Data$Food$EcosystemicServices$coefficients = {
 	dG: $author$project$Data$Unit$ratio(7),
 	dH: $author$project$Data$Unit$ratio(4)
 };
+var $author$project$Data$Unit$noImpacts = $author$project$Data$Unit$impact(0);
 var $author$project$Data$Unit$ratioToFloat = function (_v0) {
 	var _float = _v0;
 	return _float;
@@ -8294,6 +7153,7 @@ var $author$project$Data$Food$Recipe$computeIngredientComplementsImpacts = F2(
 			dH: A2(apply, $author$project$Data$Food$EcosystemicServices$coefficients.dH, plotSize)
 		};
 	});
+var $author$project$Data$Impact$noComplementsImpacts = {dj: $author$project$Data$Unit$noImpacts, du: $author$project$Data$Unit$noImpacts, dz: $author$project$Data$Unit$noImpacts, jf: $author$project$Data$Unit$noImpacts, jD: $author$project$Data$Unit$noImpacts, dG: $author$project$Data$Unit$noImpacts, dH: $author$project$Data$Unit$noImpacts};
 var $author$project$Data$Food$Recipe$computeIngredientsTotalComplements = A2(
 	$elm$core$List$foldl,
 	F2(
@@ -8573,6 +7433,11 @@ var $author$project$Data$Food$Recipe$getPreparedMassAtConsumer = F2(
 				},
 				ingredients)) : A2($author$project$Data$Food$Recipe$getTransformedIngredientsMass, wellKnown, recipe);
 	});
+var $author$project$Data$Impact$getTotalComplementsImpacts = function (complementsImpacts) {
+	return $ianmackenzie$elm_units$Quantity$sum(
+		_List_fromArray(
+			[complementsImpacts.dj, complementsImpacts.du, complementsImpacts.dz, complementsImpacts.jf, complementsImpacts.jD, complementsImpacts.dG, complementsImpacts.dH]));
+};
 var $ianmackenzie$elm_units$Quantity$at_ = F2(
 	function (_v0, _v1) {
 		var rateOfChange = _v0;
@@ -8601,6 +7466,18 @@ var $author$project$Data$Food$Recipe$getTransformedIngredientsVolume = F2(
 			$ianmackenzie$elm_units$Quantity$at_,
 			$author$project$Data$Food$Recipe$getTransformedIngredientsDensity(recipe),
 			A2($author$project$Data$Food$Recipe$getTransformedIngredientsMass, wellKnown, recipe));
+	});
+var $author$project$Data$Impact$mapComplementsImpacts = F2(
+	function (fn, ci) {
+		return {
+			dj: fn(ci.dj),
+			du: fn(ci.du),
+			dz: fn(ci.dz),
+			jf: fn(ci.jf),
+			jD: fn(ci.jD),
+			dG: fn(ci.dG),
+			dH: fn(ci.dH)
+		};
 	});
 var $elm$core$Tuple$pair = F2(
 	function (a, b) {
@@ -8839,6 +7716,10 @@ var $author$project$Data$Textile$Economics$computeRepairCostIndex = F3(
 var $author$project$Data$Unit$nonPhysicalDurability = function (value) {
 	return value;
 };
+var $author$project$Data$Unit$nonPhysicalDurabilityToFloat = function (_v0) {
+	var _float = _v0;
+	return _float;
+};
 var $elm$core$List$sum = function (numbers) {
 	return A3($elm$core$List$foldl, $elm$core$Basics$add, 0, numbers);
 };
@@ -8879,6 +7760,18 @@ var $author$project$Data$Textile$Economics$computeNonPhysicalDurabilityIndex = f
 	return $author$project$Data$Unit$nonPhysicalDurability(
 		formatIndex(minDurability + (finalIndex * (maxDurability - minDurability))));
 };
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
+var $author$project$Data$Unit$floatDurabilityFromHolistic = function (_v0) {
+	var nonPhysical = _v0.gz;
+	var physical = _v0.eT;
+	return A2(
+		$elm$core$Basics$min,
+		$author$project$Data$Unit$physicalDurabilityToFloat(physical),
+		$author$project$Data$Unit$nonPhysicalDurabilityToFloat(nonPhysical));
+};
 var $author$project$Data$Textile$Simulator$computeDurability = function (simulator) {
 	var inputs = simulator.u;
 	var nonPhysicalDurability = $author$project$Data$Textile$Economics$computeNonPhysicalDurabilityIndex(
@@ -8888,7 +7781,7 @@ var $author$project$Data$Textile$Simulator$computeDurability = function (simulat
 			gM: A2($elm$core$Maybe$withDefault, inputs.aC.ir.gM, inputs.gM),
 			gX: inputs.aC.ir.gX
 		});
-	var newDurability = {gz: nonPhysicalDurability, eT: simulator.aj.eT};
+	var newDurability = {gz: nonPhysicalDurability, eT: simulator.au.eT};
 	return _Utils_update(
 		simulator,
 		{
@@ -8896,7 +7789,7 @@ var $author$project$Data$Textile$Simulator$computeDurability = function (simulat
 				$ianmackenzie$elm_units$Quantity$multiplyBy,
 				$author$project$Data$Unit$floatDurabilityFromHolistic(newDurability),
 				simulator.ek),
-			aj: newDurability,
+			au: newDurability,
 			kz: $elm$core$Basics$round(
 				simulator.kz * $author$project$Data$Unit$floatDurabilityFromHolistic(newDurability))
 		});
@@ -9210,7 +8103,7 @@ var $author$project$Data$Textile$Simulator$updateLifeCycle = F2(
 		return _Utils_update(
 			simulator,
 			{
-				J: update(simulator.J)
+				K: update(simulator.K)
 			});
 	});
 var $elm$core$Elm$JsArray$map = _JsArray_map;
@@ -9401,6 +8294,53 @@ var $author$project$Data$Textile$Fabric$getProcess = F2(
 				return wellKnown.kC;
 		}
 	});
+var $elm$core$Array$fromListHelp = F3(
+	function (list, nodeList, nodeListSize) {
+		fromListHelp:
+		while (true) {
+			var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
+			var jsArray = _v0.a;
+			var remainingItems = _v0.b;
+			if (_Utils_cmp(
+				$elm$core$Elm$JsArray$length(jsArray),
+				$elm$core$Array$branchFactor) < 0) {
+				return A2(
+					$elm$core$Array$builderToArray,
+					true,
+					{E: nodeList, A: nodeListSize, C: jsArray});
+			} else {
+				var $temp$list = remainingItems,
+					$temp$nodeList = A2(
+					$elm$core$List$cons,
+					$elm$core$Array$Leaf(jsArray),
+					nodeList),
+					$temp$nodeListSize = nodeListSize + 1;
+				list = $temp$list;
+				nodeList = $temp$nodeList;
+				nodeListSize = $temp$nodeListSize;
+				continue fromListHelp;
+			}
+		}
+	});
+var $elm$core$Array$fromList = function (list) {
+	if (!list.b) {
+		return $elm$core$Array$empty;
+	} else {
+		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
+	}
+};
+var $elm$core$Array$filter = F2(
+	function (isGood, array) {
+		return $elm$core$Array$fromList(
+			A3(
+				$elm$core$Array$foldr,
+				F2(
+					function (x, xs) {
+						return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+					}),
+				_List_Nil,
+				array));
+	});
 var $elm$core$Bitwise$and = _Bitwise_and;
 var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
@@ -9557,7 +8497,7 @@ var $author$project$Data$Textile$Simulator$computeFabricImpacts = F2(
 	function (_v0, simulator) {
 		var textile = _v0.kk;
 		var inputs = simulator.u;
-		var lifeCycle = simulator.J;
+		var lifeCycle = simulator.K;
 		var fabricOutputMass = A4(
 			$author$project$Data$Textile$LifeCycle$getStepProp,
 			3,
@@ -9607,6 +8547,12 @@ var $author$project$Data$Textile$Simulator$computeFabricImpacts = F2(
 			},
 			simulator);
 	});
+var $ianmackenzie$elm_units$Quantity$minus = F2(
+	function (_v0, _v1) {
+		var y = _v0;
+		var x = _v1;
+		return x - y;
+	});
 var $author$project$Data$Textile$Formula$genericWaste = F2(
 	function (processWaste, stepOutputMass) {
 		var stepInputMass = A2(
@@ -9653,7 +8599,7 @@ var $author$project$Data$Textile$Simulator$computeFabricStepWaste = F2(
 	function (_v0, simulator) {
 		var textile = _v0.kk;
 		var inputs = simulator.u;
-		var lifeCycle = simulator.J;
+		var lifeCycle = simulator.K;
 		var _v1 = A2(
 			$author$project$Data$Textile$Formula$genericWaste,
 			A2(
@@ -9681,6 +8627,49 @@ var $author$project$Data$Textile$Simulator$computeFabricStepWaste = F2(
 				A2($author$project$Data$Textile$Step$updateWasteAndMasses, waste, mass),
 				simulator));
 	});
+var $elm$core$Elm$JsArray$foldl = _JsArray_foldl;
+var $elm$core$Array$foldl = F3(
+	function (func, baseCase, _v0) {
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var helper = F2(
+			function (node, acc) {
+				if (!node.$) {
+					var subTree = node.a;
+					return A3($elm$core$Elm$JsArray$foldl, helper, acc, subTree);
+				} else {
+					var values = node.a;
+					return A3($elm$core$Elm$JsArray$foldl, func, acc, values);
+				}
+			});
+		return A3(
+			$elm$core$Elm$JsArray$foldl,
+			func,
+			A3($elm$core$Elm$JsArray$foldl, helper, baseCase, tree),
+			tail);
+	});
+var $author$project$Data$Textile$LifeCycle$computeFinalImpacts = A2(
+	$elm$core$Array$foldl,
+	F2(
+		function (_v0, finalImpacts) {
+			var enabled = _v0.cP;
+			var impacts = _v0.z;
+			var transport = _v0.c5;
+			return enabled ? A2(
+				$author$project$Data$Impact$mapImpacts,
+				F2(
+					function (trigram, impact) {
+						return $ianmackenzie$elm_units$Quantity$sum(
+							_List_fromArray(
+								[
+									A2($author$project$Data$Impact$getImpact, trigram, impacts),
+									impact,
+									A2($author$project$Data$Impact$getImpact, trigram, transport.z)
+								]));
+					}),
+				finalImpacts) : finalImpacts;
+		}),
+	$author$project$Data$Impact$empty);
 var $author$project$Data$Impact$divideBy = function (n) {
 	return $author$project$Data$Impact$mapImpacts(
 		function (_v0) {
@@ -9691,9 +8680,34 @@ var $author$project$Data$Impact$divideComplementsImpactsBy = function (n) {
 	return $author$project$Data$Impact$mapComplementsImpacts(
 		$ianmackenzie$elm_units$Quantity$divideBy(n));
 };
+var $author$project$Data$Impact$impactsWithComplements = F2(
+	function (complementsImpacts, impacts) {
+		var complementsImpact = $author$project$Data$Impact$getTotalComplementsImpacts(complementsImpacts);
+		var ecsWithComplements = A2(
+			$ianmackenzie$elm_units$Quantity$minus,
+			complementsImpact,
+			A2($author$project$Data$Impact$getImpact, 19, impacts));
+		return A3($author$project$Data$Impact$insertWithoutAggregateComputation, 19, ecsWithComplements, impacts);
+	});
+var $author$project$Data$Textile$LifeCycle$sumComplementsImpacts = A2(
+	$elm$core$Basics$composeR,
+	$elm$core$Array$toList,
+	A2(
+		$elm$core$Basics$composeR,
+		$elm$core$List$filter(
+			function ($) {
+				return $.cP;
+			}),
+		A2(
+			$elm$core$Basics$composeR,
+			$elm$core$List$map(
+				function ($) {
+					return $.h1;
+				}),
+			A2($elm$core$List$foldl, $author$project$Data$Impact$addComplementsImpacts, $author$project$Data$Impact$noComplementsImpacts))));
 var $author$project$Data$Textile$Simulator$computeFinalImpacts = function (simulator) {
-	var durability = simulator.aj;
-	var lifeCycle = simulator.J;
+	var durability = simulator.au;
+	var lifeCycle = simulator.K;
 	var complementsImpacts = A2(
 		$author$project$Data$Impact$divideComplementsImpactsBy,
 		$author$project$Data$Unit$floatDurabilityFromHolistic(durability),
@@ -9805,7 +8819,7 @@ var $author$project$Data$Country$isEuropeOrTurkey = function (country) {
 };
 var $author$project$Data$Split$third = 33;
 var $author$project$Data$Textile$Simulator$computeMakingAirTransportRatio = function (simulator) {
-	var durability = simulator.aj;
+	var durability = simulator.au;
 	var inputs = simulator.u;
 	return A3(
 		$author$project$Data$Textile$Simulator$updateLifeCycleStep,
@@ -9857,6 +8871,10 @@ var $author$project$Data$Textile$Fabric$getMakingComplexity = F3(
 		}
 		return defaultComplexity;
 	});
+var $ianmackenzie$elm_units$Duration$inSeconds = function (_v0) {
+	var numSeconds = _v0;
+	return numSeconds;
+};
 var $ianmackenzie$elm_units$Duration$inMinutes = function (duration) {
 	return $ianmackenzie$elm_units$Duration$inSeconds(duration) / 60;
 };
@@ -10018,7 +9036,7 @@ var $author$project$Data$Textile$Step$updateDeadStock = F3(
 	});
 var $author$project$Data$Textile$Simulator$computeMakingStepDeadStock = function (simulator) {
 	var inputs = simulator.u;
-	var lifeCycle = simulator.J;
+	var lifeCycle = simulator.K;
 	var _v0 = A2(
 		$author$project$Data$Textile$Formula$makingDeadStock,
 		A2($elm$core$Maybe$withDefault, $author$project$Data$Env$defaultDeadStock, inputs.cl),
@@ -10211,7 +9229,7 @@ var $author$project$Data$Textile$Simulator$computeMaterialImpacts = F2(
 	});
 var $author$project$Data$Textile$Simulator$computeMaterialStepWaste = function (simulator) {
 	var inputs = simulator.u;
-	var lifeCycle = simulator.J;
+	var lifeCycle = simulator.K;
 	var _v0 = function (inputMass) {
 		return A3(
 			$elm$core$List$foldl,
@@ -10530,7 +9548,7 @@ var $author$project$Data$Textile$Material$Spinning$waste = function (spinning) {
 };
 var $author$project$Data$Textile$Simulator$computeSpinningStepWaste = function (simulator) {
 	var inputs = simulator.u;
-	var lifeCycle = simulator.J;
+	var lifeCycle = simulator.K;
 	var _v0 = function (inputMass) {
 		return A3(
 			$elm$core$List$foldl,
@@ -11016,7 +10034,7 @@ var $author$project$Data$Textile$Simulator$computeTotalTransportImpacts = functi
 	return _Utils_update(
 		simulator,
 		{
-			c5: $author$project$Data$Textile$LifeCycle$computeTotalTransportImpacts(simulator.J)
+			c5: $author$project$Data$Textile$LifeCycle$computeTotalTransportImpacts(simulator.K)
 		});
 };
 var $author$project$Data$Component$Results = $elm$core$Basics$identity;
@@ -11136,6 +10154,10 @@ var $author$project$Data$Component$computeInitialAmount = F2(
 				wastes));
 	});
 var $author$project$Data$Component$MaterialStage = 0;
+var $author$project$Data$Component$amountToFloat = function (_v0) {
+	var _float = _v0;
+	return _float;
+};
 var $author$project$Data$Component$computeMaterialResults = F2(
 	function (amount, process) {
 		var mass = $ianmackenzie$elm_units$Mass$kilograms(
@@ -11161,13 +10183,13 @@ var $author$project$Data$Component$computeMaterialResults = F2(
 	});
 var $author$project$Data$Component$ExpandedElement = F3(
 	function (amount, material, transforms) {
-		return {aQ: amount, aa: material, au: transforms};
+		return {aQ: amount, aa: material, at: transforms};
 	});
 var $author$project$Data$Component$expandElement = F2(
 	function (processes, _v0) {
 		var amount = _v0.aQ;
 		var material = _v0.aa;
-		var transforms = _v0.au;
+		var transforms = _v0.at;
 		return A2(
 			$elm_community$result_extra$Result$Extra$andMap,
 			$elm_community$result_extra$Result$Extra$combine(
@@ -11191,7 +10213,7 @@ var $author$project$Data$Component$computeElementResults = function (processes) 
 			function (_v0) {
 				var amount = _v0.aQ;
 				var material = _v0.aa;
-				var transforms = _v0.au;
+				var transforms = _v0.at;
 				return A2(
 					$elm$core$Result$andThen,
 					function (initialAmount) {
@@ -11301,7 +10323,7 @@ var $author$project$Data$Component$extractImpacts = function (_v0) {
 };
 var $author$project$Data$Textile$Simulator$computeTrims = F2(
 	function (db, simulator) {
-		var durability = simulator.aj;
+		var durability = simulator.au;
 		var inputs = simulator.u;
 		return A2(
 			$elm$core$Result$map,
@@ -11424,6 +10446,13 @@ var $elm$core$Basics$clamp = F3(
 	function (low, high, number) {
 		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
 	});
+var $ianmackenzie$elm_units$Constants$second = 1;
+var $ianmackenzie$elm_units$Constants$minute = 60 * $ianmackenzie$elm_units$Constants$second;
+var $ianmackenzie$elm_units$Constants$hour = 60 * $ianmackenzie$elm_units$Constants$minute;
+var $ianmackenzie$elm_units$Constants$day = 24 * $ianmackenzie$elm_units$Constants$hour;
+var $ianmackenzie$elm_units$Duration$inDays = function (duration) {
+	return $ianmackenzie$elm_units$Duration$inSeconds(duration) / $ianmackenzie$elm_units$Constants$day;
+};
 var $author$project$Data$Textile$Product$customDaysOfWear = function (_v0) {
 	var daysOfWear = _v0.ek;
 	var wearsPerCycle = _v0.fn;
@@ -11717,7 +10746,7 @@ var $author$project$Data$Textile$Step$create = function (_v0) {
 		h1: $author$project$Data$Impact$noComplementsImpacts,
 		fL: country,
 		h8: $ianmackenzie$elm_units$Quantity$zero,
-		aj: $author$project$Data$Unit$standardDurability($elm$core$Basics$identity),
+		au: $author$project$Data$Unit$standardDurability($elm$core$Basics$identity),
 		b7: $elm$core$Maybe$Nothing,
 		iu: editable,
 		cP: enabled,
@@ -11745,6 +10774,9 @@ var $cuducos$elm_format_number$FormatNumber$Locales$Exact = function (a) {
 	return {$: 2, a: a};
 };
 var $chain_partners$elm_bignum$Decimal$Sci = 1;
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
 var $elm$core$Basics$abs = function (n) {
 	return (n < 0) ? (-n) : n;
 };
@@ -13447,15 +12479,15 @@ var $chain_partners$elm_bignum$Decimal$roundWithContext = F2(
 		} else {
 			var s = d.a;
 			var e = d.b;
-			if (_Utils_cmp(context.ak, e) < 1) {
+			if (_Utils_cmp(context.aj, e) < 1) {
 				return d;
 			} else {
 				if (_Utils_cmp(
-					context.ak,
+					context.aj,
 					$chain_partners$elm_bignum$Integer$countDigits(s) + e) > 0) {
 					return $chain_partners$elm_bignum$Decimal$Zero;
 				} else {
-					var eDiff = context.ak - e;
+					var eDiff = context.aj - e;
 					var divisor = (eDiff < 11) ? $chain_partners$elm_bignum$Integer$fromInt(
 						A2($elm$core$Basics$pow, 10, eDiff)) : A2(
 						$elm$core$Maybe$withDefault,
@@ -13465,15 +12497,15 @@ var $chain_partners$elm_bignum$Decimal$roundWithContext = F2(
 					var s_ = A3($chain_partners$elm_bignum$Decimal$divRound, context.bx, s, divisor);
 					return A2($chain_partners$elm_bignum$Integer$eq, s_, $chain_partners$elm_bignum$Integer$zero) ? $chain_partners$elm_bignum$Decimal$Zero : A2(
 						$chain_partners$elm_bignum$Decimal$moveZeroesToE,
-						A2($elm$core$Basics$min, context.ak, $chain_partners$elm_bignum$Decimal$minExponent),
-						A2($chain_partners$elm_bignum$Decimal$Decimal, s_, context.ak));
+						A2($elm$core$Basics$min, context.aj, $chain_partners$elm_bignum$Decimal$minExponent),
+						A2($chain_partners$elm_bignum$Decimal$Decimal, s_, context.aj));
 				}
 			}
 		}
 	});
 var $chain_partners$elm_bignum$Decimal$roundTo = function (e_) {
 	return $chain_partners$elm_bignum$Decimal$roundWithContext(
-		{ak: e_, bx: 4});
+		{aj: e_, bx: 4});
 };
 var $chain_partners$elm_bignum$Decimal$Dec = 0;
 var $chain_partners$elm_bignum$Integer$gte = F2(
@@ -13622,6 +12654,24 @@ var $author$project$Views$Format$formatFloat = F2(
 				}
 			}
 		}
+	});
+var $elm$core$List$maybeCons = F3(
+	function (f, mx, xs) {
+		var _v0 = f(mx);
+		if (!_v0.$) {
+			var x = _v0.a;
+			return A2($elm$core$List$cons, x, xs);
+		} else {
+			return xs;
+		}
+	});
+var $elm$core$List$filterMap = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			$elm$core$List$maybeCons(f),
+			_List_Nil,
+			xs);
 	});
 var $author$project$Data$Split$toPercent = function (_v0) {
 	var _float = _v0;
@@ -13888,7 +12938,7 @@ var $author$project$Data$Textile$Simulator$init = function (db) {
 						return {
 							h1: $author$project$Data$Impact$noComplementsImpacts,
 							ek: inputs.aC.hu.ek,
-							aj: {
+							au: {
 								gz: $author$project$Data$Unit$standardDurability($elm$core$Basics$identity),
 								eT: A2(
 									$elm$core$Maybe$withDefault,
@@ -13897,7 +12947,7 @@ var $author$project$Data$Textile$Simulator$init = function (db) {
 							},
 							z: $author$project$Data$Impact$empty,
 							u: inputs,
-							J: lifeCycle,
+							K: lifeCycle,
 							c5: $author$project$Data$Transport$default($author$project$Data$Impact$empty),
 							c7: $author$project$Data$Impact$empty,
 							kz: $author$project$Data$Textile$Product$customDaysOfWear(product.hu)
@@ -14036,17 +13086,471 @@ var $author$project$Server$executeTextileQuery = F2(
 					$author$project$Server$toResponse)));
 	});
 var $author$project$Server$respondWith = $elm$core$Tuple$pair;
-var $author$project$Data$Textile$Query$encodeMaterialQuery = function (v) {
+var $author$project$Data$Impact$Definition$toString = function (trigram) {
+	switch (trigram) {
+		case 0:
+			return 'acd';
+		case 1:
+			return 'cch';
+		case 2:
+			return 'etf';
+		case 3:
+			return 'etf-c';
+		case 4:
+			return 'fru';
+		case 5:
+			return 'fwe';
+		case 6:
+			return 'htc';
+		case 7:
+			return 'htc-c';
+		case 8:
+			return 'htn';
+		case 9:
+			return 'htn-c';
+		case 10:
+			return 'ior';
+		case 11:
+			return 'ldu';
+		case 12:
+			return 'mru';
+		case 13:
+			return 'ozd';
+		case 14:
+			return 'pco';
+		case 15:
+			return 'pma';
+		case 16:
+			return 'swe';
+		case 17:
+			return 'tre';
+		case 18:
+			return 'wtu';
+		case 19:
+			return 'ecs';
+		default:
+			return 'pef';
+	}
+};
+var $author$project$Data$Impact$Definition$encodeBase = F2(
+	function (encoder, base) {
+		return $elm$json$Json$Encode$object(
+			A2(
+				$elm$core$List$map,
+				function (trigram) {
+					return _Utils_Tuple2(
+						$author$project$Data$Impact$Definition$toString(trigram),
+						encoder(
+							A2($author$project$Data$Impact$Definition$get, trigram, base)));
+				},
+				$author$project$Data$Impact$Definition$trigrams));
+	});
+var $elm$json$Json$Encode$float = _Json_wrap;
+var $author$project$Data$Unit$encodeImpact = A2($elm$core$Basics$composeR, $author$project$Data$Unit$impactToFloat, $elm$json$Json$Encode$float);
+var $author$project$Data$Impact$encode = function (_v0) {
+	var impacts = _v0;
+	return A2($author$project$Data$Impact$Definition$encodeBase, $author$project$Data$Unit$encodeImpact, impacts);
+};
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $author$project$Data$Country$aquaticPollutionScenarioToString = function (scenario) {
+	switch (scenario) {
+		case 0:
+			return 'Average';
+		case 1:
+			return 'Best';
+		default:
+			return 'Worst';
+	}
+};
+var $author$project$Data$Scope$toString = function (scope) {
+	switch (scope) {
+		case 0:
+			return 'food';
+		case 1:
+			return 'object';
+		case 2:
+			return 'textile';
+		default:
+			return 'veli';
+	}
+};
+var $author$project$Data$Scope$encode = A2($elm$core$Basics$composeR, $author$project$Data$Scope$toString, $elm$json$Json$Encode$string);
+var $author$project$Data$Country$encode = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'aquaticPollutionScenario',
+				$elm$json$Json$Encode$string(
+					$author$project$Data$Country$aquaticPollutionScenarioToString(v.ft))),
+				_Utils_Tuple2(
+				'code',
+				$author$project$Data$Country$encodeCode(v.cK)),
+				_Utils_Tuple2(
+				'electricityProcessUuid',
+				$elm$json$Json$Encode$string(
+					$author$project$Data$Process$idToString(v.fX.H))),
+				_Utils_Tuple2(
+				'heatProcessUuid',
+				$elm$json$Json$Encode$string(
+					$author$project$Data$Process$idToString(v.f6.H))),
+				_Utils_Tuple2(
+				'name',
+				$elm$json$Json$Encode$string(v.L)),
+				_Utils_Tuple2(
+				'scopes',
+				A2($elm$json$Json$Encode$list, $author$project$Data$Scope$encode, v.M))
+			]));
+};
+var $author$project$Data$Textile$Dyeing$toString = function (processType) {
+	switch (processType) {
+		case 0:
+			return 'average';
+		case 1:
+			return 'continuous';
+		default:
+			return 'discontinuous';
+	}
+};
+var $author$project$Data$Textile$Dyeing$encode = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Dyeing$toString, $elm$json$Json$Encode$string);
+var $author$project$Data$Textile$Fabric$toString = function (fabricProcess) {
+	switch (fabricProcess) {
+		case 0:
+			return 'knitting-circular';
+		case 1:
+			return 'knitting-fully-fashioned';
+		case 2:
+			return 'knitting-integral';
+		case 3:
+			return 'knitting-mix';
+		case 4:
+			return 'knitting-straight';
+		default:
+			return 'weaving';
+	}
+};
+var $author$project$Data$Textile$Fabric$encode = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Fabric$toString, $elm$json$Json$Encode$string);
+var $author$project$Data$Split$encodeFloat = A2($elm$core$Basics$composeR, $author$project$Data$Split$toFloat, $elm$json$Json$Encode$float);
+var $author$project$Data$Textile$Printing$toString = function (printing) {
+	if (!printing) {
+		return 'pigment';
+	} else {
+		return 'substantive';
+	}
+};
+var $author$project$Data$Textile$Printing$encodeKind = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Printing$toString, $elm$json$Json$Encode$string);
+var $author$project$Data$Textile$Printing$encode = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'kind',
+				$author$project$Data$Textile$Printing$encodeKind(v.eF)),
+				_Utils_Tuple2(
+				'ratio',
+				$author$project$Data$Split$encodeFloat(v.jR))
+			]));
+};
+var $author$project$Data$Textile$Product$encodeEndOfLifeOptions = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'volume',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Volume$inCubicMeters(v.kB)))
+			]));
+};
+var $NoRedInk$elm_uuid$Prng$Uuid$encode = A2($elm$core$Basics$composeR, $NoRedInk$elm_uuid$Prng$Uuid$toString, $elm$json$Json$Encode$string);
+var $author$project$Data$Uuid$encoder = $NoRedInk$elm_uuid$Prng$Uuid$encode;
+var $author$project$Data$Process$encodeId = function (_v0) {
+	var uuid = _v0;
+	return $author$project$Data$Uuid$encoder(uuid);
+};
+var $author$project$Data$Component$encodeElement = function (element) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'amount',
+				$elm$json$Json$Encode$float(
+					$author$project$Data$Component$amountToFloat(element.aQ))),
+				_Utils_Tuple2(
+				'material',
+				$author$project$Data$Process$encodeId(element.aa)),
+				_Utils_Tuple2(
+				'transforms',
+				A2($elm$json$Json$Encode$list, $author$project$Data$Process$encodeId, element.at))
+			]));
+};
+var $author$project$Data$Common$EncodeUtils$optionalPropertiesObject = A2(
+	$elm$core$Basics$composeL,
+	$elm$json$Json$Encode$object,
+	$elm$core$List$filterMap(
+		function (_v0) {
+			var key = _v0.a;
+			var maybeVal = _v0.b;
+			return A2(
+				$elm$core$Maybe$map,
+				function (val) {
+					return _Utils_Tuple2(key, val);
+				},
+				maybeVal);
+		}));
+var $elm$core$String$trim = _String_trim;
+var $author$project$Data$Component$encodeCustom = function (custom) {
+	return $author$project$Data$Common$EncodeUtils$optionalPropertiesObject(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'name',
+				A2(
+					$elm$core$Maybe$map,
+					$elm$json$Json$Encode$string,
+					A2(
+						$elm$core$Maybe$andThen,
+						function (name) {
+							return (name === '') ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(name);
+						},
+						A2($elm$core$Maybe$map, $elm$core$String$trim, custom.L)))),
+				_Utils_Tuple2(
+				'elements',
+				$elm$core$Maybe$Just(
+					A2($elm$json$Json$Encode$list, $author$project$Data$Component$encodeElement, custom.o)))
+			]));
+};
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $author$project$Data$Component$encodeItem = function (item) {
+	return $author$project$Data$Common$EncodeUtils$optionalPropertiesObject(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'id',
+				$elm$core$Maybe$Just(
+					$elm$json$Json$Encode$string(
+						$author$project$Data$Component$idToString(item.H)))),
+				_Utils_Tuple2(
+				'quantity',
+				$elm$core$Maybe$Just(
+					$elm$json$Json$Encode$int(
+						$author$project$Data$Component$quantityToInt(item.bG)))),
+				_Utils_Tuple2(
+				'custom',
+				A2($elm$core$Maybe$map, $author$project$Data$Component$encodeCustom, item.P))
+			]));
+};
+var $author$project$Data$Textile$MakingComplexity$toString = function (makingComplexity) {
+	switch (makingComplexity) {
+		case 0:
+			return 'high';
+		case 1:
+			return 'low';
+		case 2:
+			return 'medium';
+		case 3:
+			return 'non-applicable';
+		case 4:
+			return 'very-high';
+		default:
+			return 'very-low';
+	}
+};
+var $author$project$Data$Textile$Product$encodeMakingOptions = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'pcrWaste',
+				$author$project$Data$Split$encodeFloat(v.gG)),
+				_Utils_Tuple2(
+				'complexity',
+				$elm$json$Json$Encode$string(
+					$author$project$Data$Textile$MakingComplexity$toString(v.ef)))
+			]));
+};
+var $ianmackenzie$elm_units$Duration$inHours = function (duration) {
+	return $ianmackenzie$elm_units$Duration$inSeconds(duration) / $ianmackenzie$elm_units$Constants$hour;
+};
+var $author$project$Data$Textile$Product$encodeUseOptions = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'nonIroningProcessUuid',
+				$author$project$Data$Process$encodeId(v.jt.H)),
+				_Utils_Tuple2(
+				'wearsPerCycle',
+				$elm$json$Json$Encode$int(v.fn)),
+				_Utils_Tuple2(
+				'defaultNbCycles',
+				$elm$json$Json$Encode$int(v.fQ)),
+				_Utils_Tuple2(
+				'ratioDryer',
+				$author$project$Data$Split$encodeFloat(v.gS)),
+				_Utils_Tuple2(
+				'ratioIroning',
+				$author$project$Data$Split$encodeFloat(v.gT)),
+				_Utils_Tuple2(
+				'timeIroning',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Duration$inHours(v.hl))),
+				_Utils_Tuple2(
+				'daysOfWear',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Duration$inDays(v.ek)))
+			]));
+};
+var $author$project$Data$Textile$Product$encode = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'id',
+				$author$project$Data$Textile$Product$encodeId(v.H)),
+				_Utils_Tuple2(
+				'name',
+				$elm$json$Json$Encode$string(v.L)),
+				_Utils_Tuple2(
+				'fabric',
+				$author$project$Data$Textile$Fabric$encode(v.f_)),
+				_Utils_Tuple2(
+				'making',
+				$author$project$Data$Textile$Product$encodeMakingOptions(v.eI)),
+				_Utils_Tuple2(
+				'trims',
+				A2($elm$json$Json$Encode$list, $author$project$Data$Component$encodeItem, v.kv)),
+				_Utils_Tuple2(
+				'use',
+				$author$project$Data$Textile$Product$encodeUseOptions(v.hu)),
+				_Utils_Tuple2(
+				'endOfLife',
+				$author$project$Data$Textile$Product$encodeEndOfLifeOptions(v.ix))
+			]));
+};
+var $author$project$Data$Textile$Step$Label$toCodeString = function (label) {
+	switch (label) {
+		case 0:
+			return 'distribution';
+		case 1:
+			return 'eol';
+		case 2:
+			return 'ennobling';
+		case 3:
+			return 'fabric';
+		case 4:
+			return 'making';
+		case 5:
+			return 'material';
+		case 6:
+			return 'spinning';
+		default:
+			return 'use';
+	}
+};
+var $author$project$Data$Textile$Step$Label$encode = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Step$Label$toCodeString, $elm$json$Json$Encode$string);
+var $author$project$Data$Textile$Economics$businessToString = function (business) {
+	switch (business) {
+		case 0:
+			return 'large-business-with-services';
+		case 1:
+			return 'large-business-without-services';
+		default:
+			return 'small-business';
+	}
+};
+var $author$project$Data$Textile$Economics$encodeBusiness = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Economics$businessToString, $elm$json$Json$Encode$string);
+var $elm$json$Json$Encode$null = _Json_encodeNull;
+var $author$project$Data$Textile$Material$Origin$toString = function (origin) {
+	switch (origin) {
+		case 0:
+			return 'ArtificialFromOrganic';
+		case 1:
+			return 'NaturalFromAnimal';
+		case 2:
+			return 'NaturalFromVegetal';
+		default:
+			return 'Synthetic';
+	}
+};
+var $author$project$Data$Textile$Material$encode = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'id',
+				$author$project$Data$Textile$Material$encodeId(v.H)),
+				_Utils_Tuple2(
+				'name',
+				$elm$json$Json$Encode$string(v.L)),
+				_Utils_Tuple2(
+				'shortName',
+				$elm$json$Json$Encode$string(v.ka)),
+				_Utils_Tuple2(
+				'origin',
+				$elm$json$Json$Encode$string(
+					$author$project$Data$Textile$Material$Origin$toString(v.gD))),
+				_Utils_Tuple2(
+				'materialProcessUuid',
+				$author$project$Data$Process$encodeId(v.gq.H)),
+				_Utils_Tuple2(
+				'recycledProcessUuid',
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2(
+						$elm$core$Maybe$map,
+						A2(
+							$elm$core$Basics$composeR,
+							function ($) {
+								return $.H;
+							},
+							$author$project$Data$Process$encodeId),
+						v.jV))),
+				_Utils_Tuple2(
+				'recycledFrom',
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Textile$Material$encodeId, v.eW))),
+				_Utils_Tuple2(
+				'geographicOrigin',
+				$elm$json$Json$Encode$string(v.iI)),
+				_Utils_Tuple2(
+				'defaultCountry',
+				$elm$json$Json$Encode$string(
+					$author$project$Data$Country$codeToString(v.fO)))
+			]));
+};
+var $author$project$Data$Textile$Material$Spinning$toString = function (spinning) {
+	switch (spinning) {
+		case 0:
+			return 'ConventionalSpinning';
+		case 1:
+			return 'SyntheticSpinning';
+		default:
+			return 'UnconventionalSpinning';
+	}
+};
+var $author$project$Data$Textile$Material$Spinning$encode = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Material$Spinning$toString, $elm$json$Json$Encode$string);
+var $author$project$Data$Textile$Inputs$encodeMaterialInput = function (v) {
 	return $author$project$Data$Common$EncodeUtils$optionalPropertiesObject(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
 				'country',
-				A2($elm$core$Maybe$map, $author$project$Data$Country$encodeCode, v.fL)),
+				A2(
+					$elm$core$Maybe$map,
+					A2(
+						$elm$core$Basics$composeR,
+						function ($) {
+							return $.cK;
+						},
+						$author$project$Data$Country$encodeCode),
+					v.fL)),
 				_Utils_Tuple2(
-				'id',
+				'material',
 				$elm$core$Maybe$Just(
-					$author$project$Data$Textile$Material$encodeId(v.H))),
+					$author$project$Data$Textile$Material$encode(v.aa))),
 				_Utils_Tuple2(
 				'share',
 				$elm$core$Maybe$Just(
@@ -14056,105 +13560,450 @@ var $author$project$Data$Textile$Query$encodeMaterialQuery = function (v) {
 				A2($elm$core$Maybe$map, $author$project$Data$Textile$Material$Spinning$encode, v.cu))
 			]));
 };
-var $author$project$Data$Textile$Query$encode = function (query) {
-	return $author$project$Data$Common$EncodeUtils$optionalPropertiesObject(
+var $author$project$Data$Unit$encodePhysicalDurability = function (_v0) {
+	var _float = _v0;
+	return $elm$json$Json$Encode$float(_float);
+};
+var $author$project$Data$Textile$Economics$encodePrice = A2($elm$core$Basics$composeR, $author$project$Data$Textile$Economics$priceToFloat, $elm$json$Json$Encode$float);
+var $author$project$Data$Unit$encodeSurfaceMass = function (surfaceMass) {
+	return $elm$json$Json$Encode$int(
+		$author$project$Data$Unit$surfaceMassInGramsPerSquareMeters(surfaceMass));
+};
+var $author$project$Data$Unit$encodeYarnSize = A2($elm$core$Basics$composeR, $author$project$Data$Unit$yarnSizeInKilometers, $elm$json$Json$Encode$float);
+var $author$project$Data$Textile$Inputs$encode = function (inputs) {
+	return $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
 				'airTransportRatio',
-				A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, query.bY)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, inputs.bY))),
 				_Utils_Tuple2(
 				'business',
-				A2($elm$core$Maybe$map, $author$project$Data$Textile$Economics$encodeBusiness, query.fC)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Textile$Economics$encodeBusiness, inputs.fC))),
 				_Utils_Tuple2(
 				'countryDyeing',
-				A2($elm$core$Maybe$map, $author$project$Data$Country$encodeCode, query.aW)),
+				$author$project$Data$Country$encode(inputs.aW)),
 				_Utils_Tuple2(
 				'countryFabric',
-				A2($elm$core$Maybe$map, $author$project$Data$Country$encodeCode, query.bb)),
+				$author$project$Data$Country$encode(inputs.bb)),
 				_Utils_Tuple2(
 				'countryMaking',
-				A2($elm$core$Maybe$map, $author$project$Data$Country$encodeCode, query.bc)),
-				_Utils_Tuple2(
-				'countrySpinning',
-				A2($elm$core$Maybe$map, $author$project$Data$Country$encodeCode, query.b4)),
+				$author$project$Data$Country$encode(inputs.bc)),
 				_Utils_Tuple2(
 				'disabledSteps',
-				function () {
-					var _v0 = query.b6;
-					if (!_v0.b) {
-						return $elm$core$Maybe$Nothing;
-					} else {
-						var list = _v0;
-						return $elm$core$Maybe$Just(
-							A2($elm$json$Json$Encode$list, $author$project$Data$Textile$Step$Label$encode, list));
-					}
-				}()),
+				A2($elm$json$Json$Encode$list, $author$project$Data$Textile$Step$Label$encode, inputs.b6)),
 				_Utils_Tuple2(
 				'dyeingProcessType',
-				A2($elm$core$Maybe$map, $author$project$Data$Textile$Dyeing$encode, query.b7)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Textile$Dyeing$encode, inputs.b7))),
 				_Utils_Tuple2(
 				'fabricProcess',
-				A2($elm$core$Maybe$map, $author$project$Data$Textile$Fabric$encode, query.bj)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Textile$Fabric$encode, inputs.bj))),
 				_Utils_Tuple2(
 				'fading',
-				A2($elm$core$Maybe$map, $elm$json$Json$Encode$bool, query.cb)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $elm$json$Json$Encode$bool, inputs.cb))),
 				_Utils_Tuple2(
 				'makingComplexity',
 				A2(
-					$elm$core$Maybe$map,
-					A2($elm$core$Basics$composeR, $author$project$Data$Textile$MakingComplexity$toString, $elm$json$Json$Encode$string),
-					query.i9)),
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2(
+						$elm$core$Maybe$map,
+						A2($elm$core$Basics$composeR, $author$project$Data$Textile$MakingComplexity$toString, $elm$json$Json$Encode$string),
+						inputs.i9))),
 				_Utils_Tuple2(
 				'makingDeadStock',
-				A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, query.cl)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, inputs.cl))),
 				_Utils_Tuple2(
 				'makingWaste',
-				A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, query.cm)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, inputs.cm))),
 				_Utils_Tuple2(
 				'mass',
-				$elm$core$Maybe$Just(
-					$elm$json$Json$Encode$float(
-						$ianmackenzie$elm_units$Mass$inKilograms(query.T)))),
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Mass$inKilograms(inputs.T))),
 				_Utils_Tuple2(
 				'materials',
-				$elm$core$Maybe$Just(
-					A2($elm$json$Json$Encode$list, $author$project$Data$Textile$Query$encodeMaterialQuery, query.jc))),
+				A2($elm$json$Json$Encode$list, $author$project$Data$Textile$Inputs$encodeMaterialInput, inputs.jc)),
 				_Utils_Tuple2(
 				'numberOfReferences',
-				A2($elm$core$Maybe$map, $elm$json$Json$Encode$int, query.gB)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $elm$json$Json$Encode$int, inputs.gB))),
 				_Utils_Tuple2(
 				'physicalDurability',
-				A2($elm$core$Maybe$map, $author$project$Data$Unit$encodePhysicalDurability, query.co)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodePhysicalDurability, inputs.co))),
 				_Utils_Tuple2(
 				'price',
-				A2($elm$core$Maybe$map, $author$project$Data$Textile$Economics$encodePrice, query.gM)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Textile$Economics$encodePrice, inputs.gM))),
 				_Utils_Tuple2(
 				'printing',
-				A2($elm$core$Maybe$map, $author$project$Data$Textile$Printing$encode, query.cp)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Textile$Printing$encode, inputs.cp))),
 				_Utils_Tuple2(
 				'product',
-				$elm$core$Maybe$Just(
-					$elm$json$Json$Encode$string(
-						$author$project$Data$Textile$Product$idToString(query.aC)))),
+				$author$project$Data$Textile$Product$encode(inputs.aC)),
 				_Utils_Tuple2(
 				'surfaceMass',
-				A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeSurfaceMass, query.e5)),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeSurfaceMass, inputs.e5))),
 				_Utils_Tuple2(
 				'trims',
-				A2(
-					$elm$core$Maybe$map,
-					$elm$json$Json$Encode$list($author$project$Data$Component$encodeItem),
-					query.kv)),
+				A2($elm$json$Json$Encode$list, $author$project$Data$Component$encodeItem, inputs.kv)),
 				_Utils_Tuple2(
 				'upcycled',
-				$elm$core$Maybe$Just(
-					$elm$json$Json$Encode$bool(query.cz))),
+				$elm$json$Json$Encode$bool(inputs.cz)),
 				_Utils_Tuple2(
 				'yarnSize',
-				A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeYarnSize, query.kF))
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeYarnSize, inputs.kF)))
 			]));
 };
+var $elm$json$Json$Encode$array = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$Array$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(0),
+				entries));
+	});
+var $author$project$Data$Transport$encodeKm = A2($elm$core$Basics$composeR, $ianmackenzie$elm_units$Length$inKilometers, $elm$json$Json$Encode$float);
+var $author$project$Data$Transport$encode = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'air',
+				$author$project$Data$Transport$encodeKm(v.hK)),
+				_Utils_Tuple2(
+				'impacts',
+				$author$project$Data$Impact$encode(v.z)),
+				_Utils_Tuple2(
+				'road',
+				$author$project$Data$Transport$encodeKm(v.dP)),
+				_Utils_Tuple2(
+				'roadCooled',
+				$author$project$Data$Transport$encodeKm(v.j2)),
+				_Utils_Tuple2(
+				'sea',
+				$author$project$Data$Transport$encodeKm(v.g4)),
+				_Utils_Tuple2(
+				'seaCooled',
+				$author$project$Data$Transport$encodeKm(v.j7))
+			]));
+};
+var $author$project$Data$Impact$negateComplementsImpacts = $author$project$Data$Impact$mapComplementsImpacts(
+	A2(
+		$elm$core$Basics$composeR,
+		$author$project$Data$Unit$impactToFloat,
+		A2($elm$core$Basics$composeR, $elm$core$Basics$negate, $author$project$Data$Unit$impact)));
+var $author$project$Data$Impact$encodeComplementsImpacts = function (complementsImpact) {
+	var negated = $author$project$Data$Impact$negateComplementsImpacts(complementsImpact);
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'cropDiversity',
+				$author$project$Data$Unit$encodeImpact(negated.dj)),
+				_Utils_Tuple2(
+				'hedges',
+				$author$project$Data$Unit$encodeImpact(negated.du)),
+				_Utils_Tuple2(
+				'livestockDensity',
+				$author$project$Data$Unit$encodeImpact(negated.dz)),
+				_Utils_Tuple2(
+				'microfibers',
+				$author$project$Data$Unit$encodeImpact(negated.jf)),
+				_Utils_Tuple2(
+				'outOfEuropeEOL',
+				$author$project$Data$Unit$encodeImpact(negated.jD)),
+				_Utils_Tuple2(
+				'permanentPasture',
+				$author$project$Data$Unit$encodeImpact(negated.dG)),
+				_Utils_Tuple2(
+				'plotSize',
+				$author$project$Data$Unit$encodeImpact(negated.dH))
+			]));
+};
+var $author$project$Data$Unit$encodeNonPhysicalDurability = function (_v0) {
+	var _float = _v0;
+	return $elm$json$Json$Encode$float(_float);
+};
+var $author$project$Data$Unit$encodePickPerMeter = function (_v0) {
+	var _int = _v0;
+	return $elm$json$Json$Encode$int(_int);
+};
+var $author$project$Data$Textile$Step$encodePreTreatments = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'elecKWh',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Energy$inKilowattHours(v.ax))),
+				_Utils_Tuple2(
+				'heatMJ',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Energy$inMegajoules(v.ez))),
+				_Utils_Tuple2(
+				'energy',
+				$author$project$Data$Impact$encode(v.b9)),
+				_Utils_Tuple2(
+				'impacts',
+				$author$project$Data$Impact$encode(
+					$author$project$Data$Impact$sumImpacts(
+						_List_fromArray(
+							[v.b9, v.kp])))),
+				_Utils_Tuple2(
+				'toxicity',
+				$author$project$Data$Impact$encode(v.kp)),
+				_Utils_Tuple2(
+				'operations',
+				A2(
+					$elm$json$Json$Encode$list,
+					$elm$json$Json$Encode$string,
+					A2($elm$core$List$map, $author$project$Data$Process$getDisplayName, v.bz)))
+			]));
+};
+var $author$project$Data$Textile$Step$encodeProcessInfo = function (v) {
+	var encodeMaybeString = A2(
+		$elm$core$Basics$composeR,
+		$elm$core$Maybe$map($elm$json$Json$Encode$string),
+		$elm$core$Maybe$withDefault($elm$json$Json$Encode$null));
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'airTransport',
+				encodeMaybeString(v.bX)),
+				_Utils_Tuple2(
+				'airTransportRatio',
+				encodeMaybeString(v.bY)),
+				_Utils_Tuple2(
+				'countryElec',
+				encodeMaybeString(v.aF)),
+				_Utils_Tuple2(
+				'countryHeat',
+				encodeMaybeString(v.cM)),
+				_Utils_Tuple2(
+				'distribution',
+				encodeMaybeString(v.cO)),
+				_Utils_Tuple2(
+				'endOfLife',
+				encodeMaybeString(v.ix)),
+				_Utils_Tuple2(
+				'fabric',
+				encodeMaybeString(v.f_)),
+				_Utils_Tuple2(
+				'fading',
+				encodeMaybeString(v.cb)),
+				_Utils_Tuple2(
+				'making',
+				encodeMaybeString(v.eI)),
+				_Utils_Tuple2(
+				'passengerCar',
+				encodeMaybeString(v.jF)),
+				_Utils_Tuple2(
+				'roadTransport',
+				encodeMaybeString(v.bI)),
+				_Utils_Tuple2(
+				'seaTransport',
+				encodeMaybeString(v.cr)),
+				_Utils_Tuple2(
+				'useIroning',
+				encodeMaybeString(v.d2)),
+				_Utils_Tuple2(
+				'useNonIroning',
+				encodeMaybeString(v.d3))
+			]));
+};
+var $author$project$Data$Unit$encodeThreadDensity = function (_v0) {
+	var _float = _v0;
+	return $elm$json$Json$Encode$float(_float);
+};
+var $author$project$Data$Textile$Step$Label$toString = function (label) {
+	switch (label) {
+		case 0:
+			return 'Distribution';
+		case 1:
+			return 'Fin de vie';
+		case 2:
+			return 'Ennoblissement';
+		case 3:
+			return 'Tissage & Tricotage';
+		case 4:
+			return 'Confection';
+		case 5:
+			return 'Matières premières';
+		case 6:
+			return 'Filature';
+		default:
+			return 'Utilisation';
+	}
+};
+var $author$project$Data$Textile$Step$encode = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'airTransportRatio',
+				$author$project$Data$Split$encodeFloat(v.bY)),
+				_Utils_Tuple2(
+				'complementsImpacts',
+				$author$project$Data$Impact$encodeComplementsImpacts(v.h1)),
+				_Utils_Tuple2(
+				'country',
+				$author$project$Data$Country$encode(v.fL)),
+				_Utils_Tuple2(
+				'deadstock',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Mass$inKilograms(v.h8))),
+				_Utils_Tuple2(
+				'durability',
+				$author$project$Data$Unit$encodeNonPhysicalDurability(v.au)),
+				_Utils_Tuple2(
+				'editable',
+				$elm$json$Json$Encode$bool(v.iu)),
+				_Utils_Tuple2(
+				'elecKWh',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Energy$inKilowattHours(v.ax))),
+				_Utils_Tuple2(
+				'enabled',
+				$elm$json$Json$Encode$bool(v.cP)),
+				_Utils_Tuple2(
+				'heatMJ',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Energy$inMegajoules(v.ez))),
+				_Utils_Tuple2(
+				'impacts',
+				$author$project$Data$Impact$encode(
+					A2(
+						$author$project$Data$Impact$applyComplements,
+						$author$project$Data$Impact$getTotalComplementsImpacts(v.h1),
+						v.z))),
+				_Utils_Tuple2(
+				'inputMass',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Mass$inKilograms(v.cg))),
+				_Utils_Tuple2(
+				'label',
+				$elm$json$Json$Encode$string(
+					$author$project$Data$Textile$Step$Label$toString(v._))),
+				_Utils_Tuple2(
+				'makingDeadStock',
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, v.cl))),
+				_Utils_Tuple2(
+				'makingWaste',
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, v.cm))),
+				_Utils_Tuple2(
+				'outputMass',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Mass$inKilograms(v.jE))),
+				_Utils_Tuple2(
+				'picking',
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodePickPerMeter, v.gH))),
+				_Utils_Tuple2(
+				'preTreatments',
+				$author$project$Data$Textile$Step$encodePreTreatments(v.jK)),
+				_Utils_Tuple2(
+				'processInfo',
+				$author$project$Data$Textile$Step$encodeProcessInfo(v.ab)),
+				_Utils_Tuple2(
+				'surfaceMass',
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeSurfaceMass, v.e5))),
+				_Utils_Tuple2(
+				'threadDensity',
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeThreadDensity, v.hk))),
+				_Utils_Tuple2(
+				'transport',
+				$author$project$Data$Transport$encode(v.c5)),
+				_Utils_Tuple2(
+				'waste',
+				$elm$json$Json$Encode$float(
+					$ianmackenzie$elm_units$Mass$inKilograms(v.hz))),
+				_Utils_Tuple2(
+				'yarnSize',
+				A2(
+					$elm$core$Maybe$withDefault,
+					$elm$json$Json$Encode$null,
+					A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeYarnSize, v.kF)))
+			]));
+};
+var $author$project$Data$Textile$LifeCycle$encode = $elm$json$Json$Encode$array($author$project$Data$Textile$Step$encode);
+var $author$project$Data$Textile$Simulator$getTotalImpactsWithoutDurability = function (_v0) {
+	var lifeCycle = _v0.K;
+	var trimsImpacts = _v0.c7;
+	var complementsImpactsWithoutDurability = $author$project$Data$Textile$LifeCycle$sumComplementsImpacts(
+		A2(
+			$elm$core$Array$filter,
+			function ($) {
+				return $.cP;
+			},
+			lifeCycle));
+	return $author$project$Data$Impact$sumImpacts(
+		_List_fromArray(
+			[
+				A2(
+				$author$project$Data$Impact$impactsWithComplements,
+				complementsImpactsWithoutDurability,
+				$author$project$Data$Textile$LifeCycle$computeFinalImpacts(lifeCycle)),
+				trimsImpacts
+			]));
+};
+var $author$project$Route$TextileSimulator = F2(
+	function (a, b) {
+		return {$: 15, a: a, b: b};
+	});
+var $author$project$Data$Impact$default = 19;
 var $author$project$Data$Textile$Inputs$toQueryCountryCode = function (c) {
 	return _Utils_eq(c, $author$project$Data$Country$unknownCountryCode) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(c);
 };
@@ -14207,281 +14056,6 @@ var $author$project$Data$Textile$Inputs$toQuery = function (inputs) {
 		kF: inputs.kF
 	};
 };
-var $author$project$Views$Format$kgToString = function (mass) {
-	return A2(
-		$author$project$Views$Format$formatFloat,
-		3,
-		$ianmackenzie$elm_units$Mass$inKilograms(mass)) + 'kg';
-};
-var $author$project$Data$Textile$MakingComplexity$toLabel = function (makingComplexity) {
-	switch (makingComplexity) {
-		case 0:
-			return 'Elevée';
-		case 1:
-			return 'Faible';
-		case 2:
-			return 'Moyenne';
-		case 3:
-			return 'Non applicable';
-		case 4:
-			return 'Très élevée';
-		default:
-			return 'Très faible';
-	}
-};
-var $author$project$Data$Split$toPercentString = function (decimals) {
-	return A2(
-		$elm$core$Basics$composeR,
-		$author$project$Data$Split$toPercent,
-		$cuducos$elm_format_number$FormatNumber$format(
-			_Utils_update(
-				$cuducos$elm_format_number$FormatNumber$Locales$frenchLocale,
-				{
-					h9: $cuducos$elm_format_number$FormatNumber$Locales$Exact(decimals)
-				})));
-};
-var $author$project$Data$Textile$Inputs$makingOptionsToString = function (_v0) {
-	var airTransportRatio = _v0.bY;
-	var fading = _v0.cb;
-	var makingComplexity = _v0.i9;
-	var makingDeadStock = _v0.cl;
-	var makingWaste = _v0.cm;
-	return function (s) {
-		return (s !== '') ? (' (' + (s + ')')) : '';
-	}(
-		A2(
-			$elm$core$String$join,
-			', ',
-			A2(
-				$elm$core$List$filterMap,
-				$elm$core$Basics$identity,
-				_List_fromArray(
-					[
-						A2(
-						$elm$core$Maybe$map,
-						A2(
-							$elm$core$Basics$composeR,
-							$author$project$Data$Split$toPercentString(0),
-							function (s) {
-								return s + '\u202F% de perte';
-							}),
-						makingWaste),
-						A2(
-						$elm$core$Maybe$map,
-						A2(
-							$elm$core$Basics$composeR,
-							$author$project$Data$Split$toPercentString(0),
-							function (s) {
-								return s + '\u202F% de stocks dormants';
-							}),
-						makingDeadStock),
-						A2(
-						$elm$core$Maybe$map,
-						function (complexity) {
-							return 'complexité de confection ' + $author$project$Data$Textile$MakingComplexity$toLabel(complexity);
-						},
-						makingComplexity),
-						A2(
-						$elm$core$Maybe$andThen,
-						function (ratio) {
-							return (!$author$project$Data$Split$toPercent(ratio)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
-								A2($author$project$Data$Split$toPercentString, 0, ratio) + ' de transport aérien');
-						},
-						airTransportRatio),
-						_Utils_eq(
-						fading,
-						$elm$core$Maybe$Just(true)) ? $elm$core$Maybe$Just('délavé') : $elm$core$Maybe$Nothing
-					]))));
-};
-var $author$project$Data$Textile$Inputs$materialsToString = function (materials) {
-	return A2(
-		$elm$core$String$join,
-		', ',
-		A2(
-			$elm$core$List$map,
-			function (_v1) {
-				var country = _v1.fL;
-				var material = _v1.aa;
-				var share = _v1.ac;
-				var countryName = A2(
-					$elm$core$Maybe$withDefault,
-					' par défaut (' + (material.iI + ')'),
-					A2(
-						$elm$core$Maybe$map,
-						function ($) {
-							return $.L;
-						},
-						country));
-				return A2($author$project$Data$Split$toPercentString, 0, share) + ('% ' + (material.ka + (' provenance ' + countryName)));
-			},
-			A2(
-				$elm$core$List$filter,
-				function (_v0) {
-					var share = _v0.ac;
-					return $author$project$Data$Split$toFloat(share) > 0;
-				},
-				materials)));
-};
-var $author$project$Data$Textile$Printing$kindLabel = function (kind) {
-	if (!kind) {
-		return 'Pigmentaire';
-	} else {
-		return 'Fixé-lavé';
-	}
-};
-var $author$project$Data$Textile$Printing$toFullLabel = function (_v0) {
-	var kind = _v0.eF;
-	var ratio = _v0.jR;
-	return $author$project$Data$Textile$Printing$kindLabel(kind) + (' (' + (A2($author$project$Data$Split$toPercentString, 0, ratio) + '%)'));
-};
-var $author$project$Data$Textile$Fabric$toLabel = function (fabricProcess) {
-	switch (fabricProcess) {
-		case 0:
-			return 'Tricotage Circulaire';
-		case 1:
-			return 'Tricotage Fully fashioned / Seamless';
-		case 2:
-			return 'Tricotage Intégral / Whole garment';
-		case 3:
-			return 'Tricotage moyen (par défaut)';
-		case 4:
-			return 'Tricotage Rectiligne';
-		default:
-			return 'Tissage';
-	}
-};
-var $author$project$Data$Textile$Inputs$stepsToStrings = F2(
-	function (wellKnown, inputs) {
-		var ifStepEnabled = F2(
-			function (label, list) {
-				return (!A2($elm$core$List$member, label, inputs.b6)) ? list : _List_Nil;
-			});
-		return A2(
-			$elm$core$List$filter,
-			A2($elm$core$Basics$composeL, $elm$core$Basics$not, $elm$core$List$isEmpty),
-			_List_fromArray(
-				[
-					_List_fromArray(
-					[
-						_Utils_ap(
-						inputs.aC.L,
-						_Utils_ap(
-							inputs.cz ? ' remanufacturé' : '',
-							function () {
-								var _v0 = inputs.co;
-								if (!_v0.$) {
-									var physicalDurability = _v0.a;
-									return ', durabilité physique ' + $elm$core$String$fromFloat(
-										$author$project$Data$Unit$physicalDurabilityToFloat(physicalDurability));
-								} else {
-									return '';
-								}
-							}())),
-						$author$project$Views$Format$kgToString(inputs.T)
-					]),
-					A2(
-					ifStepEnabled,
-					5,
-					_List_fromArray(
-						[
-							'matière',
-							$author$project$Data$Textile$Inputs$materialsToString(inputs.jc)
-						])),
-					A2(
-					ifStepEnabled,
-					6,
-					_List_fromArray(
-						['filature', inputs.b4.L])),
-					function () {
-					var _v1 = inputs.kF;
-					if (!_v1.$) {
-						var yarnSize = _v1.a;
-						return _List_fromArray(
-							[
-								'titrage',
-								$elm$core$String$fromFloat(
-								$author$project$Data$Unit$yarnSizeInKilometers(yarnSize)) + 'Nm'
-							]);
-					} else {
-						return _List_Nil;
-					}
-				}(),
-					A2(
-					ifStepEnabled,
-					3,
-					_List_fromArray(
-						[
-							$author$project$Data$Textile$Fabric$toLabel(
-							A2($elm$core$Maybe$withDefault, inputs.aC.f_, inputs.bj)),
-							inputs.bb.L
-						])),
-					A2(
-					ifStepEnabled,
-					2,
-					_List_fromArray(
-						[
-							'ennoblissement\u00A0: ' + $author$project$Data$Process$getDisplayName(
-							A2($author$project$Data$Textile$Dyeing$toProcess, wellKnown, inputs.b7)),
-							inputs.aW.L
-						])),
-					A2(
-					ifStepEnabled,
-					2,
-					_List_fromArray(
-						[
-							'impression',
-							function () {
-							var _v2 = inputs.cp;
-							if (!_v2.$) {
-								var printing = _v2.a;
-								return 'impression ' + ($author$project$Data$Textile$Printing$toFullLabel(printing) + ('\u00A0: ' + inputs.aW.L));
-							} else {
-								return 'non';
-							}
-						}()
-						])),
-					A2(
-					ifStepEnabled,
-					4,
-					_List_fromArray(
-						[
-							'confection',
-							_Utils_ap(
-							inputs.bc.L,
-							$author$project$Data$Textile$Inputs$makingOptionsToString(inputs))
-						])),
-					A2(
-					ifStepEnabled,
-					0,
-					_List_fromArray(
-						['distribution', inputs.eh.L])),
-					A2(
-					ifStepEnabled,
-					7,
-					_List_fromArray(
-						['utilisation', inputs.ej.L])),
-					A2(
-					ifStepEnabled,
-					1,
-					_List_fromArray(
-						['fin de vie', inputs.ei.L]))
-				]));
-	});
-var $author$project$Data$Textile$Inputs$toString = F2(
-	function (wellKnown, inputs) {
-		return A2(
-			$elm$core$String$join,
-			', ',
-			A2(
-				$elm$core$List$map,
-				$elm$core$String$join('\u00A0: '),
-				A2($author$project$Data$Textile$Inputs$stepsToStrings, wellKnown, inputs)));
-	});
-var $author$project$Route$TextileSimulator = F2(
-	function (a, b) {
-		return {$: 15, a: a, b: b};
-	});
-var $author$project$Data$Impact$default = 19;
 var $elm$core$Bitwise$or = _Bitwise_or;
 var $truqu$elm_base64$Base64$Encode$intToBase64 = function (i) {
 	switch (i) {
@@ -14812,6 +14386,125 @@ var $author$project$Data$Object$Query$b64encode = A2(
 		$elm$core$Basics$composeR,
 		$elm$json$Json$Encode$encode(0),
 		$truqu$elm_base64$Base64$encode));
+var $author$project$Data$Textile$Query$encodeMaterialQuery = function (v) {
+	return $author$project$Data$Common$EncodeUtils$optionalPropertiesObject(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'country',
+				A2($elm$core$Maybe$map, $author$project$Data$Country$encodeCode, v.fL)),
+				_Utils_Tuple2(
+				'id',
+				$elm$core$Maybe$Just(
+					$author$project$Data$Textile$Material$encodeId(v.H))),
+				_Utils_Tuple2(
+				'share',
+				$elm$core$Maybe$Just(
+					$author$project$Data$Split$encodeFloat(v.ac))),
+				_Utils_Tuple2(
+				'spinning',
+				A2($elm$core$Maybe$map, $author$project$Data$Textile$Material$Spinning$encode, v.cu))
+			]));
+};
+var $author$project$Data$Textile$Query$encode = function (query) {
+	return $author$project$Data$Common$EncodeUtils$optionalPropertiesObject(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'airTransportRatio',
+				A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, query.bY)),
+				_Utils_Tuple2(
+				'business',
+				A2($elm$core$Maybe$map, $author$project$Data$Textile$Economics$encodeBusiness, query.fC)),
+				_Utils_Tuple2(
+				'countryDyeing',
+				A2($elm$core$Maybe$map, $author$project$Data$Country$encodeCode, query.aW)),
+				_Utils_Tuple2(
+				'countryFabric',
+				A2($elm$core$Maybe$map, $author$project$Data$Country$encodeCode, query.bb)),
+				_Utils_Tuple2(
+				'countryMaking',
+				A2($elm$core$Maybe$map, $author$project$Data$Country$encodeCode, query.bc)),
+				_Utils_Tuple2(
+				'countrySpinning',
+				A2($elm$core$Maybe$map, $author$project$Data$Country$encodeCode, query.b4)),
+				_Utils_Tuple2(
+				'disabledSteps',
+				function () {
+					var _v0 = query.b6;
+					if (!_v0.b) {
+						return $elm$core$Maybe$Nothing;
+					} else {
+						var list = _v0;
+						return $elm$core$Maybe$Just(
+							A2($elm$json$Json$Encode$list, $author$project$Data$Textile$Step$Label$encode, list));
+					}
+				}()),
+				_Utils_Tuple2(
+				'dyeingProcessType',
+				A2($elm$core$Maybe$map, $author$project$Data$Textile$Dyeing$encode, query.b7)),
+				_Utils_Tuple2(
+				'fabricProcess',
+				A2($elm$core$Maybe$map, $author$project$Data$Textile$Fabric$encode, query.bj)),
+				_Utils_Tuple2(
+				'fading',
+				A2($elm$core$Maybe$map, $elm$json$Json$Encode$bool, query.cb)),
+				_Utils_Tuple2(
+				'makingComplexity',
+				A2(
+					$elm$core$Maybe$map,
+					A2($elm$core$Basics$composeR, $author$project$Data$Textile$MakingComplexity$toString, $elm$json$Json$Encode$string),
+					query.i9)),
+				_Utils_Tuple2(
+				'makingDeadStock',
+				A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, query.cl)),
+				_Utils_Tuple2(
+				'makingWaste',
+				A2($elm$core$Maybe$map, $author$project$Data$Split$encodeFloat, query.cm)),
+				_Utils_Tuple2(
+				'mass',
+				$elm$core$Maybe$Just(
+					$elm$json$Json$Encode$float(
+						$ianmackenzie$elm_units$Mass$inKilograms(query.T)))),
+				_Utils_Tuple2(
+				'materials',
+				$elm$core$Maybe$Just(
+					A2($elm$json$Json$Encode$list, $author$project$Data$Textile$Query$encodeMaterialQuery, query.jc))),
+				_Utils_Tuple2(
+				'numberOfReferences',
+				A2($elm$core$Maybe$map, $elm$json$Json$Encode$int, query.gB)),
+				_Utils_Tuple2(
+				'physicalDurability',
+				A2($elm$core$Maybe$map, $author$project$Data$Unit$encodePhysicalDurability, query.co)),
+				_Utils_Tuple2(
+				'price',
+				A2($elm$core$Maybe$map, $author$project$Data$Textile$Economics$encodePrice, query.gM)),
+				_Utils_Tuple2(
+				'printing',
+				A2($elm$core$Maybe$map, $author$project$Data$Textile$Printing$encode, query.cp)),
+				_Utils_Tuple2(
+				'product',
+				$elm$core$Maybe$Just(
+					$elm$json$Json$Encode$string(
+						$author$project$Data$Textile$Product$idToString(query.aC)))),
+				_Utils_Tuple2(
+				'surfaceMass',
+				A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeSurfaceMass, query.e5)),
+				_Utils_Tuple2(
+				'trims',
+				A2(
+					$elm$core$Maybe$map,
+					$elm$json$Json$Encode$list($author$project$Data$Component$encodeItem),
+					query.kv)),
+				_Utils_Tuple2(
+				'upcycled',
+				$elm$core$Maybe$Just(
+					$elm$json$Json$Encode$bool(query.cz))),
+				_Utils_Tuple2(
+				'yarnSize',
+				A2($elm$core$Maybe$map, $author$project$Data$Unit$encodeYarnSize, query.kF))
+			]));
+};
 var $author$project$Data$Textile$Query$b64encode = A2(
 	$elm$core$Basics$composeR,
 	$author$project$Data$Textile$Query$encode,
@@ -15028,28 +14721,42 @@ var $author$project$Data$Dataset$toRoutePath = function (dataset) {
 			}
 	}
 };
+var $author$project$Page$Admin$Section$toSlug = function (section) {
+	switch (section) {
+		case 0:
+			return 'accounts';
+		case 1:
+			return 'components';
+		default:
+			return 'processes';
+	}
+};
 var $author$project$Route$toString = function (route) {
 	var pieces = function () {
 		_v0$8:
 		while (true) {
 			switch (route.$) {
 				case 0:
+					var section = route.a;
 					return _List_fromArray(
-						['api']);
+						[
+							'admin',
+							$author$project$Page$Admin$Section$toSlug(section)
+						]);
 				case 1:
 					return _List_fromArray(
-						['auth']);
+						['api']);
 				case 2:
+					return _List_fromArray(
+						['auth']);
+				case 3:
 					var email = route.a;
 					var token = route.b;
 					return _List_fromArray(
 						['auth', email, token]);
-				case 3:
-					return _List_fromArray(
-						['auth', 'signup']);
 				case 4:
 					return _List_fromArray(
-						['admin', 'components']);
+						['auth', 'signup']);
 				case 5:
 					var slug = route.a;
 					return _List_fromArray(
@@ -15205,6 +14912,322 @@ var $author$project$Server$toTextileWebUrl = F2(
 				A2($elm$core$Maybe$withDefault, $author$project$Data$Impact$default, maybeTrigram),
 				$elm$core$Maybe$Just(
 					$author$project$Data$Textile$Inputs$toQuery(textileQuery))));
+	});
+var $author$project$Server$toAllImpactsDetailed = function (v) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'webUrl',
+				$elm$json$Json$Encode$string(
+					_Utils_ap(
+						$author$project$Server$serverRootUrl,
+						A2($author$project$Server$toTextileWebUrl, $elm$core$Maybe$Nothing, v.u)))),
+				_Utils_Tuple2(
+				'complementsImpacts',
+				$author$project$Data$Impact$encodeComplementsImpacts(v.h1)),
+				_Utils_Tuple2(
+				'daysOfWear',
+				$elm$json$Json$Encode$int(
+					$elm$core$Basics$round(
+						$ianmackenzie$elm_units$Duration$inDays(v.ek)))),
+				_Utils_Tuple2(
+				'durability',
+				$elm$json$Json$Encode$float(
+					$author$project$Data$Unit$floatDurabilityFromHolistic(v.au))),
+				_Utils_Tuple2(
+				'impacts',
+				$author$project$Data$Impact$encode(v.z)),
+				_Utils_Tuple2(
+				'impactsWithoutDurability',
+				$author$project$Data$Impact$encode(
+					$author$project$Data$Textile$Simulator$getTotalImpactsWithoutDurability(v))),
+				_Utils_Tuple2(
+				'inputs',
+				$author$project$Data$Textile$Inputs$encode(v.u)),
+				_Utils_Tuple2(
+				'lifeCycle',
+				$author$project$Data$Textile$LifeCycle$encode(v.K)),
+				_Utils_Tuple2(
+				'transport',
+				$author$project$Data$Transport$encode(v.c5)),
+				_Utils_Tuple2(
+				'trimsImpacts',
+				$author$project$Data$Impact$encode(v.c7)),
+				_Utils_Tuple2(
+				'useNbCycles',
+				$elm$json$Json$Encode$int(v.kz))
+			]));
+};
+var $author$project$Views$Format$kgToString = function (mass) {
+	return A2(
+		$author$project$Views$Format$formatFloat,
+		3,
+		$ianmackenzie$elm_units$Mass$inKilograms(mass)) + 'kg';
+};
+var $author$project$Data$Textile$MakingComplexity$toLabel = function (makingComplexity) {
+	switch (makingComplexity) {
+		case 0:
+			return 'Elevée';
+		case 1:
+			return 'Faible';
+		case 2:
+			return 'Moyenne';
+		case 3:
+			return 'Non applicable';
+		case 4:
+			return 'Très élevée';
+		default:
+			return 'Très faible';
+	}
+};
+var $author$project$Data$Split$toPercentString = function (decimals) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$author$project$Data$Split$toPercent,
+		$cuducos$elm_format_number$FormatNumber$format(
+			_Utils_update(
+				$cuducos$elm_format_number$FormatNumber$Locales$frenchLocale,
+				{
+					h9: $cuducos$elm_format_number$FormatNumber$Locales$Exact(decimals)
+				})));
+};
+var $author$project$Data$Textile$Inputs$makingOptionsToString = function (_v0) {
+	var airTransportRatio = _v0.bY;
+	var fading = _v0.cb;
+	var makingComplexity = _v0.i9;
+	var makingDeadStock = _v0.cl;
+	var makingWaste = _v0.cm;
+	return function (s) {
+		return (s !== '') ? (' (' + (s + ')')) : '';
+	}(
+		A2(
+			$elm$core$String$join,
+			', ',
+			A2(
+				$elm$core$List$filterMap,
+				$elm$core$Basics$identity,
+				_List_fromArray(
+					[
+						A2(
+						$elm$core$Maybe$map,
+						A2(
+							$elm$core$Basics$composeR,
+							$author$project$Data$Split$toPercentString(0),
+							function (s) {
+								return s + '\u202F% de perte';
+							}),
+						makingWaste),
+						A2(
+						$elm$core$Maybe$map,
+						A2(
+							$elm$core$Basics$composeR,
+							$author$project$Data$Split$toPercentString(0),
+							function (s) {
+								return s + '\u202F% de stocks dormants';
+							}),
+						makingDeadStock),
+						A2(
+						$elm$core$Maybe$map,
+						function (complexity) {
+							return 'complexité de confection ' + $author$project$Data$Textile$MakingComplexity$toLabel(complexity);
+						},
+						makingComplexity),
+						A2(
+						$elm$core$Maybe$andThen,
+						function (ratio) {
+							return (!$author$project$Data$Split$toPercent(ratio)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+								A2($author$project$Data$Split$toPercentString, 0, ratio) + ' de transport aérien');
+						},
+						airTransportRatio),
+						_Utils_eq(
+						fading,
+						$elm$core$Maybe$Just(true)) ? $elm$core$Maybe$Just('délavé') : $elm$core$Maybe$Nothing
+					]))));
+};
+var $author$project$Data$Textile$Inputs$materialsToString = function (materials) {
+	return A2(
+		$elm$core$String$join,
+		', ',
+		A2(
+			$elm$core$List$map,
+			function (_v1) {
+				var country = _v1.fL;
+				var material = _v1.aa;
+				var share = _v1.ac;
+				var countryName = A2(
+					$elm$core$Maybe$withDefault,
+					' par défaut (' + (material.iI + ')'),
+					A2(
+						$elm$core$Maybe$map,
+						function ($) {
+							return $.L;
+						},
+						country));
+				return A2($author$project$Data$Split$toPercentString, 0, share) + ('% ' + (material.ka + (' provenance ' + countryName)));
+			},
+			A2(
+				$elm$core$List$filter,
+				function (_v0) {
+					var share = _v0.ac;
+					return $author$project$Data$Split$toFloat(share) > 0;
+				},
+				materials)));
+};
+var $author$project$Data$Textile$Printing$kindLabel = function (kind) {
+	if (!kind) {
+		return 'Pigmentaire';
+	} else {
+		return 'Fixé-lavé';
+	}
+};
+var $author$project$Data$Textile$Printing$toFullLabel = function (_v0) {
+	var kind = _v0.eF;
+	var ratio = _v0.jR;
+	return $author$project$Data$Textile$Printing$kindLabel(kind) + (' (' + (A2($author$project$Data$Split$toPercentString, 0, ratio) + '%)'));
+};
+var $author$project$Data$Textile$Fabric$toLabel = function (fabricProcess) {
+	switch (fabricProcess) {
+		case 0:
+			return 'Tricotage Circulaire';
+		case 1:
+			return 'Tricotage Fully fashioned / Seamless';
+		case 2:
+			return 'Tricotage Intégral / Whole garment';
+		case 3:
+			return 'Tricotage moyen (par défaut)';
+		case 4:
+			return 'Tricotage Rectiligne';
+		default:
+			return 'Tissage';
+	}
+};
+var $author$project$Data$Textile$Inputs$stepsToStrings = F2(
+	function (wellKnown, inputs) {
+		var ifStepEnabled = F2(
+			function (label, list) {
+				return (!A2($elm$core$List$member, label, inputs.b6)) ? list : _List_Nil;
+			});
+		return A2(
+			$elm$core$List$filter,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, $elm$core$List$isEmpty),
+			_List_fromArray(
+				[
+					_List_fromArray(
+					[
+						_Utils_ap(
+						inputs.aC.L,
+						_Utils_ap(
+							inputs.cz ? ' remanufacturé' : '',
+							function () {
+								var _v0 = inputs.co;
+								if (!_v0.$) {
+									var physicalDurability = _v0.a;
+									return ', durabilité physique ' + $elm$core$String$fromFloat(
+										$author$project$Data$Unit$physicalDurabilityToFloat(physicalDurability));
+								} else {
+									return '';
+								}
+							}())),
+						$author$project$Views$Format$kgToString(inputs.T)
+					]),
+					A2(
+					ifStepEnabled,
+					5,
+					_List_fromArray(
+						[
+							'matière',
+							$author$project$Data$Textile$Inputs$materialsToString(inputs.jc)
+						])),
+					A2(
+					ifStepEnabled,
+					6,
+					_List_fromArray(
+						['filature', inputs.b4.L])),
+					function () {
+					var _v1 = inputs.kF;
+					if (!_v1.$) {
+						var yarnSize = _v1.a;
+						return _List_fromArray(
+							[
+								'titrage',
+								$elm$core$String$fromFloat(
+								$author$project$Data$Unit$yarnSizeInKilometers(yarnSize)) + 'Nm'
+							]);
+					} else {
+						return _List_Nil;
+					}
+				}(),
+					A2(
+					ifStepEnabled,
+					3,
+					_List_fromArray(
+						[
+							$author$project$Data$Textile$Fabric$toLabel(
+							A2($elm$core$Maybe$withDefault, inputs.aC.f_, inputs.bj)),
+							inputs.bb.L
+						])),
+					A2(
+					ifStepEnabled,
+					2,
+					_List_fromArray(
+						[
+							'ennoblissement\u00A0: ' + $author$project$Data$Process$getDisplayName(
+							A2($author$project$Data$Textile$Dyeing$toProcess, wellKnown, inputs.b7)),
+							inputs.aW.L
+						])),
+					A2(
+					ifStepEnabled,
+					2,
+					_List_fromArray(
+						[
+							'impression',
+							function () {
+							var _v2 = inputs.cp;
+							if (!_v2.$) {
+								var printing = _v2.a;
+								return 'impression ' + ($author$project$Data$Textile$Printing$toFullLabel(printing) + ('\u00A0: ' + inputs.aW.L));
+							} else {
+								return 'non';
+							}
+						}()
+						])),
+					A2(
+					ifStepEnabled,
+					4,
+					_List_fromArray(
+						[
+							'confection',
+							_Utils_ap(
+							inputs.bc.L,
+							$author$project$Data$Textile$Inputs$makingOptionsToString(inputs))
+						])),
+					A2(
+					ifStepEnabled,
+					0,
+					_List_fromArray(
+						['distribution', inputs.eh.L])),
+					A2(
+					ifStepEnabled,
+					7,
+					_List_fromArray(
+						['utilisation', inputs.ej.L])),
+					A2(
+					ifStepEnabled,
+					1,
+					_List_fromArray(
+						['fin de vie', inputs.ei.L]))
+				]));
+	});
+var $author$project$Data$Textile$Inputs$toString = F2(
+	function (wellKnown, inputs) {
+		return A2(
+			$elm$core$String$join,
+			', ',
+			A2(
+				$elm$core$List$map,
+				$elm$core$String$join('\u00A0: '),
+				A2($author$project$Data$Textile$Inputs$stepsToStrings, wellKnown, inputs)));
 	});
 var $author$project$Server$toAllImpactsSimple = F2(
 	function (wellKnown, _v0) {
@@ -15526,7 +15549,7 @@ var $author$project$Server$handleRequest = F2(
 				case 10:
 					if (!_v0.a.a.$) {
 						var textileQuery = _v0.a.a.a;
-						return A3($author$project$Server$executeTextileQuery, db, $author$project$Data$Textile$Simulator$encode, textileQuery);
+						return A3($author$project$Server$executeTextileQuery, db, $author$project$Server$toAllImpactsDetailed, textileQuery);
 					} else {
 						var error = _v0.a.a.a;
 						return A2(

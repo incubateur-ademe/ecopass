@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  justify-content: center;
+}
+
+.box {
+  flex: 1;
+  min-width: min(32rem, 100%);
+}
+
+.tile {
+  flex: 1;
+
+  svg {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.75rem;
+  }
+}

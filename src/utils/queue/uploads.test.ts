@@ -7,7 +7,7 @@ import { failUpload, completeUpload } from "../../services/upload"
 import { checkUploadsStatus, getFirstFileUpload, updateUploadToPending } from "../../db/upload"
 import { downloadFileFromS3 } from "../s3/bucket"
 import { FileUpload } from "../../db/upload"
-import { Status } from "../../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { decryptAndDezipFile } from "../encryption/encryption"
 
 jest.mock("chardet")
@@ -16,7 +16,10 @@ jest.mock("../parsing/excel/parse")
 jest.mock("../../db/product")
 jest.mock("../../services/upload")
 jest.mock("../../db/upload")
-jest.mock("../s3/bucket")
+jest.mock("../s3/bucket", () => ({
+  uploadFileToS3: jest.fn(),
+  downloadFileFromS3: jest.fn(),
+}))
 jest.mock("../encryption/encryption")
 
 const mockedChardet = chardet as jest.Mocked<typeof chardet>

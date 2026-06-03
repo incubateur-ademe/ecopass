@@ -99,4 +99,5 @@ export type ParsedProduct = {
     id: string
     quantity: string | number | undefined
   }[]
+  mainComponent?: boolean
 }

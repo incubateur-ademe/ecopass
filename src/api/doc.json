@@ -183,7 +183,7 @@
           }
         ],
         "tags": ["Déclaration"],
-        "summary": "Déclare un lot de produits sur le portail de l'Affichage Environnemental. Uniquement disponible sur le serveur de test.",
+        "summary": "Déclare un lot de produits sur le portail de l'Affichage Environnemental.",
         "description": "Permet de déclarer plusieurs produits regroupés en lot. Tous les produits du lot partagent les mêmes métadonnées (GTINs, référence interne, marque, score déclaré) mais peuvent avoir des informations techniques différentes (matériaux, pays, etc.).",
         "requestBody": {
           "description": "Requête modélisant les paramètres du lot de produits à déclarer",
@@ -221,6 +221,89 @@
           },
           "208": {
             "description": "Le nouveau lot est identique à l'ancien",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "enum": ["Le produit existe déjà."]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidParametersError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise - L'utilisateur doit fournir un token Bearer valide dans l'en-tête Authorization. Cette erreur survient si le token est manquant, invalide ou expiré.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/produits/multicomposants": {
+      "post": {
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Déclaration"],
+        "summary": "Déclare un produit multicomposants sur le portail de l'Affichage Environnemental. Uniquement disponible sur l'environnement de test pour le moment.",
+        "description": "Permet de déclarer un produit regroupant plusieurs composants. Tous les composants du produit partagent les mêmes métadonnées (GTINs, référence interne, marque, score déclaré) et le même type de produit, mais peuvent avoir des informations techniques différentes (masse, matières, pays, impression, etc.). Un seul composant doit être défini comme composant principal.",
+        "requestBody": {
+          "description": "Requête modélisant les paramètres du produit multicomposants à déclarer",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiComponentProductQuery"
+              },
+              "examples": {
+                "vesteMulticomposants": {
+                  "$ref": "#/components/examples/vesteMulticomposants"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Déclaration de produit multicomposants validée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Déclaration de produit multicomposants réussie.",
+                  "properties": {
+                    "result": {
+                      "type": "string",
+                      "enum": ["success"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "208": {
+            "description": "Le nouveau produit multicomposants est identique à l'ancien",
             "content": {
               "application/json": {
                 "schema": {
@@ -392,27 +475,34 @@
                       "createdAt": "2025-11-27T10:00:00Z",
                       "category": "T-shirt",
                       "score": {
-                        "score": 2311.08,
-                        "standardized": 955.01,
-                        "durability": 1.06,
-                        "acd": 0.105,
-                        "cch": 2.794,
-                        "etf": 172.27,
-                        "fru": 44.07,
-                        "fwe": 0.0007,
-                        "htc": 1.25e-9,
-                        "htn": 1.25e-7,
-                        "ior": 8.66,
-                        "ldu": 48.77,
-                        "mru": 0.0014,
-                        "ozd": 2.33e-7,
-                        "pco": 0.024,
-                        "pma": 2.9e-7,
-                        "swe": 0.007,
-                        "tre": 0.085,
-                        "wtu": 0.438,
-                        "microfibers": 129.95,
-                        "outOfEuropeEOL": 138.12
+                        "score": 1404.965599718265,
+                        "standardized": 936.6437331455104,
+                        "durability": 0.67,
+                        "acd": 0.04195569657855826,
+                        "cch": 7.74213460144599,
+                        "etf": 305.9071623783734,
+                        "fru": 99.54550743506823,
+                        "fwe": 0.001226779343506402,
+                        "ior": 9.453062345833024,
+                        "ldu": 102.9176328600372,
+                        "mru": 0.00002244465726084131,
+                        "ozd": 1.904132357839134e-7,
+                        "pco": 0.03029830439785,
+                        "pma": 5.17488501906917e-7,
+                        "swe": 0.0245479277707963,
+                        "tre": 0.1024326352422391,
+                        "wtu": 2.089747384008741,
+                        "microfibers": 55.97014925373134,
+                        "outOfEuropeEOL": 54.85074626865671,
+                        "materials": 410.5263602338779,
+                        "spinning": 42.6176992142446,
+                        "fabric": 30.19844148041522,
+                        "dyeing": 201.2995480190762,
+                        "making": 26.750412,
+                        "usage": 106.7891634,
+                        "endOfLife": 41.73391728,
+                        "transport": 80.60366918362402,
+                        "trims": 0.8077410000000782
                       },
                       "upload": {
                         "version": "7.0.0",
@@ -805,6 +895,63 @@
             }
           ]
         }
+      },
+      "vesteMulticomposants": {
+        "summary": "Produit multicomposants de type manteau",
+        "value": {
+          "gtins": ["1234567890456"],
+          "internalReference": "VESTE-MULTI-001",
+          "brandId": "74a1ce48-56e1-452e-ba9b-0c55fae4ed85",
+          "product": "manteau",
+          "price": 89,
+          "numberOfReferences": 300,
+          "business": "small-business",
+          "trims": [
+            {
+              "id": "86b877ff-0d59-482f-bb34-3ff306b07496",
+              "quantity": 1
+            }
+          ],
+          "components": [
+            {
+              "mainComponent": true,
+              "mass": 0.65,
+              "materials": [
+                {
+                  "id": "ei-coton",
+                  "share": 0.7,
+                  "country": "TR"
+                },
+                {
+                  "id": "ei-pet",
+                  "share": 0.3,
+                  "country": "CN"
+                }
+              ],
+              "countrySpinning": "TR",
+              "countryFabric": "TR",
+              "countryDyeing": "TR",
+              "countryMaking": "MA"
+            },
+            {
+              "mass": 0.12,
+              "materials": [
+                {
+                  "id": "ei-pet",
+                  "share": 1,
+                  "country": "CN"
+                }
+              ],
+              "countrySpinning": "CN",
+              "countryFabric": "CN",
+              "countryDyeing": "CN",
+              "printing": {
+                "kind": "pigment",
+                "ratio": 0.05
+              }
+            }
+          ]
+        }
       }
     },
     "schemas": {
@@ -940,7 +1087,7 @@
         "properties": {
           "gtins": {
             "type": "array",
-            "description": "Les codes GTIN (ou EAN) du produit, format 13 ou 8 chiffres",
+            "description": "Les codes GTIN (ou EAN) du produit, format 13 ou 8 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez [nous contacter](mailto:affichage-environnemental@ecobalyse.beta.gouv.fr).",
             "items": {
               "type": "string",
               "pattern": "^(\\d{8}|\\d{13})$",
@@ -958,7 +1105,7 @@
           },
           "declaredScore": {
             "type": "number",
-            "description": "Score Ecobalyse, si vous l'avez calculé. Attention, si il est différent de notre calcul, le produit sera en erreur."
+            "description": "Dans l'hypothèse où vous ne déclarez pas ce champ, le calcul sera effectué automatiquement conformément à vos déclarations. Le score calculé demeure sous votre responsabilité. [Consultez la méthode de calcul](/notice-reglementaire.pdf)."
           },
           "mass": {
             "type": "number",
@@ -1112,7 +1259,7 @@
         "properties": {
           "gtins": {
             "type": "array",
-            "description": "Les codes GTIN (ou EAN) du lot de produits, format 13 ou 8 chiffres",
+            "description": "Les codes GTIN (ou EAN) du lot de produits, format 13 ou 8 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez [nous contacter](mailto:affichage-environnemental@ecobalyse.beta.gouv.fr).",
             "items": {
               "type": "string",
               "pattern": "^(\\d{8}|\\d{13})$",
@@ -1130,7 +1277,7 @@
           },
           "declaredScore": {
             "type": "number",
-            "description": "Score Ecobalyse total du lot, si vous l'avez calculé. Attention, si il est différent de notre calcul, le lot sera en erreur."
+            "description": "Dans l'hypothèse où vous ne déclarez pas ce champ, le calcul sera effectué automatiquement conformément à vos déclarations. Le score calculé demeure sous votre responsabilité. [Consultez la méthode de calcul](/notice-reglementaire.pdf)."
           },
           "numberOfReferences": {
             "description": "Nombre de références au catalogue de la marque.",
@@ -1152,6 +1299,13 @@
               "additionalProperties": false,
               "required": ["mass", "materials", "product", "countryMaking"],
               "properties": {
+                "numberOfItem": {
+                  "description": "Nombre d'articles de ce type dans le lot",
+                  "default": 1,
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 999
+                },
                 "mass": {
                   "type": "number",
                   "description": "Masse du produit fini, en kilogrammes",
@@ -1265,6 +1419,170 @@
           }
         }
       },
+      "MultiComponentProductQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gtins", "internalReference", "product", "components"],
+        "properties": {
+          "gtins": {
+            "type": "array",
+            "description": "Les codes GTIN (ou EAN) du produit multicomposants, format 13 ou 8 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez [nous contacter](mailto:affichage-environnemental@ecobalyse.beta.gouv.fr).",
+            "items": {
+              "type": "string",
+              "pattern": "^(\\d{8}|\\d{13})$",
+              "example": "1234567890123"
+            }
+          },
+          "internalReference": {
+            "type": "string",
+            "description": "Référence interne du produit multicomposants",
+            "example": "MULTI-123"
+          },
+          "brandId": {
+            "type": "string",
+            "description": "Marque id du produit"
+          },
+          "declaredScore": {
+            "type": "number",
+            "description": "Dans l'hypothèse où vous ne déclarez pas ce champ, le calcul sera effectué automatiquement conformément à vos déclarations. Le score calculé demeure sous votre responsabilité. [Consultez la méthode de calcul](/notice-reglementaire.pdf)."
+          },
+          "product": {
+            "type": "string",
+            "description": "Identifiant du produit final, commun à l'ensemble des composants (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/products`)",
+            "enum": [
+              "chemise",
+              "jean",
+              "jupe",
+              "manteau",
+              "pantalon",
+              "pull",
+              "tshirt",
+              "chaussettes",
+              "calecon",
+              "slip",
+              "maillot-de-bain"
+            ]
+          },
+          "business": {
+            "type": "string",
+            "description": "Type d'entreprise et d'offre de services :<br/>- `small-business` : TPE/PME<br/>- `large-business-with-services` : Grande entreprise avec service de réparation<br/>- `large-business-without-services` (par défaut): Grande entreprise sans service de réparation",
+            "enum": ["small-business", "large-business-with-services", "large-business-without-services"]
+          },
+          "numberOfReferences": {
+            "description": "Nombre de références au catalogue de la marque.",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 999999
+          },
+          "price": {
+            "description": "Prix du produit, en Euros (€).",
+            "type": "number",
+            "minimum": 1
+          },
+          "trims": {
+            "description": "Liste des accessoires du produit (boutons, zip, etc).<br/>La liste des accessoires disponibles est accessible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/trims`.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Identifiant de l'accessoire"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "components": {
+            "type": "array",
+            "description": "Liste des composants du produit. Un et un seul composant doit avoir `mainComponent` à `true` et un `countryMaking` spécifié.",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["mass", "materials"],
+              "properties": {
+                "mainComponent": {
+                  "type": "boolean",
+                  "description": "Indique si ce composant est le composant principal du produit. Exactement un composant doit être principal."
+                },
+                "mass": {
+                  "type": "number",
+                  "description": "Masse du composant, en kilogrammes",
+                  "minimum": 0.01,
+                  "example": 0.17
+                },
+                "materials": {
+                  "type": "array",
+                  "description": "Liste des matières composant ce composant",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductQueryMaterial"
+                  },
+                  "minItems": 1
+                },
+                "airTransportRatio": {
+                  "type": "number",
+                  "description": "Part de **transport aérien** entre l'étape de **Confection** et l'étape de **Distribution**, entre `0` et `1`",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "countryDyeing": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Teinture** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)<br/>Ce champs est requis si `upcycled` n'est pas `true`.",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "countryFabric": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Tissage/Tricotage** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`)<br/>Ce champs est requis si `upcycled` n'est pas `true`.",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "countryMaking": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Confection** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`). Ce champ est requis uniquement si `mainComponent` vaut `true`.",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "countrySpinning": {
+                  "type": "string",
+                  "description": "Code pays pour l'étape de **Filature** (liste disponible sur le point d'entrée `https://ecobalyse.beta.gouv.fr/versions/v7.0.0/api/textile/countries`).<br/>Si non spécifié, le pays de filature pris en considération est celui de production de<br/>la matière la plus représentée dans le mix.",
+                  "minLength": 2,
+                  "maxLength": 3
+                },
+                "fading": {
+                  "type": "boolean",
+                  "description": "Active l'application du **procédé de délavage** pour l'étape de confection du composant."
+                },
+                "printing": {
+                  "type": "object",
+                  "description": "Ce paramètre permet de préciser le type d'impression effectuée sur le composant.<br/>Par exemple, `{\"kind\": \"pigment\", \"ratio\": 0.1}` signifie impression pigmentaire sur 10%<br/>de la superficie du composant.",
+                  "required": ["kind"],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "description": "Type de procédé d'impression pouvant prendre les valeurs suivantes :<br/>- `pigment` pour une impression pigmentaire ;<br/>- `substantive` pour une impression fixé/lavé ;",
+                      "enum": ["pigment", "substantive"]
+                    },
+                    "ratio": {
+                      "type": "number",
+                      "description": "Pourcentage de surface imprimée",
+                      "enum": [0.01, 0.05, 0.2, 0.5, 0.8]
+                    }
+                  }
+                },
+                "upcycled": {
+                  "description": "Composant remanufacturé",
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
       "ProductResponse": {
         "type": "object",
         "description": "Informations complètes d'un produit avec son score environnemental",
@@ -1289,9 +1607,29 @@
           "brand": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Identifiant de la marque"
+              },
               "name": {
                 "type": "string",
                 "description": "Marque du produit"
+              },
+              "organization": {
+                "type": "object",
+                "description": "Organisation propriétaire de la marque",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Identifiant de l'organisation"
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "description": "Nom d'affichage de l'organisation"
+                  }
+                }
               }
             }
           },
@@ -1300,62 +1638,109 @@
             "format": "date-time",
             "description": "Date de création de la déclaration"
           },
-          "category": {
-            "type": "string",
-            "description": "Catégorie du produit"
-          },
           "score": {
-            "$ref": "#/components/schemas/ProductScore"
+            "type": "number",
+            "description": "Score environnemental total (en points)"
+          },
+          "standardized": {
+            "type": "number",
+            "description": "Score environnemental standardisé (en points pour 100g)"
+          },
+          "informations": {
+            "type": "array",
+            "description": "Informations détaillées par composant du produit",
+            "items": {
+              "$ref": "#/components/schemas/ProductInformationResponse"
+            }
           },
           "upload": {
             "$ref": "#/components/schemas/UploadInfo"
           }
         },
         "example": {
-          "id": "7a183a57-e5bc-4170-a770-66654281aab9",
+          "id": "b6f3f23a-3923-4395-bfd9-cd9dff1817a0",
           "gtins": ["8546241205910"],
-          "internalReference": "015Q8sUpK3",
-          "brand": "Emmaus",
-          "createdAt": "2025-08-08T10:17:58.231Z",
-          "category": "Chaussettes",
-          "score": {
-            "score": 2311.078426292239,
-            "standardized": 955.008359333349,
-            "durability": 1.06,
-            "acd": 0.1049088905964158,
-            "cch": 2.794430456618692,
-            "etf": 172.2658976359552,
-            "fru": 44.07360301333709,
-            "fwe": 0.0007120915634146073,
-            "htc": 1.253754933395389e-9,
-            "htn": 1.254026821447234e-7,
-            "ior": 8.660045224543365,
-            "ldu": 48.76698455485243,
-            "mru": 0.001361737365871345,
-            "ozd": 2.333908506457944e-7,
-            "pco": 0.02443578069892489,
-            "pma": 2.904338778583435e-7,
-            "swe": 0.007269255547161345,
-            "tre": 0.0852166469255385,
-            "wtu": 0.4375728953090684,
-            "microfibers": 129.9470834508611,
-            "outOfEuropeEOL": 138.1201431619307
+          "internalReference": "LOT-457",
+          "brand": {
+            "id": "56c27d6a-a879-406a-9ab3-17c439772e57",
+            "name": "Ma marque",
+            "organization": {
+              "displayName": "Ma marque",
+              "id": "676fc42f-97a8-427d-a133-536b6592bd67"
+            }
           },
+          "createdAt": "2026-05-19T07:11:13.218Z",
+          "score": 2852.3553175613533,
+          "standardized": 407.4793310801934,
+          "informations": [
+            {
+              "categorySlug": "T-shirt / Polo",
+              "mainComponent": null,
+              "score": {
+                "score": 2852.3553175613533,
+                "standardized": 407.4793310801934,
+                "durability": 1.32,
+                "acd": 0.0508784847014782,
+                "cch": 7.9182818952003995,
+                "etf": 574.2181255410668,
+                "fru": 195.191741817777,
+                "fwe": 0.0026239044398372277,
+                "ior": 44.05572253689201,
+                "ldu": 235.42194614216976,
+                "mru": 0.00027402215054601116,
+                "ozd": 4.199735924103755e-7,
+                "pco": 0.029068450253474817,
+                "pma": 3.7585721745928127e-7,
+                "swe": 0.042774209456675975,
+                "tre": 0.08901875144528448,
+                "wtu": 4.9388405119877286,
+                "microfibers": 132.57575757575756,
+                "outOfEuropeEOL": 129.9242424242424,
+                "materials": 1861.3137610914296,
+                "spinning": 42.20859905844703,
+                "fabric": 29.843997550173004,
+                "dyeing": 348.42162835069206,
+                "making": 5.8868985,
+                "usage": 874.6179611599999,
+                "endOfLife": 194.69419728,
+                "transport": 40.92047619024546,
+                "trims": 367.2015
+              }
+            }
+          ],
           "upload": {
             "version": "7.0.0",
             "createdBy": {
               "organization": {
-                "name": "Ecopass"
-              },
-              "nom": "Dane",
-              "prenom": "Jane"
+                "displayName": "Ma marque",
+                "id": "676fc42f-97a8-427d-a133-536b6592bd67"
+              }
             }
+          }
+        }
+      },
+      "ProductInformationResponse": {
+        "type": "object",
+        "description": "Informations détaillées pour un composant de produit",
+        "properties": {
+          "categorySlug": {
+            "type": "string",
+            "nullable": true,
+            "description": "Catégorie du composant"
+          },
+          "mainComponent": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Indique s'il s'agit du composant principal"
+          },
+          "score": {
+            "$ref": "#/components/schemas/ProductScore"
           }
         }
       },
       "ProductScore": {
         "type": "object",
-        "description": "Score environnemental du produit",
+        "description": "Score environnemental du produit. Les Impacts sont exprimés dans leurs unités d'usage (comme spécifié [sur le site d'Ecobalyse](https://ecobalyse.beta.gouv.fr/versions/v7.0.0/#/explore/textile/impacts)) et les Cycles de vie sont exprimés en points sans le coefficient de durabilité.",
         "properties": {
           "score": {
             "type": "number",
@@ -1363,7 +1748,7 @@
           },
           "standardized": {
             "type": "number",
-            "description": "Score environnemental standardisé pour 100g"
+            "description": "Score environnemental standardisé (en points pour 100g)"
           },
           "durability": {
             "type": "number",
@@ -1371,76 +1756,77 @@
           },
           "acd": {
             "type": "number",
-            "description": "Acidification (en points)"
+            "description": "Impact - Acidification"
           },
           "cch": {
             "type": "number",
-            "description": "Changement climatique (en points)"
+            "description": "Impact - Changement climatique"
           },
           "etf": {
             "type": "number",
-            "description": "Écotoxicité pour écosystèmes d'eau douce, corrigée (en points)"
+            "description": "Impact - Écotoxicité pour écosystèmes d'eau douce, corrigée"
           },
           "fru": {
             "type": "number",
-            "description": "Épuisement des ressources fossiles (en points)"
+            "description": "Impact - Épuisement des ressources fossiles"
           },
           "fwe": {
             "type": "number",
-            "description": "Eutrophisation eaux douces (en points)"
-          },
-          "htc": {
-            "type": "number",
-            "description": "Toxicité humaine - cancer, corrigée (en points)"
-          },
-          "htn": {
-            "type": "number",
-            "description": "Toxicité humaine - non cancer, corrigée (en points)"
+            "description": "Impact - Eutrophisation eaux douces"
           },
           "ior": {
             "type": "number",
-            "description": "Rayonnements ionisants (en points)"
+            "description": "Impact - Rayonnements ionisants"
           },
           "ldu": {
             "type": "number",
-            "description": "Occupation des sols (en points)"
+            "description": "Impact - Occupation des sols"
           },
           "mru": {
             "type": "number",
-            "description": "Épuisement des ressources minéraux et métaux (en points)"
+            "description": "Impact - Épuisement des ressources minéraux et métaux"
           },
           "ozd": {
             "type": "number",
-            "description": "Appauvrissement de la couche d'ozone (en points)"
+            "description": "Impact - Appauvrissement de la couche d'ozone"
           },
           "pco": {
             "type": "number",
-            "description": "Formation photochimique d'ozone (en points)"
+            "description": "Impact - Formation photochimique d'ozone"
           },
           "pma": {
             "type": "number",
-            "description": "Particules (en points)"
+            "description": "Impact - Particules"
           },
           "swe": {
             "type": "number",
-            "description": "Eutrophisation marine (en points)"
+            "description": "Impact - Eutrophisation marine"
           },
           "tre": {
             "type": "number",
-            "description": "Eutrophisation terrestre (en points)"
+            "description": "Impact - Eutrophisation terrestre"
           },
           "wtu": {
             "type": "number",
-            "description": "Consommation d'eau (en points)"
+            "description": "Impact - Consommation d'eau"
           },
           "microfibers": {
             "type": "number",
-            "description": "Émission de microfibres (en points)"
+            "description": "Impact - Émission de microfibres"
           },
           "outOfEuropeEOL": {
             "type": "number",
-            "description": "Fin de vie hors Europe (en points)"
-          }
+            "description": "Impact - Fin de vie hors Europe"
+          },
+          "materials": { "type": "number", "description": "Cycle de vie - Matières premières" },
+          "spinning": { "type": "number", "description": "Cycle de vie - Filature" },
+          "fabric": { "type": "number", "description": "Cycle de vie - Tissage & Tricotage" },
+          "dyeing": { "type": "number", "description": "Cycle de vie - Ennoblissement" },
+          "making": { "type": "number", "description": "Cycle de vie - Confection" },
+          "usage": { "type": "number", "description": "Cycle de vie - Utilisation" },
+          "endOfLife": { "type": "number", "description": "Cycle de vie - Fin de vie" },
+          "transport": { "type": "number", "description": "Cycle de vie - Transport" },
+          "trims": { "type": "number", "description": "Cycle de vie - Accessoires" }
         }
       },
       "UploadInfo": {
@@ -1458,19 +1844,16 @@
               "organization": {
                 "type": "object",
                 "properties": {
-                  "name": {
+                  "id": {
                     "type": "string",
-                    "description": "Nom de l'organisation"
+                    "format": "uuid",
+                    "description": "Identifiant de l'organisation"
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "description": "Nom d'affichage de l'organisation"
                   }
                 }
-              },
-              "nom": {
-                "type": "string",
-                "description": "Nom de l'utilisateur"
-              },
-              "prenom": {
-                "type": "string",
-                "description": "Prénom de l'utilisateur"
               }
             }
           }

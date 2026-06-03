@@ -1,4 +1,4 @@
-import { OrganizationType } from "../../../prisma/src/prisma"
+import { OrganizationType } from "@prisma/enums"
 
 export const organizationTypesAllowedToDeclare = [
   OrganizationType.Brand,

@@ -5,5 +5,12 @@ declare global {
     please: {
       track: (events: string[]) => void
     }
+    metabaseConfig?: {
+      theme?: {
+        preset?: string
+      }
+      isGuest?: boolean
+      instanceUrl?: string
+    }
   }
 }

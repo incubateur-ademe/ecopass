@@ -6,11 +6,12 @@ import { productCategories } from "../../types/productCategory"
 import { businesses } from "../../types/business"
 import { materials as allMaterials } from "../../types/material"
 import { accessories as allAccessories } from "../../types/accessory"
-import { Accessory, Material, Product, ProductInformation, Status } from "../../../../prisma/src/prisma"
+import { Accessory, Material, Product, ProductInformation } from "@prisma/client"
+import { Status } from "@prisma/enums"
 import { impressions } from "../../types/impression"
 import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
-import { hashParsedProduct } from "../../encryption/hash"
+import { hashProduct } from "../../encryption/hash"
 import { checkHeaders, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
 
@@ -46,9 +47,9 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
   const now = new Date()
 
   for (let rowIndex = 1; rowIndex < data.length; rowIndex++) {
-    const row = data[rowIndex].map((cell) => (cell ? cell.toString().trim() : ""))
+    const row = data[rowIndex].map((cell) => (cell !== null && cell !== undefined ? cell.toString().trim() : ""))
 
-    if (!row || row.every((cell) => !cell)) {
+    if (!row || row.length === 0 || row.every((cell) => !cell)) {
       continue
     }
     const id = uuid()
@@ -136,14 +137,14 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
       id: productId,
       score: null,
       standardized: null,
-      hash: hashParsedProduct(
+      hash: hashProduct(
         {
           gtins: gtins,
           internalReference: internalReference,
           brandId: brand,
           declaredScore: declaredScore,
         },
-        rawProduct,
+        [rawProduct],
         authorizedBrands,
       ),
       createdAt: now,

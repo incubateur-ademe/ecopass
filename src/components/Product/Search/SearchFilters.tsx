@@ -24,11 +24,10 @@ const SearchFilters = ({
   onSearchSubmit: () => void
 }) => {
   return (
-    <div className={classNames("fr-grid-row", "fr-grid-row--gutters", "fr-mt-2w")}>
+    <div className={classNames("fr-grid-row", "fr-grid-row--gutters")}>
       <div className='fr-col-12'>
         <Input
-          label='Recherche'
-          hintText='Recherchez par code-barres ou référence interne'
+          label='Saisir un code-barres (8 ou 13 chiffres) ou une référence produit'
           nativeInputProps={{
             value: search,
             onChange: (e) => onSearchChange(e.target.value),
@@ -43,7 +42,7 @@ const SearchFilters = ({
       </div>
       <div className='fr-col-12 fr-col-md-6'>
         <Select
-          label='Marque'
+          label='Sélectionner une marque'
           nativeSelectProps={{
             value: brandId,
             onChange: (e) => onBrandChange(e.target.value),
@@ -58,7 +57,7 @@ const SearchFilters = ({
       </div>
       <div className='fr-col-12 fr-col-md-6'>
         <Select
-          label='Catégorie'
+          label='Sélectionner une catégorie'
           nativeSelectProps={{
             value: category,
             onChange: (e) => onCategoryChange(e.target.value),

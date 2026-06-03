@@ -1,6 +1,7 @@
 "use client"
 import Table from "../Table/Table"
-import { Export, Status } from "../../../prisma/src/prisma"
+import { Export } from "@prisma/client"
+import { Status } from "@prisma/enums"
 import DownloadExport from "./DownloadExport"
 import { formatDateTime } from "../../services/format"
 import { useState } from "react"

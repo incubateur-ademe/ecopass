@@ -1,4 +1,4 @@
-import { OrganizationType } from "../../../prisma/src/prisma"
+import { OrganizationType } from "@prisma/enums"
 import { UserOrganization } from "../../db/user"
 import Block from "../Block/Block"
 import BrandOrganization from "./Brand/BrandOrganization"

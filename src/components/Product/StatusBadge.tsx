@@ -1,4 +1,4 @@
-import { Status } from "../../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 
 const statusTitle: Record<Status, string> = {

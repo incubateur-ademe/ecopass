@@ -3,8 +3,8 @@ import { prismaClient } from "../db/prismaClient"
 import { stringify } from "csv-stringify/sync"
 import fs from "fs"
 import path from "path"
-import { BATCH_CATEGORY } from "../utils/types/productCategory"
 import { computeBatchScore } from "../utils/ecobalyse/batches"
+import { getProductCategory } from "../utils/product/category"
 
 const getDataGouvCSV = async () => {
   console.log("Fetching all Done products...")
@@ -15,7 +15,7 @@ const getDataGouvCSV = async () => {
     },
     include: {
       brand: { select: { name: true } },
-      informations: { select: { categorySlug: true }, include: { score: true } },
+      informations: { select: { categorySlug: true, score: true, mainComponent: true } },
       upload: {
         include: {
           createdBy: {
@@ -57,8 +57,8 @@ const getDataGouvCSV = async () => {
   const csvData = Array.from(uniqueProducts.entries()).map(([gtin, product]) => {
     const totalScore = computeBatchScore(product)
     return [
-      product.brand,
-      product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY,
+      product.brand?.name ?? "",
+      getProductCategory(product.informations),
       gtin,
       product.internalReference,
       totalScore.score ?? "",
@@ -69,8 +69,6 @@ const getDataGouvCSV = async () => {
       totalScore.etf ?? "",
       totalScore.fru ?? "",
       totalScore.fwe ?? "",
-      totalScore.htc ?? "",
-      totalScore.htn ?? "",
       totalScore.ior ?? "",
       totalScore.ldu ?? "",
       totalScore.mru ?? "",
@@ -82,6 +80,15 @@ const getDataGouvCSV = async () => {
       totalScore.wtu ?? "",
       totalScore.microfibers ?? "",
       totalScore.outOfEuropeEOL ?? "",
+      totalScore.trims ?? "",
+      totalScore.materials ?? "",
+      totalScore.spinning ?? "",
+      totalScore.fabric ?? "",
+      totalScore.dyeing ?? "",
+      totalScore.making ?? "",
+      totalScore.transport ?? "",
+      totalScore.usage ?? "",
+      totalScore.endOfLife ?? "",
       product.createdAt.toISOString(),
     ]
   })
@@ -91,29 +98,36 @@ const getDataGouvCSV = async () => {
     columns: [
       "Marque",
       "Catégorie",
-      "GTINs",
+      "GTIN",
       "Référence interne",
       "Score",
       "Score standardisé",
       "Durabilité",
-      "Acidification",
-      "Changement climatique",
-      "Écotoxicité de l'eau douce, corrigée",
-      "Utilisation de ressources fossiles",
-      "Eutrophisation eaux douces",
-      "Toxicité humaine - cancer, corrigée",
-      "Toxicité humaine - non-cancer, corrigée",
-      "Radiations ionisantes",
-      "Utilisation des sols",
-      "Utilisation de ressources minérales et métalliques",
-      "Appauvrissement de la couche d'ozone",
-      "Formation d'ozone photochimique",
-      "Particules",
-      "Eutrophisation marine",
-      "Eutrophisation terrestre",
-      "Utilisation de ressources en eau",
-      "Complément microfibres",
-      "Complément export hors-Europe",
+      "Impact - Acidification",
+      "Impact - Changement climatique",
+      "Impact - Écotoxicité de l'eau douce, corrigée",
+      "Impact - Utilisation de ressources fossiles",
+      "Impact - Eutrophisation eaux douces",
+      "Impact - Radiations ionisantes",
+      "Impact - Utilisation des sols",
+      "Impact - Utilisation de ressources minérales et métalliques",
+      "Impact - Appauvrissement de la couche d'ozone",
+      "Impact - Formation d'ozone photochimique",
+      "Impact - Particules",
+      "Impact - Eutrophisation marine",
+      "Impact - Eutrophisation terrestre",
+      "Impact - Utilisation de ressources en eau",
+      "Impact - Complément microfibres",
+      "Impact - Complément export hors-Europe",
+      "Cycle de vie - Accessoires",
+      "Cycle de vie - Matières premières",
+      "Cycle de vie - Filature",
+      "Cycle de vie - Tissage & Tricotage",
+      "Cycle de vie - Ennoblissement",
+      "Cycle de vie - Confection",
+      "Cycle de vie - Transport",
+      "Cycle de vie - Utilisation",
+      "Cycle de vie - Fin de vie",
       "Date de création",
     ],
   })

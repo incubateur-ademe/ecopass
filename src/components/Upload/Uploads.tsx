@@ -4,7 +4,7 @@ import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
 import { auth } from "../../services/auth/auth"
 import { getUploadsByUserId, getuploadsCountByUserId } from "../../db/upload"
 import Download from "./Download"
-import { Status } from "../../../prisma/src/prisma"
+import { Status } from "@prisma/client"
 import { formatDateTime } from "../../services/format"
 import Table from "../Table/Table"
 import StatusBadge from "./StatusBadge"
@@ -26,7 +26,7 @@ const Uploads = async ({ page }: { page: number }) => {
         fixed
         caption='Mes fichiers'
         noCaption
-        headers={["Date de dépot", "Nom du fichier", "Statut", "Nombre de produits validés", "Fichier de résultat"]}
+        headers={["Date de dépôt", "Nom du fichier", "Statut", "Nombre de produits validés", "Fichier de résultat"]}
         data={uploads.map((upload) => [
           formatDateTime(upload.createdAt),
           upload.name,

@@ -2,7 +2,7 @@ import crypto from "crypto"
 import { ProductInformationAPI } from "../../services/validation/api"
 import { ParsedProduct } from "../../types/Product"
 import JSZip from "jszip"
-import { Accessory, Material, ProductInformation } from "../../../prisma/src/prisma"
+import { Accessory, Material, ProductInformation } from "@prisma/client"
 import { simplifyValue } from "../parsing/parsing"
 import { productCategories } from "../types/productCategory"
 
@@ -104,6 +104,7 @@ export function encryptProductFields(product: ProductInformationAPI | ParsedProd
   return {
     product: {
       category: product.product,
+      mainComponent: product.mainComponent === undefined ? null : product.mainComponent,
       categorySlug: computeCategorySlug(product.product),
       airTransportRatio: encrypt(product.airTransportRatio),
       business: encrypt(product.business),

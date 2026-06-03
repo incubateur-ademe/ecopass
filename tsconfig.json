@@ -4,7 +4,7 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -21,6 +21,14 @@
       {
         "name": "next"
       }
+    ],
+    "paths": {
+      "@prisma/*": [
+        "./prisma/generated/prisma/*"
+      ]
+    },
+    "types": [
+      "jest"
     ]
   },
   "include": [

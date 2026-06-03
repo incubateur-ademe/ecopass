@@ -1,9 +1,11 @@
-import { Accessory, Material, Prisma, Product, ProductInformation, Status, UploadType } from "../../prisma/src/prisma"
+import { Accessory, Material, Prisma, Product, ProductInformation } from "@prisma/client"
+import { Status, UploadType } from "@prisma/enums"
 import { ParsedProductValidation } from "../services/validation/product"
-import { ProductCategory } from "../types/Product"
 import { decryptProductFields } from "../utils/encryption/encryption"
-import { BATCH_CATEGORY, productCategories } from "../utils/types/productCategory"
+import { productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
+import { checkOldProduct, ProductCheckResult } from "../services/validation/oldProduct"
+import { getProductCategory } from "../utils/product/category"
 
 export const createProducts = async ({
   products,
@@ -16,27 +18,62 @@ export const createProducts = async ({
   accessories: Accessory[]
   informations: (ProductInformation & { materials: undefined; accessories: undefined })[]
 }) => {
+  const gtinToProductIds = new Map<string, string[]>()
+  products.forEach((product) =>
+    product.gtins
+      .filter((gtin) => gtin)
+      .forEach((gtin) => {
+        if (!gtinToProductIds.has(gtin)) {
+          gtinToProductIds.set(gtin, [])
+        }
+        gtinToProductIds.get(gtin)!.push(product.id)
+      }),
+  )
+
+  const duplicatedProductIds = new Set<string>()
+  for (const ids of gtinToProductIds.values()) {
+    if (ids.length > 1) {
+      ids.forEach((id) => duplicatedProductIds.add(id))
+    }
+  }
+
   return prismaClient.$transaction(
     async (transaction) => {
       const productsToCreate = []
       const ids = new Set<string>()
 
       for (const product of products) {
-        const lastVersion = await getLastProductByGtin(product.gtins[0])
+        if (duplicatedProductIds.has(product.id)) {
+          await transaction.product.create({
+            data: { ...product, status: Status.Error, error: "GTIN dupliqué dans le fichier" },
+          })
+          continue
+        }
 
-        if (lastVersion && lastVersion.hash === product.hash) {
-          await prismaClient.uploadProduct.create({
+        const oldProductCheck = await checkOldProduct(product.gtins, product.hash)
+
+        if (oldProductCheck.result === ProductCheckResult.Unchanged && oldProductCheck.lastProduct) {
+          await transaction.uploadProduct.create({
             data: {
-              productId: lastVersion.id,
+              productId: oldProductCheck.lastProduct.id,
               uploadId: product.uploadId,
               uploadOrder: product.uploadOrder || 0,
             },
           })
           continue
-        } else {
-          productsToCreate.push(product)
-          ids.add(product.id)
         }
+        if (oldProductCheck.result === ProductCheckResult.TooRecent && oldProductCheck.lastProduct) {
+          await transaction.product.create({
+            data: {
+              ...product,
+              status: Status.Error,
+              error: "Un produit avec le même GTIN a été déclaré trop récemment",
+            },
+          })
+          continue
+        }
+        productsToCreate.push(product)
+        ids.add(product.id)
       }
 
       if (productsToCreate.length > 0) {
@@ -146,15 +183,52 @@ const productWithScoreSelect = {
   id: true,
   gtins: true,
   internalReference: true,
-  brand: { select: { name: true } },
+  brand: { select: { id: true, name: true, organization: { select: { displayName: true, id: true } } } },
   createdAt: true,
   score: true,
   standardized: true,
-  informations: { select: { categorySlug: true, score: true } },
+  informations: {
+    select: {
+      categorySlug: true,
+      mainComponent: true,
+      score: {
+        select: {
+          score: true,
+          standardized: true,
+          durability: true,
+          acd: true,
+          cch: true,
+          etf: true,
+          fru: true,
+          fwe: true,
+          ior: true,
+          ldu: true,
+          mru: true,
+          ozd: true,
+          pco: true,
+          pma: true,
+          swe: true,
+          tre: true,
+          wtu: true,
+          microfibers: true,
+          outOfEuropeEOL: true,
+          materials: true,
+          spinning: true,
+          fabric: true,
+          dyeing: true,
+          making: true,
+          usage: true,
+          endOfLife: true,
+          transport: true,
+          trims: true,
+        },
+      },
+    },
+  },
   upload: {
     select: {
       version: true,
-      createdBy: { select: { organization: { select: { displayName: true } } } },
+      createdBy: { select: { organization: { select: { displayName: true, id: true } } } },
     },
   },
 } satisfies Prisma.ProductSelect
@@ -163,7 +237,7 @@ export const getProductWithScoreHistory = async (gtin: string, page: number, pag
   prismaClient.product.findMany({
     select: productWithScoreSelect,
     where: {
-      gtins: { has: gtin },
+      gtins: { has: decodeURI(gtin) },
       status: Status.Done,
     },
     orderBy: { createdAt: "desc" },
@@ -174,7 +248,7 @@ export const getProductWithScoreHistory = async (gtin: string, page: number, pag
 export const getProductWithScoreHistoryCount = async (gtin: string) => {
   return prismaClient.product.count({
     where: {
-      gtins: { has: gtin },
+      gtins: { has: decodeURI(gtin) },
       status: Status.Done,
     },
   })
@@ -184,7 +258,7 @@ export const getProductWithScore = async (gtin: string) =>
   prismaClient.product.findFirst({
     select: productWithScoreSelect,
     where: {
-      gtins: { has: gtin },
+      gtins: { has: decodeURI(gtin) },
       status: Status.Done,
     },
     orderBy: { createdAt: "desc" },
@@ -192,11 +266,22 @@ export const getProductWithScore = async (gtin: string) =>
 
 export type ProductWithScore = NonNullable<Awaited<ReturnType<typeof getProductWithScore>>>
 
+export const getProductByGtin = async (gtin: string, id?: string) =>
+  prismaClient.product.findFirst({
+    select: { internalReference: true },
+    where: {
+      gtins: { has: decodeURI(gtin) },
+      id,
+      status: Status.Done,
+    },
+    orderBy: { createdAt: "desc" },
+  })
+
 export const getOldProductWithScore = async (gtin: string, version: string) =>
   prismaClient.product.findFirst({
     select: productWithScoreSelect,
     where: {
-      gtins: { has: gtin },
+      gtins: { has: decodeURI(gtin) },
       id: version,
       status: Status.Done,
     },
@@ -204,7 +289,7 @@ export const getOldProductWithScore = async (gtin: string, version: string) =>
   })
 
 const getProducts = async (
-  where: Pick<Prisma.ProductWhereInput, "upload" | "uploadId" | "createdAt" | "brandId" | "OR">,
+  where: Pick<Prisma.ProductWhereInput, "upload" | "informations" | "uploadId" | "createdAt" | "brandId" | "status">,
   skip?: number,
   take?: number,
 ) => {
@@ -234,14 +319,76 @@ const getProducts = async (
 
 export type Products = Awaited<ReturnType<typeof getProducts>>
 
-export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brand?: string) => {
+export const countPublicProductsByBrandId = async (
+  brandId: string | undefined,
+  category: string | undefined,
+  organization: string | undefined,
+  from: Date | undefined,
+  to: Date | undefined,
+) => {
+  const result = await prismaClient.product.findMany({
+    where: {
+      status: Status.Done,
+      brandId,
+      informations: category
+        ? {
+            some: {
+              categorySlug: category,
+            },
+          }
+        : undefined,
+      upload: organization ? { organizationId: organization } : undefined,
+      createdAt: {
+        gte: from,
+        lte: to,
+      },
+    },
+    select: { internalReference: true },
+    distinct: ["internalReference"],
+  })
+  return result.length
+}
+
+export const getPublicProductsByBrandId = async (
+  brandId: string | undefined,
+  category: string | undefined,
+  organization: string | undefined,
+  from: Date | undefined,
+  to: Date | undefined,
+  page: number,
+) =>
+  getProducts(
+    {
+      brandId,
+      informations: category
+        ? {
+            some: {
+              categorySlug: category,
+            },
+          }
+        : undefined,
+      upload: organization ? { organizationId: organization } : undefined,
+      createdAt: {
+        gte: from,
+        lte: to,
+      },
+    },
+    (page - 1) * 10,
+    10,
+  )
+
+export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brandId?: string) => {
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
     select: {
       organization: {
         select: {
           id: true,
-          brands: true,
+          brands: { select: { id: true } },
+          authorizedBy: {
+            select: { from: { select: { brands: { select: { id: true } } } } },
+            where: { active: true },
+          },
         },
       },
     },
@@ -251,31 +398,31 @@ export const getOrganizationProductsCountByUserIdAndBrand = async (userId: strin
     return 0
   }
 
+  const authorizedBrands = new Set([
+    ...user.organization.brands.map((brand) => brand.id),
+    ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
+  ])
+
+  if (brandId && !authorizedBrands.has(brandId)) {
+    return 0
+  }
+
   const products = await prismaClient.product.groupBy({
     by: ["internalReference"],
     where: {
-      OR: [
-        {
-          brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
-          status: Status.Done,
-        },
-        {
-          upload: { organizationId: user.organization.id },
-          status: Status.Done,
-          brandId: brand,
-        },
-      ],
+      brandId: brandId ? brandId : { in: Array.from(authorizedBrands) },
+      status: Status.Done,
     },
     _count: { internalReference: true },
   })
   return products.length
 }
 
-export const getOrganizationProductsByUserIdAndBrand = async (
+export const getOrganizationProductsByUserIdAndBrandId = async (
   userId: string,
   page: number,
   size: number | undefined,
-  brand?: string,
+  brandId?: string,
 ) => {
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
@@ -283,7 +430,11 @@ export const getOrganizationProductsByUserIdAndBrand = async (
       organization: {
         select: {
           id: true,
-          brands: true,
+          brands: { select: { id: true } },
+          authorizedBy: {
+            select: { from: { select: { brands: { select: { id: true } } } } },
+            where: { active: true },
+          },
         },
       },
     },
@@ -292,36 +443,28 @@ export const getOrganizationProductsByUserIdAndBrand = async (
   if (!user || !user.organization) {
     return []
   }
+
+  const authorizedBrands = new Set([
+    ...user.organization.brands.map((brand) => brand.id),
+    ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
+  ])
+
+  if (brandId && !authorizedBrands.has(brandId)) {
+    return []
+  }
+
   return size
     ? getProducts(
         {
-          OR: [
-            {
-              brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
-              status: Status.Done,
-            },
-            {
-              upload: { organizationId: user.organization.id },
-              status: Status.Done,
-              brandId: brand,
-            },
-          ],
+          brandId: brandId ? brandId : { in: Array.from(authorizedBrands) },
+          status: Status.Done,
         },
         (page || 0) * size,
         size,
       )
     : getProducts({
-        OR: [
-          {
-            brandId: brand ? brand : { in: user.organization.brands.map((brand) => brand.id) },
-            status: Status.Done,
-          },
-          {
-            upload: { organizationId: user.organization.id },
-            status: Status.Done,
-            brandId: brand,
-          },
-        ],
+        brandId: brandId ? brandId : { in: Array.from(authorizedBrands) },
+        status: Status.Done,
       })
 }
 export const getProductsByUploadId = async (uploadId: string) => {
@@ -510,14 +653,20 @@ export const searchProducts = async (options: {
   }
 }
 
-export const getLastProductByGtin = async (gtin: string) =>
-  prismaClient.product.findFirst({
+export const getLastProductsByGtins = async (gtins: string[]) => {
+  const products = await prismaClient.product.findMany({
     where: {
-      gtins: { has: gtin },
+      gtins: { hasSome: gtins },
+      status: Status.Done,
     },
     orderBy: { createdAt: "desc" },
-    select: { hash: true, id: true },
+    select: { hash: true, id: true, gtins: true, createdAt: true },
   })
+
+  return gtins
+    .map((gtin) => products.find((product) => product.gtins.includes(gtin)))
+    .filter((product) => product !== undefined)
+}
 
 export const getProductCountByCategory = async () => {
   const allProducts = await prismaClient.product.findMany({
@@ -526,10 +675,10 @@ export const getProductCountByCategory = async () => {
     },
     select: {
       internalReference: true,
-      createdAt: true,
       informations: {
         select: {
           categorySlug: true,
+          mainComponent: true,
         },
       },
     },
@@ -546,33 +695,31 @@ export const getProductCountByCategory = async () => {
     }
   }
 
-  const categoryCount = uniqueProducts.reduce(
+  return uniqueProducts.reduce(
     (acc, product) => {
-      const category = product.informations.length == 1 ? product.informations[0].categorySlug : BATCH_CATEGORY
+      const category = getProductCategory(product.informations)
       if (!category) {
         return acc
       }
-      if (!acc[category]) {
-        acc[category] = 0
-      }
-      acc[category] += 1
+      acc[category] = acc[category] ? acc[category] + 1 : 1
       return acc
     },
-    {} as Record<ProductCategory | string, number>,
+    {} as Record<string, number>,
   )
-
-  return categoryCount
 }
 
 export const getDistinctBrandCount = async () => {
-  const result = await prismaClient.product.groupBy({
-    by: ["brandId"],
+  const brands = await prismaClient.product.findMany({
     where: {
       status: Status.Done,
+      brandId: { not: null },
     },
+    select: {
+      brandId: true,
+    },
+    distinct: ["brandId"],
   })
-
-  return result.length
+  return brands.length
 }
 
 export const getOrganizationProductsByUserId = async (userId: string) => {
@@ -665,6 +812,7 @@ export const getBrandsInformations = async () => {
             const brand = acc[product.brandId]
             if (!brand) {
               acc[product.brandId] = {
+                id: product.brandId,
                 references: new Set<string>([product.internalReference]),
                 firstDepositDate: product.createdAt,
                 lastDepositDate: product.createdAt,
@@ -681,7 +829,7 @@ export const getBrandsInformations = async () => {
           }
           return acc
         },
-        {} as Record<string, { references: Set<string>; firstDepositDate: Date; lastDepositDate: Date }>,
+        {} as Record<string, { id: string; references: Set<string>; firstDepositDate: Date; lastDepositDate: Date }>,
       )
 
     return {
@@ -697,11 +845,105 @@ export const getBrandsInformations = async () => {
       },
       brands: Object.entries(brands).map(([brandName, brand]) => ({
         name: brandsNames.find((brand) => brand.id === brandName)?.name || brandName,
+        brandId: brand.id,
         organization: organization.name,
+        organizationId: organization.id,
         totalProducts: brand.references.size,
         firstDepositDate: brand.firstDepositDate,
         lastDepositDate: brand.lastDepositDate,
       })),
     }
   })
+}
+
+export const getLastBrands = async () => {
+  const brands = await prismaClient.product.groupBy({
+    by: ["brandId"],
+    where: {
+      status: Status.Done,
+      brandId: { not: null },
+    },
+    _max: { createdAt: true },
+    orderBy: { _max: { createdAt: "desc" } },
+    take: 5,
+  })
+
+  const brandsDetails = await prismaClient.brand.findMany({
+    where: { id: { in: brands.map((b) => b.brandId).filter((brand) => brand !== null) } },
+    select: { id: true, name: true },
+  })
+
+  return brands.map((brand) => brandsDetails.find((b) => b.id === brand.brandId)).filter((brand) => brand !== undefined)
+}
+
+export const forEachLatestProductsByBrandIdForExport = async (
+  onBatch: (
+    products: Prisma.ProductGetPayload<{
+      include: {
+        brand: { select: { id: true; name: true } }
+        informations: {
+          include: {
+            materials: true
+            accessories: true
+            score: true
+          }
+        }
+      }
+    }>[],
+  ) => Promise<void> | void,
+  brandId?: string,
+  category?: string,
+  organization?: string,
+) => {
+  const latest = await prismaClient.product.findMany({
+    where: {
+      status: Status.Done,
+      brandId,
+      informations: category
+        ? {
+            some: {
+              categorySlug: productCategories[category],
+            },
+          }
+        : undefined,
+      upload: organization ? { organizationId: organization } : undefined,
+    },
+    select: { id: true, internalReference: true, createdAt: true },
+    distinct: ["internalReference"],
+    orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
+  })
+
+  if (latest.length === 0) {
+    return 0
+  }
+
+  const latestIds = latest.map((row) => row.id)
+  const batchSize = parseInt(process.env.QUERY_PARAMETER_BATCH_SIZE || "50000", 10)
+  let processedProducts = 0
+
+  for (let index = 0; index < latestIds.length; index += batchSize) {
+    const batchIds = latestIds.slice(index, index + batchSize)
+
+    const batchProducts = await prismaClient.product.findMany({
+      where: {
+        id: { in: batchIds },
+      },
+      include: {
+        brand: { select: { id: true, name: true } },
+        informations: {
+          include: {
+            materials: true,
+            accessories: true,
+            score: true,
+          },
+        },
+      },
+      orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
+    })
+
+    processedProducts += batchProducts.length
+    await onBatch(batchProducts)
+  }
+
+  return processedProducts
 }

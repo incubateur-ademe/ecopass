@@ -1,42 +1,89 @@
 import { ProductWithScore } from "../../db/product"
-import { Badge } from "@codegouvfr/react-dsfr/Badge"
 import { formatDate } from "../../services/format"
 import Block from "../Block/Block"
-import ProductScore from "./ProductScore"
-import ProductHistory from "./ProductHistory"
-import ProductScoreImpacts from "./ProductScoreImpacts"
-import { BATCH_CATEGORY } from "../../utils/types/productCategory"
 import { computeBatchScore } from "../../utils/ecobalyse/batches"
+import styles from "./Product.module.css"
+import Image from "next/image"
+import Label from "../Label/Label"
+import Badge from "@codegouvfr/react-dsfr/Badge"
+import ProductHistory from "./ProductHistory"
+import PublicProductScoreImpact from "./PublicProductScoreImpact"
+import InformationBanner from "../Home/InformationBanner"
+import DownloadScore from "./DownloadScore"
+import ProductScoreImpacts from "./ProductScoreImpacts"
+import DurabilityBadge from "./DurabilityBadge"
+import { BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
+import Link from "next/link"
+import { getProductCategory, getProductIcon } from "../../utils/product/category"
 
-const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: string; isOld?: boolean }) => {
-  const isBatch = product.informations.length > 1
+const Product = ({
+  product,
+  gtin,
+  isPro,
+  isOld,
+  brandId,
+  breadCrumbs,
+}: {
+  product: ProductWithScore
+  gtin: string
+  isPro?: boolean
+  isOld?: boolean
+  brandId?: string
+  breadCrumbs?: BreadcrumbProps
+}) => {
   const totalScore = computeBatchScore(product)
+
+  const categorySlug = getProductCategory(product.informations)
+  const icon = getProductIcon(categorySlug)
   return (
     <>
-      <Block>
-        <h1>Coût environnemental</h1>
-        <Badge severity={isOld ? "warning" : "success"} className='fr-mb-4w'>
-          {isOld ? "Déclaration obsolète" : "Déclaration validée"}
-        </Badge>
-        <div data-testid='product-details'>
-          <p className='fr-text--xl fr-mb-1w'>
-            <b>
-              {isBatch ? BATCH_CATEGORY : product.informations[0].categorySlug}
-              {product.brand && <span> - {product.brand.name}</span>}
-            </b>
-          </p>
+      <Block home breadCrumbs={breadCrumbs}>
+        {isPro && (
+          <Badge severity={isOld ? "warning" : "success"} className='fr-mb-4w'>
+            {isOld ? "Déclaration obsolète" : "Déclaration validée"}
+          </Badge>
+        )}
+        <h1>Coût environnemental de ce produit</h1>
+        <div className={styles.productBanner}>
+          <div className={styles.productLine}>
+            <h2 className={styles.title}>
+              {product.internalReference}
+              <br />
+              <Link href={`/marques/${product.brand?.id}`} className={styles.brandName}>
+                {product.brand?.name}
+              </Link>
+            </h2>
+            {icon && <Image src={`/icons/${icon}.svg`} alt='' width={64} height={64} />}
+          </div>
+          <div className={styles.productLine} data-testid='product-score'>
+            <div className={styles.badges}>
+              <Label
+                product={{ score: totalScore.score, standardized: totalScore.standardized }}
+                className={styles.label}
+              />
+              {isPro && <DownloadScore score={totalScore} internalReference={product.internalReference} />}
+            </div>
+            <div className={styles.badges}>
+              <Badge severity='info' noIcon>
+                coût pour 100g : {Math.round(totalScore.standardized).toLocaleString("fr-FR")} points
+              </Badge>
+              <DurabilityBadge durability={totalScore.durability} />
+            </div>
+          </div>
+        </div>
+        <div data-testid='product-details' className='fr-mt-5w'>
           <p>
-            Référence interne : <b>{product.internalReference}</b>
-          </p>
-          <p>
-            Code-barres{product.gtins.length > 1 ? "s" : ""} : <b>{product.gtins.join(", ")}</b>
+            Code-barres : <b>{product.gtins.join(", ")}</b>
           </p>
           <p>
             Déposé le : <b>{formatDate(product.createdAt)}</b>
           </p>
           {product.upload.createdBy.organization && (
             <p>
-              Par : <b>{product.upload.createdBy.organization.displayName}</b>
+              Par :{" "}
+              <Link href={`/organisations/${product.upload.createdBy.organization.id}`}>
+                <b>{product.upload.createdBy.organization.displayName}</b>
+              </Link>
             </p>
           )}
           <p>
@@ -45,23 +92,14 @@ const Product = ({ product, gtin, isOld }: { product: ProductWithScore; gtin: st
         </div>
       </Block>
       <Block>
-        <div data-testid='product-score'>
-          {product.score !== null && product.standardized !== null && (
-            <ProductScore
-              score={{
-                score: product.score,
-                standardized: product.standardized,
-                durability: totalScore.durability,
-              }}
-              internalReference={product.internalReference}
-            />
-          )}
-        </div>
+        {isPro ? <ProductScoreImpacts score={totalScore} /> : <PublicProductScoreImpact score={totalScore} />}
+        <ProductHistory gtin={gtin} brandId={brandId} />
       </Block>
-      <ProductScoreImpacts score={totalScore} />
-      <Block>
-        <ProductHistory gtin={gtin} />
-      </Block>
+      {!isPro && (
+        <Block secondary>
+          <InformationBanner />
+        </Block>
+      )}
     </>
   )
 }

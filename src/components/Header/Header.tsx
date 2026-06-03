@@ -2,13 +2,106 @@
 import { Header as HeaderDSFR } from "@codegouvfr/react-dsfr/Header"
 import { Session } from "next-auth"
 import { usePathname } from "next/navigation"
-import { OrganizationType, UserRole } from "../../../prisma/src/prisma"
 import { isTestEnvironment } from "../../utils/test"
 import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
+import { OrganizationType } from "@prisma/enums"
+import {
+  canAccessAdminSpace,
+  canAccessFullData,
+  canAccessProInformationSpace,
+} from "../../utils/authorization/authorizations"
 
 const Header = ({ session, type }: { session: Session | null; type: OrganizationType | null }) => {
   const canDeclare = type ? organizationTypesAllowedToDeclare.includes(type) : false
+  const role = session?.user?.role
+  const canAccessAdmin = canAccessAdminSpace(role)
+  const canAccessData = canAccessFullData(role)
+  const canAccessProInfo = canAccessProInformationSpace(role)
   const pathname = usePathname()
+
+  const adminNavigationItem = canAccessAdmin
+    ? {
+        text: "Admin",
+        isActive: pathname.startsWith("/admin"),
+        menuLinks: [
+          { linkProps: { href: "/admin/stats" }, text: "Statistiques", isActive: pathname === "/admin/stats" },
+          {
+            linkProps: { href: "/admin/nouvel-utilisateur" },
+            text: "Créer un utilisateur",
+            isActive: pathname === "/admin/nouvel-utilisateur",
+          },
+          { linkProps: { href: "/admin/donnees" }, text: "Données", isActive: pathname === "/admin/donnees" },
+        ],
+      }
+    : canAccessData
+      ? { linkProps: { href: "/admin/donnees" }, text: "Données", isActive: pathname === "/admin/donnees" }
+      : null
+
+  const connectedNavigation = canDeclare
+    ? [
+        { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
+        {
+          linkProps: { href: "/declarations" },
+          text: "Déclarations",
+          isActive: pathname.startsWith("/declarations"),
+        },
+        { linkProps: { href: "/produits" }, text: "Produits déclarés", isActive: pathname.startsWith("/produits") },
+        { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") },
+        {
+          linkProps: { href: "/organisation" },
+          text: "Organisation",
+          isActive: pathname.startsWith("/organisation"),
+        },
+        adminNavigationItem,
+      ]
+    : [
+        { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
+        canAccessProInfo
+          ? {
+              linkProps: { href: "/organisation" },
+              text: "Organisation",
+              isActive: pathname.startsWith("/organisation"),
+            }
+          : null,
+        canAccessProInfo
+          ? { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" }
+          : null,
+        {
+          linkProps: { href: "/marques" },
+          text: "Les marques déclarantes",
+          isActive: pathname.startsWith("/marques"),
+        },
+        {
+          linkProps: { href: "/recherche" },
+          text: "Recherchez un produit",
+          isActive: pathname === "/recherche" || pathname.startsWith("/produits/"),
+        },
+        type === OrganizationType.Distributor
+          ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") }
+          : null,
+        adminNavigationItem,
+      ]
+
+  const visitorNavigation = [
+    { linkProps: { href: "/" }, text: "Vous êtes consommateurs", isActive: pathname === "/" },
+    {
+      linkProps: { href: "/professionnels" },
+      text: "Vous êtes professionnels",
+      isActive: pathname === "/professionnels",
+    },
+    { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" },
+    {
+      linkProps: { href: "/marques" },
+      text: "Les marques déclarantes",
+      isActive: pathname.startsWith("/marques"),
+    },
+    {
+      linkProps: { href: "/recherche" },
+      text: "Recherchez un produit",
+      isActive: pathname === "/recherche" || pathname.startsWith("/produits/"),
+    },
+  ]
+
   return (
     <HeaderDSFR
       brandTop={
@@ -24,36 +117,7 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
       }}
       serviceTitle='Affichage environnemental'
       serviceTagline={isTestEnvironment() ? "Serveur de test" : undefined}
-      navigation={
-        session && session.user
-          ? [
-              { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
-              canDeclare
-                ? {
-                    linkProps: { href: "/declarations" },
-                    text: "Déclarations",
-                    isActive: pathname.startsWith("/declarations"),
-                  }
-                : null,
-              canDeclare
-                ? {
-                    linkProps: { href: "/produits" },
-                    text: "Produits déclarés",
-                    isActive: pathname.startsWith("/produits"),
-                  }
-                : null,
-              canDeclare ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") } : null,
-              {
-                linkProps: { href: "/organisation" },
-                text: "Organisation",
-                isActive: pathname.startsWith("/organisation"),
-              },
-              session.user.role === UserRole.ADMIN
-                ? { linkProps: { href: "/admin" }, text: "Admin", isActive: pathname.startsWith("/admin") }
-                : null,
-            ].filter((link) => link !== null)
-          : []
-      }
+      navigation={(session && session.user ? connectedNavigation : visitorNavigation).filter((item) => item !== null)}
       quickAccessItems={
         session && session.user
           ? [
@@ -65,7 +129,15 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
                 text: "Se déconnecter",
               },
             ]
-          : []
+          : [
+              {
+                linkProps: {
+                  href: "/login",
+                },
+                iconId: "ri-account-circle-line",
+                text: "Se connecter",
+              },
+            ]
       }
     />
   )

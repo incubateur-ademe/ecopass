@@ -1,12 +1,14 @@
-import Table from "@codegouvfr/react-dsfr/Table"
-import Button from "@codegouvfr/react-dsfr/Button"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import classNames from "classnames"
 import { Products } from "../../../db/product"
-import { formatDateTime } from "../../../services/format"
-import { BATCH_CATEGORY } from "../../../utils/types/productCategory"
 import styles from "./SearchResults.module.css"
+import Badge from "@codegouvfr/react-dsfr/Badge"
+import Image from "next/image"
+import { formatNumber } from "../../../services/format"
+import Table from "../../Table/Table"
+import ProductLink from "../ProductLink"
+import { getProductCategory, getProductIcon } from "../../../utils/product/category"
 
 const SearchResults = ({
   products,
@@ -28,25 +30,28 @@ const SearchResults = ({
   return (
     <>
       <p data-testid='search-results-count'>
-        <b>{total}</b> {total > 1 ? "produits trouvés" : "produit trouvé"}
+        <b>{total}</b> {total > 1 ? "références produit trouvées" : "référence produit trouvée"}
       </p>
       <div data-testid='search-results-table'>
         <Table
-          headers={["Code-barres", "Référence interne", "Marque", "Catégorie", "Score", "Date de création", "Action"]}
-          data={products.map((product) => [
-            product.gtins.join(", "),
-            product.internalReference,
-            product.brand?.name || "-",
-            product.informations.length === 1 ? product.informations[0].categorySlug : BATCH_CATEGORY,
-            product.score ? Math.round(product.score) : "-",
-            formatDateTime(product.createdAt),
-            <Button
-              linkProps={{ href: `/produits/${product.gtins[0]}` }}
-              key={product.id}
-              className={styles.displayButton}>
-              Voir le détail
-            </Button>,
-          ])}
+          headers={["Code-barres", "Référence interne", "Marque", "Catégorie", "Score", "Détails"]}
+          data={products.map((product) => {
+            const categorySlug = getProductCategory(product.informations)
+            const icon = getProductIcon(categorySlug)
+            return [
+              product.gtins.join(", "),
+              product.internalReference,
+              product.brand?.name || "-",
+              <div className={styles.category} key={product.id}>
+                {icon && <Image src={`/icons/${icon}.svg`} alt='' width={32} height={32} />}
+                {categorySlug || "Non renseignée"}
+              </div>,
+              <Badge severity='info' noIcon key={product.id}>
+                {product.score ? formatNumber(product.score) : "-"}
+              </Badge>,
+              <ProductLink product={product} key={product.id} />,
+            ]
+          })}
         />
       </div>
 

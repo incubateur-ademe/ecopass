@@ -88,7 +88,7 @@ export type ColumnType = [
 ]
 
 const columns: Partial<Record<ColumnType[number], string>> = {
-  gtinseans: "GTINs/Eans",
+  gtinseans: "GTINs/EANs",
   referenceinterne: "Référence interne",
   categorie: "Catégorie",
   masse: "Masse (en kg)",

@@ -2,7 +2,7 @@ import Link from "next/link"
 import Block from "../components/Block/Block"
 import { Stats } from "../services/stats/stats"
 import { ProductCategory } from "../types/Product"
-import styles from "./Statistics.module.css"
+import StatsList from "../components/Statistics/StatsList"
 
 const plural: Record<ProductCategory, string> = {
   [ProductCategory.Chemise]: "Chemises",
@@ -33,10 +33,12 @@ const Statistics = ({ stats }: { stats: Stats }) => {
     <>
       <Block>
         <h1>Statistiques</h1>
-        <ul className={styles.list}>
-          <li>
-            <b>{stats.visits.toLocaleString("fr-FR")}</b> visites
-          </li>
+        <StatsList>
+          {stats.visits && (
+            <li>
+              <b>{stats.visits.toLocaleString("fr-FR")}</b> visites
+            </li>
+          )}
           <li>
             <b>{stats.fileUploads.toLocaleString("fr-FR")}</b> fichiers déposés
           </li>
@@ -49,8 +51,8 @@ const Statistics = ({ stats }: { stats: Stats }) => {
                 .reduce((acc, count) => acc + count, 0)
                 .toLocaleString("fr-FR")}
             </b>{" "}
-            produits déposés par <b>{stats.distinctBrands.toLocaleString("fr-FR")}</b> marques :
-            <ul className={styles.smallList}>
+            références produits déposées par <b>{stats.distinctBrands.toLocaleString("fr-FR")}</b> marques :
+            <StatsList small>
               {Object.entries(stats.products)
                 .sort(([, countA], [, countB]) => countB - countA)
                 .map(([category, count]) => (
@@ -58,9 +60,9 @@ const Statistics = ({ stats }: { stats: Stats }) => {
                     <b>{count.toLocaleString("fr-FR")}</b> {getPlural(count, category)}
                   </li>
                 ))}
-            </ul>
+            </StatsList>
           </li>
-        </ul>
+        </StatsList>
         <Link
           className='fr-link'
           href='https://stats.beta.gouv.fr/index.php?module=CoreHome&action=index&idSite=226&period=day&date=yesterday'

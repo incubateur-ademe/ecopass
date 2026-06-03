@@ -1,0 +1,21 @@
+.separator {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #666;
+  font-weight: 600;
+  text-transform: uppercase;
+  align-self: stretch;
+  margin: 1.5rem 0;
+
+  &::after,
+  &::before {
+    content: "";
+    width: 100%;
+    min-height: 1px;
+    background: #ddd;
+    flex: 1;
+  }
+}

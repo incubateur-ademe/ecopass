@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#F6F6F6"/>
+  <rect x="50" y="50" width="300" height="200" fill="white" rx="10"/>
+  <text x="200" y="120" font-family="Arial" font-size="14" fill="#3A3A3A" text-anchor="middle">COÛT ENVIRONNEMENTAL</text>
+  <text x="200" y="160" font-family="Arial" font-size="48" font-weight="bold" fill="#000091" text-anchor="middle">1123</text>
+  <text x="200" y="190" font-family="Arial" font-size="16" fill="#3A3A3A" text-anchor="middle">points d'impact</text>
+  <text x="200" y="220" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">ECOBALYSE</text>
+</svg>

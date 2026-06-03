@@ -1,9 +1,8 @@
-import Block from "../components/Block/Block"
-import styles from "./MentionsLegales.module.css"
+import LegalContainer from "../components/Mentions/LegalContainer"
 
 const MentionsLegales = () => {
   return (
-    <Block className={styles.container}>
+    <LegalContainer>
       <h1>Mentions légales</h1>
       <p>Mis à jour le 12/09/2025</p>
       <h2>Éditeur du site</h2>
@@ -42,7 +41,7 @@ const MentionsLegales = () => {
         Si vous n'obtenez pas de réponse rapide de notre part, vous êtes en droit de faire parvenir vos doléances ou une
         demande de saisine au Défenseur des droits.
       </p>
-    </Block>
+    </LegalContainer>
   )
 }
 

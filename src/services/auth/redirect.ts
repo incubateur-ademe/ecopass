@@ -2,7 +2,7 @@ import { auth } from "./auth"
 import { getUserOrganizationType } from "../../db/user"
 import { redirect } from "next/navigation"
 import type { Session } from "next-auth"
-import { OrganizationType } from "../../../prisma/src/prisma"
+import { OrganizationType } from "@prisma/enums"
 
 export async function tryAndGetSession(
   redirectIfNoSession: true,

@@ -1,4 +1,4 @@
-import { Status } from "../../prisma/src/prisma"
+import { Status } from "@prisma/enums"
 import { prismaClient } from "./prismaClient"
 
 export const createExport = async (userId: string, brand?: string) =>

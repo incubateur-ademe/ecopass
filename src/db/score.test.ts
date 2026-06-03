@@ -1,14 +1,16 @@
 import { v4 as uuid } from "uuid"
-import { Prisma, Status, UploadType } from "../../prisma/src/prisma"
-import { prismaTest } from "../../jest.setup"
+import { Prisma } from "@prisma/client"
+import { Status, UploadType } from "@prisma/enums"
+import { prismaTest as mockPrismaTest } from "../../jest.setup"
 jest.mock("./prismaClient", () => ({
-  prismaClient: prismaTest,
+  prismaClient: mockPrismaTest,
 }))
 
 import { createScore, createScores } from "./score"
 import { APIUser } from "../services/auth/auth"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { cleanDB } from "./testUtils"
+import { trim } from "zod"
 
 describe("Score DB integration", () => {
   let user: NonNullable<APIUser>["user"]
@@ -18,7 +20,7 @@ describe("Score DB integration", () => {
   beforeAll(async () => {
     await cleanDB()
 
-    const organization = await prismaTest.organization.create({
+    const organization = await mockPrismaTest.organization.create({
       data: {
         name: "TestOrg",
         displayName: "TestOrg",
@@ -34,7 +36,7 @@ describe("Score DB integration", () => {
       },
     })
     testOrganizationId = organization.id
-    user = await prismaTest.user.create({
+    user = await mockPrismaTest.user.create({
       data: { email: "test@example.com", organizationId: testOrganizationId },
       select: {
         id: true,
@@ -55,7 +57,7 @@ describe("Score DB integration", () => {
       },
     })
 
-    const upload = await prismaTest.upload.create({
+    const upload = await mockPrismaTest.upload.create({
       data: {
         version: "test-version",
         type: "API",
@@ -102,10 +104,10 @@ describe("Score DB integration", () => {
   })
 
   beforeEach(async () => {
-    await prismaTest.score.deleteMany()
-    await prismaTest.accessory.deleteMany()
-    await prismaTest.material.deleteMany()
-    await prismaTest.product.deleteMany()
+    await mockPrismaTest.score.deleteMany()
+    await mockPrismaTest.accessory.deleteMany()
+    await mockPrismaTest.material.deleteMany()
+    await mockPrismaTest.product.deleteMany()
   })
 
   it("createScores should insert multiple scores", async () => {
@@ -135,6 +137,15 @@ describe("Score DB integration", () => {
         durability: 0.82,
         microfibers: 8.7,
         outOfEuropeEOL: 0.6,
+        materials: 120,
+        transport: 25,
+        spinning: 8,
+        fabric: 4,
+        dyeing: 2,
+        making: 0.5,
+        usage: 0.3,
+        endOfLife: 0.1,
+        trims: 0.00012,
       },
       {
         productId: id2,
@@ -159,11 +170,20 @@ describe("Score DB integration", () => {
         durability: 0.45,
         microfibers: 18.2,
         outOfEuropeEOL: 2.1,
+        materials: 150,
+        transport: 30,
+        spinning: 10,
+        fabric: 5,
+        dyeing: 3,
+        making: 1,
+        usage: 0.5,
+        endOfLife: 0.2,
+        trims: 0.00034,
       },
     ]
 
     await Promise.all([
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: "id-1",
@@ -175,7 +195,7 @@ describe("Score DB integration", () => {
           },
         },
       }),
-      prismaTest.product.create({
+      mockPrismaTest.product.create({
         data: {
           ...baseProduct,
           id: "id-2",
@@ -192,7 +212,7 @@ describe("Score DB integration", () => {
     const result = await createScores(scores)
 
     expect(result.count).toBe(2)
-    const found = await prismaTest.score.findMany()
+    const found = await mockPrismaTest.score.findMany()
     expect(found).toHaveLength(2)
 
     const score1 = found.find((score) => score.productId === id1)
@@ -233,6 +253,15 @@ describe("Score DB integration", () => {
       durability: 0.67,
       microfibers: 12.3,
       outOfEuropeEOL: 1.2,
+      materials: 120,
+      transport: 25,
+      spinning: 8,
+      fabric: 4,
+      dyeing: 2,
+      making: 0.5,
+      usage: 0.3,
+      endOfLife: 0.1,
+      trims: 0.00012,
     }
 
     const product = {
@@ -256,7 +285,7 @@ describe("Score DB integration", () => {
     }
     await createScore(user, product, [informations], [score], "test-hash")
 
-    const createdScore = await prismaTest.score.findFirst({
+    const createdScore = await mockPrismaTest.score.findFirst({
       where: { score: 85.5 },
       include: { product: { include: { product: { include: { upload: true } } } } },
     })

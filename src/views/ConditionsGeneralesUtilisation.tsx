@@ -1,9 +1,8 @@
-import Block from "../components/Block/Block"
-import styles from "./MentionsLegales.module.css"
+import LegalContainer from "../components/Mentions/LegalContainer"
 
 const ConditionsGeneralesUtilisation = () => {
   return (
-    <Block className={styles.container}>
+    <LegalContainer>
       <h1>Conditions générales d’utilisation</h1>
       <p>Mis à jour le 18/11/2025</p>
       <br />
@@ -168,7 +167,7 @@ const ConditionsGeneralesUtilisation = () => {
         fonction des modifications apportées à la plateforme, de l’évolution de la législation ou pour tout autre motif
         jugé nécessaire.
       </p>
-    </Block>
+    </LegalContainer>
   )
 }
 

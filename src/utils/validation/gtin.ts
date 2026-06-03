@@ -1,3 +1,5 @@
+import { Organization } from "@prisma/client"
+
 export const isValidGtin = (gtin: string): boolean => {
   const digits = gtin.split("").map(Number)
 
@@ -11,4 +13,12 @@ export const isValidGtin = (gtin: string): boolean => {
   const calculatedCheckDigit = (10 - (sum % 10)) % 10
 
   return digits[digits.length - 1] === calculatedCheckDigit
+}
+
+export const getDefaultGTINs = (
+  organization: Pick<Organization, "siret" | "uniqueId" | "id">,
+  internalReference: string,
+) => {
+  const suffix = organization.siret || (organization.uniqueId || organization.id).slice(0, 8)
+  return [`${internalReference}-${suffix}`]
 }

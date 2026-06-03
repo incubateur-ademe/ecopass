@@ -4,14 +4,14 @@
   align-items: center;
   gap: 1rem;
 
-  @media screen and (max-width: 767px) {
+  @media screen and (max-width: 50rem) {
     flex-direction: column;
     flex-wrap: wrap;
   }
 }
 
 .bannerTest {
-  @media screen and (max-width: 992px) {
+  @media screen and (max-width: 62rem) {
     flex-direction: column-reverse;
     flex-wrap: wrap;
   }
@@ -30,13 +30,17 @@
 }
 
 .image {
-  max-width: 400px;
+  width: 100%;
+  max-width: 350px;
   height: auto;
-  border-radius: 50%;
 
-  @media screen and (max-width: 767px) {
+  @media screen and (max-width: 50rem) {
     max-width: min(100%, 300px);
   }
+}
+
+.round {
+  border-radius: 50%;
 }
 
 .alert {
@@ -46,7 +50,7 @@
     min-width: 500px;
   }
 
-  @media screen and (max-width: 992px) {
+  @media screen and (max-width: 62rem) {
     min-width: 100%;
   }
 }
@@ -55,18 +59,14 @@
   max-width: 200px;
 }
 
-.title {
-  font-size: 2.5rem;
-  line-height: 3rem;
-
-  @media screen and (max-width: 575px) {
-    font-size: 2rem;
-    line-height: 2.5rem;
-  }
-}
-
 .description {
   font-size: 1.25rem;
   line-height: 1.75rem;
   margin-block: 1.5rem;
+}
+
+.connection {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
 }

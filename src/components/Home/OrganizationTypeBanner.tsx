@@ -5,7 +5,7 @@ import classNames from "classnames"
 import { isTestEnvironment } from "../../utils/test"
 import { UserOrganization } from "../../db/user"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
-import { OrganizationType } from "../../../prisma/src/prisma"
+import { OrganizationType } from "@prisma/enums"
 import { useState } from "react"
 import LoadingButton from "../Button/LoadingButton"
 import { updateOrganizationType } from "../../serverFunctions/organization"
@@ -77,7 +77,7 @@ const OrganizationTypeBanner = ({ organization }: { organization: UserOrganizati
           </LoadingButton>
         </form>
       </div>
-      <Image className={styles.image} src='/images/tshirt.jpg' alt='' width={384} height={386} />
+      <Image className={styles.image} src='/images/tshirt.webp' alt='' width={384} height={386} />
     </div>
   )
 }

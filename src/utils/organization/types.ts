@@ -1,4 +1,4 @@
-import { OrganizationType } from "../../../prisma/src/prisma"
+import { OrganizationType } from "@prisma/enums"
 
 export const organizationTypes: Record<OrganizationType, string> = {
   [OrganizationType.Brand]: "Marque",
