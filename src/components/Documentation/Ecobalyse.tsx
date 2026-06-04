@@ -145,6 +145,13 @@ const Ecobalyse = () => {
         2…).
       </p>
       <br />
+      <h3>Déclarer un lot</h3>
+      <p>Pour déclarer un lot de produits, indiquez une ligne par produit du lot.</p>
+      <p>
+        Attention à bien indiquer les mêmes informations communes (GTINs/EANs, Référence interne, Marque ID, Score, Prix
+        et Nombre de références) sur chaque ligne.
+      </p>
+      <br />
       <h3>Informations sur les accessoires</h3>
       <p>
         <b>Attention</b>, si vous n'avez pas d'accessoires, vous devez remplir ces champs avec la valeur 0.

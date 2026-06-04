@@ -25,16 +25,9 @@ const accessoryValidation = z.object({
     .min(0, "La quantité de l'accessoire doit être supérieure à 0"),
 })
 
-const productValidation = z.object({
-  id: z.string(),
+const informationValidation = z.object({
   productId: z.string(),
-  uploadId: z.string(),
-  status: z.enum(Status, { message: "Statut invalide" }),
-  createdAt: z.date(),
-  error: z.string().nullable(),
-  emptyTrims: z.boolean().optional(),
-  internalReference: z.string({ message: "La référence interne est obligatoire" }),
-  declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
+  id: z.string(),
   category: z.enum(ProductCategory, { message: "Catégorie de produit invalide" }),
   airTransportRatio: z
     .number({ message: "La part de transport aérien doit être un pourcentage" })
@@ -45,12 +38,6 @@ const productValidation = z.object({
   business: z.enum(Business, { message: "Taille de l'entreprise invalide" }).optional(),
   fading: z.boolean({ message: "Délavage doit valoir 'Oui' ou 'Non'" }).optional(),
   mass: z.number({ message: "Le poids est obligatoire" }).min(0.01, "La masse doit être supérieure à 0,01 kg"),
-  numberOfReferences: z
-    .number({ message: "Le nombre de références doit être un nombre" })
-    .min(1, "Le nombre de références doit être supérieur à 1")
-    .max(999999, "Le nombre de références doit être inférieur à 999 999")
-    .optional(),
-  price: z.number({ message: "Le prix doit être un nombre" }).min(1, "Le prix doit être supérieur à 1 €").optional(),
   countryDyeing: z.enum(Country, { message: "Origine de l'ennoblissement/impression invalide" }).optional(),
   countryFabric: z.enum(Country, { message: "Origine de tissage/tricotage invalide" }).optional(),
   countryMaking: z.enum(Country, { message: "Origine de confection invalide" }),
@@ -64,6 +51,27 @@ const productValidation = z.object({
     return Math.abs(totalShare - 1) < epsilon
   }, "La somme des parts de matières doit être égale à 100%"),
   accessories: z.array(accessoryValidation),
+  numberOfItem: z.number().min(1).max(999).optional(),
+  numberOfReferences: z
+    .number({ message: "Le nombre de références doit être un nombre" })
+    .min(1, "Le nombre de références doit être supérieur à 1")
+    .max(999999, "Le nombre de références doit être inférieur à 999 999")
+    .optional(),
+  price: z.number({ message: "Le prix doit être un nombre" }).min(1, "Le prix doit être supérieur à 1 €").optional(),
+  emptyTrims: z.boolean().optional(),
+})
+export type ParsedProductInformationValidation = z.infer<typeof informationValidation>
+
+const productValidation = z.object({
+  id: z.string(),
+  uploadId: z.string(),
+  status: z.enum(Status, { message: "Statut invalide" }),
+  createdAt: z.date(),
+  error: z.string().nullable(),
+  emptyTrims: z.boolean().optional(),
+  internalReference: z.string({ message: "La référence interne est obligatoire" }),
+  declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
+  informations: z.array(informationValidation),
 })
 
 export const getUserProductValidation = (brands: [string, ...string[]]) =>
@@ -74,20 +82,32 @@ export const getUserProductValidation = (brands: [string, ...string[]]) =>
       }),
     })
     .refine((product) => {
-      const hasImpression = product.impression !== undefined
-      const hasImpressionPercentage = product.impressionPercentage !== undefined
+      return product.informations.every((information) => {
+        const hasImpression = information.impression !== undefined
+        const hasImpressionPercentage = information.impressionPercentage !== undefined
 
-      if ((hasImpression && !hasImpressionPercentage) || (hasImpressionPercentage && !hasImpression)) {
-        return false
-      }
+        if ((hasImpression && !hasImpressionPercentage) || (hasImpressionPercentage && !hasImpression)) {
+          return false
+        }
 
-      return true
+        return true
+      })
     }, "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié")
     .refine((data) => {
-      if (!data.upcycled) {
-        return data.countryDyeing !== undefined && data.countryFabric !== undefined
-      }
-      return true
+      return data.informations.every((information) => {
+        if (!information.upcycled) {
+          return information.countryDyeing !== undefined && information.countryFabric !== undefined
+        }
+        return true
+      })
     }, "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé")
+    .refine((data) => {
+      const price = data.informations[0].price
+      return data.informations.every((information) => information.price === price)
+    }, "Le prix doit être identique pour toutes les composantes du produit")
+    .refine((data) => {
+      const numberOfReferences = data.informations[0].numberOfReferences
+      return data.informations.every((information) => information.numberOfReferences === numberOfReferences)
+    }, "Le nombre de références doit être identique pour toutes les composantes du produit")
 
 export type ParsedProductValidation = z.infer<ReturnType<typeof getUserProductValidation>>

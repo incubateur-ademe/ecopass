@@ -18,25 +18,31 @@ describe("productValidation", () => {
     brandId: "58ca7f37-0c8d-4463-ba40-c244c130192b",
     internalReference: "TestRef",
     declaredScore: null,
-    category: ProductCategory.Jean,
-    mass: 0.5,
-    countryDyeing: Country.Chine,
-    countryFabric: Country.France,
-    countryMaking: Country.RégionEuropeDeLOuest,
-    materials: [
+    informations: [
       {
-        id: "material-1",
-        productId: "12345",
-        slug: MaterialType.Coton,
-        share: 1,
-      },
-    ],
-    accessories: [
-      {
-        id: "accessory-1",
-        slug: AccessoryType.BoutonEnMétal,
-        quantity: 4,
-        productId: "123",
+        id: "11111",
+        productId: "54321",
+        category: ProductCategory.Jean,
+        mass: 0.5,
+        countryDyeing: Country.Chine,
+        countryFabric: Country.France,
+        countryMaking: Country.RégionEuropeDeLOuest,
+        materials: [
+          {
+            id: "material-1",
+            productId: "12345",
+            slug: MaterialType.Coton,
+            share: 1,
+          },
+        ],
+        accessories: [
+          {
+            id: "accessory-1",
+            slug: AccessoryType.BoutonEnMétal,
+            quantity: 4,
+            productId: "123",
+          },
+        ],
       },
     ],
   }
@@ -47,47 +53,55 @@ describe("productValidation", () => {
   })
 
   it("allows valid product without accessories", () => {
-    const result = productValidation.safeParse({ ...validProduct, accessories: [] })
+    const result = productValidation.safeParse({
+      ...validProduct,
+      informations: [{ ...validProduct.informations[0], accessories: [] }],
+    })
     expect(result.success).toEqual(true)
   })
 
   it("allows full product", () => {
     const result = productValidation.safeParse({
       ...validProduct,
-      airTransportRatio: 0.5,
-      business: Business.Small,
-      countryDyeing: Country.Bangladesh,
-      countryFabric: Country.Cambodge,
-      countryMaking: Country.Chine,
-      countrySpinning: Country.Inde,
-      fading: true,
-      materials: [
+      informations: [
         {
-          id: "123",
-          slug: MaterialType.Acrylique,
-          country: Country.Pakistan,
-          share: 0.2,
-          productId: "123",
-        },
-        {
-          id: "123",
-          slug: MaterialType.Coton,
-          country: Country.Myanmar,
-          share: 0.8,
-          productId: "123",
+          ...validProduct.informations[0],
+          airTransportRatio: 0.5,
+          business: Business.Small,
+          countryDyeing: Country.Bangladesh,
+          countryFabric: Country.Cambodge,
+          countryMaking: Country.Chine,
+          countrySpinning: Country.Inde,
+          fading: true,
+          materials: [
+            {
+              id: "123",
+              slug: MaterialType.Acrylique,
+              country: Country.Pakistan,
+              share: 0.2,
+              productId: "123",
+            },
+            {
+              id: "123",
+              slug: MaterialType.Coton,
+              country: Country.Myanmar,
+              share: 0.8,
+              productId: "123",
+            },
+          ],
+          numberOfReferences: 625106,
+          price: 50,
+          accessories: [
+            {
+              id: "accessory-1",
+              slug: AccessoryType.BoutonEnMétal,
+              quantity: 4,
+              productId: "123",
+            },
+          ],
+          upcycled: false,
         },
       ],
-      numberOfReferences: 625106,
-      price: 50,
-      accessories: [
-        {
-          id: "accessory-1",
-          slug: AccessoryType.BoutonEnMétal,
-          quantity: 4,
-          productId: "123",
-        },
-      ],
-      upcycled: false,
     })
     expect(result.success).toEqual(true)
   })
@@ -131,27 +145,16 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        category: undefined,
+        informations: [
+          {
+            ...validProduct.informations[0],
+            category: undefined,
+          },
+        ],
       },
       [
         {
-          path: ["category"],
-          message: "Catégorie de produit invalide",
-        },
-      ],
-    )
-  })
-
-  it("does not allow valid product without category", () => {
-    expectZodValidationToFail(
-      productValidation,
-      validProduct,
-      {
-        category: undefined,
-      },
-      [
-        {
-          path: ["category"],
+          path: ["informations", "0", "category"],
           message: "Catégorie de produit invalide",
         },
       ],
@@ -163,11 +166,16 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        category: "Invalid",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            category: "Invalid",
+          },
+        ],
       },
       [
         {
-          path: ["category"],
+          path: ["informations", "0", "category"],
           message: "Catégorie de produit invalide",
         },
       ],
@@ -175,21 +183,46 @@ describe("productValidation", () => {
   })
 
   it("does not allow product without internal reference", () => {
-    expectZodValidationToFail(productValidation, validProduct, { internalReference: [] }, [
-      { path: ["internalReference"], message: "La référence interne est obligatoire" },
-    ])
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        internalReference: [],
+      },
+      [{ path: ["internalReference"], message: "La référence interne est obligatoire" }],
+    )
   })
 
   it("does not allow product with mass < 0.01", () => {
-    expectZodValidationToFail(productValidation, validProduct, { mass: 0.009 }, [
-      { path: ["mass"], message: "La masse doit être supérieure à 0,01 kg" },
-    ])
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            mass: 0.009,
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "mass"], message: "La masse doit être supérieure à 0,01 kg" }],
+    )
   })
 
   it("does not allow product without mass", () => {
-    expectZodValidationToFail(productValidation, validProduct, { mass: undefined }, [
-      { path: ["mass"], message: "Le poids est obligatoire" },
-    ])
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            mass: undefined,
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "mass"], message: "Le poids est obligatoire" }],
+    )
   })
 
   it("does not allow product with zero declaredScore", () => {
@@ -199,41 +232,113 @@ describe("productValidation", () => {
   })
 
   it("does not allow product with price too low", () => {
-    expectZodValidationToFail(productValidation, validProduct, { price: 0 }, [
-      { path: ["price"], message: "Le prix doit être supérieur à 1 €" },
-    ])
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            price: 0,
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "price"], message: "Le prix doit être supérieur à 1 €" }],
+    )
   })
 
   it("does not allow product with invalid price", () => {
-    expectZodValidationToFail(productValidation, validProduct, { price: "Une bonne affaire" }, [
-      { path: ["price"], message: "Le prix doit être un nombre" },
-    ])
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            price: "Une bonne affaire",
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "price"], message: "Le prix doit être un nombre" }],
+    )
   })
 
   it("does not allow product with too low airTransportRatio", () => {
-    expectZodValidationToFail(productValidation, validProduct, { airTransportRatio: -1 }, [
-      { path: ["airTransportRatio"], message: "La part de transport aérien doit être supérieure à 0%" },
-    ])
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            airTransportRatio: -1,
+          },
+        ],
+      },
+      [
+        {
+          path: ["informations", "0", "airTransportRatio"],
+          message: "La part de transport aérien doit être supérieure à 0%",
+        },
+      ],
+    )
   })
 
   it("does not allow product with too high airTransportRatio", () => {
-    expectZodValidationToFail(productValidation, validProduct, { airTransportRatio: 1.1 }, [
-      { path: ["airTransportRatio"], message: "La part de transport aérien doit être inférieure à 100%" },
-    ])
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            airTransportRatio: 1.1,
+          },
+        ],
+      },
+      [
+        {
+          path: ["informations", "0", "airTransportRatio"],
+          message: "La part de transport aérien doit être inférieure à 100%",
+        },
+      ],
+    )
   })
 
   it("does not allow product with invalid airTransportRatio", () => {
-    expectZodValidationToFail(productValidation, validProduct, { airTransportRatio: "par train" }, [
-      { path: ["airTransportRatio"], message: "La part de transport aérien doit être un pourcentage" },
-    ])
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            airTransportRatio: "par train",
+          },
+        ],
+      },
+      [
+        {
+          path: ["informations", "0", "airTransportRatio"],
+          message: "La part de transport aérien doit être un pourcentage",
+        },
+      ],
+    )
   })
 
   it("does not allow product with invalid material share sum", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { materials: [{ ...validProduct.materials[0], share: 0.5 }] },
-      [{ path: ["materials"], message: "La somme des parts de matières doit être égale à 100%" }],
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            materials: [{ ...validProduct.informations[0].materials[0], share: 0.5 }],
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "materials"], message: "La somme des parts de matières doit être égale à 100%" }],
     )
   })
 
@@ -242,11 +347,26 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        accessories: [
-          { ...validProduct.materials[0], id: "accessory-1", slug: AccessoryType.BoutonEnMétal, quantity: -1 },
+        informations: [
+          {
+            ...validProduct.informations[0],
+            accessories: [
+              {
+                ...validProduct.informations[0].accessories[0],
+                id: "accessory-1",
+                slug: AccessoryType.BoutonEnMétal,
+                quantity: -1,
+              },
+            ],
+          },
         ],
       },
-      [{ path: ["accessories", "0", "quantity"], message: "La quantité de l'accessoire doit être supérieure à 0" }],
+      [
+        {
+          path: ["informations", "0", "accessories", "0", "quantity"],
+          message: "La quantité de l'accessoire doit être supérieure à 0",
+        },
+      ],
     )
   })
 
@@ -255,9 +375,14 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        upcycled: "maybe",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            upcycled: "maybe",
+          },
+        ],
       },
-      [{ path: ["upcycled"], message: "Remanufacturé doit valoir 'Oui' ou 'Non'" }],
+      [{ path: ["informations", "0", "upcycled"], message: "Remanufacturé doit valoir 'Oui' ou 'Non'" }],
     )
   })
 
@@ -266,9 +391,14 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        fading: "maybe",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            fading: "maybe",
+          },
+        ],
       },
-      [{ path: ["fading"], message: "Délavage doit valoir 'Oui' ou 'Non'" }],
+      [{ path: ["informations", "0", "fading"], message: "Délavage doit valoir 'Oui' ou 'Non'" }],
     )
   })
 
@@ -277,9 +407,14 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        business: "Faire de l'argent",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            business: "Faire de l'argent",
+          },
+        ],
       },
-      [{ path: ["business"], message: "Taille de l'entreprise invalide" }],
+      [{ path: ["informations", "0", "business"], message: "Taille de l'entreprise invalide" }],
     )
   })
 
@@ -288,9 +423,19 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        numberOfReferences: 0,
+        informations: [
+          {
+            ...validProduct.informations[0],
+            numberOfReferences: 0,
+          },
+        ],
       },
-      [{ path: ["numberOfReferences"], message: "Le nombre de références doit être supérieur à 1" }],
+      [
+        {
+          path: ["informations", "0", "numberOfReferences"],
+          message: "Le nombre de références doit être supérieur à 1",
+        },
+      ],
     )
   })
 
@@ -299,9 +444,19 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        numberOfReferences: 1000000,
+        informations: [
+          {
+            ...validProduct.informations[0],
+            numberOfReferences: 1000000,
+          },
+        ],
       },
-      [{ path: ["numberOfReferences"], message: "Le nombre de références doit être inférieur à 999 999" }],
+      [
+        {
+          path: ["informations", "0", "numberOfReferences"],
+          message: "Le nombre de références doit être inférieur à 999 999",
+        },
+      ],
     )
   })
 
@@ -310,9 +465,14 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        numberOfReferences: "Beaucoup",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            numberOfReferences: "Beaucoup",
+          },
+        ],
       },
-      [{ path: ["numberOfReferences"], message: "Le nombre de références doit être un nombre" }],
+      [{ path: ["informations", "0", "numberOfReferences"], message: "Le nombre de références doit être un nombre" }],
     )
   })
 
@@ -321,9 +481,14 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        countryFabric: "Ici",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            countryFabric: "Ici",
+          },
+        ],
       },
-      [{ path: ["countryFabric"], message: "Origine de tissage/tricotage invalide" }],
+      [{ path: ["informations", "0", "countryFabric"], message: "Origine de tissage/tricotage invalide" }],
     )
   })
 
@@ -332,9 +497,14 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        countryDyeing: "Ici",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            countryDyeing: "Ici",
+          },
+        ],
       },
-      [{ path: ["countryDyeing"], message: "Origine de l'ennoblissement/impression invalide" }],
+      [{ path: ["informations", "0", "countryDyeing"], message: "Origine de l'ennoblissement/impression invalide" }],
     )
   })
 
@@ -343,9 +513,14 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        countryMaking: "Ici",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            countryMaking: "Ici",
+          },
+        ],
       },
-      [{ path: ["countryMaking"], message: "Origine de confection invalide" }],
+      [{ path: ["informations", "0", "countryMaking"], message: "Origine de confection invalide" }],
     )
   })
 
@@ -354,9 +529,14 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        countrySpinning: "Ici",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            countrySpinning: "Ici",
+          },
+        ],
       },
-      [{ path: ["countrySpinning"], message: "Origine de filature invalide" }],
+      [{ path: ["informations", "0", "countrySpinning"], message: "Origine de filature invalide" }],
     )
   })
 
@@ -365,9 +545,14 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        impression: "Oui",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            impression: "Oui",
+          },
+        ],
       },
-      [{ path: ["impression"], message: "Type d'impression invalide" }],
+      [{ path: ["informations", "0", "impression"], message: "Type d'impression invalide" }],
     )
   })
 
@@ -376,8 +561,13 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        impression: undefined,
-        impressionPercentage: 0.8,
+        informations: [
+          {
+            ...validProduct.informations[0],
+            impressionPercentage: 0.8,
+            impression: undefined,
+          },
+        ],
       },
       [
         {
@@ -393,8 +583,13 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        impression: Impression.FixéLavé,
-        impressionPercentage: undefined,
+        informations: [
+          {
+            ...validProduct.informations[0],
+            impression: Impression.FixéLavé,
+            impressionPercentage: undefined,
+          },
+        ],
       },
       [
         {
@@ -410,11 +605,16 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        impressionPercentage: "Tout",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            impressionPercentage: "Tout",
+          },
+        ],
       },
       [
         {
-          path: ["impressionPercentage"],
+          path: ["informations", "0", "impressionPercentage"],
           message: "Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%",
         },
       ],
@@ -426,11 +626,16 @@ describe("productValidation", () => {
       productValidation,
       validProduct,
       {
-        impressionPercentage: 0.4,
+        informations: [
+          {
+            ...validProduct.informations[0],
+            impressionPercentage: 0.4,
+          },
+        ],
       },
       [
         {
-          path: ["impressionPercentage"],
+          path: ["informations", "0", "impressionPercentage"],
           message: "Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%",
         },
       ],
@@ -438,19 +643,39 @@ describe("productValidation", () => {
   })
 
   it("does not allow product with empty materials array", () => {
-    expectZodValidationToFail(productValidation, validProduct, { materials: [] }, [
-      { path: ["materials"], message: "La somme des parts de matières doit être égale à 100%" },
-    ])
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            materials: [],
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "materials"], message: "La somme des parts de matières doit être égale à 100%" }],
+    )
   })
 
   it("does not allow product with material share > 1", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { materials: [{ ...validProduct.materials[0], share: 1.1 }] },
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            materials: [{ ...validProduct.informations[0].materials[0], share: 1.1 }],
+          },
+        ],
+      },
       [
-        { path: ["materials.0.share"], message: "La part de la matière doit être inférieure à 100%" },
-        { path: ["materials"], message: "La somme des parts de matières doit être égale à 100%" },
+        {
+          path: ["informations", "0", "materials", "0", "share"],
+          message: "La part de la matière doit être inférieure à 100%",
+        },
+        { path: ["informations", "0", "materials"], message: "La somme des parts de matières doit être égale à 100%" },
       ],
     )
   })
@@ -459,10 +684,20 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { materials: [{ ...validProduct.materials[0], share: -0.1 }] },
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            materials: [{ ...validProduct.informations[0].materials[0], share: -0.1 }],
+          },
+        ],
+      },
       [
-        { path: ["materials"], message: "La somme des parts de matières doit être égale à 100%" },
-        { path: ["materials.0.share"], message: "La part de la matière doit être supérieure à 0%" },
+        { path: ["informations", "0", "materials"], message: "La somme des parts de matières doit être égale à 100%" },
+        {
+          path: ["informations", "0", "materials", "0", "share"],
+          message: "La part de la matière doit être supérieure à 0%",
+        },
       ],
     )
   })
@@ -471,8 +706,20 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { materials: [{ ...validProduct.materials[0], share: "Tout" }] },
-      [{ path: ["materials.0.share"], message: "La part de la matière doit être un pourcentage" }],
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            materials: [{ ...validProduct.informations[0].materials[0], share: "Tout" }],
+          },
+        ],
+      },
+      [
+        {
+          path: ["informations", "0", "materials", "0", "share"],
+          message: "La part de la matière doit être un pourcentage",
+        },
+      ],
     )
   })
 
@@ -480,8 +727,15 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { materials: [{ ...validProduct.materials[0], slug: "Papier" }] },
-      [{ path: ["materials.0.slug"], message: "Type de matière invalide" }],
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            materials: [{ ...validProduct.informations[0].materials[0], slug: "Papier" }],
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "materials.0.slug"], message: "Type de matière invalide" }],
     )
   })
 
@@ -489,8 +743,15 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { materials: [{ ...validProduct.materials[0], slug: undefined }] },
-      [{ path: ["materials.0.slug"], message: "Type de matière invalide" }],
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            materials: [{ ...validProduct.informations[0].materials[0], slug: undefined }],
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "materials.0.slug"], message: "Type de matière invalide" }],
     )
   })
 
@@ -498,8 +759,15 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { materials: [{ ...validProduct.materials[0], country: "La bas" }] },
-      [{ path: ["materials.0.country"], message: "Origine de la matière invalide" }],
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            materials: [{ ...validProduct.informations[0].materials[0], country: "La bas" }],
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "materials", "0", "country"], message: "Origine de la matière invalide" }],
     )
   })
 
@@ -507,8 +775,15 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { accessories: [{ ...validProduct.accessories[0], slug: "Col" }] },
-      [{ path: ["accessories.0.slug"], message: "Type d'accessoire invalide" }],
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            accessories: [{ ...validProduct.informations[0].accessories[0], slug: "Col" }],
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "accessories.0.slug"], message: "Type d'accessoire invalide" }],
     )
   })
 
@@ -516,8 +791,20 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { accessories: [{ ...validProduct.accessories[0], quantity: -1 }] },
-      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être supérieure à 0" }],
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            accessories: [{ ...validProduct.informations[0].accessories[0], quantity: -1 }],
+          },
+        ],
+      },
+      [
+        {
+          path: ["informations", "0", "accessories", "0", "quantity"],
+          message: "La quantité de l'accessoire doit être supérieure à 0",
+        },
+      ],
     )
   })
 
@@ -525,8 +812,20 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { accessories: [{ ...validProduct.accessories[0], quantity: undefined }] },
-      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être un nombre entier" }],
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            accessories: [{ ...validProduct.informations[0].accessories[0], quantity: undefined }],
+          },
+        ],
+      },
+      [
+        {
+          path: ["informations", "0", "accessories", "0", "quantity"],
+          message: "La quantité de l'accessoire doit être un nombre entier",
+        },
+      ],
     )
   })
 
@@ -534,43 +833,95 @@ describe("productValidation", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
-      { accessories: [{ ...validProduct.accessories[0], quantity: 1.5 }] },
-      [{ path: ["accessories.0.quantity"], message: "La quantité de l'accessoire doit être un nombre entier" }],
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            accessories: [{ ...validProduct.informations[0].accessories[0], quantity: 1.5 }],
+          },
+        ],
+      },
+      [
+        {
+          path: ["informations", "0", "accessories", "0", "quantity"],
+          message: "La quantité de l'accessoire doit être un nombre entier",
+        },
+      ],
     )
   })
 
   it("does not allow product without countryDyeing", () => {
-    expectZodValidationToFail(productValidation, validProduct, { countryDyeing: undefined }, [
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
       {
-        path: [""],
-        message:
-          "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            countryDyeing: undefined,
+          },
+        ],
       },
-    ])
+      [
+        {
+          path: [""],
+          message:
+            "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé",
+        },
+      ],
+    )
   })
 
   it("does not allow product without countryFabric", () => {
-    expectZodValidationToFail(productValidation, validProduct, { countryFabric: undefined }, [
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
       {
-        path: [""],
-        message:
-          "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé",
+        informations: [
+          {
+            ...validProduct.informations[0],
+            countryFabric: undefined,
+          },
+        ],
       },
-    ])
+      [
+        {
+          path: [""],
+          message:
+            "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé",
+        },
+      ],
+    )
   })
 
   it("does not allow product without countryMaking", () => {
-    expectZodValidationToFail(productValidation, validProduct, { countryMaking: undefined }, [
-      { path: ["countryMaking"], message: "Origine de confection invalide" },
-    ])
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            countryMaking: undefined,
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "countryMaking"], message: "Origine de confection invalide" }],
+    )
   })
 
   it("allows upcycled product without countryDyeing and countryFabric", () => {
     const result = productValidation.safeParse({
       ...validProduct,
-      upcycled: true,
-      countryDyeing: undefined,
-      countryFabric: undefined,
+
+      informations: [
+        {
+          ...validProduct.informations[0],
+          upcycled: true,
+          countryDyeing: undefined,
+          countryFabric: undefined,
+        },
+      ],
     })
     expect(result.success).toEqual(true)
   })
