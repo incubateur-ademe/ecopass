@@ -102,6 +102,8 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
     },
   ]
 
+  const connected = !!session?.user
+
   return (
     <HeaderDSFR
       brandTop={
@@ -117,28 +119,35 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
       }}
       serviceTitle='Affichage environnemental'
       serviceTagline={isTestEnvironment() ? "Serveur de test" : undefined}
-      navigation={(session && session.user ? connectedNavigation : visitorNavigation).filter((item) => item !== null)}
-      quickAccessItems={
-        session && session.user
-          ? [
-              {
-                linkProps: {
-                  href: "/logout",
-                },
-                iconId: "ri-account-circle-fill",
-                text: "Se déconnecter",
+      navigation={(connected ? connectedNavigation : visitorNavigation).filter((item) => item !== null)}
+      quickAccessItems={[
+        {
+          linkProps: {
+            href: isTestEnvironment()
+              ? "https://docs.numerique.gouv.fr/docs/fd1182f0-2180-4a62-9531-bf23e812886e/"
+              : "https://docs.numerique.gouv.fr/docs/4c19480c-746e-49d9-aa1c-8b94f8790720/",
+            target: "_blank",
+            rel: "noopener noreferrer",
+          },
+          iconId: connected ? "fr-icon-information-fill" : "fr-icon-information-line",
+          text: "Centre d'aide",
+        },
+        connected
+          ? {
+              linkProps: {
+                href: "/logout",
               },
-            ]
-          : [
-              {
-                linkProps: {
-                  href: "/login",
-                },
-                iconId: "ri-account-circle-line",
-                text: "Se connecter",
+              iconId: "ri-account-circle-fill",
+              text: "Se déconnecter",
+            }
+          : {
+              linkProps: {
+                href: "/login",
               },
-            ]
-      }
+              iconId: "ri-account-circle-line",
+              text: "Se connecter",
+            },
+      ]}
     />
   )
 }
