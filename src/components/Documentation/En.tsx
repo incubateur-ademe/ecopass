@@ -187,6 +187,16 @@ const En = () => {
       </p>
       <p>To redeclare a batch, you must redeclare all products in the batch.</p>
       <br />
+      <h3>Declare a multi-component product</h3>
+      <p>
+        To declare a product with multiple components, you can add the column "Composant principal". This column must be
+        "Yes" for the main component and "No" for the others.
+      </p>
+      <p>
+        Make sure to provide the same common information (GTINs/EANs, Internal Reference, Brand ID, Score, Category,
+        Price, and Number of References) on each line.
+      </p>
+      <br />
       <h3>Material information</h3>
       <p>For each material used, add the following columns (up to 16 materials):</p>
       <ul>
