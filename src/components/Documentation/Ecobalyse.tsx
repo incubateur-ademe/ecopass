@@ -10,146 +10,258 @@ const Ecobalyse = () => {
       </Button>
       <h2>Colonnes</h2>
       <h3>Informations produit</h3>
+      <p>
+        Pour les champs optionnels, si la valeur n'est pas définie on utilise les{" "}
+        <Link href='#default'>valeurs par défaut</Link> d'Ecobalyse.
+      </p>
       <ul>
         <li>
-          <b>GTINs/EANs</b> : tous les codes GTIN (ou EAN) du produit, séparés par des points virgules. Ces derniers
-          doivent être composés de 8 ou 13 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez{" "}
-          <Link
-            href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'
-            target='_blank'
-            rel='noopener noreferrer'>
-            nous contacter.
-          </Link>
+          <p>
+            <b>GTINs/EANs</b> : tous les codes GTIN (ou EAN) du produit, séparés par des points virgules. Ces derniers
+            doivent être composés de 8 ou 13 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez{" "}
+            <Link
+              href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'
+              target='_blank'
+              rel='noopener noreferrer'>
+              nous contacter.
+            </Link>
+          </p>
         </li>
         <li>
-          <b>Référence interne</b> : référence utilisée en interne pour votre produit. Si vous n'en avez pas, vous
-          pouvez utiliser le GTIN (ou l'EAN) principal.
-        </li>{" "}
-        <li>
-          <b>Marque ID</b> (optionnel) : id de la marque du produit, à retrouver dans votre page{" "}
-          <Link href='/organisation'>organisation</Link>.
+          <p>
+            <b>Référence interne</b> : référence utilisée en interne pour votre produit. Si vous n'en avez pas, vous
+            pouvez utiliser le GTIN (ou l'EAN) principal.
+          </p>
         </li>
         <li>
-          <b>Score</b> (optionnel) : score Ecobalyse (version {ecobalyseVersion}), si vous l'avez calculé. Attention, si
-          il est différent de notre calcul, le produit sera en erreur.
-          <p className='fr-hint-text'>si pas de valeur définie, on utilise le score calculé.</p>
+          <p>
+            <b>Marque ID</b> (optionnel) : id de la marque du produit, à retrouver dans votre page{" "}
+            <Link href='/organisation'>organisation</Link>.
+          </p>
+          <p className='fr-hint-text'>Si la valeur n'est pas définie, on utilise la marque par défaut.</p>
         </li>
         <li>
-          <b>Catégorie</b> : type de produit à choisir dans la liste suivante :
+          <p>
+            <b>Score</b> (optionnel) : score Ecobalyse (version {ecobalyseVersion}), si vous l'avez calculé. Attention,
+            s'il est différent de notre calcul, le produit sera en erreur.
+          </p>
+          <p className='fr-hint-text'>Si la valeur n'est pas définie, on utilise le score calculé.</p>
+        </li>
+        <li>
+          <p>
+            <b>Catégorie</b> : type de produit à choisir dans la liste suivante :
+          </p>
           <ul>
-            <li>chemise</li>
-            <li>jean</li>
-            <li>jupe</li>
-            <li>manteau</li>
-            <li>pantalon</li>
-            <li>pull</li>
-            <li>tshirt</li>
-            <li>chaussettes</li>
-            <li>calecon</li>
-            <li>slip</li>
-            <li>maillot-de-bain</li>
+            <li>
+              <p>chemise</p>
+            </li>
+            <li>
+              <p>jean</p>
+            </li>
+            <li>
+              <p>jupe</p>
+            </li>
+            <li>
+              <p>manteau</p>
+            </li>
+            <li>
+              <p>pantalon</p>
+            </li>
+            <li>
+              <p>pull</p>
+            </li>
+            <li>
+              <p>tshirt</p>
+            </li>
+            <li>
+              <p>chaussettes</p>
+            </li>
+            <li>
+              <p>calecon</p>
+            </li>
+            <li>
+              <p>slip</p>
+            </li>
+            <li>
+              <p>maillot-de-bain</p>
+            </li>
           </ul>
         </li>
         <li>
-          <b>Masse (en kg)</b> : masse du produit fini, en kilogrammes (min : 0,01 kg).
+          <p>
+            <b>Masse (en kg)</b> : masse du produit fini, en kilogrammes (min : 0,01 kg).
+          </p>
         </li>
         <li>
-          <b>Remanufacturé</b> (optionnel) : est ce que le produit est remanufacturé ? true/false.
+          <p>
+            <b>Remanufacturé</b> (optionnel) : est-ce que le produit est remanufacturé ? true/false.
+          </p>
         </li>
         <li>
-          <b>Nombre de références</b> (optionnel) : nombre de références au catalogue de la marque (min : 1, max :
-          999999).
+          <p>
+            <b>Nombre de références</b> (optionnel) : nombre de références au catalogue de la marque (min : 1, max :
+            999999).
+          </p>
         </li>
         <li>
-          <b>Prix (en euros, TTC)</b> (optionnel) : prix du produit, en Euros (€), TTC (min : 1).
+          <p>
+            <b>Prix (en euros, TTC)</b> (optionnel) : prix du produit, en Euros (€), TTC (min : 1).
+          </p>
         </li>
         <li>
-          <b>Taille de l'entreprise</b> (optionnel) : type d'entreprise et d'offre de services :
+          <p>
+            <b>Taille de l'entreprise</b> (optionnel) : type d'entreprise et d'offre de services :
+          </p>
           <ul>
-            <li>small-business</li>
-            <li>large-business-with-services</li>
-            <li>large-business-without-services</li>
+            <li>
+              <p>small-business</p>
+            </li>
+            <li>
+              <p>large-business-with-services</p>
+            </li>
+            <li>
+              <p>large-business-without-services</p>
+            </li>
           </ul>
         </li>
         <li>
-          <b>Origine de filature</b> (optionnel) : pays pour l'étape de filature.
+          <p>
+            <b>Origine de filature</b> (optionnel) : pays pour l'étape de filature.
+          </p>
           <p className='fr-hint-text'>
             si pas de valeur définie, on utilise celui de production de la matière la plus représentée dans le mix.
           </p>
         </li>
         <li>
-          <b>Origine de tissage/tricotage</b> (optionnel) : pays pour l'étape de tissage/tricotage. Requis si le produit
-          n'est pas remanufacturé.
+          <p>
+            <b>Origine de tissage/tricotage</b> (optionnel) : pays pour l'étape de tissage/tricotage. Requis si le
+            produit n'est pas remanufacturé.
+          </p>
         </li>
         <li>
-          <b>Origine de l'ennoblissement/impression</b> (optionnel) : pays pour l'étape d'ennoblissement/impression.
-          Requis si le produit n'est pas remanufacturé.
+          <p>
+            <b>Origine de l'ennoblissement/impression</b> (optionnel) : pays pour l'étape d'ennoblissement/impression.
+            Requis si le produit n'est pas remanufacturé.
+          </p>
         </li>
         <li>
-          <b>Origine de confection</b> : pays pour l'étape de confection.
+          <p>
+            <b>Origine de confection</b> : pays pour l'étape de confection.
+          </p>
         </li>
         <li>
-          <b>Type d'impression</b> (optionnel) : type de procédé d'impression effectuée sur le produit à choisir dans la
-          liste suivante :
+          <p>
+            <b>Type d'impression</b> (optionnel) : type de procédé d'impression effectuée sur le produit à choisir dans
+            la liste suivante :
+          </p>
           <ul>
-            <li>pigment</li>
-            <li>substantive</li>
+            <li>
+              <p>pigment</p>
+            </li>
+            <li>
+              <p>substantive</p>
+            </li>
           </ul>
         </li>
         <li>
-          <b>Pourcentage d'impression</b> (optionnel) : pourcentage de surface imprimée (1%, 5%, 20%, 50% ou 80%)..
+          <p>
+            <b>Pourcentage d'impression</b> (optionnel) : pourcentage de surface imprimée (1%, 5%, 20%, 50% ou 80%).
+          </p>
         </li>
         <li>
-          <b>Délavage</b> (optionnel) : Y a t'il application d'un procédé de délavage pour l'étape de confection du
-          produit ? true/false.
+          <p>
+            <b>Délavage</b> (optionnel) : Y a-t-il application d'un procédé de délavage pour l'étape de confection du
+            produit ? true/false.
+          </p>
         </li>
         <li>
-          <b>Part du transport aérien</b> (optionnel) : pourcentage du transport aérien entre l'étape de confection et
-          l'étape de distribution.
+          <p>
+            <b>Part du transport aérien</b> (optionnel) : pourcentage du transport aérien entre l'étape de confection et
+            l'étape de distribution.
+          </p>
         </li>
       </ul>
-      <br />
-      <h3>Information sur les matières</h3>
-      <p>Pour chaque matière utilisée, ajoutez les colonnes suivantes (jusqu’à 16 matières) :</p>
-      <ul>
-        <li>
-          <b>Matière X</b> : type de matière à choisir dans la liste suivante :
-          <ul>
-            <li>elasthane</li>
-            <li>ei-acrylique</li>
-            <li>ei-jute-kenaf</li>
-            <li>ei-pp</li>
-            <li>ei-pet</li>
-            <li>ei-pet-r</li>
-            <li>ei-pa</li>
-            <li>ei-lin</li>
-            <li>ei-laine-par-defaut</li>
-            <li>ei-laine-nouvelle-filiere</li>
-            <li>ei-coton</li>
-            <li>ei-coton-organic</li>
-            <li>ei-chanvre</li>
-            <li>ei-viscose</li>
-            <li>coton-rdpc</li>
-            <li>coton-rdp</li>
-          </ul>
-        </li>
-        <li>
-          <b>Matière X pourcentage</b> : Part du produit que cette matière représente en pourcentage.
-        </li>
-        <li>
-          <b>Matière X origine</b> (optionnel) : pays ou région d’origine de la matière.
-        </li>
-      </ul>
-      <p>
-        Remplacez <b>X</b> par un nombre de 1 à 16 (ex : Matière 1, Matière 1 pourcentage, Matière 1 origine, Matière
-        2…).
-      </p>
       <br />
       <h3>Déclarer un lot</h3>
       <p>Pour déclarer un lot de produits, indiquez une ligne par produit du lot.</p>
       <p>
         Attention à bien indiquer les mêmes informations communes (GTINs/EANs, Référence interne, Marque ID, Score, Prix
         et Nombre de références) sur chaque ligne.
+      </p>
+      <p>Pour redéclarer un lot, il faut redéclarer tous les produits du lot.</p>
+      <br />
+      <h3>Information sur les matières</h3>
+      <p>Pour chaque matière utilisée, ajoutez les colonnes suivantes (jusqu’à 16 matières) :</p>
+      <ul>
+        <li>
+          <p>
+            <b>Matière X</b> : type de matière à choisir dans la liste suivante :
+          </p>
+          <ul>
+            <li>
+              <p>elasthane</p>
+            </li>
+            <li>
+              <p>ei-acrylique</p>
+            </li>
+            <li>
+              <p>ei-jute-kenaf</p>
+            </li>
+            <li>
+              <p>ei-pp</p>
+            </li>
+            <li>
+              <p>ei-pet</p>
+            </li>
+            <li>
+              <p>ei-pet-r</p>
+            </li>
+            <li>
+              <p>ei-pa</p>
+            </li>
+            <li>
+              <p>ei-lin</p>
+            </li>
+            <li>
+              <p>ei-laine-par-defaut</p>
+            </li>
+            <li>
+              <p>ei-laine-nouvelle-filiere</p>
+            </li>
+            <li>
+              <p>ei-coton</p>
+            </li>
+            <li>
+              <p>ei-coton-organic</p>
+            </li>
+            <li>
+              <p>ei-chanvre</p>
+            </li>
+            <li>
+              <p>ei-viscose</p>
+            </li>
+            <li>
+              <p>coton-rdpc</p>
+            </li>
+            <li>
+              <p>coton-rdp</p>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <p>
+            <b>Matière X pourcentage</b> : Part du produit que cette matière représente en pourcentage.
+          </p>
+        </li>
+        <li>
+          <p>
+            <b>Matière X origine</b> (optionnel) : pays ou région d’origine de la matière.
+          </p>
+        </li>
+      </ul>
+      <p>
+        Remplacez <b>X</b> par un nombre de 1 à 16 (ex : Matière 1, Matière 1 pourcentage, Matière 1 origine, Matière
+        2…).
       </p>
       <br />
       <h3>Informations sur les accessoires</h3>
@@ -160,41 +272,87 @@ const Ecobalyse = () => {
       </p>
       <ul>
         <li>
-          <b>Quantité de zip long</b>
+          <p>
+            <b>Quantité de zip long</b>
+          </p>
         </li>
         <li>
-          <b>Quantité de zip court</b>
+          <p>
+            <b>Quantité de zip court</b>
+          </p>
         </li>
         <li>
-          <b>Quantité de bouton en plastique</b>
+          <p>
+            <b>Quantité de bouton en plastique</b>
+          </p>
         </li>
         <li>
-          <b>Quantité de bouton en métal</b>
+          <p>
+            <b>Quantité de bouton en métal</b>
+          </p>
         </li>
       </ul>
       <br />
       <h3>Pays</h3>
       <p>La liste des pays disponibles est la suivante :</p>
       <ul>
-        <li>REO</li>
-        <li>REE</li>
-        <li>RAS</li>
-        <li>RAF</li>
-        <li>RME</li>
-        <li>RLA</li>
-        <li>RNA</li>
-        <li>ROC</li>
-        <li>MM</li>
-        <li>BD</li>
-        <li>CN</li>
-        <li>FR</li>
-        <li>IN</li>
-        <li>KH</li>
-        <li>MA</li>
-        <li>PK</li>
-        <li>TN</li>
-        <li>TR</li>
-        <li>VN</li>
+        <li>
+          <p>REO</p>
+        </li>
+        <li>
+          <p>REE</p>
+        </li>
+        <li>
+          <p>RAS</p>
+        </li>
+        <li>
+          <p>RAF</p>
+        </li>
+        <li>
+          <p>RME</p>
+        </li>
+        <li>
+          <p>RLA</p>
+        </li>
+        <li>
+          <p>RNA</p>
+        </li>
+        <li>
+          <p>ROC</p>
+        </li>
+        <li>
+          <p>MM</p>
+        </li>
+        <li>
+          <p>BD</p>
+        </li>
+        <li>
+          <p>CN</p>
+        </li>
+        <li>
+          <p>FR</p>
+        </li>
+        <li>
+          <p>IN</p>
+        </li>
+        <li>
+          <p>KH</p>
+        </li>
+        <li>
+          <p>MA</p>
+        </li>
+        <li>
+          <p>PK</p>
+        </li>
+        <li>
+          <p>TN</p>
+        </li>
+        <li>
+          <p>TR</p>
+        </li>
+        <li>
+          <p>VN</p>
+        </li>
       </ul>
     </>
   )

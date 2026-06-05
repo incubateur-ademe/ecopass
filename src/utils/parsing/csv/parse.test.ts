@@ -243,7 +243,7 @@ describe("parseCSV", () => {
     expect(accessories).toHaveLength(0)
   })
 
-  it("parses a valid CSV with semi colon", async () => {
+  it("parses a valid CSV with semicolon", async () => {
     const product = `"2234567891001;3234567891000";"REF-123";"";"2222;63";Pull;"0;55";Non;9000;100;Grande entreprise sans service de réparation;Viscose;"90,00 %";Chine;Jute;"10,00 %";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Chine;Chine;Chine;Pigmentaire;"20,00 %";Chine;Non;"75,00%";1;;;`
     const csv = Buffer.from(`${header.replaceAll(",", ";")}\n${product}`)
     const { products, materials, accessories } = await parseCSV(csv, null, upload)
