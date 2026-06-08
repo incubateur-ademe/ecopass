@@ -53,20 +53,31 @@ const getSize = (value: number, large: boolean) => {
     }
     return 0
   } else {
-    const abs = Math.abs(value)
-    if (abs > 100) {
-      return -45
-    }
-
-    if (abs > 10) {
+    if (value < -99) {
       return -60
     }
 
-    if (abs > 0) {
+    if (value < -9) {
+      return -70
+    }
+
+    if (value < 0) {
+      return -80
+    }
+
+    if (value === 0) {
+      return -112
+    }
+
+    if (value < 10) {
+      return -75
+    }
+
+    if (value < 100) {
       return -65
     }
 
-    return -100
+    return -55
   }
 }
 
@@ -126,7 +137,7 @@ export const getEtiquetteSVG = (score: number, standardizedScore: number, catego
 
   const title = `${svgTitle(score, standardizedScore)} ${comparisonText}`
   return `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${large ? 376 : 207} 77" role="img" aria-label="${title}" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${large ? 376 : 213} 77" role="img" aria-label="${title}" fill="none">
 <title>${title}</title>
   <defs>
     <style>
