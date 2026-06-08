@@ -430,4 +430,79 @@ describe("parseExcel", () => {
       "La référence interne doit être identique pour toutes les composantes du produit, Le score déclaré doit être identique pour toutes les composantes du produit, La marque doit être identique pour toutes les composantes du produit, Le prix doit être identique pour toutes les composantes du produit, Le nombre de références doit être identique pour toutes les composantes du produit",
     )
   })
+
+  it("should regroup multicomponent products", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const headersWithMainComponent = [...defaultHeaders, "Composant principal"]
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+
+    const excelBuffer = createExcelBuffer([
+      headersWithMainComponent,
+      [...defaultProducts, "oui"],
+      [...secondRow, "non"],
+    ])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(informations[0].mainComponent).toBe(true)
+    expect(informations[1].mainComponent).toBe(false)
+  })
+
+  it("should fail if multiple categories in multicomponent products", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const categoryIndex = defaultHeaders.indexOf("Catégorie")
+    const headersWithMainComponent = [...defaultHeaders, "Composant principal"]
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+    secondRow[categoryIndex] = "jeans"
+
+    const excelBuffer = createExcelBuffer([
+      headersWithMainComponent,
+      [...defaultProducts, "oui"],
+      [...secondRow, "non"],
+    ])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Tous les composants du produit doivent avoir la même catégorie")
+  })
+
+  it("should fail if multiple main components in multicomponent products", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const headersWithMainComponent = [...defaultHeaders, "Composant principal"]
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+
+    const excelBuffer = createExcelBuffer([
+      headersWithMainComponent,
+      [...defaultProducts, "oui"],
+      [...secondRow, "oui"],
+    ])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Il ne peut y avoir qu'un seul composant principal par produit")
+  })
+
+  it("should fail if main component value is wrong", async () => {
+    const headersWithMainComponent = [...defaultHeaders, "Composant principal"]
+    const excelBuffer = createExcelBuffer([headersWithMainComponent, [...defaultProducts, "nimps"]])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(1)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Composant principal doit valoir 'Oui' ou 'Non'")
+    expect(informations[0].mainComponent).toBe(null)
+  })
 })

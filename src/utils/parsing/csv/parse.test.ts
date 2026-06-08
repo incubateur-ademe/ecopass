@@ -467,4 +467,51 @@ describe("parseCSV", () => {
       "La référence interne doit être identique pour toutes les composantes du produit, Le score déclaré doit être identique pour toutes les composantes du produit, La marque doit être identique pour toutes les composantes du produit, Le prix doit être identique pour toutes les composantes du produit, Le nombre de références doit être identique pour toutes les composantes du produit",
     )
   })
+
+  it("should regroup multicomponent products", async () => {
+    const csv = Buffer.from(
+      `${header},"Composant principal"\n${defaultProducts},"oui"\n${defaultProducts.replace("2234567891001;3234567891000", "3234567891000;2234567891001")},"non"`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(informations[0].mainComponent).toBe(true)
+    expect(informations[1].mainComponent).toBe(false)
+  })
+
+  it("should fail if multiple categories in multicomponent products", async () => {
+    const csv = Buffer.from(
+      `${header},"Composant principal"\n${defaultProducts},"oui"\n${defaultProducts.replace("2234567891001;3234567891000", "3234567891000;2234567891001").replace("Pull", "jeans")},"non"`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Tous les composants du produit doivent avoir la même catégorie")
+  })
+
+  it("should fail if multiple main components in multicomponent products", async () => {
+    const csv = Buffer.from(
+      `${header},"Composant principal"\n${defaultProducts},"oui"\n${defaultProducts.replace("2234567891001;3234567891000", "3234567891000;2234567891001")},"oui"`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Il ne peut y avoir qu'un seul composant principal par produit")
+  })
+
+  it("should fail if multiple main components is wrong", async () => {
+    const csv = Buffer.from(`${header},"Composant principal"\n${defaultProducts},"nimps"`)
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(1)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Composant principal doit valoir 'Oui' ou 'Non'")
+    expect(informations[0].mainComponent).toBe(null)
+  })
 })

@@ -68,7 +68,12 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
     const id = uuid()
     const productId = existingProduct ? existingProduct.product.id : uuid()
 
+    const mainComponentValue = getBooleanValue(row[headerMapping["composantprincipal"]])
+    const mainComponentError = typeof mainComponentValue === "string"
+    const mainComponent = mainComponentError ? undefined : mainComponentValue
+
     const rawProduct = {
+      mainComponent,
       product: getValue<ProductCategory>(productCategories, row[headerMapping["categorie"]]),
       airTransportRatio: getNumberValue(row[headerMapping["partdutransportaerien"]] || ""),
       business: getValue<Business>(businesses, row[headerMapping["tailledelentreprise"]]),
@@ -137,7 +142,7 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
       : ([] as string[])
 
     const product = {
-      error: null,
+      error: mainComponentError ? "Composant principal doit valoir 'Oui' ou 'Non'" : null,
       id: productId,
       score: null,
       standardized: null,
@@ -154,7 +159,7 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
       createdAt: now,
       uploadId: upload ? upload.id : "",
       uploadOrder: rowIndex,
-      status: Status.Pending,
+      status: mainComponentError ? Status.Error : Status.Pending,
       gtins: gtins,
       internalReference: internalReference,
       brandName: brand,
@@ -191,6 +196,12 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
       if (existingProduct.raw[0].numberOfReferences !== rawProduct.numberOfReferences) {
         errors.push("Le nombre de références doit être identique pour toutes les composantes du produit")
       }
+      if (
+        rawProduct.mainComponent === true &&
+        existingProduct.raw.some((component) => component.mainComponent === true)
+      ) {
+        errors.push("Il ne peut y avoir qu'un seul composant principal par produit")
+      }
 
       if (errors.length > 0) {
         existingProduct.product.status = Status.Error
@@ -207,6 +218,14 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
       emptyTrims: !hasAccessoire1 && rawProduct.trims.length === 0,
       ...encrypted.product,
     })
+  }
+  for (const { product, raw } of Object.values(productsByGtins)) {
+    if (raw.findIndex((component) => component.mainComponent === true) !== -1) {
+      if (raw.findIndex((component) => component.product !== raw[0].product) !== -1) {
+        product.status = Status.Error
+        product.error = "Tous les composants du produit doivent avoir la même catégorie"
+      }
+    }
   }
 
   return { products, informations, materials, accessories }

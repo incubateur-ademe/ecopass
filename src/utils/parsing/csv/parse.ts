@@ -121,7 +121,12 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       const id = uuid()
       const productId = existingProduct ? existingProduct.product.id : uuid()
 
+      const mainComponentValue = getBooleanValue(row.record["composantprincipal"])
+      const mainComponentError = typeof mainComponentValue === "string"
+      const mainComponent = mainComponentError ? undefined : mainComponentValue
+
       const rawProduct = {
+        mainComponent,
         product: getValue<ProductCategory>(productCategories, row.record["categorie"]),
         airTransportRatio: getNumberValue(row.record["partdutransportaerien"], 0.01),
         business: getValue<Business>(businesses, row.record["tailledelentreprise"]),
@@ -195,7 +200,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         : ([] as string[])
 
       const product = {
-        error: null,
+        error: mainComponentError ? "Composant principal doit valoir 'Oui' ou 'Non'" : null,
         id: productId,
         score: null,
         standardized: null,
@@ -212,7 +217,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         createdAt: now,
         uploadId: upload.id,
         uploadOrder: row.info.records,
-        status: Status.Pending,
+        status: mainComponentError ? Status.Error : Status.Pending,
         gtins: gtins,
         internalReference: internalReference,
         brandName: brand,
@@ -249,6 +254,12 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         if (existingProduct.raw[0].numberOfReferences !== rawProduct.numberOfReferences) {
           errors.push("Le nombre de références doit être identique pour toutes les composantes du produit")
         }
+        if (
+          rawProduct.mainComponent === true &&
+          existingProduct.raw.some((component) => component.mainComponent === true)
+        ) {
+          errors.push("Il ne peut y avoir qu'un seul composant principal par produit")
+        }
 
         if (errors.length > 0) {
           existingProduct.product.status = Status.Error
@@ -267,7 +278,18 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       })
     })
 
-    parser.on("end", resolve)
+    parser.on("end", () => {
+      for (const { product, raw } of Object.values(productsByGtins)) {
+        if (raw.findIndex((component) => component.mainComponent === true) !== -1) {
+          if (raw.findIndex((component) => component.product !== raw[0].product) !== -1) {
+            product.status = Status.Error
+            product.error = "Tous les composants du produit doivent avoir la même catégorie"
+          }
+        }
+      }
+
+      resolve()
+    })
     parser.on("error", reject)
     stream.on("error", reject)
   })

@@ -190,6 +190,16 @@ const Ecobalyse = () => {
       </p>
       <p>Pour redéclarer un lot, il faut redéclarer tous les produits du lot.</p>
       <br />
+      <h3>Déclarer un produit multi composant</h3>
+      <p>
+        Pour déclarer un produit avec plusieurs composants, vous pouvez rajouter la colonne "Composant principal". Cette
+        dernière doit valoir "Oui" pour le composant principal et "Non" pour les autres.
+      </p>
+      <br />
+      <p>
+        Attention à bien indiquer les mêmes informations communes (GTINs/EANs, Référence interne, Marque ID, Score,
+        Catégorie, Prix et Nombre de références) sur chaque ligne.
+      </p>
       <h3>Information sur les matières</h3>
       <p>Pour chaque matière utilisée, ajoutez les colonnes suivantes (jusqu’à 16 matières) :</p>
       <ul>
