@@ -117,6 +117,8 @@ export const getEtiquetteSVG = (score: number, standardizedScore: number, catego
   const maxSize = yCenter - 4 + 1 - 6
 
   const gaugeHeight = Math.abs(deltaPercent) > 100 ? maxSize : (absValue / 100) * maxSize
+  const gaugeWidth = large ? 26 : 20
+  const gaugeBaseX = large ? 249.75 : 247
 
   const backgroundY = deltaPercent > 0 ? yCenter - gaugeHeight : yCenter
   const cursorY =
@@ -124,7 +126,7 @@ export const getEtiquetteSVG = (score: number, standardizedScore: number, catego
 
   const title = `${svgTitle(score, standardizedScore)} ${comparisonText}`
   return `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${large ? 376 : 221} 77" role="img" aria-label="${title}" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${large ? 376 : 207} 77" role="img" aria-label="${title}" fill="none">
 <title>${title}</title>
   <defs>
     <style>
@@ -135,11 +137,11 @@ export const getEtiquetteSVG = (score: number, standardizedScore: number, catego
     ${svgContent(score, standardizedScore)}
 
   <g transform="translate(-1 0.75) scale(0.619)">
-    <path fill="#f6f6f6" d="M249.7,8.14c0-2.7,2.19-4.88,4.88-4.88h21.16v113.96h-21.16c-2.7,0-4.88-2.19-4.88-4.88V8.14Z"/>
+    <rect fill="#f6f6f6" x="${gaugeBaseX}" y="3.26" width="${gaugeWidth}" height="113.96" rx="4.88" ry="4.88"/>
     ${large && `<rect fill="none" stroke="#dbdbdb" stroke-width="1.3" x="250.35" y="4" width="356.86" height="112.66" rx="4.23" ry="4.23"/>`}
-    <rect x="249.75" y="${yCenter - 1}" width="26" height="2" fill="#dbdbdb" />
-    <rect x="249.75" y="${backgroundY}" width="26" height="${gaugeHeight}" fill="${colors.background}" />
-    <rect x="249.75" y="${cursorY}" width="26" height="6" fill="${colors.cursor}" />
+    <rect x="${gaugeBaseX}" y="${yCenter - 1}" width="${gaugeWidth}" height="2" fill="#dbdbdb" />
+    <rect x="${gaugeBaseX}" y="${backgroundY}" width="${gaugeWidth}" height="${gaugeHeight}" fill="${colors.background}" />
+    <rect x="${gaugeBaseX}" y="${cursorY}" width="${gaugeWidth}" height="6" fill="${colors.cursor}" />
     ${
       large
         ? `<text fill="#000" font-size="17.72px" font-family="Marianne-Bold, Marianne" font-weight="700" transform="translate(298.68 36.78)">Ce produit a un impact</text>
@@ -147,8 +149,8 @@ export const getEtiquetteSVG = (score: number, standardizedScore: number, catego
     <text fill="#000" font-size="17.72px" font-family="Marianne-Bold, Marianne" font-weight="700" transform="translate(298.97 93.94)">de cette catégorie</text>
     <rect fill="${colors.background}" x="299.34" y="47.05" width="${122 + size}" height="25.41" rx="4.3" ry="4.3"/>
     <text fill="${colors.text}" font-size="17.72px" font-family="Marianne-Bold, Marianne" font-weight="700" transform="translate(305.27 66)">${comparisonText}</text>`
-        : `<rect fill="${colors.background}" x="280" y="47.05" width="${122 + size}" height="25.41" rx="4.3" ry="4.3"/>
-    <text fill="${colors.text}" font-size="17.72px" font-family="Marianne-Bold, Marianne" font-weight="700" transform="translate(286 66)">${comparisonText}</text>`
+        : `<rect fill="${colors.background}" x="269" y="47.05" width="${132 + size}" height="25.41" rx="4.3" ry="4.3"/>
+    <text fill="${colors.text}" font-size="20px" font-family="Marianne-Bold, Marianne" font-weight="700" transform="translate(273 66)">${comparisonText}</text>`
     }
   </g>
 </svg>`
