@@ -50,9 +50,7 @@ export const processUploadsToQueue = async () => {
     await updateUploadToPending(upload.id)
     const parsedData = await parseFile(buffer, upload)
     const numberOfCreatedProduct = await createProducts(parsedData)
-    if (numberOfCreatedProduct === 0) {
-      await checkUploadsStatus([upload.id])
-    }
+    await checkUploadsStatus([upload.id])
     console.log(`Upload processed, ${parsedData.products.length} products, ${numberOfCreatedProduct} created`)
   } catch (error) {
     let message = "Erreur lors de l'analyse du fichier"
