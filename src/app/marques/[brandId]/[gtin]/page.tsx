@@ -29,7 +29,7 @@ const ProductPage = async (props: Props) => {
   const session = await tryAndGetSession(false, false)
   const role = session?.user?.role
   const params = await props.params
-  const product = await getProductWithScore(params.gtin)
+  const product = await getProductWithScore(decodeURIComponent(params.gtin))
   return (
     <>
       <StartDsfrOnHydration />
