@@ -59,6 +59,14 @@ export async function GET(request: NextRequest) {
 
     let svgContent: string
     if (validatedData.modele === "avecComparaison" || validatedData.modele === "avecComparaisonSimple") {
+      if (process.env.ALLOW_COMPARISON !== "true") {
+        return NextResponse.json(
+          {
+            error: "La génération d'étiquettes avec comparaison est uniquement disponible sur l'environnement de test",
+          },
+          { status: 403 },
+        )
+      }
       if (!productCategory) {
         productCategory = validatedData.categorie
         if (!productCategory) {
