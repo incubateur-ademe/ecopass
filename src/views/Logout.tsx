@@ -1,7 +1,7 @@
 "use client"
 import { signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { v4 as uuidv4 } from "uuid"
+import { v4 as uuid } from "uuid"
 
 const Logout = ({ force }: { force?: boolean }) => {
   const session = useSession()
@@ -16,7 +16,7 @@ const Logout = ({ force }: { force?: boolean }) => {
     const logOutUrl = new URL(`${process.env.NEXT_PUBLIC_PROCONNECT_DOMAIN}/api/v2/session/end`)
     logOutUrl.searchParams.set("id_token_hint", session.data.idToken || "")
     logOutUrl.searchParams.set("post_logout_redirect_uri", `${process.env.NEXT_PUBLIC_URL}/logout/proconnect`)
-    logOutUrl.searchParams.set("state", uuidv4())
+    logOutUrl.searchParams.set("state", uuid())
     router.push(logOutUrl.toString())
   } else {
     signOut({ callbackUrl: "/" })
