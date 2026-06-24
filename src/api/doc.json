@@ -679,7 +679,7 @@
               "type": "string",
               "enum": ["simple", "avecComparaison", "avecComparaisonSimple"]
             },
-            "description": "Modèle de l'image à générer, soit `simple` pour une image simple, soit `avecComparaison` ou `avecComparaisonSimple` pour une image avec jauge de comparaison"
+            "description": "Modèle de l'image à générer, soit `simple` pour une image simple, soit `avecComparaison` ou `avecComparaisonSimple` pour une image avec jauge de comparaison. Attention, les images avec comparaison sont uniquement disponibles sur [l'environnement de test](https://test-affichage-environnemental.ecobalyse.beta.gouv.fr/). Pour en savoir plus sur le produit moyen considéré, merci de nous contacter à l'adresse [affichage-environnemental@ecobalyse.beta.gouv.fr](mailto:affichage-environnemental@ecobalyse.beta.gouv.fr)"
           },
           {
             "name": "gtin",
