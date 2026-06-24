@@ -10,7 +10,7 @@ const csp = {
     "'self'",
     "'unsafe-inline'",
     `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}/matomo.js`,
-    "https://quefairedemesdechets.ademe.fr/infotri/configurateur.js",
+    "https://quefairedemesdechets.ademe.fr/infotri/iframe.js",
     "https://ecobalyse-ecopass-metabase.osc-fr1.scalingo.io/app/embed.js",
     "https://impactco2.fr/iframe.js",
   ],

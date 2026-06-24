@@ -91,7 +91,7 @@ const Product = ({
         </div>
       </Block>
       <Block>
-        <ProductScoreImpacts score={totalScore} />
+        <ProductScoreImpacts score={totalScore} isPro={isPro} />
         <ProductHistory gtin={gtin} brandId={brandId} />
       </Block>
       {!isPro && (

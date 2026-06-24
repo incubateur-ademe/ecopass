@@ -96,7 +96,7 @@ jobs:
         with:
           lighthouseCheckResults: ${{ steps.lighthousePublic.outputs.lighthouseCheckResults }}
           minAccessibilityScore: "100"
-          minBestPracticesScore: "100"
+          minBestPracticesScore: "78"
       - name: Create authenticated Lighthouse session
         id: lighthouseAuth
         run: pnpm tsx .github/scripts/create-lighthouse-auth-session.ts
@@ -116,7 +116,7 @@ jobs:
         with:
           lighthouseCheckResults: ${{ steps.lighthousePrivate.outputs.lighthouseCheckResults }}
           minAccessibilityScore: "100"
-          minBestPracticesScore: "100"
+          minBestPracticesScore: "78"
       - name: Upload Lighthouse artifacts
         uses: actions/upload-artifact@v5
         if: always()

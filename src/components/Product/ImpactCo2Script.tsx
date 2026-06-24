@@ -18,8 +18,8 @@ const ImpactCo2Script = ({ value }: { value: number }) => {
     script.async = true
     script.dataset.name = "impact-co2"
     script.src = "https://impactco2.fr/iframe.js"
-    script.dataset.type = "comparateur/etiquette"
-    script.dataset.search = `?value=${value}&comparisons=voiturethermique`
+    script.dataset.type = "comparateur/etiquette-animee"
+    script.dataset.search = `?value=${value}&comparisons=voiturethermique,random,random`
 
     container.appendChild(script)
   }, [value])

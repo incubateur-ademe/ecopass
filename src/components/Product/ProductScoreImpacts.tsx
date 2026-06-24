@@ -5,14 +5,18 @@ import Badge from "@codegouvfr/react-dsfr/Badge"
 import { impactCategories, ponderations } from "../../utils/product/impacts"
 import Image from "next/image"
 import ProductLifeCycleImpacts from "./ProductLifeCycleImpacts"
+import OtherTool from "./OtherTool"
+import InfoTriScript from "./InfoTriScript"
 import ImpactCo2Script from "./ImpactCo2Script"
 
 type ScoreKey = keyof Omit<NonNullable<ProductWithScore["informations"][number]["score"]>, "id" | "productId">
 
 const ProductScoreImpacts = ({
   score,
+  isPro,
 }: {
   score: Omit<NonNullable<ProductWithScore["informations"][number]["score"]>, "id" | "productId">
+  isPro?: boolean
 }) => {
   const calculateImpactValue = (key: string, base: number, ponderation: number) => {
     const baseValue = score[key as ScoreKey] || 0
@@ -31,6 +35,25 @@ const ProductScoreImpacts = ({
             marché (ex : consommation d'électricité du procédé de filature).
           </p>
           <ProductLifeCycleImpacts score={score} />
+          <div className='fr-mb-8w'>
+            {isPro ? (
+              <OtherTool
+                title="Ajouter l'info-tri sur vos pages produits en ligne"
+                subTitle='Configurez le widget info-tri et ajoutez-le à vos plateformes e-commerce.'
+                buttonLabel='Intégrer'
+                buttonLink='https://quefairedemesdechets.ademe.fr/nos-outils/integrer-info-tri/?utm_source=Ecobalyse&utm_medium=site&utm_campaign=pro'>
+                <InfoTriScript />
+              </OtherTool>
+            ) : (
+              <OtherTool
+                title='Que faire de ce produit en fin de cycle de vie ?'
+                subTitle='Réparation, réemploi, recyclage : trouvez où lui donner une seconde vie près de chez vous.'
+                linkLabel='En savoir + sur info tri'
+                link='https://quefairedemesdechets.ademe.fr/?utm_source=Ecobalyse&utm_medium=site&utm_campaign=pro'>
+                <InfoTriScript />
+              </OtherTool>
+            )}
+          </div>
         </>
       )}
       <h2>Quels sont les impacts de ce produit sur l’environnement ?</h2>
@@ -89,8 +112,22 @@ const ProductScoreImpacts = ({
                 ]}
               />
               {categoryKey === "climat" && (
-                <div className={styles.iframe}>
-                  <ImpactCo2Script value={score.cch} key='impact-co2-script' />
+                <div className='fr-mt-4w'>
+                  {isPro ? (
+                    <OtherTool
+                      title='Comprendre l’impact carbone'
+                      subTitle='Aider les consommateurs à visualiser l’impact carbone de ce produit en CO₂e.'
+                      buttonLabel='Intégrer'
+                      buttonLink={`https://impactco2.fr/outils/comparateur?value=${score.cch}&comparisons=voiturethermique,random,random#etiquette-animee`}>
+                      <ImpactCo2Script value={score.cch} />
+                    </OtherTool>
+                  ) : (
+                    <OtherTool
+                      title='Comprendre l’impact carbone'
+                      subTitle={`Cette valeur correspond à ${Math.round(score.cch).toLocaleString("fr-FR")} kg de CO₂e.`}>
+                      <ImpactCo2Script value={score.cch} />
+                    </OtherTool>
+                  )}
                 </div>
               )}
             </div>
