@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useRef } from "react"
 
-const InfoTri = () => {
+const InfoTriScript = () => {
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -17,22 +17,19 @@ const InfoTri = () => {
     }
 
     // Remove any previous script if present
-    const prevScript = container.querySelector('script[src*="quefairedemesdechets.ademe.fr/infotri/configurateur.js"]')
-    if (prevScript) prevScript.remove()
+    const prevScript = container.querySelector('script[src*="quefairedemesdechets.ademe.fr/infotri/iframe.js"]')
+    if (prevScript) {
+      prevScript.remove()
+    }
 
     const script = document.createElement("script")
-    script.src = "https://quefairedemesdechets.ademe.fr/infotri/configurateur.js"
+    script.src = "https://quefairedemesdechets.ademe.fr/infotri/iframe.js"
     script.async = true
-    script.dataset.config = "categorie=tous&consigne=1&avec_phrase=false"
+    script.dataset.config = "categorie=tous&consigne=3&avec_phrase=false"
     container.appendChild(script)
   }, [])
 
-  return (
-    <>
-      <h3 className='fr-mt-2w'>Info tri</h3>
-      <div ref={containerRef} />
-    </>
-  )
+  return <div ref={containerRef} />
 }
 
-export default InfoTri
+export default InfoTriScript
