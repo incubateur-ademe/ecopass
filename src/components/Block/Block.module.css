@@ -5,10 +5,15 @@
 
 .noMargin {
   padding-top: 0;
+  padding-bottom: 0;
 }
 
-.secondary {
+.yellow {
   background-color: var(--background-default-grey-hover);
+}
+
+.blue {
+  background-color: #e1edfb;
 }
 
 .home {

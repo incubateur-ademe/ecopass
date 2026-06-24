@@ -1,0 +1,10 @@
+.brands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.brand {
+  background-color: #e8edff;
+  color: #0063cb;
+}

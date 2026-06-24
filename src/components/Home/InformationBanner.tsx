@@ -1,24 +1,39 @@
+import Image from "next/image"
+import Block from "../Block/Block"
+import styles from "./InformationBanner.module.css"
+import { Button } from "@codegouvfr/react-dsfr/Button"
+
 const InformationBanner = () => {
   return (
     <>
-      <h2>Qu’est-ce que le coût environnemental ?</h2>
-      <p>
-        Le coût environnemental traduit l'ensemble des impacts générés par un vêtement tout au long de son cycle de vie
-        : depuis l’approvisionnement des matières, aux différentes étapes de fabrication, en passant par son transport,
-        jusqu’à sa fin de vie en tant que déchet.
-      </p>
-      <br />
-      <p>
-        Son objectif est d’informer les consommateurs sur l’impact écologique des vêtements qu’ils sont susceptibles
-        d’acheter. Ce repère simple et compréhensible permet de comparer les étiquettes et sensibiliser à la
-        consommation responsable. Comme on compare les prix des vêtements, plus le coût environnemental est élevé, plus
-        l'impact sur la planète est fort.
-      </p>
-      <br />
-      <p>
-        Ce dispositif entend également inciter les fabricants et distributeurs à initier et valoriser leurs démarches
-        d’écoconception, et ainsi encourager la production durable.
-      </p>
+      <Block noMargin className={styles.container}>
+        <Image className={styles.image} src='/images/homejeans.png' alt='Jeans' width={500} height={500} />
+        <div className={styles.text}>
+          <h2>Qu’est-ce que le coût environnemental ?</h2>
+          <p>
+            L’affichage environnemental est une méthode d’évaluation de l’impact environnemental d’un produit sur
+            l’ensemble de son cycle de vie. Cela inclut chaque étape, de la production des matières premières à la fin
+            de vie du produit.
+          </p>
+          <Button priority='secondary' className='fr-mt-2w'>
+            Tout comprendre
+          </Button>
+        </div>
+      </Block>
+      <Block noMargin className={styles.reversedContainer}>
+        <Image className={styles.image} src='/images/homejeans.png' alt='Jeans' width={500} height={500} />
+        <div className={styles.text}>
+          <h2>Qu’est-ce que le coût environnemental ?</h2>
+          <p>
+            L’affichage environnemental est une méthode d’évaluation de l’impact environnemental d’un produit sur
+            l’ensemble de son cycle de vie. Cela inclut chaque étape, de la production des matières premières à la fin
+            de vie du produit.
+          </p>
+          <Button priority='secondary' className='fr-mt-2w'>
+            Tout comprendre
+          </Button>
+        </div>
+      </Block>
     </>
   )
 }

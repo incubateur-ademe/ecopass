@@ -1,13 +1,39 @@
+.background {
+  background-image: url("/images/homebanner.svg");
+  background-repeat: no-repeat;
+  background-position-y: center;
+
+  @media screen and (max-width: 62rem) {
+    background-image: none;
+  }
+}
+
+.backgroundPro {
+  background-image: url("/images/homebanner-pro.png");
+  background-repeat: no-repeat;
+  background-position: right;
+
+  @media screen and (max-width: 62rem) {
+    background-image: none;
+  }
+}
+
 .banner {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 5rem;
+  margin-left: 10rem;
 
-  @media screen and (max-width: 50rem) {
+  @media screen and (max-width: 62rem) {
     flex-direction: column;
     flex-wrap: wrap;
+    margin-left: 0;
   }
+}
+
+.bannerPro {
+  flex-direction: row-reverse;
 }
 
 .bannerTest {
@@ -39,8 +65,10 @@
   }
 }
 
-.round {
-  border-radius: 50%;
+.proImage {
+  max-width: unset;
+  height: 100%;
+  width: auto;
 }
 
 .alert {
@@ -60,13 +88,16 @@
 }
 
 .description {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  margin-block: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
 }
 
 .connection {
   display: flex;
   gap: 1rem;
   align-items: flex-start;
+}
+
+.brands {
+  margin-top: 5rem;
 }

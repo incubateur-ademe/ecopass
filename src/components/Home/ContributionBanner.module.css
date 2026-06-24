@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+
+  h2 {
+    margin: 0.5rem 0;
+  }
+}
+
+.badge {
+  background-color: #0063cb;
+  color: white;
+}
+
+.button {
+  height: 100%;
+}

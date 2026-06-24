@@ -6,7 +6,7 @@ import { Breadcrumb, BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
 const Block = ({
   children,
   className,
-  secondary,
+  type,
   noMargin,
   large,
   home,
@@ -14,7 +14,7 @@ const Block = ({
 }: {
   children: ReactNode
   className?: string
-  secondary?: boolean
+  type?: "yellow" | "blue"
   noMargin?: boolean
   large?: boolean
   home?: boolean
@@ -23,7 +23,8 @@ const Block = ({
   return (
     <div
       className={classNames({
-        [styles.secondary]: secondary,
+        [styles.yellow]: type === "yellow",
+        [styles.blue]: type === "blue",
         [styles.home]: home,
       })}>
       <div

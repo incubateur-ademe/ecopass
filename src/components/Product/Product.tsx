@@ -95,7 +95,7 @@ const Product = ({
         <ProductHistory gtin={gtin} brandId={brandId} />
       </Block>
       {!isPro && (
-        <Block secondary>
+        <Block type='yellow'>
           <InformationBanner />
         </Block>
       )}
