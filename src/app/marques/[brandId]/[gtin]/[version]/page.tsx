@@ -29,10 +29,9 @@ const OldProductPage = async (props: Props) => {
   const session = await tryAndGetSession(false, false)
   const role = session?.user?.role
   const params = await props.params
-  const gtin = decodeURIComponent(params.gtin)
   const [product, oldProduct] = await Promise.all([
-    getProductWithScore(gtin),
-    getOldProductWithScore(gtin, params.version),
+    getProductWithScore(params.gtin),
+    getOldProductWithScore(params.gtin, params.version),
   ])
 
   return (
