@@ -1,6 +1,7 @@
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import styles from "./OtherTool.module.css"
 import Link from "next/link"
+import { ReactNode } from "react"
 
 const OtherTool = ({
   title,
@@ -11,8 +12,8 @@ const OtherTool = ({
   linkLabel,
   children,
 }: {
-  title: string
-  subTitle: string
+  title: ReactNode
+  subTitle: ReactNode
   buttonLabel?: string
   buttonLink?: string
   link?: string
@@ -26,7 +27,7 @@ const OtherTool = ({
         <p className={styles.title}>{title}</p>
         <p>{subTitle}</p>
         {link && linkLabel && (
-          <Link href={link} target='_blank' rel='noopener noreferrer' className='fr-link'>
+          <Link href={link} target='_blank' rel='noopener noreferrer' className={styles.link}>
             {linkLabel}
           </Link>
         )}

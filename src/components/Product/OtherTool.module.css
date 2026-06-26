@@ -68,3 +68,22 @@
   font-weight: 700;
   line-height: 1.25rem;
 }
+
+.link {
+  color: #000;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.25rem;
+  text-decoration: underline;
+  background-image: none;
+
+  &:hover {
+    background-image: var(--underline-img), var(--underline-img);
+    background-size: calc(var(--underline-hover-width) - 20px) calc(var(--underline-thickness) * 2);
+  }
+
+  &::after {
+    color: var(--text-action-high-blue-france);
+    text-decoration: none;
+  }
+}
