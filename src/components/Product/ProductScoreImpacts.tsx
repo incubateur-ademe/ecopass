@@ -115,16 +115,23 @@ const ProductScoreImpacts = ({
                 <div className='fr-mt-4w'>
                   {isPro ? (
                     <OtherTool
-                      title='Comprendre l’impact carbone'
+                      title='Ajouter les modules d’Impact CO2 sur vos pages produits'
                       subTitle='Aider les consommateurs à visualiser l’impact carbone de ce produit en CO₂e.'
                       buttonLabel='Intégrer'
-                      buttonLink={`https://impactco2.fr/outils/comparateur?value=${score.cch}&comparisons=voiturethermique,random,random#etiquette-animee`}>
+                      buttonLink={`https://impactco2.fr/outils/comparateur?value=${score.cch}&comparisons=voiturethermique,random,random&mtm_campaign=Ecobalyse#etiquette-animee`}>
                       <ImpactCo2Script value={score.cch} />
                     </OtherTool>
                   ) : (
                     <OtherTool
-                      title='Comprendre l’impact carbone'
-                      subTitle={`Cette valeur correspond à ${Math.round(score.cch).toLocaleString("fr-FR")} kg de CO₂e.`}>
+                      title={
+                        <>
+                          <Badge as='span' severity='info' noIcon className='fr-mr-1w'>
+                            {Math.round(impacts[0].value)} pts
+                          </Badge>
+                          d'impact sur le climat ça représente quoi en impact carbone ?
+                        </>
+                      }
+                      subTitle={`Ça représente ${Math.round(score.cch).toLocaleString("fr-FR")} kg de CO₂e.`}>
                       <ImpactCo2Script value={score.cch} />
                     </OtherTool>
                   )}
