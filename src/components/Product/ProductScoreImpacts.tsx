@@ -8,6 +8,7 @@ import ProductLifeCycleImpacts from "./ProductLifeCycleImpacts"
 import OtherTool from "./OtherTool"
 import InfoTriScript from "./InfoTriScript"
 import ImpactCo2Script from "./ImpactCo2Script"
+import classNames from "classnames"
 
 type ScoreKey = keyof Omit<NonNullable<ProductWithScore["informations"][number]["score"]>, "id" | "productId">
 
@@ -35,11 +36,11 @@ const ProductScoreImpacts = ({
             marché (ex : consommation d'électricité du procédé de filature).
           </p>
           <ProductLifeCycleImpacts score={score} />
-          <div className='fr-mb-8w'>
+          <div className={classNames("fr-mb-8w", styles.otherTool)}>
             {isPro ? (
               <OtherTool
-                title="Ajouter l'info-tri sur vos pages produits en ligne"
-                subTitle='Configurez le widget info-tri et ajoutez-le à vos plateformes e-commerce.'
+                title="Ajouter l'Info-tri sur vos pages produits en ligne"
+                subTitle='Configurez le widget Info-tri et ajoutez-le à vos plateformes e‑commerce.'
                 buttonLabel='Intégrer'
                 buttonLink='https://quefairedemesdechets.ademe.fr/nos-outils/integrer-info-tri/?utm_source=Ecobalyse&utm_medium=site&utm_campaign=pro'>
                 <InfoTriScript />
@@ -48,7 +49,7 @@ const ProductScoreImpacts = ({
               <OtherTool
                 title='Que faire de ce produit en fin de cycle de vie ?'
                 subTitle='Réparation, réemploi, recyclage : trouvez où lui donner une seconde vie près de chez vous.'
-                linkLabel='En savoir + sur info tri'
+                linkLabel='En savoir + sur Info-tri'
                 link='https://quefairedemesdechets.ademe.fr/?utm_source=Ecobalyse&utm_medium=site&utm_campaign=pro'>
                 <InfoTriScript />
               </OtherTool>
@@ -112,7 +113,7 @@ const ProductScoreImpacts = ({
                 ]}
               />
               {categoryKey === "climat" && (
-                <div className='fr-mt-4w'>
+                <div className={classNames("fr-mt-4w", styles.otherTool)}>
                   {isPro ? (
                     <OtherTool
                       title='Ajouter les modules d’Impact CO2 sur vos pages produits'
