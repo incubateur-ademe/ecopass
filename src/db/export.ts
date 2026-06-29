@@ -33,6 +33,12 @@ export const completeExport = async (exportId: string) =>
     data: { status: Status.Done },
   })
 
+export const failExport = async (exportId: string) =>
+  prismaClient.export.update({
+    where: { id: exportId },
+    data: { status: Status.Error },
+  })
+
 export const getExportByName = async (userId: string, name: string) =>
   prismaClient.export.findFirst({
     where: {

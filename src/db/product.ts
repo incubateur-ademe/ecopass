@@ -528,7 +528,38 @@ export const getProductsByOrganizationIdAndBrandBefore = async (
   organizationId: string,
   before: Date,
   brand: string | null,
-) => getProducts({ upload: { organizationId }, createdAt: { lt: before }, brandId: brand || undefined })
+) => {
+  const organization = await prismaClient.organization.findUnique({
+    where: { id: organizationId },
+    select: {
+      id: true,
+      brands: { select: { id: true } },
+      authorizedBy: {
+        select: { from: { select: { brands: { select: { id: true } } } } },
+        where: { active: true },
+      },
+    },
+  })
+
+  if (!organization) {
+    return []
+  }
+
+  const authorizedBrands = new Set([
+    ...organization.brands.map((brand) => brand.id),
+    ...organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
+  ])
+
+  if (brand && !authorizedBrands.has(brand)) {
+    return []
+  }
+
+  return getProducts({
+    brandId: brand ? brand : { in: Array.from(authorizedBrands) },
+    status: Status.Done,
+    createdAt: { lt: before },
+  })
+}
 
 export const getAllBrands = async () => {
   const products = await prismaClient.product.findMany({
