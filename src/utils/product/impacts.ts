@@ -40,7 +40,7 @@ export const impactCategories = {
     impacts: [
       {
         key: "cch" as const,
-        definition: "Indicateur le plus connu, correspond à la modification du climat, affectant l'écosystème global.",
+        definition: "Cet indicateur se mesure en kg équivalent 'CO₂', le principal gaz à effet de serre.",
       },
     ],
   },
@@ -51,18 +51,22 @@ export const impactCategories = {
       {
         key: "ldu" as const,
         definition:
-          "Mesure de l'évolution de la qualité des sols (production biotique, résistance à l'érosion, filtration mécanique).",
+          "Mesure de l'évolution de la qualité des sols (production biotique, résistance à l'érosion, filtration mécanique). Cet indicateur n'a pas de dimension, il se mesure en Points ('Pt').",
       },
       {
         key: "fru" as const,
         definition:
           "Indicateur de l'épuisement des ressources naturelles en combustibles fossiles (gaz, charbon, pétrole).",
       },
-      { key: "mru" as const, definition: "Indicateur de l'épuisement des ressources naturelles non fossiles." },
+      {
+        key: "mru" as const,
+        definition:
+          "Indicateur de l'épuisement des ressources naturelles non fossiles. Il se mesure en kg d'équivalent d'antimoine ('Sb') (élément métallique).",
+      },
       {
         key: "wtu" as const,
         definition:
-          "Indicateur de la consommation d'eau et son épuisement dans certaines régions. À ce stade, elle n'est prise en compte que pour l'étape “Matière & Filature”.",
+          "Indicateur de la consommation d'eau et son épuisement dans certaines régions. À ce stade, elle n'est prise en compte que pour l'étape “Matière & Filature”. Cet indicateur se mesure en mètre cube ('m³') d'eau consommé.",
       },
     ],
   },
@@ -73,17 +77,17 @@ export const impactCategories = {
       {
         key: "etf" as const,
         definition:
-          "Indicateur d'écotoxicité  pour écosystèmes aquatiques d'eau douce. Cet indicateur se mesure en  Comparative Toxic Unit for ecosystems (CTUe)",
+          "Indicateur d'écotoxicité pour écosystèmes aquatiques d'eau douce. Cet indicateur se mesure en Comparative Toxic Unit for ecosystems (CTUe). Cet indicateur est corrigé.",
       },
       {
         key: "ior" as const,
         definition:
-          "Indicateur correspondant aux dommages pour la santé humaine et les écosystèmes liés aux émissions de radionucléides.",
+          "Indicateur correspondant aux dommages pour la santé humaine et les écosystèmes liés aux émissions de radionucléides. Il se mesure en kilobecquerel d'équivalent 'Uranium 235'.",
       },
       {
         key: "acd" as const,
         definition:
-          "Indicateur de l'acidification potentielle des sols et des eaux due à la libération de gaz tels que les oxydes d'azote et les oxydes de soufre.",
+          "Indicateur de l'acidification potentielle des sols et des eaux due à la libération de gaz tels que les oxydes d'azote et les oxydes de soufre. Cet indicateur se mesure en mol (quantité de matière) d'équivalent d'ions hydrogène (H+).",
       },
       {
         key: "tre" as const,
@@ -93,22 +97,22 @@ export const impactCategories = {
       {
         key: "fwe" as const,
         definition:
-          "Indicateur correspondant à un enrichissement excessif des milieux naturels en nutriments, ce qui conduit à une prolifération et une asphyxie (zone morte). C'est  ce phénomène qui est à l'origine des algues vertes. On peut le retrouver en rivière et en lac également.",
+          "Indicateur correspondant à un enrichissement excessif des milieux naturels en nutriments, ce qui conduit à une prolifération et une asphyxie (zone morte). C'est ce phénomène qui est à l'origine des algues vertes. On peut le retrouver en rivière et en lac également. Cet indicateur se mesure en kg d'équivalent Phosphore ('P'), le phosphore étant l'un des éléments responsables de l'eutrophisation des eaux douces.",
       },
       {
         key: "pco" as const,
         definition:
-          "Indicateur correspondant à la dégradation de la qualité de l'air, principalement via la formation de brouillard de basse altitude nommé smog. Il a des conséquences néfastes sur la santé.",
+          "Indicateur correspondant à la dégradation de la qualité de l'air, principalement via la formation de brouillard de basse altitude nommé smog. Il a des conséquences néfastes sur la santé. Cet indicateur se mesure en kg d'équivalent Composés Organiques Volatiles Non Méthaniques ('COVNM'), un ensemble de composés organiques (alcools, aromatiques,...) contribuant à la formation d'ozone photochimique.",
       },
       {
         key: "swe" as const,
         definition:
-          "Indicateur correspondant à un enrichissement excessif des milieux naturels en nutriments, ce qui conduit à une prolifération et une asphyxie (zone morte). C'est ce phénomène qui est à l'origine des algues vertes.",
+          "Indicateur correspondant à un enrichissement excessif des milieux naturels en nutriments, ce qui conduit à une prolifération et une asphyxie (zone morte). C'est ce phénomène qui est à l'origine des algues vertes. Cet indicateur se mesure en kg d'équivalent azote ('N'), l'azote étant l'un des éléments responsables de l'eutrophisation des eaux marines.",
       },
       {
         key: "ozd" as const,
         definition:
-          "La couche d'ozone est située en haute altitude dans l'atmosphère,  elle protège des rayons ultra-violets solaires. Son appauvrissement  augmente l'exposition de l'ensemble des êtres vivants à ces radiations négatives (cancérigènes en particulier).",
+          "La couche d'ozone est située en haute altitude dans l'atmosphère, elle protège des rayons ultra-violets solaires. Son appauvrissement augmente l'exposition de l'ensemble des êtres vivants à ces radiations négatives (cancérigènes en particulier). Cet indicateur se mesure en kg d'équivalent 'CFC 11', le CFC 11 (trichlorofluorométhane) étant l'un des gaz responsable de l'appauvrissement de la couche d'ozone.",
       },
     ],
   },
@@ -119,7 +123,7 @@ export const impactCategories = {
       {
         key: "pma" as const,
         definition:
-          "Indicateur correspondant aux effets négatifs sur la santé humaine causés par les émissions de particules (PM) et de leurs précurseurs (NOx, SOx, NH3).",
+          "Indicateur correspondant aux effets négatifs sur la santé humaine causés par les émissions de particules ('PM') et de leurs précurseurs ('NOx', 'SOx', 'NH3'). Cet indicateur se mesure en incidence de maladie supplémentaire due aux particules",
       },
     ],
   },

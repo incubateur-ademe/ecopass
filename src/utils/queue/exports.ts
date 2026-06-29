@@ -1,4 +1,4 @@
-import { completeExport, getFirstExport } from "../../db/export"
+import { completeExport, failExport, getFirstExport } from "../../db/export"
 import { getProductsByOrganizationIdAndBrandBefore, ProductWithScore } from "../../db/product"
 import JSZip from "jszip"
 import { getSVG } from "../label/svg"
@@ -30,7 +30,7 @@ export const processExportsQueue = async () => {
   )
 
   if (!products.length) {
-    completeExport(exportToProcess.id)
+    failExport(exportToProcess.id)
     return
   }
 
