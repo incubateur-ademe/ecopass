@@ -1,5 +1,5 @@
 import { processExportsQueue } from "./exports"
-import { completeExport, getFirstExport } from "../../db/export"
+import { completeExport, failExport, getFirstExport } from "../../db/export"
 import { getProductsByOrganizationIdAndBrandBefore } from "../../db/product"
 import { getSVG } from "../label/simple"
 import { uploadFileToS3 } from "../s3/bucket"
@@ -16,6 +16,7 @@ jest.mock("../s3/bucket", () => ({
 jest.mock("jszip")
 
 const mockedCompleteExport = completeExport as jest.MockedFunction<typeof completeExport>
+const mockedFailExport = failExport as jest.MockedFunction<typeof failExport>
 const mockedGetFirstExport = getFirstExport as jest.MockedFunction<typeof getFirstExport>
 const mockedGetProductsByOrganizationIdAndBrandBefore =
   getProductsByOrganizationIdAndBrandBefore as jest.MockedFunction<typeof getProductsByOrganizationIdAndBrandBefore>
@@ -124,7 +125,7 @@ describe("processExportsQueue", () => {
       mockExport.createdAt,
       "Test Brand",
     )
-    expect(mockedCompleteExport).toHaveBeenCalledWith("export-1")
+    expect(mockedFailExport).toHaveBeenCalledWith("export-1")
     expect(mockedGetSVG).not.toHaveBeenCalled()
   })
 
