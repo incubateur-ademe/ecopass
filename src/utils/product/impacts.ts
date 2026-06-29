@@ -40,8 +40,7 @@ export const impactCategories = {
     impacts: [
       {
         key: "cch" as const,
-        definition:
-          "Indicateur le plus connu, correspond à la modification du climat, affectant l'écosystème global. Cet indicateur se mesure en kg équivalent 'CO₂', le principal gaz à effet de serre.",
+        definition: "Cet indicateur se mesure en kg équivalent 'CO₂', le principal gaz à effet de serre.",
       },
     ],
   },

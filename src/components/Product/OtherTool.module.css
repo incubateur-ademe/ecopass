@@ -83,7 +83,6 @@
   }
 
   &::after {
-    color: var(--text-action-high-blue-france);
     text-decoration: none;
   }
 }
