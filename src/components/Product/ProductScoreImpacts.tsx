@@ -132,7 +132,7 @@ const ProductScoreImpacts = ({
                           d'impact sur le climat ça représente quoi en impact carbone ?
                         </>
                       }
-                      subTitle={`Ça représente ${Math.round(score.cch).toLocaleString("fr-FR")} kg de CO₂e.`}>
+                      subTitle={`Ça représente ${(Math.round(score.cch * 100) / 100).toLocaleString("fr-FR")} kg de CO₂e.`}>
                       <ImpactCo2Script value={score.cch} />
                     </OtherTool>
                   )}
