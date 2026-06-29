@@ -12,3 +12,9 @@
   font-size: 2rem;
   margin-right: 1rem;
 }
+
+.otherTool {
+  @media screen and (max-width: 34.5rem) {
+    display: none;
+  }
+}
