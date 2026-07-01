@@ -84,11 +84,16 @@ test("admin can change organization info", async ({ page }) => {
   await expect(page.getByLabel("Organisation sans GTIN")).not.toBeVisible()
   await page.getByRole("button", { name: "Valider" }).click()
 
+  await expect(page.getByTestId("organization-type")).toContainText("Type : Distributeur")
+  await expect(page.getByTestId("organization-no-gtin")).not.toBeVisible()
+  await expect(page.getByLabel("Organisation sans GTIN")).not.toBeVisible()
+
   await page.reload()
 
   await expect(page.getByTestId("organization-type")).toContainText("Type : Distributeur")
   await expect(page.getByTestId("organization-no-gtin")).not.toBeVisible()
   await expect(page.getByLabel("Organisation sans GTIN")).not.toBeVisible()
+
   await page.getByLabel("Type de l'organisation").selectOption("Brand")
   await expect(page.getByLabel("Organisation sans GTIN")).toBeVisible()
   await page.getByText("Organisation sans GTIN").click()
