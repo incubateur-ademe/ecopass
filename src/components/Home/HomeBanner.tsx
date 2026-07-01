@@ -78,7 +78,7 @@ const HomeBanner = ({ withConnection = true, isPro }: { withConnection?: boolean
               </span>
               <br />
               <span>
-                <b>Vos données de test seront automatiquement supprimées sous 7 jours</b>
+                <b>Attention, les données de test sont régulièrement supprimées.</b>
               </span>
             </>
           }
