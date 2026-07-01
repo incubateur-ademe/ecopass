@@ -8,10 +8,27 @@ const download = (data: BlobPart[], filename: string, type: string) => {
   document.body.removeChild(link)
 }
 
-export const downloadFile = (data: string | Buffer, filename: string) => {
+const base64ToUint8Array = (base64: string) => {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return bytes
+}
+
+export const downloadFile = (
+  data:
+    | string
+    | {
+        mimeType: string
+        base64: string
+      },
+  filename: string,
+) => {
   if (typeof data === "string") {
     download([data], filename, "text/csv;charset=utf-8;")
   } else {
-    download([new Uint8Array(data)], filename, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    download([base64ToUint8Array(data.base64)], filename, data.mimeType)
   }
 }
