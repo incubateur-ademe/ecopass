@@ -192,6 +192,7 @@ const En = () => {
         To declare a product with multiple components, you can add the column "Composant principal". This column must be
         "Yes" for the main component and "No" for the others.
       </p>
+      <p>If the product has accessories, they must only be declared on the main component.</p>
       <p>
         Make sure to provide the same common information (GTINs/EANs, Internal Reference, Brand ID, Score, Category,
         Price, and Number of References) on each line.
