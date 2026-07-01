@@ -74,7 +74,12 @@ export const exportUpload = async (uploadId: string) => {
     const worksheet = XLSX.utils.aoa_to_sheet([headers, ...data])
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, "Export")
-    return Buffer.from(XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }))
+    const workbookBase64 = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }).toString("base64")
+
+    return {
+      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      base64: workbookBase64,
+    }
   }
 
   return stringify(data, {
