@@ -44,7 +44,7 @@ const PolitiqueDeConfidentialite = () => {
           rel='noopener noreferrer'
           className='fr-link'
           href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'>
-          affichage-environnemental@ecobalyse.beta.gouv.fr
+          affichage‑environnemental@ecobalyse.beta.gouv.fr
         </a>
       </p>
       <br />

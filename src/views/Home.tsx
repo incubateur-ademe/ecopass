@@ -8,6 +8,7 @@ import { organizationTypesAllowedToDeclare } from "../utils/organization/canDecl
 import InformationBanner from "../components/Home/InformationBanner"
 import InformationProBanner from "../components/Home/InformationProBanner"
 import ContributionBanner from "../components/Home/ContributionBanner"
+import FAQ from "../components/Home/FAQ"
 
 const Home = ({ connected, type, isPro }: { connected?: boolean; type: OrganizationType | null; isPro?: boolean }) => {
   const isAllowedToDeclare = !!(type && organizationTypesAllowedToDeclare.includes(type))
@@ -16,6 +17,11 @@ const Home = ({ connected, type, isPro }: { connected?: boolean; type: Organizat
       <HomeBanner connected={connected} isPro={isPro} isAllowedToDeclare={isAllowedToDeclare} />
       {(connected || !isTestEnvironment()) && (
         <>
+          {isPro && (
+            <Block type='blue'>
+              <ContributionBanner pro />
+            </Block>
+          )}
           <Block large>
             <SearchBanner />
           </Block>
@@ -25,12 +31,13 @@ const Home = ({ connected, type, isPro }: { connected?: boolean; type: Organizat
             </Block>
           )}
           {isPro || isAllowedToDeclare ? (
-            <Block large type='yellow'>
+            <Block large type='grey'>
               <InformationProBanner />
             </Block>
           ) : (
             <>
               <InformationBanner />
+              <FAQ />
               <Block>
                 <KeyResults />
               </Block>

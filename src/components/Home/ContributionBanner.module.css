@@ -1,11 +1,23 @@
 .container {
   display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+}
+
+.content {
+  flex: 1;
+  display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
 
   h2 {
     margin: 0.5rem 0;
+  }
+
+  @media screen and (max-width: 62rem) {
+    flex-direction: column;
   }
 }
 
@@ -16,4 +28,10 @@
 
 .button {
   height: 100%;
+}
+
+.image {
+  @media screen and (max-width: 30rem) {
+    display: none;
+  }
 }

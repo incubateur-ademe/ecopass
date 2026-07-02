@@ -10,6 +10,10 @@
 .image {
   width: 50%;
   height: auto;
+
+  @media screen and (max-width: 53.75rem) {
+    display: none;
+  }
 }
 
 .text {
@@ -19,4 +23,12 @@
   justify-content: center;
   align-items: center;
   padding: 5rem;
+
+  @media screen and (max-width: 62rem) {
+    padding: 2.5rem;
+  }
+
+  @media screen and (max-width: 53.75rem) {
+    width: 100%;
+  }
 }

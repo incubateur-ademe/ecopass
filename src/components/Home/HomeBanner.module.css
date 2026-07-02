@@ -2,18 +2,20 @@
   background-image: url("/images/homebanner.svg");
   background-repeat: no-repeat;
   background-position-y: center;
+  background-size: 66%;
 
   @media screen and (max-width: 62rem) {
     background-image: none;
   }
 }
 
-.backgroundPro {
+.proBackground {
   background-image: url("/images/homebanner-pro.png");
   background-repeat: no-repeat;
-  background-position: right;
+  background-position-x: right;
+  background-size: contain;
 
-  @media screen and (max-width: 62rem) {
+  @media screen and (max-width: 69rem) {
     background-image: none;
   }
 }
@@ -22,7 +24,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 5rem;
+  gap: 2rem 5rem;
   margin-left: 10rem;
 
   @media screen and (max-width: 62rem) {
@@ -33,7 +35,16 @@
 }
 
 .bannerPro {
-  flex-direction: row-reverse;
+  margin-left: 0;
+  margin-right: 30rem;
+
+  @media screen and (max-width: 84rem) {
+    margin-right: 40rem;
+  }
+
+  @media screen and (max-width: 69rem) {
+    margin: 0;
+  }
 }
 
 .bannerTest {
@@ -60,15 +71,10 @@
   max-width: 350px;
   height: auto;
 
-  @media screen and (max-width: 50rem) {
-    max-width: min(100%, 300px);
+  @media screen and (max-width: 62rem) {
+    height: 100px;
+    width: auto;
   }
-}
-
-.proImage {
-  max-width: unset;
-  height: 100%;
-  width: auto;
 }
 
 .alert {
@@ -90,14 +96,12 @@
 .description {
   font-size: 0.875rem;
   line-height: 1.5rem;
-}
-
-.connection {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
+  margin-bottom: 2rem;
 }
 
 .brands {
   margin-top: 5rem;
+  @media screen and (max-width: 62rem) {
+    margin-top: 2rem;
+  }
 }

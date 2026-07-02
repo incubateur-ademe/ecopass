@@ -1,0 +1,33 @@
+.container {
+  background-color: white;
+  display: flex;
+  align-items: center;
+}
+
+.image {
+  @media screen and (max-width: 62rem) {
+    display: none;
+  }
+}
+
+.content {
+  height: stretch;
+  border: 1px solid var(--background-action-low-blue-france-hover);
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding-left: 2rem;
+  @media screen and (max-width: 62rem) {
+    padding: 2rem;
+    border: 1px solid var(--background-action-low-blue-france-hover);
+    width: 100%;
+  }
+}
+
+.line {
+  background-color: var(--background-action-low-blue-france-hover);
+  height: 1px;
+  width: 75%;
+}

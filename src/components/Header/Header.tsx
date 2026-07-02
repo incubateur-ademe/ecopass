@@ -142,7 +142,7 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
             }
           : {
               linkProps: {
-                href: "/login",
+                href: pathname === "/" ? "/login/public" : "/login",
               },
               iconId: "ri-account-circle-line",
               text: "Se connecter",

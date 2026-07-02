@@ -9,15 +9,15 @@
 }
 
 .yellow {
-  background-color: var(--background-default-grey-hover);
+  background: var(--background-alt-brown-cafe-creme);
 }
 
 .blue {
   background-color: #e1edfb;
 }
 
-.home {
-  background: var(--background-alt-brown-cafe-creme);
+.grey {
+  background-color: var(--background-default-grey-hover);
 }
 
 .large {

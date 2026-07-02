@@ -21,7 +21,11 @@ const HomeBanner = ({
 }) => {
   const proView = isPro || isAllowedToDeclare
   return (
-    <Block large home className={classNames({ [styles.background]: !proView })}>
+    <Block
+      large
+      type='yellow'
+      className={proView ? "" : styles.background}
+      containerClassName={proView ? styles.proBackground : ""}>
       <div
         className={classNames(styles.banner, {
           [styles.bannerTest]: isTestEnvironment(),
@@ -58,13 +62,15 @@ const HomeBanner = ({
             }
           />
         ) : (
-          <Image
-            className={classNames(styles.image, { [styles.small]: connected, [styles.proImage]: isPro })}
-            src={proView ? "/images/homebanner-pro.png" : "/images/etiquette.svg"}
-            alt=''
-            width={378}
-            height={188}
-          />
+          !proView && (
+            <Image
+              className={classNames(styles.image, { [styles.small]: connected })}
+              src='/images/etiquette.svg'
+              alt=''
+              width={378}
+              height={188}
+            />
+          )
         )}
         <div>
           <h1>
@@ -83,36 +89,37 @@ const HomeBanner = ({
                     <br />
                     Connectez-vous avec ProConnect pour déclarer le coût environnemental de vos produits.
                   </p>
-                  <div className={styles.connection}>
-                    <ProConnect />
-                    <Alert
-                      small
-                      severity='info'
-                      description={
-                        <>
-                          Vous n’avez pas de SIRET ? Nous vous invitons à remplir{" "}
-                          <Link
-                            className='fr-link'
-                            href='https://demarche.numerique.gouv.fr/commencer/registration-of-companies-without-a-siret-number-o'>
-                            ce questionnaire
-                          </Link>{" "}
-                          pour valider votre inscription.
-                        </>
-                      }
-                    />
-                  </div>
+                  <Alert
+                    small
+                    className='fr-mb-4w'
+                    severity='info'
+                    description={
+                      <>
+                        Vous n’avez pas de SIRET ? Nous vous invitons à remplir{" "}
+                        <Link
+                          className='fr-link'
+                          href='https://demarche.numerique.gouv.fr/commencer/registration-of-companies-without-a-siret-number-o'>
+                          ce questionnaire
+                        </Link>{" "}
+                        pour valider votre inscription.
+                      </>
+                    }
+                  />
+                  <ProConnect />
                 </>
               )
             ) : (
-              <p className={styles.description}>
-                Réglettes, équivalences, valeurs médianes.. porté par le Gouvernement, l’affichage environnemental
-                développe pour les entreprises, des outils qui s’ajoutent à vos sites et applications en quelques clics.
-                100% gratuit.
-              </p>
+              <>
+                <p className={styles.description}>
+                  Réglettes, équivalences, valeurs médianes.. porté par le Gouvernement, l’affichage environnemental
+                  développe pour les entreprises, des outils qui s’ajoutent à vos sites et applications en quelques
+                  clics. 100% gratuit.
+                </p>
+                <div className={styles.brands}>
+                  <LastBrands />
+                </div>
+              </>
             ))}
-          <div className={styles.brands}>
-            <LastBrands />
-          </div>
         </div>
       </div>
       {connected && isAllowedToDeclare && (
