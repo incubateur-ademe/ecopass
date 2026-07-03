@@ -6,9 +6,8 @@ import { isTestEnvironment } from "../../utils/test"
 import ProConnect from "../Button/ProConnect"
 import Link from "next/link"
 import Block from "../Block/Block"
-import { Tile } from "@codegouvfr/react-dsfr/Tile"
-import { Badge } from "@codegouvfr/react-dsfr/Badge"
 import LastBrands from "./LastBrands"
+import { Tile } from "@codegouvfr/react-dsfr/Tile"
 
 const HomeBanner = ({
   connected,
@@ -25,11 +24,12 @@ const HomeBanner = ({
       large
       type='yellow'
       className={proView ? "" : styles.background}
-      containerClassName={proView ? styles.proBackground : ""}>
+      containerClassName={proView && !connected ? styles.proBackground : ""}>
       <div
         className={classNames(styles.banner, {
           [styles.bannerTest]: isTestEnvironment(),
-          [styles.bannerPro]: proView,
+          [styles.bannerPro]: proView && !connected,
+          [styles.bannerProConnected]: proView && connected,
         })}>
         {isTestEnvironment() ? (
           <Alert
@@ -120,52 +120,39 @@ const HomeBanner = ({
                 </div>
               </>
             ))}
+          {connected && isAllowedToDeclare && (
+            <div className={styles.tiles}>
+              <Tile
+                orientation='horizontal'
+                title='Gérez votre entreprise'
+                imageUrl='/images/catalog.svg'
+                imageAlt=''
+                titleAs='h2'
+                desc='Listez vos marques et organisez vos délégations'
+                linkProps={{ href: "/organisation" }}
+              />
+              <Tile
+                orientation='horizontal'
+                title='Déclarer vos produits'
+                imageUrl='/images/contract.svg'
+                imageAlt=''
+                titleAs='h2'
+                desc='Déclarez officiellement vos produits et suivez leur statut'
+                linkProps={{ href: "/declarations" }}
+              />
+              <Tile
+                orientation='horizontal'
+                title='Consulter vos produits'
+                imageUrl='/images/search.svg'
+                imageAlt=''
+                titleAs='h2'
+                desc='Retrouvez ici tous vos produits déclarés'
+                linkProps={{ href: "/produits" }}
+              />
+            </div>
+          )}
         </div>
       </div>
-      {connected && isAllowedToDeclare && (
-        <div className='fr-grid-row fr-grid-row--gutters fr-mt-3w'>
-          <div className='fr-col-12 fr-col-lg-4'>
-            <Tile
-              orientation='horizontal'
-              start={<Badge>Organisation</Badge>}
-              title='Gérez votre entreprise'
-              imageUrl='/images/catalog.svg'
-              imageAlt=''
-              titleAs='h2'
-              desc='Listez vos marques et organisez vos délégations.'
-              linkProps={{ href: "/organisation" }}
-            />
-          </div>
-          <div className='fr-col-12 fr-col-lg-4'>
-            <Tile
-              orientation='horizontal'
-              start={<Badge>dépôt officiel</Badge>}
-              title='Déclarer vos produits'
-              imageUrl='/images/contract.svg'
-              imageAlt=''
-              titleAs='h2'
-              desc={
-                <>
-                  Déclarez <b>officiellement</b> vos produits et suivez leur statut.
-                </>
-              }
-              linkProps={{ href: "/declarations" }}
-            />
-          </div>
-          <div className='fr-col-12 fr-col-lg-4'>
-            <Tile
-              orientation='horizontal'
-              start={<Badge>produits</Badge>}
-              title='Consulter vos produits'
-              imageUrl='/images/search.svg'
-              imageAlt=''
-              titleAs='h2'
-              desc='Retrouvez ici tous vos produits déclarés.'
-              linkProps={{ href: "/produits" }}
-            />
-          </div>
-        </div>
-      )}
     </Block>
   )
 }

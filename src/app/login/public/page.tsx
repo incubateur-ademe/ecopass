@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation"
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import { auth } from "../../../services/auth/auth"
-import "../../../css/login.css"
 import PublicLogin from "../../../views/PublicLogin"
 
 const LoginPage = async () => {

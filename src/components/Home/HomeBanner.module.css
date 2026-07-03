@@ -47,6 +47,10 @@
   }
 }
 
+.bannerProConnected {
+  margin: 0;
+}
+
 .bannerTest {
   @media screen and (max-width: 62rem) {
     flex-direction: column-reverse;
@@ -103,5 +107,14 @@
   margin-top: 5rem;
   @media screen and (max-width: 62rem) {
     margin-top: 2rem;
+  }
+}
+
+.tiles {
+  display: flex;
+  gap: 1.25rem;
+  width: 100%;
+  @media screen and (max-width: 62rem) {
+    flex-direction: column;
   }
 }
