@@ -925,4 +925,48 @@ describe("productValidation", () => {
     })
     expect(result.success).toEqual(true)
   })
+
+  it("allows main component product", () => {
+    const result = productValidation.safeParse({
+      ...validProduct,
+
+      informations: [
+        {
+          ...validProduct.informations[0],
+          mainComponent: true,
+        },
+      ],
+    })
+    expect(result.success).toEqual(true)
+  })
+
+  it("allows with null main component product", () => {
+    const result = productValidation.safeParse({
+      ...validProduct,
+
+      informations: [
+        {
+          ...validProduct.informations[0],
+          mainComponent: null,
+        },
+      ],
+    })
+    expect(result.success).toEqual(true)
+  })
+
+  it("does not allow product with invalid main component", () => {
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            mainComponent: "Nimps",
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "mainComponent"], message: "Invalid input: expected boolean, received string" }],
+    )
+  })
 })
