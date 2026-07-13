@@ -22,7 +22,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       maildev:
-        image: maildev/maildev:latest
+        image: maildev/maildev:2.2.1
         ports:
           - 1080:1080
           - 1025:1025
