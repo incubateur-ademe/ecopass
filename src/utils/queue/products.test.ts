@@ -152,7 +152,6 @@ describe("processProductsQueue", () => {
             numberOfReferences: 100000,
             price: 10,
             upcycled: false,
-            mainComponent: null,
           },
         ],
         id: "product-1",
@@ -203,7 +202,6 @@ describe("processProductsQueue", () => {
             impression: "Pigmentaire",
             impressionPercentage: 0.2,
             mass: 0.15,
-            mainComponent: null,
             materials: [
               {
                 country: "Chine",
@@ -276,7 +274,6 @@ describe("processProductsQueue", () => {
             price: 10,
             mass: 0.15,
             upcycled: false,
-            mainComponent: null,
             materials: [
               {
                 country: "Chine",
@@ -489,7 +486,6 @@ describe("processProductsQueue", () => {
             price: 10,
             productId: "product-1",
             upcycled: false,
-            mainComponent: null,
           },
         ],
       },

@@ -53,7 +53,7 @@ const product = z.object({
     return Math.abs(totalShare - 1) < epsilon
   }, "La somme des parts de matières doit être égale à 100%"),
   trims: z.array(accessoryValidation).optional(),
-  mainComponent: z.boolean().nullable().optional(),
+  mainComponent: z.boolean().optional(),
 })
 
 export type ProductInformationAPI = z.infer<typeof product> & { numberOfItem?: number }
