@@ -151,52 +151,53 @@ const mockedFailProducts = failProducts as jest.MockedFunction<typeof failProduc
 const mockedPrismaUpdate = prismaClient.product.update as jest.MockedFunction<typeof prismaClient.product.update>
 
 describe("API Ecobalyse", () => {
-  const mockEcobalyseResponse = {
-    impacts: {
-      ecs: 85.5,
-      acd: 2.73,
-      cch: 1589.45,
-      etf: 20654.8,
-      "etf-c": 21287.2,
-      fru: 4289.7,
-      fwe: 0.106,
-      htc: 0.00000114,
-      "htc-c": 0.0000000904,
-      htn: 0.0000849,
-      "htn-c": 0.000127,
-      ior: 167.8,
-      ldu: 51743.2,
-      mru: 0.00423,
-      ozd: 0.00268,
-      pco: 1.548,
-      pma: 0.0000423,
-      swe: 0.459,
-      tre: 5.207,
-      wtu: 763.4,
-      pef: 0.855,
-    },
-    durability: 0.75,
-    complementsImpacts: {
-      cropDiversity: 0,
-      hedges: 0,
-      livestockDensity: 0,
-      microfibers: 12.3,
-      outOfEuropeEOL: 1.2,
-      permanentPasture: 0,
-      plotSize: 0,
-    },
-    lifeCycle: [
-      { label: "Matières premières", impacts: { ecs: 20 } as EcobalyseImpacts },
-      { label: "Filature", impacts: { ecs: 15 } as EcobalyseImpacts },
-      { label: "Tissage & Tricotage", impacts: { ecs: 10 } as EcobalyseImpacts },
-      { label: "Ennoblissement", impacts: { ecs: 25 } as EcobalyseImpacts },
-      { label: "Confection", impacts: { ecs: 5 } as EcobalyseImpacts },
-      { label: "Utilisation", impacts: { ecs: 20 } as EcobalyseImpacts },
-      { label: "Fin de vie", impacts: { ecs: 5 } as EcobalyseImpacts },
-    ],
-    transport: { impacts: { ecs: 0.123 } },
-    trimsImpacts: { ecs: -35.998000000000005 },
-  } satisfies EcobalyseResponse
+  const mockEcobalyseResponse = () =>
+    ({
+      impacts: {
+        ecs: 85.5,
+        acd: 2.73,
+        cch: 1589.45,
+        etf: 20654.8,
+        "etf-c": 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 0.00000114,
+        "htc-c": 0.0000000904,
+        htn: 0.0000849,
+        "htn-c": 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        mru: 0.00423,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
+        pef: 0.855,
+      },
+      durability: 0.75,
+      complementsImpacts: {
+        cropDiversity: 0,
+        hedges: 0,
+        livestockDensity: 0,
+        microfibers: 12.3,
+        outOfEuropeEOL: 1.2,
+        permanentPasture: 0,
+        plotSize: 0,
+      },
+      lifeCycle: [
+        { label: "Matières premières", impacts: { ecs: 20 } as EcobalyseImpacts },
+        { label: "Filature", impacts: { ecs: 15 } as EcobalyseImpacts },
+        { label: "Tissage & Tricotage", impacts: { ecs: 10 } as EcobalyseImpacts },
+        { label: "Ennoblissement", impacts: { ecs: 25 } as EcobalyseImpacts },
+        { label: "Confection", impacts: { ecs: 5 } as EcobalyseImpacts },
+        { label: "Utilisation", impacts: { ecs: 20 } as EcobalyseImpacts },
+        { label: "Fin de vie", impacts: { ecs: 5 } as EcobalyseImpacts },
+      ],
+      transport: { impacts: { ecs: 0.123 } },
+      trimsImpacts: { ecs: -35.998000000000005 },
+    }) satisfies EcobalyseResponse
 
   describe("saveEcobalyseResults", () => {
     const mockProduct: ParsedProductValidation = {
@@ -251,7 +252,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should compute and save score", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       const results = await saveEcobalyseResults([mockProduct])
 
@@ -364,7 +365,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should remove undefined value before computing", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       const results = await saveEcobalyseResults([
         {
@@ -487,7 +488,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should remove trims when they are undefined", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       await saveEcobalyseResults([
         {
@@ -529,7 +530,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should pass trims when they are empty", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       const results = await saveEcobalyseResults([
         {
@@ -572,7 +573,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should fail if declared score is different", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
       const productWithDeclaredScore = {
         ...mockProduct,
         declaredScore: 100,
@@ -591,7 +592,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should create score if declared score is correctly rounded", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
       const productWithDeclaredScore = {
         ...mockProduct,
         declaredScore: 86,
@@ -669,7 +670,7 @@ describe("API Ecobalyse", () => {
       }
       const products = [mockProduct, product2]
 
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse).mockResolvedValueOnce({
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse()).mockResolvedValueOnce({
         impacts: {
           ecs: 92.3,
           acd: 3.14,
@@ -809,6 +810,45 @@ describe("API Ecobalyse", () => {
         }),
       )
     })
+
+    it("should remove trims on not main component", async () => {
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
+
+      await saveEcobalyseResults([
+        {
+          ...mockProduct,
+          informations: [
+            {
+              ...mockProduct.informations[0],
+              mainComponent: false,
+            },
+          ],
+        },
+      ])
+
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: {
+          mainComponent: false,
+          airTransportRatio: 0.1,
+          business: "small-business",
+          countryFabric: "IN",
+          countryMaking: "BD",
+          countrySpinning: "MM",
+          countryDyeing: "FR",
+          fading: false,
+          mass: 0.5,
+          materials: [{ id: "ei-coton", share: 1, productId: "id-1", slug: "Coton", country: "KH" }],
+          trims: [],
+          price: 25.99,
+          numberOfReferences: 100,
+          printing: { kind: "pigment", ratio: 0.2 },
+          product: "tshirt",
+          upcycled: false,
+        },
+      })
+    })
   })
 
   describe("computeEcobalyseScore", () => {
@@ -842,7 +882,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should compute proper score", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       const result = await computeEcobalyseScore(mockAPIProduct)
 
@@ -925,9 +965,9 @@ describe("API Ecobalyse", () => {
       } as EcobalyseImpacts
 
       mockedRunElmFunction.mockResolvedValueOnce({
-        ...mockEcobalyseResponse,
-        impacts: { ...mockEcobalyseResponse.impacts },
-        lifeCycle: mockEcobalyseResponse.lifeCycle.map((stage) =>
+        ...mockEcobalyseResponse(),
+        impacts: { ...mockEcobalyseResponse().impacts },
+        lifeCycle: mockEcobalyseResponse().lifeCycle.map((stage) =>
           stage.label === "Confection" ? { ...stage, impacts: confectionImpacts } : stage,
         ),
       })
@@ -963,9 +1003,9 @@ describe("API Ecobalyse", () => {
       } as EcobalyseImpacts
 
       mockedRunElmFunction.mockResolvedValueOnce({
-        ...mockEcobalyseResponse,
-        impacts: { ...mockEcobalyseResponse.impacts },
-        lifeCycle: mockEcobalyseResponse.lifeCycle.map((stage) =>
+        ...mockEcobalyseResponse(),
+        impacts: { ...mockEcobalyseResponse().impacts },
+        lifeCycle: mockEcobalyseResponse().lifeCycle.map((stage) =>
           stage.label === "Confection" ? { ...stage, impacts: confectionImpacts } : stage,
         ),
       })
@@ -979,7 +1019,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should cap price at 1000 when price is above 1000", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       await computeEcobalyseScore({ ...mockAPIProduct, price: 1500 })
 
@@ -993,7 +1033,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should floor price at 1 when price is below 1", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       await computeEcobalyseScore({ ...mockAPIProduct, price: 0.5 })
 
@@ -1007,7 +1047,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should keep price as is when price is between 1 and 1000", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       await computeEcobalyseScore({ ...mockAPIProduct, price: 50 })
 
@@ -1021,7 +1061,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should not include price in body when price is undefined", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       await computeEcobalyseScore({ ...mockAPIProduct, price: undefined })
 

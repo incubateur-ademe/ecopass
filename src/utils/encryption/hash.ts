@@ -32,7 +32,7 @@ export type ProductInformationForHash = {
         quantity: string | number | undefined
       }[]
     | undefined
-  mainComponent?: boolean
+  mainComponent?: boolean | null
 }
 
 export const hashProduct = (

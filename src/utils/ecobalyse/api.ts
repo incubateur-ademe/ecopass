@@ -62,16 +62,20 @@ const convertProductToEcobalyse = (
     })),
     numberOfReferences: product.numberOfReferences,
     price: product.price,
-    trims: product.emptyTrims
-      ? undefined
-      : product.accessories
-          .filter((accessory) => accessory.quantity > 0)
-          .map((accessory) => ({
-            id: accessoryMapping[accessory.slug],
-            quantity: accessory.quantity,
-          })),
+    trims:
+      product.mainComponent === false
+        ? []
+        : product.emptyTrims
+          ? undefined
+          : product.accessories
+              .filter((accessory) => accessory.quantity > 0)
+              .map((accessory) => ({
+                id: accessoryMapping[accessory.slug],
+                quantity: accessory.quantity,
+              })),
     upcycled: product.upcycled,
     product: productMapping[product.category],
+    mainComponent: product.mainComponent,
   }
 
   return removeUndefined(result)
@@ -119,7 +123,6 @@ export const computeEcobalyseScore = async (product: ProductInformationAPI) => {
     url: "/textile/simulator/detailed",
     body: removeUndefined(productData),
   })
-
   const lifeCycleValues: Record<keyof typeof lifeCycles | "transport" | "trims", number> = {
     transport: result.transport.impacts.ecs,
     trims: result.trimsImpacts.ecs,

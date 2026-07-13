@@ -59,6 +59,7 @@ const informationValidation = z.object({
     .optional(),
   price: z.number({ message: "Le prix doit être un nombre" }).min(1, "Le prix doit être supérieur à 1 €").optional(),
   emptyTrims: z.boolean().optional(),
+  mainComponent: z.boolean().nullable().optional(),
 })
 export type ParsedProductInformationValidation = z.infer<typeof informationValidation>
 
