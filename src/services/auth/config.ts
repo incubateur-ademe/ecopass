@@ -4,7 +4,7 @@ import bcrypt from "bcrypt"
 import { AuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prismaClient } from "../../db/prismaClient"
-import { UserRole } from "@prisma/enums"
+import { UserRole, UserType } from "@prisma/enums"
 import { createOrganization } from "../../db/organization"
 
 export const authOptions = {
@@ -12,21 +12,23 @@ export const authOptions = {
   events: {
     createUser: async ({ user }) => {
       try {
-        const siret = user.agentconnect_info?.siret || ""
-        if (siret) {
-          let organization = await prismaClient.organization.findUnique({
-            where: { siret },
-          })
+        if (user.type === UserType.PROFESSIONNEL) {
+          const siret = user.agentconnect_info?.siret || ""
+          if (siret) {
+            let organization = await prismaClient.organization.findUnique({
+              where: { siret },
+            })
 
-          if (!organization) {
-            organization = await createOrganization(siret)
+            if (!organization) {
+              organization = await createOrganization(siret)
+            }
+            await prismaClient.user.update({
+              where: { id: user.id },
+              data: {
+                organizationId: organization.id,
+              },
+            })
           }
-          await prismaClient.user.update({
-            where: { id: user.id },
-            data: {
-              organizationId: organization.id,
-            },
-          })
         }
       } catch (error) {
         console.error("Error in createUser event:", error)
@@ -74,7 +76,7 @@ export const authOptions = {
           throw new Error("Invalid credentials")
         }
 
-        return { email: user.email || "", id: user.id, role: user.role || undefined }
+        return { email: user.email || "", id: user.id, role: user.role || undefined, type: user.type }
       },
     }),
     {
@@ -123,6 +125,55 @@ export const authOptions = {
           nom: profile.usual_name,
           email: profile.email,
           agentconnect_info: profile,
+          type: UserType.PROFESSIONNEL,
+        }
+      },
+    },
+    {
+      id: "franceconnect",
+      name: "FranceConnect",
+      type: "oauth",
+      idToken: true,
+      clientId: process.env.FRANCECONNECT_CLIENT_ID,
+      clientSecret: process.env.FRANCECONNECT_CLIENT_SECRET,
+      wellKnown: `${process.env.NEXT_PUBLIC_FRANCECONNECT_DOMAIN}/api/v2/.well-known/openid-configuration`,
+      allowDangerousEmailAccountLinking: true,
+      checks: ["nonce", "state"],
+      authorization: {
+        params: {
+          scope: "openid uid email",
+          acr_values: "eidas1",
+          redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/franceconnect`,
+          nonce: uuid(),
+          state: uuid(),
+        },
+      },
+      client: {
+        authorization_signed_response_alg: "RS256",
+        id_token_signed_response_alg: "RS256",
+        userinfo_encrypted_response_alg: "RS256",
+        userinfo_signed_response_alg: "RS256",
+        userinfo_encrypted_response_enc: "RS256",
+      },
+      userinfo: {
+        async request(context) {
+          const userInfo = await fetch(`${process.env.NEXT_PUBLIC_FRANCECONNECT_DOMAIN}/api/v2/userinfo`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${context.tokens.access_token}`,
+            },
+          }).then((res) => {
+            return res.text()
+          })
+          return JSON.parse(Buffer.from(userInfo.split(".")[1], "base64").toString())
+        },
+      },
+      profile: async (profile) => {
+        return {
+          id: profile.email,
+          email: profile.email,
+          agentconnect_info: profile,
+          type: UserType.CITOYEN,
         }
       },
     },
@@ -134,6 +185,7 @@ export const authOptions = {
     async jwt({ token, account, user }) {
       if (user) {
         token.id = user.id
+        token.type = user.type
         token.role = user.role
       }
 
@@ -147,6 +199,7 @@ export const authOptions = {
       if (token && session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as UserRole
+        session.user.type = token.type as UserType
         session.provider = token.provider as string
         session.idToken = token.idToken as string
       }
