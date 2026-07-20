@@ -4,39 +4,37 @@ import { ProductCategory } from "../types/Product"
 import { getProductCategory } from "../utils/product/category"
 
 export const getAllBrandsWithStats = async () => {
-  const allProducts = await prismaClient.product.findMany({
-    where: {
-      status: Status.Done,
-      brandId: { not: null },
-    },
-    orderBy: { createdAt: "desc" },
+  const brands = await prismaClient.brand.findMany({
     select: {
-      internalReference: true,
-      createdAt: true,
-      brandId: true,
-      brand: {
+      id: true,
+      name: true,
+      product: {
         select: {
-          id: true,
-          name: true,
+          internalReference: true,
+          createdAt: true,
+          brandId: true,
         },
+        where: { status: Status.Done },
+        orderBy: [{ createdAt: "desc" }],
       },
     },
   })
-
-  const uniqueProducts = [] as typeof allProducts
+  const uniqueProducts = [] as ((typeof brands)[0]["product"][0] & { brand: { id: string; name: string } })[]
   const seen = new Set<string>()
 
-  for (const product of allProducts) {
-    const key = `${product.brandId}:${product.internalReference}`
-    if (!seen.has(key)) {
-      uniqueProducts.push(product)
-      seen.add(key)
-    }
-  }
+  brands.forEach((brand) => {
+    brand.product.forEach((product) => {
+      const key = `${brand.id}:${product.internalReference}`
+      if (!seen.has(key)) {
+        uniqueProducts.push({ ...product, brand: { id: brand.id, name: brand.name } })
+        seen.add(key)
+      }
+    })
+  })
 
   const brandStats = uniqueProducts.reduce(
     (acc, product) => {
-      if (!product.brand) {
+      if (!product.brandId) {
         return acc
       }
 
@@ -51,7 +49,7 @@ export const getAllBrandsWithStats = async () => {
       }
 
       acc[brandId].productCount += 1
-      if (product.createdAt > acc[brandId].lastDeclarationDate) {
+      if (acc[brandId].lastDeclarationDate && product.createdAt > acc[brandId].lastDeclarationDate) {
         acc[brandId].lastDeclarationDate = product.createdAt
       }
 
@@ -60,14 +58,32 @@ export const getAllBrandsWithStats = async () => {
     {} as Record<string, BrandWithStats>,
   )
 
-  return Object.values(brandStats).sort((a, b) => b.lastDeclarationDate.getTime() - a.lastDeclarationDate.getTime())
+  return brands
+    .map((brand) => {
+      const brandWithStat = brandStats[brand.id]
+      if (brandWithStat) {
+        return brandWithStat
+      }
+
+      return {
+        id: brand.id,
+        name: brand.name,
+        productCount: 0,
+        lastDeclarationDate: null,
+      }
+    })
+    .sort(
+      (a, b) =>
+        (b.lastDeclarationDate?.getTime() || 0) - (a.lastDeclarationDate?.getTime() || 0) ||
+        a.name.localeCompare(b.name),
+    )
 }
 
 export type BrandWithStats = {
   id: string
   name: string
   productCount: number
-  lastDeclarationDate: Date
+  lastDeclarationDate: Date | null
 }
 
 export const getBrandsByIds = async (ids: string[]) =>
