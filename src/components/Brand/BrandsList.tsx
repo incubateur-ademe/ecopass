@@ -73,7 +73,7 @@ const BrandsList = ({
           currentPageLabel: "Marques",
           segments: [{ linkProps: { href: "/" }, label: "Accueil" }],
         }}>
-        <h1>Liste des marques ayant déclaré au moins un produit</h1>
+        <h1>Liste des marques</h1>
         <div className={styles.headerContainer}>
           <div className={styles.content}>
             <SearchInput
@@ -119,7 +119,7 @@ const BrandsList = ({
                 <Badge key={brand.id} severity='info' noIcon>
                   {brand.productCount.toString()}
                 </Badge>,
-                formatDate(brand.lastDeclarationDate),
+                brand.lastDeclarationDate ? formatDate(brand.lastDeclarationDate) : "-",
               ])}
             />
           </div>

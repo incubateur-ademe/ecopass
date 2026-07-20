@@ -9,14 +9,16 @@ const BrandHeader = ({ productCount, brand }: { brand: BrandInformation; product
     <div className={styles.hero}>
       <div className={styles.header}>
         <h1 className={styles.title}>{brand.name}</h1>
-        {productCount > 0 && (
+        {productCount > 0 ? (
           <p className={styles.subtitle}>
             Cette marque a déclaré <strong>{productCount.toLocaleString("fr-FR")}</strong> référence
             {productCount > 1 ? "s" : ""} produit.
           </p>
+        ) : (
+          <p className={styles.subtitle}>Cette marque n'a déclaré aucun produit.</p>
         )}
         <p className={styles.subtitle}>
-          {productCount > 0 ? "Elle" : "Cette marque"} appartient à l'organisation{" "}
+          Elle appartient à l'organisation{" "}
           <Link href={`/organisations/${brand.organization.id}`}>{brand.organization.displayName}</Link>.
         </p>
         {brand.organization.authorizedOrganizations.length > 0 && (

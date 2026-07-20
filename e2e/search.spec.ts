@@ -111,12 +111,19 @@ test("Search", async ({ page }) => {
   await expect(page).toHaveURL("http://localhost:3000/recherche?search=ref-101&page=1")
 
   await page.getByRole("link", { name: "Les marques déclarantes" }).click()
-  await expect(
-    page.getByRole("heading", { name: "Liste des marques ayant déclaré au moins un produit", exact: true }),
-  ).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Liste des marques", exact: true })).toBeVisible()
 
-  await expect(page.getByTestId("search-results-count")).toContainText("3 marques ont déclaré 4 références produit.")
-  await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(3)
+  await expect(page.getByTestId("search-results-count")).toContainText("6 marques ont déclaré 4 références produit.")
+  await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(6)
+  await expect(
+    page.getByTestId("search-results-table").locator("table tbody tr").nth(1).locator("td").nth(0),
+  ).toHaveText("Emmaus")
+  await expect(
+    page.getByTestId("search-results-table").locator("table tbody tr").nth(1).locator("td").nth(1),
+  ).toHaveText("2")
+  await expect(
+    page.getByTestId("search-results-table").locator("table tbody tr").nth(1).locator("td").nth(2),
+  ).toHaveText("20/04/2026")
 
   await page.getByRole("textbox", { name: "Rechercher une marque" }).fill("sol")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(1)

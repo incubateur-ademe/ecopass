@@ -62,7 +62,7 @@ const Links = ({ organization }: { organization: Organization }) => {
               <Badge key={link.to.id} severity='info' noIcon>
                 {link.references}
               </Badge>,
-              link.lastDeclaration ? formatDate(link.lastDeclaration) : "",
+              link.lastDeclaration ? formatDate(link.lastDeclaration) : "-",
               <Button key={link.to.id} priority='secondary' linkProps={{ href: `/organisations/${link.to.id}` }}>
                 Voir le détail
               </Button>,
@@ -86,7 +86,7 @@ const Links = ({ organization }: { organization: Organization }) => {
               <Badge key={link.from.id} severity='info' noIcon>
                 {link.references}
               </Badge>,
-              link.lastDeclaration ? formatDate(link.lastDeclaration) : "",
+              link.lastDeclaration ? formatDate(link.lastDeclaration) : "-",
               <Button key={link.from.id} priority='secondary' linkProps={{ href: `/organisations/${link.from.id}` }}>
                 Voir le détail
               </Button>,
@@ -125,7 +125,7 @@ const Links = ({ organization }: { organization: Organization }) => {
                       {link.references}
                     </Badge>
                   </td>
-                  <td>{link.lastDeclaration ? formatDate(link.lastDeclaration) : ""}</td>
+                  <td>{link.lastDeclaration ? formatDate(link.lastDeclaration) : "-"}</td>
                   <td>
                     <Button priority='secondary' linkProps={{ href: `/marques/${link.id}` }}>
                       Voir le détail
