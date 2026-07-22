@@ -121,9 +121,11 @@ test("Search", async ({ page }) => {
   await expect(
     page.getByTestId("search-results-table").locator("table tbody tr").nth(1).locator("td").nth(1),
   ).toHaveText("2")
+
+  const threeMonthsData = new Date(Date.now() - 91 * 24 * 60 * 60 * 1000)
   await expect(
     page.getByTestId("search-results-table").locator("table tbody tr").nth(1).locator("td").nth(2),
-  ).toHaveText("20/04/2026")
+  ).toHaveText(threeMonthsData.toLocaleDateString("fr-FR"))
 
   await page.getByRole("textbox", { name: "Rechercher une marque" }).fill("sol")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(1)
