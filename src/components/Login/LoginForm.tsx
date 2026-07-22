@@ -1,4 +1,5 @@
 "use client"
+
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
 import Input from "@codegouvfr/react-dsfr/Input"
 import ProConnectButton from "@codegouvfr/react-dsfr/ProConnectButton"
@@ -11,6 +12,13 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import classNames from "classnames"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { track } from "../../utils/matomo"
+
+const messages: Record<string, string> = {
+  proconnect:
+    "Vous essayez de vous connecter avec un compte ProConnect, veuillez utiliser le bouton de connexion ProConnect ci-dessus.",
+  "no password":
+    "Vous n'avez pas encore défini votre mot de passe. Veuillez utiliser le lien envoyé par email pour le définir avant de vous connecter.",
+}
 
 const LoginForm = ({ test }: { test: boolean }) => {
   const router = useRouter()
@@ -150,9 +158,8 @@ const LoginForm = ({ test }: { test: boolean }) => {
                     <Alert
                       className='fr-mt-4w'
                       title={
-                        error === "proconnect"
-                          ? "Vous essayez de vous connecter avec un compte ProConnect, veuillez utiliser le bouton de connexion ProConnect ci dessus."
-                          : "Une erreur est survenue lors de la connexion. Veuillez vérifier vos identifiants et réessayer."
+                        messages[error] ||
+                        "Une erreur est survenue lors de la connexion. Veuillez vérifier vos identifiants et réessayer."
                       }
                       severity='error'
                     />
