@@ -9,7 +9,7 @@ const OrganizationName = ({ organization }: { organization: UserOrganization }) 
   const [text, setText] = useState(organization.displayName)
   useEffect(() => {
     const update = () => {
-      if (text) {
+      if (text && text !== organization.displayName) {
         updateDisplayName(text)
       }
     }
@@ -19,7 +19,8 @@ const OrganizationName = ({ organization }: { organization: UserOrganization }) 
     }, 300)
 
     return () => clearTimeout(debounce)
-  }, [text])
+  }, [text, organization.displayName])
+
   return (
     <Input
       className={styles.input}

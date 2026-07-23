@@ -85,6 +85,8 @@ export const getUserOrganization = async (userId: string) => {
           naf: true,
           siret: true,
           uniqueId: true,
+          noGTIN: true,
+          gtinPrefixes: { select: { id: true, prefix: true } },
           brands: { select: { id: true, name: true, default: true, active: true } },
           authorizedOrganizations: {
             select: {
