@@ -266,7 +266,7 @@
           }
         ],
         "tags": ["Déclaration"],
-        "summary": "Déclare un produit multicomposants sur le portail de l'Affichage Environnemental. Uniquement disponible sur l'environnement de test pour le moment.",
+        "summary": "Déclare un produit multicomposants sur le portail de l'Affichage Environnemental.",
         "description": "Permet de déclarer un produit regroupant plusieurs composants. Tous les composants du produit partagent les mêmes métadonnées (GTINs, référence interne, marque, score déclaré) et le même type de produit, mais peuvent avoir des informations techniques différentes (masse, matières, pays, impression, etc.). Un seul composant doit être défini comme composant principal.",
         "requestBody": {
           "description": "Requête modélisant les paramètres du produit multicomposants à déclarer",
