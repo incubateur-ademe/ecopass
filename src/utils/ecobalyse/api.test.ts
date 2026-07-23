@@ -6,7 +6,7 @@ import { runElmFunction } from "./elm"
 import { Status } from "@prisma/enums"
 import { Business, Country, MaterialType, AccessoryType, Impression, ProductCategory } from "../../types/Product"
 import { EcobalyseImpacts, EcobalyseResponse } from "../../types/Ecobalyse"
-import { ParsedProductValidation } from "../../services/validation/product"
+import { ParsedProductInformationValidation, ParsedProductValidation } from "../../services/validation/product"
 import { ProductInformationAPI } from "../../services/validation/api"
 
 describe("computeBatchInformations", () => {
@@ -96,6 +96,43 @@ describe("computeBatchInformations", () => {
     expect(results[0].price).toBe((1 / 21) * 99)
     expect(results[1].price).toBe((20 / 21) * 99)
   })
+
+  test("should also work with ParsedProductInformationValidation", () => {
+    const parsedInformations = [
+      {
+        id: "pi-1",
+        productId: "p-1",
+        category: ProductCategory.Chemise,
+        business: Business.Small,
+        mass: 1,
+        materials: [{ id: "m-1", productId: "pi-1", slug: MaterialType.Viscose, share: 1 }],
+        accessories: [{ id: "a-1", productId: "pi-1", slug: AccessoryType.BoutonEnMétal, quantity: 1 }],
+        countryDyeing: Country.France,
+        countryFabric: Country.France,
+        countryMaking: Country.France,
+      },
+      {
+        id: "pi-2",
+        productId: "p-1",
+        category: ProductCategory.Jean,
+        business: Business.Small,
+        mass: 1,
+        materials: [{ id: "m-2", productId: "pi-2", slug: MaterialType.Viscose, share: 1 }],
+        accessories: [{ id: "a-2", productId: "pi-2", slug: AccessoryType.BoutonEnMétal, quantity: 1 }],
+        countryDyeing: Country.France,
+        countryFabric: Country.France,
+        countryMaking: Country.France,
+      },
+    ] satisfies ParsedProductInformationValidation[]
+
+    const results = computeBatchInformations(99, 12, parsedInformations)
+
+    expect(results).toHaveLength(2)
+    expect(results[0].numberOfReferences).toBe(12)
+    expect(results[1].numberOfReferences).toBe(12)
+    expect(results[0].price).toBe((15 / 35) * 99)
+    expect(results[1].price).toBe((20 / 35) * 99)
+  })
 })
 
 jest.mock("../../db/product")
@@ -114,93 +151,99 @@ const mockedFailProducts = failProducts as jest.MockedFunction<typeof failProduc
 const mockedPrismaUpdate = prismaClient.product.update as jest.MockedFunction<typeof prismaClient.product.update>
 
 describe("API Ecobalyse", () => {
-  const mockEcobalyseResponse = {
-    impacts: {
-      ecs: 85.5,
-      acd: 2.73,
-      cch: 1589.45,
-      etf: 20654.8,
-      "etf-c": 21287.2,
-      fru: 4289.7,
-      fwe: 0.106,
-      htc: 0.00000114,
-      "htc-c": 0.0000000904,
-      htn: 0.0000849,
-      "htn-c": 0.000127,
-      ior: 167.8,
-      ldu: 51743.2,
-      mru: 0.00423,
-      ozd: 0.00268,
-      pco: 1.548,
-      pma: 0.0000423,
-      swe: 0.459,
-      tre: 5.207,
-      wtu: 763.4,
-      pef: 0.855,
-    },
-    durability: 0.75,
-    complementsImpacts: {
-      cropDiversity: 0,
-      hedges: 0,
-      livestockDensity: 0,
-      microfibers: 12.3,
-      outOfEuropeEOL: 1.2,
-      permanentPasture: 0,
-      plotSize: 0,
-    },
-    lifeCycle: [
-      { label: "Matières premières", impacts: { ecs: 20 } as EcobalyseImpacts },
-      { label: "Filature", impacts: { ecs: 15 } as EcobalyseImpacts },
-      { label: "Tissage & Tricotage", impacts: { ecs: 10 } as EcobalyseImpacts },
-      { label: "Ennoblissement", impacts: { ecs: 25 } as EcobalyseImpacts },
-      { label: "Confection", impacts: { ecs: 5 } as EcobalyseImpacts },
-      { label: "Utilisation", impacts: { ecs: 20 } as EcobalyseImpacts },
-      { label: "Fin de vie", impacts: { ecs: 5 } as EcobalyseImpacts },
-    ],
-    transport: { impacts: { ecs: 0.123 } },
-    trimsImpacts: { ecs: -35.998000000000005 },
-  } satisfies EcobalyseResponse
+  const mockEcobalyseResponse = () =>
+    ({
+      impacts: {
+        ecs: 85.5,
+        acd: 2.73,
+        cch: 1589.45,
+        etf: 20654.8,
+        "etf-c": 21287.2,
+        fru: 4289.7,
+        fwe: 0.106,
+        htc: 0.00000114,
+        "htc-c": 0.0000000904,
+        htn: 0.0000849,
+        "htn-c": 0.000127,
+        ior: 167.8,
+        ldu: 51743.2,
+        mru: 0.00423,
+        ozd: 0.00268,
+        pco: 1.548,
+        pma: 0.0000423,
+        swe: 0.459,
+        tre: 5.207,
+        wtu: 763.4,
+        pef: 0.855,
+      },
+      durability: 0.75,
+      complementsImpacts: {
+        cropDiversity: 0,
+        hedges: 0,
+        livestockDensity: 0,
+        microfibers: 12.3,
+        outOfEuropeEOL: 1.2,
+        permanentPasture: 0,
+        plotSize: 0,
+      },
+      lifeCycle: [
+        { label: "Matières premières", impacts: { ecs: 20 } as EcobalyseImpacts },
+        { label: "Filature", impacts: { ecs: 15 } as EcobalyseImpacts },
+        { label: "Tissage & Tricotage", impacts: { ecs: 10 } as EcobalyseImpacts },
+        { label: "Ennoblissement", impacts: { ecs: 25 } as EcobalyseImpacts },
+        { label: "Confection", impacts: { ecs: 5 } as EcobalyseImpacts },
+        { label: "Utilisation", impacts: { ecs: 20 } as EcobalyseImpacts },
+        { label: "Fin de vie", impacts: { ecs: 5 } as EcobalyseImpacts },
+      ],
+      transport: { impacts: { ecs: 0.123 } },
+      trimsImpacts: { ecs: -35.998000000000005 },
+    }) satisfies EcobalyseResponse
 
   describe("saveEcobalyseResults", () => {
     const mockProduct: ParsedProductValidation = {
       id: "id-1",
-      productId: "product-1",
       internalReference: "REF-001",
       brandId: "Test Brand",
       status: Status.Pending,
       error: null,
       createdAt: new Date(),
       uploadId: "upload-1",
-      category: ProductCategory.TShirtPolo,
-      business: Business.Small,
-      mass: 0.5,
-      price: 25.99,
-      airTransportRatio: 0.1,
-      countryDyeing: Country.France,
-      countryFabric: Country.Inde,
-      countryMaking: Country.Bangladesh,
-      countrySpinning: Country.Myanmar,
-      impression: Impression.Pigmentaire,
-      impressionPercentage: 0.2,
-      fading: false,
-      upcycled: false,
-      numberOfReferences: 100,
       declaredScore: null,
-      materials: [
+      informations: [
         {
-          id: "mat-1",
+          id: "pi-1",
           productId: "id-1",
-          slug: MaterialType.Coton,
-          share: 1.0,
-          country: Country.Cambodge,
-        },
-      ],
-      accessories: [
-        {
-          id: "acc-1",
-          productId: "id-1",
-          slug: AccessoryType.BoutonEnPlastique,
-          quantity: 5,
+          category: ProductCategory.TShirtPolo,
+          business: Business.Small,
+          mass: 0.5,
+          price: 25.99,
+          airTransportRatio: 0.1,
+          countryDyeing: Country.France,
+          countryFabric: Country.Inde,
+          countryMaking: Country.Bangladesh,
+          countrySpinning: Country.Myanmar,
+          impression: Impression.Pigmentaire,
+          impressionPercentage: 0.2,
+          fading: false,
+          upcycled: false,
+          numberOfReferences: 100,
+          materials: [
+            {
+              id: "mat-1",
+              productId: "id-1",
+              slug: MaterialType.Coton,
+              share: 1.0,
+              country: Country.Cambodge,
+            },
+          ],
+          accessories: [
+            {
+              id: "acc-1",
+              productId: "id-1",
+              slug: AccessoryType.BoutonEnPlastique,
+              quantity: 5,
+            },
+          ],
         },
       ],
     }
@@ -209,7 +252,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should compute and save score", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       const results = await saveEcobalyseResults([mockProduct])
 
@@ -240,88 +283,101 @@ describe("API Ecobalyse", () => {
       })
 
       expect(mockedCreateProductScore).toHaveBeenCalledWith(
-        {
-          acd: 2.73,
-          cch: 1589.45,
-          durability: 0.75,
-          dyeing: 25,
-          endOfLife: 5,
-          etf: 21287.2,
-          fabric: 10,
-          fru: 4289.7,
-          fwe: 0.106,
-          htc: 9.04e-8,
-          htn: 0.000127,
-          ior: 167.8,
-          ldu: 51743.2,
-          making: 5,
-          materials: 20,
-          microfibers: 12.3,
-          mru: 0.00423,
-          outOfEuropeEOL: 1.2,
-          ozd: 0.00268,
-          pco: 1.548,
-          pma: 0.0000423,
-          score: 85.5,
-          spinning: 15,
-          swe: 0.459,
-          transport: 0.123,
-          tre: 5.207,
-          trims: -35.998000000000005,
-          usage: 20,
-          wtu: 763.4,
-        },
+        [
+          {
+            acd: 2.73,
+            cch: 1589.45,
+            durability: 0.75,
+            dyeing: 25,
+            endOfLife: 5,
+            etf: 21287.2,
+            fabric: 10,
+            fru: 4289.7,
+            fwe: 0.106,
+            htc: 9.04e-8,
+            htn: 0.000127,
+            ior: 167.8,
+            ldu: 51743.2,
+            making: 5,
+            materials: 20,
+            microfibers: 12.3,
+            mru: 0.00423,
+            outOfEuropeEOL: 1.2,
+            ozd: 0.00268,
+            pco: 1.548,
+            pma: 0.0000423,
+            score: 85.5,
+            spinning: 15,
+            swe: 0.459,
+            transport: 0.123,
+            tre: 5.207,
+            trims: -35.998000000000005,
+            usage: 20,
+            wtu: 763.4,
+          },
+        ],
         expect.objectContaining({
-          mass: 0.5,
-          productId: "product-1",
+          informations: expect.arrayContaining([
+            expect.objectContaining({
+              mass: 0.5,
+              productId: "id-1",
+            }),
+          ]),
         }),
       )
 
       expect(results).toEqual([
-        {
-          id: "id-1",
-          acd: 2.73,
-          cch: 1589.45,
-          durability: 0.75,
-          dyeing: 25,
-          endOfLife: 5,
-          etf: 21287.2,
-          fabric: 10,
-          fru: 4289.7,
-          fwe: 0.106,
-          htc: 9.04e-8,
-          htn: 0.000127,
-          ior: 167.8,
-          ldu: 51743.2,
-          making: 5,
-          materials: 20,
-          microfibers: 12.3,
-          mru: 0.00423,
-          outOfEuropeEOL: 1.2,
-          ozd: 0.00268,
-          pco: 1.548,
-          pma: 0.0000423,
-          score: 85.5,
-          spinning: 15,
-          swe: 0.459,
-          transport: 0.123,
-          tre: 5.207,
-          trims: -35.998000000000005,
-          usage: 20,
-          wtu: 763.4,
-        },
+        [
+          {
+            id: "pi-1",
+            acd: 2.73,
+            cch: 1589.45,
+            durability: 0.75,
+            dyeing: 25,
+            endOfLife: 5,
+            etf: 21287.2,
+            fabric: 10,
+            fru: 4289.7,
+            fwe: 0.106,
+            htc: 9.04e-8,
+            htn: 0.000127,
+            ior: 167.8,
+            ldu: 51743.2,
+            making: 5,
+            materials: 20,
+            microfibers: 12.3,
+            mru: 0.00423,
+            outOfEuropeEOL: 1.2,
+            ozd: 0.00268,
+            pco: 1.548,
+            pma: 0.0000423,
+            score: 85.5,
+            spinning: 15,
+            swe: 0.459,
+            transport: 0.123,
+            tre: 5.207,
+            trims: -35.998000000000005,
+            usage: 20,
+            wtu: 763.4,
+          },
+        ],
       ])
     })
 
     it("should remove undefined value before computing", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       const results = await saveEcobalyseResults([
         {
           ...mockProduct,
-          business: undefined,
-          numberOfReferences: undefined,
-          materials: [{ ...mockProduct.materials[0], country: undefined }],
+          informations: [
+            {
+              ...mockProduct.informations[0],
+              business: undefined,
+              numberOfReferences: undefined,
+              materials: [{ ...mockProduct.informations[0].materials[0], country: undefined }],
+            },
+          ],
         },
       ])
 
@@ -350,87 +406,100 @@ describe("API Ecobalyse", () => {
       })
 
       expect(mockedCreateProductScore).toHaveBeenCalledWith(
-        {
-          acd: 2.73,
-          cch: 1589.45,
-          durability: 0.75,
-          dyeing: 25,
-          endOfLife: 5,
-          etf: 21287.2,
-          fabric: 10,
-          fru: 4289.7,
-          fwe: 0.106,
-          htc: 9.04e-8,
-          htn: 0.000127,
-          ior: 167.8,
-          ldu: 51743.2,
-          making: 5,
-          materials: 20,
-          microfibers: 12.3,
-          mru: 0.00423,
-          outOfEuropeEOL: 1.2,
-          ozd: 0.00268,
-          pco: 1.548,
-          pma: 0.0000423,
-          score: 85.5,
-          spinning: 15,
-          swe: 0.459,
-          transport: 0.123,
-          tre: 5.207,
-          trims: -35.998000000000005,
-          usage: 20,
-          wtu: 763.4,
-        },
+        [
+          {
+            acd: 2.73,
+            cch: 1589.45,
+            durability: 0.75,
+            dyeing: 25,
+            endOfLife: 5,
+            etf: 21287.2,
+            fabric: 10,
+            fru: 4289.7,
+            fwe: 0.106,
+            htc: 9.04e-8,
+            htn: 0.000127,
+            ior: 167.8,
+            ldu: 51743.2,
+            making: 5,
+            materials: 20,
+            microfibers: 12.3,
+            mru: 0.00423,
+            outOfEuropeEOL: 1.2,
+            ozd: 0.00268,
+            pco: 1.548,
+            pma: 0.0000423,
+            score: 85.5,
+            spinning: 15,
+            swe: 0.459,
+            transport: 0.123,
+            tre: 5.207,
+            trims: -35.998000000000005,
+            usage: 20,
+            wtu: 763.4,
+          },
+        ],
         expect.objectContaining({
-          mass: 0.5,
-          productId: "product-1",
+          informations: expect.arrayContaining([
+            expect.objectContaining({
+              mass: 0.5,
+              productId: "id-1",
+            }),
+          ]),
         }),
       )
 
       expect(results).toEqual([
-        {
-          id: "id-1",
-          acd: 2.73,
-          cch: 1589.45,
-          durability: 0.75,
-          dyeing: 25,
-          endOfLife: 5,
-          etf: 21287.2,
-          fabric: 10,
-          fru: 4289.7,
-          fwe: 0.106,
-          htc: 9.04e-8,
-          htn: 0.000127,
-          ior: 167.8,
-          ldu: 51743.2,
-          making: 5,
-          materials: 20,
-          microfibers: 12.3,
-          mru: 0.00423,
-          outOfEuropeEOL: 1.2,
-          ozd: 0.00268,
-          pco: 1.548,
-          pma: 0.0000423,
-          score: 85.5,
-          spinning: 15,
-          swe: 0.459,
-          transport: 0.123,
-          tre: 5.207,
-          trims: -35.998000000000005,
-          usage: 20,
-          wtu: 763.4,
-        },
+        [
+          {
+            id: "pi-1",
+            acd: 2.73,
+            cch: 1589.45,
+            durability: 0.75,
+            dyeing: 25,
+            endOfLife: 5,
+            etf: 21287.2,
+            fabric: 10,
+            fru: 4289.7,
+            fwe: 0.106,
+            htc: 9.04e-8,
+            htn: 0.000127,
+            ior: 167.8,
+            ldu: 51743.2,
+            making: 5,
+            materials: 20,
+            microfibers: 12.3,
+            mru: 0.00423,
+            outOfEuropeEOL: 1.2,
+            ozd: 0.00268,
+            pco: 1.548,
+            pma: 0.0000423,
+            score: 85.5,
+            spinning: 15,
+            swe: 0.459,
+            transport: 0.123,
+            tre: 5.207,
+            trims: -35.998000000000005,
+            usage: 20,
+            wtu: 763.4,
+          },
+        ],
       ])
     })
 
     it("should remove trims when they are undefined", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
-      const results = await saveEcobalyseResults([
+      await saveEcobalyseResults([
         {
           ...mockProduct,
-          accessories: [],
-          emptyTrims: true,
+          informations: [
+            {
+              ...mockProduct.informations[0],
+              accessories: [],
+              emptyTrims: true,
+            },
+          ],
         },
       ])
 
@@ -461,13 +530,18 @@ describe("API Ecobalyse", () => {
     })
 
     it("should pass trims when they are empty", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       const results = await saveEcobalyseResults([
         {
           ...mockProduct,
-          accessories: [],
-          emptyTrims: false,
+          informations: [
+            {
+              ...mockProduct.informations[0],
+              accessories: [],
+              emptyTrims: false,
+            },
+          ],
         },
       ])
 
@@ -499,7 +573,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should fail if declared score is different", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
       const productWithDeclaredScore = {
         ...mockProduct,
         declaredScore: 100,
@@ -509,7 +583,7 @@ describe("API Ecobalyse", () => {
 
       expect(mockedFailProducts).toHaveBeenCalledWith([
         {
-          productId: "product-1",
+          id: "id-1",
           error: "Le score déclaré (100) ne correspond pas au score calculé (85.5)",
         },
       ])
@@ -518,7 +592,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should create score if declared score is correctly rounded", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
       const productWithDeclaredScore = {
         ...mockProduct,
         declaredScore: 86,
@@ -528,40 +602,46 @@ describe("API Ecobalyse", () => {
 
       expect(mockedFailProducts).not.toHaveBeenCalled()
       expect(mockedCreateProductScore).toHaveBeenCalledWith(
-        {
-          acd: 2.73,
-          cch: 1589.45,
-          durability: 0.75,
-          dyeing: 25,
-          endOfLife: 5,
-          etf: 21287.2,
-          fabric: 10,
-          fru: 4289.7,
-          fwe: 0.106,
-          htc: 9.04e-8,
-          htn: 0.000127,
-          ior: 167.8,
-          ldu: 51743.2,
-          making: 5,
-          materials: 20,
-          microfibers: 12.3,
-          mru: 0.00423,
-          outOfEuropeEOL: 1.2,
-          ozd: 0.00268,
-          pco: 1.548,
-          pma: 0.0000423,
-          score: 85.5,
-          spinning: 15,
-          swe: 0.459,
-          transport: 0.123,
-          tre: 5.207,
-          trims: -35.998000000000005,
-          usage: 20,
-          wtu: 763.4,
-        },
+        [
+          {
+            acd: 2.73,
+            cch: 1589.45,
+            durability: 0.75,
+            dyeing: 25,
+            endOfLife: 5,
+            etf: 21287.2,
+            fabric: 10,
+            fru: 4289.7,
+            fwe: 0.106,
+            htc: 9.04e-8,
+            htn: 0.000127,
+            ior: 167.8,
+            ldu: 51743.2,
+            making: 5,
+            materials: 20,
+            microfibers: 12.3,
+            mru: 0.00423,
+            outOfEuropeEOL: 1.2,
+            ozd: 0.00268,
+            pco: 1.548,
+            pma: 0.0000423,
+            score: 85.5,
+            spinning: 15,
+            swe: 0.459,
+            transport: 0.123,
+            tre: 5.207,
+            trims: -35.998000000000005,
+            usage: 20,
+            wtu: 763.4,
+          },
+        ],
         expect.objectContaining({
-          mass: 0.5,
-          productId: "product-1",
+          informations: expect.arrayContaining([
+            expect.objectContaining({
+              mass: 0.5,
+              productId: "id-1",
+            }),
+          ]),
         }),
       )
     })
@@ -582,10 +662,15 @@ describe("API Ecobalyse", () => {
     })
 
     it("should compute multiple products", async () => {
-      const product2 = { ...mockProduct, id: "id-2", productId: "product-2", mass: 0.7 }
+      const product2 = {
+        ...mockProduct,
+        informations: [{ ...mockProduct.informations[0], mass: 0.7, id: "pi-2", productId: "id-2" }],
+        id: "id-2",
+        productId: "product-2",
+      }
       const products = [mockProduct, product2]
 
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse).mockResolvedValueOnce({
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse()).mockResolvedValueOnce({
         impacts: {
           ecs: 92.3,
           acd: 3.14,
@@ -638,85 +723,131 @@ describe("API Ecobalyse", () => {
       expect(mockedCreateProductScore).toHaveBeenCalledTimes(2)
       expect(mockedCreateProductScore).toHaveBeenNthCalledWith(
         1,
-        {
-          acd: 2.73,
-          cch: 1589.45,
-          durability: 0.75,
-          dyeing: 25,
-          endOfLife: 5,
-          etf: 21287.2,
-          fabric: 10,
-          fru: 4289.7,
-          fwe: 0.106,
-          htc: 9.04e-8,
-          htn: 0.000127,
-          ior: 167.8,
-          ldu: 51743.2,
-          making: 5,
-          materials: 20,
-          microfibers: 12.3,
-          mru: 0.00423,
-          outOfEuropeEOL: 1.2,
-          ozd: 0.00268,
-          pco: 1.548,
-          pma: 0.0000423,
-          score: 85.5,
-          spinning: 15,
-          swe: 0.459,
-          transport: 0.123,
-          tre: 5.207,
-          trims: -35.998000000000005,
-          usage: 20,
-          wtu: 763.4,
-        },
+        [
+          {
+            acd: 2.73,
+            cch: 1589.45,
+            durability: 0.75,
+            dyeing: 25,
+            endOfLife: 5,
+            etf: 21287.2,
+            fabric: 10,
+            fru: 4289.7,
+            fwe: 0.106,
+            htc: 9.04e-8,
+            htn: 0.000127,
+            ior: 167.8,
+            ldu: 51743.2,
+            making: 5,
+            materials: 20,
+            microfibers: 12.3,
+            mru: 0.00423,
+            outOfEuropeEOL: 1.2,
+            ozd: 0.00268,
+            pco: 1.548,
+            pma: 0.0000423,
+            score: 85.5,
+            spinning: 15,
+            swe: 0.459,
+            transport: 0.123,
+            tre: 5.207,
+            trims: -35.998000000000005,
+            usage: 20,
+            wtu: 763.4,
+          },
+        ],
         expect.objectContaining({
-          mass: 0.5,
-          productId: "product-1",
+          informations: expect.arrayContaining([
+            expect.objectContaining({
+              mass: 0.5,
+              productId: "id-1",
+            }),
+          ]),
         }),
       )
       expect(mockedCreateProductScore).toHaveBeenNthCalledWith(
         2,
-        {
-          acd: 3.14,
-          cch: 1823.67,
-          durability: 0.68,
-          dyeing: 26,
-          endOfLife: 6,
-          etf: 24456.1,
-          fabric: 11,
-          fru: 4932.8,
-          fwe: 0.142,
-          htc: 1.08e-7,
-          htn: 0.000146,
-          ior: 193.2,
-          ldu: 59432.7,
-          making: 6,
-          materials: 21,
-          microfibers: 14.7,
-          mru: 0.00487,
-          outOfEuropeEOL: 1.8,
-          ozd: 0.00308,
-          pco: 1.789,
-          pma: 0.0000487,
-          score: 92.3,
-          spinning: 16,
-          swe: 0.528,
-          transport: 0.321,
-          tre: 5.984,
-          trims: -44.556999999999995,
-          usage: 21,
-          wtu: 878.9,
-        },
+        [
+          {
+            acd: 3.14,
+            cch: 1823.67,
+            durability: 0.68,
+            dyeing: 26,
+            endOfLife: 6,
+            etf: 24456.1,
+            fabric: 11,
+            fru: 4932.8,
+            fwe: 0.142,
+            htc: 1.08e-7,
+            htn: 0.000146,
+            ior: 193.2,
+            ldu: 59432.7,
+            making: 6,
+            materials: 21,
+            microfibers: 14.7,
+            mru: 0.00487,
+            outOfEuropeEOL: 1.8,
+            ozd: 0.00308,
+            pco: 1.789,
+            pma: 0.0000487,
+            score: 92.3,
+            spinning: 16,
+            swe: 0.528,
+            transport: 0.321,
+            tre: 5.984,
+            trims: -44.556999999999995,
+            usage: 21,
+            wtu: 878.9,
+          },
+        ],
         expect.objectContaining({
-          mass: 0.7,
-          productId: "product-2",
+          informations: expect.arrayContaining([
+            expect.objectContaining({
+              mass: 0.7,
+              productId: "id-2",
+            }),
+          ]),
         }),
       )
-      expect(results).toHaveLength(2)
-      expect(results[0]?.id).toBe("id-1")
-      expect(results[0]?.score).toBe(85.5)
-      expect(results[1]?.id).toBe("id-2")
-      expect(results[1]?.score).toBe(92.3)
+    })
+
+    it("should remove trims on not main component", async () => {
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
+
+      await saveEcobalyseResults([
+        {
+          ...mockProduct,
+          informations: [
+            {
+              ...mockProduct.informations[0],
+              mainComponent: false,
+            },
+          ],
+        },
+      ])
+
+      expect(mockedRunElmFunction).toHaveBeenCalledWith({
+        method: "POST",
+        url: "/textile/simulator/detailed",
+        body: {
+          mainComponent: false,
+          airTransportRatio: 0.1,
+          business: "small-business",
+          countryFabric: "IN",
+          countryMaking: "BD",
+          countrySpinning: "MM",
+          countryDyeing: "FR",
+          fading: false,
+          mass: 0.5,
+          materials: [{ id: "ei-coton", share: 1, productId: "id-1", slug: "Coton", country: "KH" }],
+          trims: [],
+          price: 25.99,
+          numberOfReferences: 100,
+          printing: { kind: "pigment", ratio: 0.2 },
+          product: "tshirt",
+          upcycled: false,
+        },
+      })
     })
   })
 
@@ -751,7 +882,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should compute proper score", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       const result = await computeEcobalyseScore(mockAPIProduct)
 
@@ -834,9 +965,9 @@ describe("API Ecobalyse", () => {
       } as EcobalyseImpacts
 
       mockedRunElmFunction.mockResolvedValueOnce({
-        ...mockEcobalyseResponse,
-        impacts: { ...mockEcobalyseResponse.impacts },
-        lifeCycle: mockEcobalyseResponse.lifeCycle.map((stage) =>
+        ...mockEcobalyseResponse(),
+        impacts: { ...mockEcobalyseResponse().impacts },
+        lifeCycle: mockEcobalyseResponse().lifeCycle.map((stage) =>
           stage.label === "Confection" ? { ...stage, impacts: confectionImpacts } : stage,
         ),
       })
@@ -872,9 +1003,9 @@ describe("API Ecobalyse", () => {
       } as EcobalyseImpacts
 
       mockedRunElmFunction.mockResolvedValueOnce({
-        ...mockEcobalyseResponse,
-        impacts: { ...mockEcobalyseResponse.impacts },
-        lifeCycle: mockEcobalyseResponse.lifeCycle.map((stage) =>
+        ...mockEcobalyseResponse(),
+        impacts: { ...mockEcobalyseResponse().impacts },
+        lifeCycle: mockEcobalyseResponse().lifeCycle.map((stage) =>
           stage.label === "Confection" ? { ...stage, impacts: confectionImpacts } : stage,
         ),
       })
@@ -888,7 +1019,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should cap price at 1000 when price is above 1000", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       await computeEcobalyseScore({ ...mockAPIProduct, price: 1500 })
 
@@ -902,7 +1033,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should floor price at 1 when price is below 1", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       await computeEcobalyseScore({ ...mockAPIProduct, price: 0.5 })
 
@@ -916,7 +1047,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should keep price as is when price is between 1 and 1000", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       await computeEcobalyseScore({ ...mockAPIProduct, price: 50 })
 
@@ -930,7 +1061,7 @@ describe("API Ecobalyse", () => {
     })
 
     it("should not include price in body when price is undefined", async () => {
-      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse)
+      mockedRunElmFunction.mockResolvedValueOnce(mockEcobalyseResponse())
 
       await computeEcobalyseScore({ ...mockAPIProduct, price: undefined })
 

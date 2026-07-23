@@ -15,6 +15,7 @@ export type ColumnType = [
   "referenceinterne",
   "marqueid",
   "score",
+  "composantprincipal",
   "categorie",
   "masse",
   "remanufacture",

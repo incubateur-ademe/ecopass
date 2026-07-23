@@ -123,41 +123,47 @@ describe("processProductsQueue", () => {
     )
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([
       {
-        accessories: [],
-        airTransportRatio: 0.1,
-        brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
-        business: "TPE/PME",
-        category: "T-shirt / Polo",
-        countryDyeing: "Chine",
-        countryFabric: "Chine",
-        countryMaking: "Chine",
-        countrySpinning: "Chine",
-        createdAt: expect.any(Date),
-        declaredScore: 123,
-        error: null,
-        fading: false,
-        gtins: ["1234567891118", "1234567891019"],
-        id: "info-1",
-        productId: "product-1",
-        impression: "Pigmentaire",
-        impressionPercentage: 0.2,
-        internalReference: "My-ref",
-        mass: 0.15,
-        materials: [
+        informations: [
           {
-            country: "Chine",
-            id: "mat-1",
-            productId: "info-1",
-            share: 1,
-            slug: "Coton",
+            accessories: [],
+            airTransportRatio: 0.1,
+            business: "TPE/PME",
+            category: "T-shirt / Polo",
+            countryDyeing: "Chine",
+            countryFabric: "Chine",
+            countryMaking: "Chine",
+            countrySpinning: "Chine",
+            fading: false,
+            id: "info-1",
+            productId: "product-1",
+            impression: "Pigmentaire",
+            impressionPercentage: 0.2,
+            mass: 0.15,
+            materials: [
+              {
+                country: "Chine",
+                id: "mat-1",
+                productId: "info-1",
+                share: 1,
+                slug: "Coton",
+              },
+            ],
+            emptyTrims: false,
+            numberOfReferences: 100000,
+            price: 10,
+            upcycled: false,
+            mainComponent: null,
           },
         ],
-        emptyTrims: false,
-        numberOfReferences: 100000,
-        price: 10,
+        id: "product-1",
+        brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        gtins: ["1234567891118", "1234567891019"],
+        createdAt: expect.any(Date),
+        declaredScore: 123,
         status: "Pending",
-        upcycled: false,
         uploadId: "test-upload-id",
+        internalReference: "My-ref",
+        error: null,
       },
     ])
     expect(mockedFailProducts).toHaveBeenCalledWith([])
@@ -181,41 +187,47 @@ describe("processProductsQueue", () => {
     )
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([
       {
-        accessories: [],
-        airTransportRatio: 0.1,
-        brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
-        business: "TPE/PME",
-        category: "T-shirt / Polo",
-        countryDyeing: "Chine",
-        countryFabric: "Chine",
-        countryMaking: "Chine",
-        countrySpinning: "Chine",
+        informations: [
+          {
+            accessories: [],
+            airTransportRatio: 0.1,
+            business: "TPE/PME",
+            category: "T-shirt / Polo",
+            countryDyeing: "Chine",
+            countryFabric: "Chine",
+            countryMaking: "Chine",
+            countrySpinning: "Chine",
+            fading: false,
+            id: "info-1",
+            productId: "product-1",
+            impression: "Pigmentaire",
+            impressionPercentage: 0.2,
+            mass: 0.15,
+            mainComponent: null,
+            materials: [
+              {
+                country: "Chine",
+                id: "mat-1",
+                productId: "info-1",
+                share: 1,
+                slug: "Coton",
+              },
+            ],
+            emptyTrims: false,
+            numberOfReferences: 100000,
+            price: 10,
+            upcycled: false,
+          },
+        ],
+        id: "product-1",
+        status: "Pending",
+        uploadId: "test-upload-id",
+        internalReference: "My-ref",
+        gtins: ["My-ref-123456789"],
         createdAt: expect.any(Date),
         declaredScore: 123,
         error: null,
-        fading: false,
-        gtins: ["My-ref-123456789"],
-        id: "info-1",
-        productId: "product-1",
-        impression: "Pigmentaire",
-        impressionPercentage: 0.2,
-        internalReference: "My-ref",
-        mass: 0.15,
-        materials: [
-          {
-            country: "Chine",
-            id: "mat-1",
-            productId: "info-1",
-            share: 1,
-            slug: "Coton",
-          },
-        ],
-        emptyTrims: false,
-        numberOfReferences: 100000,
-        price: 10,
-        status: "Pending",
-        upcycled: false,
-        uploadId: "test-upload-id",
+        brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
       },
     ])
     expect(mockedFailProducts).toHaveBeenCalledWith([])
@@ -244,41 +256,47 @@ describe("processProductsQueue", () => {
     )
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([
       {
-        accessories: [],
-        airTransportRatio: 0.1,
-        brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
-        business: "TPE/PME",
-        category: "T-shirt / Polo",
-        countryDyeing: "Chine",
-        countryFabric: "Chine",
-        countryMaking: "Chine",
-        countrySpinning: "Chine",
+        informations: [
+          {
+            accessories: [],
+            airTransportRatio: 0.1,
+            business: "TPE/PME",
+            category: "T-shirt / Polo",
+            countryDyeing: "Chine",
+            countryFabric: "Chine",
+            countryMaking: "Chine",
+            countrySpinning: "Chine",
+            fading: false,
+            emptyTrims: false,
+            id: "info-1",
+            productId: "product-1",
+            impression: "Pigmentaire",
+            impressionPercentage: 0.2,
+            numberOfReferences: 100000,
+            price: 10,
+            mass: 0.15,
+            upcycled: false,
+            mainComponent: null,
+            materials: [
+              {
+                country: "Chine",
+                id: "mat-1",
+                productId: "info-1",
+                share: 1,
+                slug: "Coton",
+              },
+            ],
+          },
+        ],
+        id: "product-1",
+        gtins: ["My-ref-unique-i"],
+        status: "Pending",
+        uploadId: "test-upload-id",
         createdAt: expect.any(Date),
         declaredScore: 123,
         error: null,
-        fading: false,
-        gtins: ["My-ref-unique-i"],
-        id: "info-1",
-        productId: "product-1",
-        impression: "Pigmentaire",
-        impressionPercentage: 0.2,
+        brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
         internalReference: "My-ref",
-        mass: 0.15,
-        materials: [
-          {
-            country: "Chine",
-            id: "mat-1",
-            productId: "info-1",
-            share: 1,
-            slug: "Coton",
-          },
-        ],
-        emptyTrims: false,
-        numberOfReferences: 100000,
-        price: 10,
-        status: "Pending",
-        upcycled: false,
-        uploadId: "test-upload-id",
       },
     ])
     expect(mockedFailProducts).toHaveBeenCalledWith([])
@@ -304,7 +322,7 @@ describe("processProductsQueue", () => {
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([])
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
-        productId: "product-1",
+        id: "product-1",
         error: "Organisation non trouvée",
       },
     ])
@@ -321,7 +339,7 @@ describe("processProductsQueue", () => {
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([])
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
-        productId: "product-1",
+        id: "product-1",
         error: 'Marque invalide. Voici la liste de vos marques : "2c3be047-4388-459a-80e1-0ce2bbd0e9d4"',
       },
     ])
@@ -343,7 +361,7 @@ describe("processProductsQueue", () => {
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([])
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
-        productId: "product-1",
+        id: "product-1",
         error: "Votre organisation n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
       },
     ])
@@ -367,7 +385,7 @@ describe("processProductsQueue", () => {
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([])
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
-        productId: "product-1",
+        id: "product-1",
         error: "Le poids est obligatoire",
       },
     ])
@@ -389,7 +407,7 @@ describe("processProductsQueue", () => {
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([])
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
-        productId: "product-1",
+        id: "product-1",
         error:
           "Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
@@ -414,7 +432,7 @@ describe("processProductsQueue", () => {
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([])
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
-        productId: "product-1",
+        id: "product-1",
         error:
           "Le poids est obligatoire, Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
@@ -433,46 +451,52 @@ describe("processProductsQueue", () => {
 
     expect(mockedSaveEcobalyseResults).toHaveBeenCalledWith([
       {
-        accessories: [],
-        airTransportRatio: 0.1,
-        brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
-        business: "TPE/PME",
-        category: "T-shirt / Polo",
-        countryDyeing: "Chine",
-        countryFabric: "Chine",
-        countryMaking: "Chine",
-        countrySpinning: "Chine",
         createdAt: expect.any(Date),
+        brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
         declaredScore: 123,
         error: null,
-        fading: false,
+        id: "product-1",
+        status: "Pending",
+        uploadId: "test-upload-id",
         gtins: ["1234567891118", "1234567891019"],
-        id: "info-1",
-        productId: "product-1",
-        impression: "Pigmentaire",
-        impressionPercentage: 0.2,
         internalReference: "My-ref",
-        mass: 0.15,
-        materials: [
+        informations: [
           {
-            country: "Chine",
-            id: "mat-1",
-            productId: "info-1",
-            share: 1,
-            slug: "Coton",
+            id: "info-1",
+            accessories: [],
+            airTransportRatio: 0.1,
+            business: "TPE/PME",
+            category: "T-shirt / Polo",
+            countryDyeing: "Chine",
+            countryFabric: "Chine",
+            countryMaking: "Chine",
+            countrySpinning: "Chine",
+            fading: false,
+            impression: "Pigmentaire",
+            impressionPercentage: 0.2,
+            mass: 0.15,
+            materials: [
+              {
+                country: "Chine",
+                id: "mat-1",
+                productId: "info-1",
+                share: 1,
+                slug: "Coton",
+              },
+            ],
+            emptyTrims: false,
+            numberOfReferences: 100000,
+            price: 10,
+            productId: "product-1",
+            upcycled: false,
+            mainComponent: null,
           },
         ],
-        emptyTrims: false,
-        numberOfReferences: 100000,
-        price: 10,
-        status: "Pending",
-        upcycled: false,
-        uploadId: "test-upload-id",
       },
     ])
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
-        productId: "product-2",
+        id: "product-2",
         error:
           "Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },

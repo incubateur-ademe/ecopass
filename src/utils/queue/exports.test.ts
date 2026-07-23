@@ -1,14 +1,14 @@
 import { processExportsQueue } from "./exports"
 import { completeExport, failExport, getFirstExport } from "../../db/export"
 import { getProductsByOrganizationIdAndBrandBefore } from "../../db/product"
-import { getSVG } from "../label/svg"
+import { getSVG } from "../label/simple"
 import { uploadFileToS3 } from "../s3/bucket"
 import { Status } from "@prisma/enums"
 import JSZip from "jszip"
 
 jest.mock("../../db/export")
 jest.mock("../../db/product")
-jest.mock("../label/svg")
+jest.mock("../label/simple")
 jest.mock("../s3/bucket", () => ({
   uploadFileToS3: jest.fn(),
   downloadFileFromS3: jest.fn(),

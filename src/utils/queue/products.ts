@@ -55,7 +55,7 @@ export const processProductsQueue = async () => {
       }
 
       const result = {
-        product: userProductValidation.safeParse({ ...product, ...product.informations[0] }),
+        product: userProductValidation.safeParse(product),
         gtins: brand.organization.noGTIN
           ? product.gtins.filter((gtin) => gtin).length > 0
             ? {
@@ -86,7 +86,6 @@ export const processProductsQueue = async () => {
       return result
     }),
   )
-
   await Promise.all([
     saveEcobalyseResults(
       validatedProducts
@@ -105,7 +104,7 @@ export const processProductsQueue = async () => {
       validatedProducts
         .filter((result) => !result.product.success || !result.gtins.success)
         .map((result) => ({
-          productId: result.id,
+          id: result.id,
           error: [...(result.product.error?.issues || []), ...(result.gtins.error?.issues || [])]
             .map((issue) => issue.message)
             .join(", "),

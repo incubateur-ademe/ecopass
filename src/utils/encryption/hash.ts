@@ -2,40 +2,42 @@ import hash from "object-hash"
 import { ecobalyseVersion } from "../ecobalyse/config"
 import { Prisma } from "@prisma/client"
 
+export type ProductInformationForHash = {
+  product: string
+  airTransportRatio?: string | number | undefined
+  business?: string
+  fading?: string | boolean | undefined
+  mass: string | number | undefined
+  numberOfReferences?: string | number | undefined
+  price?: string | number | undefined
+  countryDyeing?: string
+  countryFabric?: string
+  countryMaking: string
+  countrySpinning?: string
+  upcycled?: string | boolean | undefined
+  printing?:
+    | {
+        kind: string
+        ratio: string | number | undefined
+      }
+    | undefined
+  materials: {
+    id: string
+    share: number | string | undefined
+    country?: string
+  }[]
+  trims?:
+    | {
+        id: string
+        quantity: string | number | undefined
+      }[]
+    | undefined
+  mainComponent?: boolean | null
+}
+
 export const hashProduct = (
   product: Omit<Prisma.ProductCreateInput, "hash" | "upload" | "brand"> & { brandId: string },
-  informations: {
-    product: string
-    airTransportRatio?: string | number | undefined
-    business?: string
-    fading?: string | boolean | undefined
-    mass: string | number | undefined
-    numberOfReferences?: string | number | undefined
-    price?: string | number | undefined
-    countryDyeing?: string
-    countryFabric?: string
-    countryMaking: string
-    countrySpinning?: string
-    upcycled?: string | boolean | undefined
-    printing?:
-      | {
-          kind: string
-          ratio: string | number | undefined
-        }
-      | undefined
-    materials: {
-      id: string
-      share: number | string | undefined
-      country?: string
-    }[]
-    trims?:
-      | {
-          id: string
-          quantity: string | number | undefined
-        }[]
-      | undefined
-    mainComponent?: boolean
-  }[],
+  informations: ProductInformationForHash[],
   brands: string[],
 ) =>
   hash(
