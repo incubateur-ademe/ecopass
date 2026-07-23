@@ -13,6 +13,7 @@ const clean = async () => {
   await prismaClient.upload.deleteMany()
   await prismaClient.brand.deleteMany({})
   await prismaClient.authorizedOrganization.deleteMany({})
+  await prismaClient.gTINPrefix.deleteMany({})
   await prismaClient.organization.deleteMany({})
   await prismaClient.aPIKey.deleteMany({})
   await prismaClient.export.deleteMany({})
@@ -75,6 +76,11 @@ const users = async () => {
         name: "Textile Premium",
         displayName: "Textile Premium",
         type: OrganizationType.Consultancy,
+        gtinPrefixes: {
+          createMany: {
+            data: [{ prefix: "999999" }],
+          },
+        },
         uniqueId: "350b9fc6-0d05-496b-b429-cc66064e98e8",
         brands: {
           createMany: {

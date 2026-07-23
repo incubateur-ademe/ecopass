@@ -224,3 +224,60 @@ export const getOrganizationByUniqueId = async (uniqueId: string) => {
     },
   })
 }
+
+export const addNewGTINPrefix = async (prefix: string) => {
+  if (!prefix || !/^[0-9]{6}$/.test(prefix)) {
+    return "Préfixe GTIN invalide"
+  }
+
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+  const user = await prismaClient.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      organization: true,
+    },
+  })
+
+  if (!user || !user.organization) {
+    return "Aucune organisation trouvée pour l'utilisateur"
+  }
+
+  const existingPrefix = await prismaClient.gTINPrefix.findUnique({
+    where: { prefix },
+  })
+
+  if (existingPrefix) {
+    return "existing"
+  }
+
+  await prismaClient.gTINPrefix.create({
+    data: {
+      prefix,
+      organizationId: user.organization.id,
+    },
+  })
+}
+
+export const deleteGTINPrefix = async (id: string) => {
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+  const user = await prismaClient.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      organization: true,
+    },
+  })
+
+  if (!user || !user.organization) {
+    return "Aucune organisation trouvée pour l'utilisateur"
+  }
+
+  await prismaClient.gTINPrefix.deleteMany({
+    where: { id, organizationId: user.organization.id },
+  })
+}
