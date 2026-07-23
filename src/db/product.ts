@@ -675,6 +675,15 @@ export const getLastProductsByGtins = async (gtins: string[]) => {
     .filter((product) => product !== undefined)
 }
 
+export const getAllProducts = async () =>
+  prismaClient.product.groupBy({
+    by: ["internalReference"],
+    where: {
+      status: Status.Done,
+    },
+    _min: { createdAt: true },
+  })
+
 export const getProductCountByCategory = async () => {
   const allProducts = await prismaClient.product.findMany({
     where: {
