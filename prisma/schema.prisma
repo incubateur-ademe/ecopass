@@ -289,6 +289,8 @@ model Organization {
   effectif String?
   naf      String?
 
+  gtinPrefixes GTINPrefix[]
+
   authorizedBy            AuthorizedOrganization[] @relation("ToOrg")
   authorizedOrganizations AuthorizedOrganization[] @relation("FromOrg")
 
@@ -297,6 +299,16 @@ model Organization {
   upload Upload[]
 
   @@map("organizations")
+}
+
+model GTINPrefix {
+  id     String @id @default(uuid())
+  prefix String @unique
+
+  organizationId String?       @map("organization_id")
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  @@map("gtin_prefixes")
 }
 
 model AuthorizedOrganization {

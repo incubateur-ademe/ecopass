@@ -1,0 +1,17 @@
+.container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+
+  @media screen and (max-width: 50rem) {
+    flex-direction: column-reverse;
+    img {
+      margin: auto;
+    }
+  }
+}
+
+.form {
+  flex: 1;
+}

@@ -86,6 +86,8 @@ test("manage siret delegation", async ({ page }) => {
   await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
+  await page.getByRole("tab", { name: "Délégations" }).click()
+
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
   await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(0)
 
@@ -166,6 +168,8 @@ test("manage siret delegation", async ({ page }) => {
   await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
 
+  await page.getByRole("tab", { name: "Délégations" }).click()
+
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
   await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(1)
   await expect(page.getByTestId("from-delegations-table").locator("table tbody tr").locator("td").nth(1)).toHaveText(
@@ -177,6 +181,8 @@ test("manage siret delegation", async ({ page }) => {
 
   await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
+
+  await page.getByRole("tab", { name: "Délégations" }).click()
 
   await page
     .getByTestId("to-delegations-table")
@@ -250,6 +256,8 @@ test("manage unique id delegation", async ({ page }) => {
 
   await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
+
+  await page.getByRole("tab", { name: "Délégations" }).click()
 
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
   await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(0)
@@ -330,6 +338,8 @@ test("manage unique id delegation", async ({ page }) => {
 
   await page.getByRole("link", { name: "Organisation" }).first().click()
   await expect(page).toHaveURL(/.*\/organisation/)
+
+  await page.getByRole("tab", { name: "Délégations" }).click()
 
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
   await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(1)
@@ -414,6 +424,8 @@ test("manage unique id delegation", async ({ page }) => {
   await expect(page.getByTestId("brands-table").locator("table tbody tr").nth(2).locator("td").nth(2)).toHaveText(
     "Marque retirée",
   )
+
+  await page.getByRole("tab", { name: "Délégations" }).click()
 
   await page
     .getByTestId("to-delegations-table")
@@ -513,4 +525,42 @@ test("manage unique id delegation", async ({ page }) => {
   await expect(page).toHaveURL(/.*\/produits/)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
+})
+
+test("manage GTIN prefixes", async ({ page }) => {
+  await login(page)
+
+  await page.getByRole("link", { name: "Organisation" }).first().click()
+  await expect(page).toHaveURL(/.*\/organisation/)
+
+  await page.getByRole("tab", { name: "GTIN préfixes" }).click()
+
+  await page.getByRole("textbox", { name: "Ajouter un préfixe" }).fill("123")
+  await page.getByLabel("GTIN préfixes").getByRole("button", { name: "Ajouter" }).click()
+  await expect(page.getByText("Le préfixe doit contenir exactement 6 chiffres")).toBeVisible()
+
+  await page.getByRole("textbox", { name: "Ajouter un préfixe" }).fill("999999")
+  await page.getByLabel("GTIN préfixes").getByRole("button", { name: "Ajouter" }).click()
+  await expect(
+    page.getByText("Ce préfixe existe déjà. Si vous pensez que c'est une erreur, veuillez nous contacter."),
+  ).toBeVisible()
+
+  await page.getByRole("textbox", { name: "Ajouter un préfixe" }).fill("123456")
+  await page.getByLabel("GTIN préfixes").getByRole("button", { name: "Ajouter" }).click()
+
+  await expect(page.getByTestId("gtin-prefixes-table").locator("table tbody tr")).toHaveCount(1)
+  await expect(
+    page.getByTestId("gtin-prefixes-table").locator("table tbody tr").nth(0).locator("td").nth(0),
+  ).toHaveText("123456")
+
+  await page
+    .getByTestId("gtin-prefixes-table")
+    .locator("table tbody tr")
+    .nth(0)
+    .locator("td")
+    .nth(1)
+    .locator("button")
+    .click()
+
+  await expect(page.getByTestId("gtin-prefixes-table").locator("table tbody tr")).toHaveCount(0)
 })
