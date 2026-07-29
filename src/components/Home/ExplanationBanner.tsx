@@ -1,7 +1,7 @@
 const ExplanationBanner = () => {
   return (
     <>
-      <h2>Qu'est ce que le coût environnemental ?</h2>
+      <h2>Qu'est-ce que le coût environnemental ?</h2>
       <p>
         Le coût environnemental traduit l'ensemble des impacts générés par un vêtement tout au long de son cycle de vie
         : depuis l’approvisionnement des matières, aux différentes étapes de fabrication, en passant par son transport,

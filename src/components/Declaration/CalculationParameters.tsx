@@ -57,7 +57,7 @@ const CalculationParameters = ({
   const submit = (e: FormEvent) => {
     e.preventDefault()
     let success = true
-    let newErrors: { [key in keyof typeof data]?: ReactNode } = {}
+    const newErrors: { [key in keyof typeof data]?: ReactNode } = {}
 
     if (!data.product) {
       newErrors.product = "La catégorie de produit est requise"
@@ -145,15 +145,6 @@ const CalculationParameters = ({
 
   const removeMaterial = (index: number) => {
     const newMaterials = data.materials.filter((_, i) => i !== index)
-    setData("materials", newMaterials)
-  }
-
-  const updateMaterial = (index: number, field: "id" | "share", value: string) => {
-    const newMaterials = [...data.materials]
-    newMaterials[index] = {
-      ...newMaterials[index],
-      [field]: value,
-    }
     setData("materials", newMaterials)
   }
 
@@ -263,7 +254,14 @@ const CalculationParameters = ({
                   materialTypeRefs.current[index] = element
                 }
               },
-              onChange: (e) => updateMaterial(index, "id", e.target.value),
+              onChange: (e) => {
+                const newMaterials = [...data.materials]
+                newMaterials[index] = {
+                  ...newMaterials[index],
+                  id: e.target.value,
+                }
+                setData("materials", newMaterials)
+              },
             }}>
             <option value=''>Sélectionner une option</option>
             {materialOptions.map((option) => (
@@ -285,7 +283,14 @@ const CalculationParameters = ({
                   materialShareRefs.current[index] = element
                 }
               },
-              onChange: (e) => updateMaterial(index, "share", e.target.value),
+              onChange: (e) => {
+                const newMaterials = [...data.materials]
+                newMaterials[index] = {
+                  ...newMaterials[index],
+                  share: e.target.value === "" ? 0 : Number.parseFloat(e.target.value),
+                }
+                setData("materials", newMaterials)
+              },
               placeholder: "%",
             }}
           />

@@ -72,7 +72,7 @@ const Header = ({
             }
           : null,
         canAccessProInfo
-          ? { linkProps: { href: "/informations" }, text: "Informer-vous", isActive: pathname === "/informations" }
+          ? { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" }
           : null,
         userType === UserType.CITOYEN
           ? {
@@ -104,7 +104,7 @@ const Header = ({
       text: "Vous êtes professionnels",
       isActive: pathname === "/professionnels",
     },
-    { linkProps: { href: "/informations" }, text: "Informer-vous", isActive: pathname === "/informations" },
+    { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" },
     {
       linkProps: { href: "/marques" },
       text: "Les marques",

@@ -1,7 +1,7 @@
 import Logout from "../../../views/Logout"
 
-const LogoutFranceconnect = async () => {
+const LogoutProconnect = async () => {
   return <Logout force />
 }
 
-export default LogoutFranceconnect
+export default LogoutProconnect

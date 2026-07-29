@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
-import { Status } from "@prisma/enums"
+import { Status, UserType } from "@prisma/enums"
 
 jest.mock("./prismaClient", () => ({
   prismaClient: mockPrismaTest,
@@ -47,7 +47,7 @@ describe("Brands DB", () => {
     brandB = brands[1]
 
     const user = await mockPrismaTest.user.create({
-      data: { email: "brands-test@example.com", organizationId: orgId },
+      data: { email: "brands-test@example.com", organizationId: orgId, type: UserType.PROFESSIONNEL },
     })
     testUserId = user.id
 
@@ -152,10 +152,10 @@ describe("Brands DB", () => {
     const b = stats.find((s) => s.id === brandB.id)
 
     expect(a?.productCount).toBe(2)
-    expect(a?.lastDeclarationDate.getTime()).toBe(now.getTime())
+    expect(a?.lastDeclarationDate?.getTime()).toBe(now.getTime())
 
     expect(b?.productCount).toBe(1)
-    expect(b?.lastDeclarationDate.getTime()).toBe(earlier.getTime())
+    expect(b?.lastDeclarationDate?.getTime()).toBe(earlier.getTime())
 
     expect(stats[0].id).toBe(brandA.id)
     expect(stats[1].id).toBe(brandB.id)

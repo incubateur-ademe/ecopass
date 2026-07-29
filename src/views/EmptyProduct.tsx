@@ -12,7 +12,7 @@ const EmptyProduct = () => {
           severity='warning'
           className='fr-mb-2w'
           title='Le code saisi n’existe pas ou n’est pas dans notre base'
-          description="Le code-barres saisi ne correspond à aucun produit référence. Il se peut que la marque ne l’ait pas encore enregistré ou n’ai pas encore utilisé le portail. Etes-vous sûr d'avoir pris un vêtement, et saisi le code à barres présent sur la taille de référence ?"
+          description="Le code-barres saisi ne correspond à aucun produit référencé. Il se peut que la marque ne l’ait pas encore enregistré ou n’ait pas encore utilisé le portail. Êtes-vous sûr d'avoir pris un vêtement et d'avoir saisi le code-barres présent sur l’étiquette de référence ?"
         />
         <ProductNotFound />
       </Block>

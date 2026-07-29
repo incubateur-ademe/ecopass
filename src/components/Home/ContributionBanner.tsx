@@ -1,8 +1,8 @@
-import Image from "next/image";
-import styles from "./ContributionBanner.module.css";
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import Link from "next/link";
-import { Button } from "@codegouvfr/react-dsfr/Button";
+import Image from "next/image"
+import styles from "./ContributionBanner.module.css"
+import { Badge } from "@codegouvfr/react-dsfr/Badge"
+import Link from "next/link"
+import { Button } from "@codegouvfr/react-dsfr/Button"
 
 const ContributionBanner = ({ pro }: { pro?: boolean }) => {
   return (
@@ -28,7 +28,8 @@ const ContributionBanner = ({ pro }: { pro?: boolean }) => {
               </>
             ) : (
               <>
-                Ajouter des produits pour permettre aux citoyens des achats plus éclairés et sollicitez les marques pour les impliquer.{" "}
+                Ajoutez des produits pour permettre aux citoyens des achats plus éclairés et sollicitez les marques pour
+                les impliquer.{" "}
                 <Link
                   href='https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000052212871'
                   target='_blank'

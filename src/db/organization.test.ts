@@ -7,7 +7,7 @@ jest.mock("./prismaClient", () => ({
 import { createOrganization, getUserOrganizationType, getOrganizationById } from "./organization"
 import { getSiretInfo } from "../serverFunctions/siret"
 import { prismaClient } from "./prismaClient"
-import { OrganizationType, Status, UploadType } from "@prisma/enums"
+import { OrganizationType, Status, UploadType, UserType } from "@prisma/enums"
 import { cleanDB } from "./testUtils"
 
 jest.mock("../serverFunctions/siret")
@@ -159,6 +159,7 @@ describe("organization", () => {
       const user = await prismaClient.user.create({
         data: {
           email: "test-user@example.com",
+          type: UserType.PROFESSIONNEL,
         },
       })
 

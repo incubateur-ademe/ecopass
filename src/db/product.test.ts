@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid"
 import { Prisma } from "@prisma/client"
-import { Status } from "@prisma/enums"
+import { Status, UserType } from "@prisma/enums"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
 jest.mock("./prismaClient", () => ({
   prismaClient: mockPrismaTest,
@@ -71,7 +71,7 @@ describe("Product DB integration", () => {
     })
     testOrganizationId = organization.id
     const user = await mockPrismaTest.user.create({
-      data: { email: "test@example.com", organizationId: testOrganizationId },
+      data: { email: "test@example.com", organizationId: testOrganizationId, type: UserType.PROFESSIONNEL },
     })
     testUserId = user.id
     const upload = await mockPrismaTest.upload.create({

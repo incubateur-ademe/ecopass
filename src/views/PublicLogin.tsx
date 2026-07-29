@@ -12,8 +12,8 @@ const PublicLogin = () => {
           <div className='fr-col-12 fr-col-md-9 fr-col-lg-8'>
             <h1>Connexion</h1>
             <p className='fr-mb-2w'>
-              Pour déclarer le coût environnemental de références textile, vous devez créer un compte pour centraliser
-              vos déclaration dans un espace dédié.
+              Pour déclarer le coût environnemental de références textiles, vous devez créer un compte pour centraliser
+              vos déclarations dans un espace dédié.
             </p>
             <p className='fr-mb-2w'>
               Si vous rencontrez des difficultés à vous connecter,{" "}

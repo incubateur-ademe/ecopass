@@ -31,34 +31,33 @@ const Identification = ({
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     let success = true
-    let newErrors: { [key in keyof typeof data]?: ReactNode } = {}
+    const newErrors: { [key in keyof typeof data]?: ReactNode } = {}
     if (!data.gtin) {
       newErrors.gtin = "Le code barre (GTIN) est requis"
       if (success) {
         gtinRef.current?.focus()
       }
       success = false
-    }
-    if (/^\d{8}$|^\d{13}$/.test(data.gtin) === false || !isValidGtin(data.gtin)) {
+    } else if (/^\d{8}$|^\d{13}$/.test(data.gtin) === false || !isValidGtin(data.gtin)) {
       newErrors.gtin =
         "Le code GTIN n'est pas valide (doit contenir 8 ou 13 chiffres et avoir une somme de contrôle correcte)"
       if (success) {
         gtinRef.current?.focus()
       }
       success = false
-    }
-
-    const gtinDeclared = await isGTINAlreadyDeclared(data.gtin)
-    if (gtinDeclared) {
-      newErrors.gtin = (
-        <>
-          Ce produit a déjà été déclaré par sa marque. <Link href={`/produits/${data.gtin}`}>Voir le produit</Link>
-        </>
-      )
-      if (success) {
-        gtinRef.current?.focus()
+    } else {
+      const gtinDeclared = await isGTINAlreadyDeclared(data.gtin)
+      if (gtinDeclared) {
+        newErrors.gtin = (
+          <>
+            Ce produit a déjà été déclaré par sa marque. <Link href={`/produits/${data.gtin}`}>Voir le produit</Link>
+          </>
+        )
+        if (success) {
+          gtinRef.current?.focus()
+        }
+        success = false
       }
-      success = false
     }
 
     if (!data.brandName.trim()) {

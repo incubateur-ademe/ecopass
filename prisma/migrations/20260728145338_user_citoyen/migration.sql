@@ -11,5 +11,8 @@ CREATE TYPE "UserType" AS ENUM ('CITOYEN', 'PROFESSIONNEL');
 ALTER TYPE "UploadType" ADD VALUE 'SIMPLIFIED';
 
 -- AlterTable
-ALTER TABLE "users" ADD COLUMN     "birthdate" TEXT,
-ADD COLUMN     "type" "UserType" NOT NULL;
+ ALTER TABLE "users"
+   ADD COLUMN "birthdate" TEXT,
+   ADD COLUMN "type" "UserType" ;
+ UPDATE "users" SET "type" = 'PROFESSIONNEL' WHERE "type" IS NULL;
+ ALTER TABLE "users" ALTER COLUMN "type" SET NOT NULL;

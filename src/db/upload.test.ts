@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid"
-import { Status, UploadType } from "@prisma/enums"
+import { Status, UploadType, UserType } from "@prisma/enums"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
 
 jest.mock("./prismaClient", () => ({
@@ -78,6 +78,7 @@ describe("Upload DB integration", () => {
       data: {
         email: "test@example.com",
         organizationId: testOrganizationId,
+        type: UserType.PROFESSIONNEL,
       },
       select: { id: true, organizationId: true },
     })

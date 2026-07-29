@@ -1,10 +1,10 @@
 "use client"
 
-import { track } from "../../utils/matomo";
-import { signIn } from "next-auth/react";
-import styles from "./LoginForm.module.css";
-import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton";
-import { FranceConnectButton } from "@codegouvfr/react-dsfr/FranceConnectButton";
+import { track } from "../../utils/matomo"
+import { signIn } from "next-auth/react"
+import styles from "./LoginForm.module.css"
+import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton"
+import { FranceConnectButton } from "@codegouvfr/react-dsfr/FranceConnectButton"
 
 const PublicLoginForm = () => {
   return (
