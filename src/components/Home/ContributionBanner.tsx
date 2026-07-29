@@ -41,7 +41,7 @@ const ContributionBanner = ({ pro }: { pro?: boolean }) => {
           </p>
         </div>
         {!pro && (
-          <Button priority='secondary' className={styles.button}>
+          <Button priority='secondary' className={styles.button} linkProps={{ href: "/declaration-simplifiee" }}>
             Declarer un produit
           </Button>
         )}

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 const SimplifiedDeclarationPage = async () => {
-  await tryAndGetSession(true, false)
+  await tryAndGetSession(true, false, "/login/public?next=/declaration-simplifiee")
 
   return (
     <>

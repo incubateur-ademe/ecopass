@@ -3,7 +3,7 @@ import Link from "next/link"
 import { isTestEnvironment } from "../utils/test"
 import PublicLoginForm from "../components/Login/PublicLoginForm"
 
-const PublicLogin = () => {
+const PublicLogin = ({ callbackUrl }: { callbackUrl: string }) => {
   const test = isTestEnvironment()
   return (
     <Block className='fr-grid-row fr-grid-row--center'>
@@ -34,7 +34,7 @@ const PublicLogin = () => {
               </Link>
               .
             </p>
-            <PublicLoginForm />
+            <PublicLoginForm callbackUrl={callbackUrl} />
           </div>
         </div>
       </div>

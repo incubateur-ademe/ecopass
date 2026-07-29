@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 const ProductsPage = async ({ searchParams }: PageProps) => {
-  const session = await tryAndGetSession(true, true, organizationTypesAllowedToDeclare)
+  const session = await tryAndGetSession(true, true, "", organizationTypesAllowedToDeclare)
 
   const params = await searchParams
   const page = params.page ? parseInt(params.page as string, 10) : 1
