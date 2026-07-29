@@ -6,7 +6,7 @@ import styles from "./LoginForm.module.css"
 import { ProConnectButton } from "@codegouvfr/react-dsfr/ProConnectButton"
 import { FranceConnectButton } from "@codegouvfr/react-dsfr/FranceConnectButton"
 
-const PublicLoginForm = () => {
+const PublicLoginForm = ({ callbackUrl }: { callbackUrl: string }) => {
   return (
     <>
       <div className={styles.box}>
@@ -18,7 +18,7 @@ const PublicLoginForm = () => {
         <FranceConnectButton
           onClick={() => {
             track("Login", "FranceConnect", "FranceConnect")
-            signIn("franceconnect", { callbackUrl: "/" })
+            signIn("franceconnect", { callbackUrl })
           }}
         />
       </div>
@@ -31,7 +31,7 @@ const PublicLoginForm = () => {
         <ProConnectButton
           onClick={() => {
             track("Login", "ProConnect", "ProConnect")
-            signIn("proconnect", { callbackUrl: "/" })
+            signIn("proconnect", { callbackUrl })
           }}
         />
       </div>

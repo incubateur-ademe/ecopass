@@ -8,7 +8,7 @@ const ProductNotFound = () => {
       <div className={styles.content}>
         <h3>Vous ne trouvez pas ce produit ?</h3>
         <p>Contribuez à enrichir la base de données en ajoutant vous-même les références encore absentes.</p>
-        <Button>Ajouter une référence</Button>
+        <Button linkProps={{ href: "/declaration-simplifiee" }}>Ajouter une référence</Button>
         <div className={styles.line} />
         <p>Ou vous pouvez aussi préciser votre recherche :</p>
         <Button priority='secondary' iconId='fr-icon-settings-5-line'>

@@ -27,7 +27,7 @@
 }
 
 .button {
-  height: 100%;
+  flex: none;
 }
 
 .image {

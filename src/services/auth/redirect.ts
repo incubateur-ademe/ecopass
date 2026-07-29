@@ -7,31 +7,34 @@ import { OrganizationType, UserType } from "@prisma/enums"
 export async function tryAndGetSession(
   redirectIfNoSession: true,
   checkOrganizationType: boolean,
+  redirection?: string,
   allowedOrganizationTypes?: OrganizationType[],
 ): Promise<Session>
 
 export async function tryAndGetSession(
   redirectIfNoSession: false,
   checkOrganizationType: boolean,
+  redirection?: string,
   allowedOrganizationTypes?: OrganizationType[],
 ): Promise<Session | null>
 
 export async function tryAndGetSession(
   redirectIfNoSession: boolean,
   checkOrganizationType: boolean,
+  redirection?: string,
   allowedOrganizationTypes?: OrganizationType[],
 ) {
   const session = await auth()
   if (redirectIfNoSession) {
     if (!session || !session.user) {
-      redirect("/")
+      redirect(redirection || "/")
     }
   }
 
   if (checkOrganizationType && session && session.user && session.user.type === UserType.PROFESSIONNEL) {
     const type = await getUserOrganizationType(session.user.id)
     if (!type) {
-      redirect("/organisation/type")
+      redirect(redirection || "/organisation/type")
     }
   }
 
@@ -39,7 +42,7 @@ export async function tryAndGetSession(
     const type = await getUserOrganizationType(session?.user.id)
 
     if (!type || !allowedOrganizationTypes.includes(type)) {
-      redirect("/")
+      redirect(redirection || "/")
     }
   }
 

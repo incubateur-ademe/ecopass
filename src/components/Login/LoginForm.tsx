@@ -20,7 +20,7 @@ const messages: Record<string, string> = {
     "Vous n'avez pas encore défini votre mot de passe. Veuillez utiliser le lien envoyé par email pour le définir avant de vous connecter.",
 }
 
-const LoginForm = ({ test }: { test: boolean }) => {
+const LoginForm = ({ test, callbackUrl }: { test: boolean; callbackUrl: string }) => {
   const router = useRouter()
   const [error, setError] = useState("")
 
@@ -67,7 +67,7 @@ const LoginForm = ({ test }: { test: boolean }) => {
         <ProConnectButton
           onClick={() => {
             track("Login", "ProConnect", "ProConnect")
-            signIn("proconnect", { callbackUrl: "/" })
+            signIn("proconnect", { callbackUrl })
           }}
         />
       </div>
