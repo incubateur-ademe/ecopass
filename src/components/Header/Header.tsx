@@ -4,19 +4,27 @@ import { Session } from "next-auth"
 import { usePathname } from "next/navigation"
 import { isTestEnvironment } from "../../utils/test"
 import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
-import { OrganizationType } from "@prisma/enums"
+import { OrganizationType, UserType } from "@prisma/enums"
 import {
   canAccessAdminSpace,
   canAccessFullData,
   canAccessProInformationSpace,
 } from "../../utils/authorization/authorizations"
 
-const Header = ({ session, type }: { session: Session | null; type: OrganizationType | null }) => {
-  const canDeclare = type ? organizationTypesAllowedToDeclare.includes(type) : false
+const Header = ({
+  session,
+  organizationType,
+  userType,
+}: {
+  session: Session | null
+  organizationType: OrganizationType | null
+  userType?: UserType
+}) => {
+  const canDeclare = organizationType ? organizationTypesAllowedToDeclare.includes(organizationType) : false
   const role = session?.user?.role
   const canAccessAdmin = canAccessAdminSpace(role)
   const canAccessData = canAccessFullData(role)
-  const canAccessProInfo = canAccessProInformationSpace(role)
+  const canAccessProInfo = canAccessProInformationSpace(role, userType)
   const pathname = usePathname()
 
   const adminNavigationItem = canAccessAdmin
@@ -64,7 +72,14 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
             }
           : null,
         canAccessProInfo
-          ? { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" }
+          ? { linkProps: { href: "/informations" }, text: "Informer-vous", isActive: pathname === "/informations" }
+          : null,
+        userType === UserType.CITOYEN
+          ? {
+              linkProps: { href: "/declaration-simplifiee" },
+              text: "Déclaration simplifiée",
+              isActive: pathname.startsWith("/declaration-simplifiee"),
+            }
           : null,
         {
           linkProps: { href: "/marques" },
@@ -73,10 +88,10 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
         },
         {
           linkProps: { href: "/recherche" },
-          text: "Recherchez un produit",
+          text: "Rechercher un produit",
           isActive: pathname === "/recherche" || pathname.startsWith("/produits/"),
         },
-        type === OrganizationType.Distributor
+        organizationType === OrganizationType.Distributor
           ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") }
           : null,
         adminNavigationItem,
@@ -89,7 +104,7 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
       text: "Vous êtes professionnels",
       isActive: pathname === "/professionnels",
     },
-    { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" },
+    { linkProps: { href: "/informations" }, text: "Informer-vous", isActive: pathname === "/informations" },
     {
       linkProps: { href: "/marques" },
       text: "Les marques",
@@ -97,7 +112,7 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
     },
     {
       linkProps: { href: "/recherche" },
-      text: "Recherchez un produit",
+      text: "Rechercher un produit",
       isActive: pathname === "/recherche" || pathname.startsWith("/produits/"),
     },
   ]

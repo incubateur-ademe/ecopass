@@ -8,28 +8,32 @@ import Link from "next/link"
 import Block from "../Block/Block"
 import LastBrands from "./LastBrands"
 import { Tile } from "@codegouvfr/react-dsfr/Tile"
+import { UserType } from "@prisma/client"
+import { Badge } from "@codegouvfr/react-dsfr/Badge"
 
 const HomeBanner = ({
   connected,
   isAllowedToDeclare,
   isPro,
+  userType,
 }: {
   connected?: boolean
   isAllowedToDeclare: boolean
   isPro?: boolean
+  userType?: UserType
 }) => {
   const proView = isPro || isAllowedToDeclare
   return (
     <Block
       large
       type='yellow'
-      className={proView ? "" : styles.background}
+      className={proView || connected ? "" : styles.background}
       containerClassName={proView && !connected ? styles.proBackground : ""}>
       <div
         className={classNames(styles.banner, {
           [styles.bannerTest]: isTestEnvironment(),
           [styles.bannerPro]: proView && !connected,
-          [styles.bannerProConnected]: proView && connected,
+          [styles.bannerConnected]: connected,
         })}>
         {isTestEnvironment() ? (
           <Alert
@@ -62,22 +66,15 @@ const HomeBanner = ({
             }
           />
         ) : (
-          !proView && (
-            <Image
-              className={classNames(styles.image, { [styles.small]: connected })}
-              src='/images/etiquette.svg'
-              alt=''
-              width={378}
-              height={188}
-            />
-          )
+          !proView &&
+          !connected && <Image className={styles.image} src='/images/etiquette.svg' alt='' width={378} height={188} />
         )}
         <div>
           <h1>
             {isTestEnvironment()
-              ? "Serveur de test pour la déclaration du coût environnemental de vos produits textiles"
+              ? "Serveur de test pour la déclaration du coût environnemental de produits textiles"
               : proView
-                ? "Déclarez le coût environnemental de vos produits textiles"
+                ? "Déclarer le coût environnemental de produits textiles"
                 : "Affichage environnemental"}
           </h1>
           {!isTestEnvironment() &&
@@ -108,6 +105,10 @@ const HomeBanner = ({
                   <ProConnect />
                 </>
               )
+            ) : connected ? (
+              <p className={styles.description}>
+                Contribuer à enrichir la base de données en ajoutant vous-même les références encore absentes.
+              </p>
             ) : (
               <>
                 <p className={styles.description}>
@@ -124,12 +125,13 @@ const HomeBanner = ({
             <div className={styles.tiles}>
               <Tile
                 orientation='horizontal'
-                title='Gérez votre entreprise'
+                title='Gérer votre entreprise'
                 imageUrl='/images/catalog.svg'
                 imageAlt=''
                 titleAs='h2'
                 desc='Listez vos marques et organisez vos délégations'
                 linkProps={{ href: "/organisation" }}
+                start={<Badge>ORGANISATION</Badge>}
               />
               <Tile
                 orientation='horizontal'
@@ -139,6 +141,7 @@ const HomeBanner = ({
                 titleAs='h2'
                 desc='Déclarez officiellement vos produits et suivez leur statut'
                 linkProps={{ href: "/declarations" }}
+                start={<Badge>DÉPÔT OFFICIEL</Badge>}
               />
               <Tile
                 orientation='horizontal'
@@ -148,6 +151,35 @@ const HomeBanner = ({
                 titleAs='h2'
                 desc='Retrouvez ici tous vos produits déclarés'
                 linkProps={{ href: "/produits" }}
+                start={<Badge>PRODUITS</Badge>}
+              />
+            </div>
+          )}
+          {connected && userType === UserType.CITOYEN && (
+            <div className={styles.tiles}>
+              <Tile
+                orientation='horizontal'
+                title='Déclarer des produits un par un via un formulaire simplifié'
+                imageUrl='/images/conclusion.svg'
+                imageAlt=''
+                titleAs='h2'
+                desc='L’essentiel pour une déclaration'
+                linkProps={{ href: "/declaration-simplifiee" }}
+                start={<Badge>DÉCLARATION SIMPLIFIÉE</Badge>}
+              />
+              <Tile
+                orientation='horizontal'
+                title='Comment trouver les informations nécessaires à la déclaration de données'
+                imageUrl='/images/document-search.svg'
+                imageAlt=''
+                titleAs='h2'
+                desc='Consultez le centre d’aide - Docs'
+                linkProps={{
+                  href: "https://docs.numerique.gouv.fr/docs/4c19480c-746e-49d9-aa1c-8b94f8790720/",
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                }}
+                start={<Badge>AIDE</Badge>}
               />
             </div>
           )}

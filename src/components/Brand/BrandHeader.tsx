@@ -17,23 +17,27 @@ const BrandHeader = ({ productCount, brand }: { brand: BrandInformation; product
         ) : (
           <p className={styles.subtitle}>Cette marque n'a déclaré aucun produit.</p>
         )}
-        <p className={styles.subtitle}>
-          Elle appartient à l'organisation{" "}
-          <Link href={`/organisations/${brand.organization.id}`}>{brand.organization.displayName}</Link>.
-        </p>
-        {brand.organization.authorizedOrganizations.length > 0 && (
-          <p className={styles.subtitle}>
-            Bureau d'études délégataire actif :{" "}
-            {brand.organization.authorizedOrganizations
-              .flatMap((authOrg) => [
-                <Link key={authOrg.to.id} href={`/organisations/${authOrg.to.id}`}>
-                  {authOrg.to.displayName}
-                </Link>,
-                ", ",
-              ])
-              .slice(0, -1)}
-            .
-          </p>
+        {brand.organization && (
+          <>
+            <p className={styles.subtitle}>
+              Elle appartient à l'organisation{" "}
+              <Link href={`/organisations/${brand.organization.id}`}>{brand.organization.displayName}</Link>.
+            </p>
+            {brand.organization.authorizedOrganizations.length > 0 && (
+              <p className={styles.subtitle}>
+                Bureau d'études délégataire actif :{" "}
+                {brand.organization.authorizedOrganizations
+                  .flatMap((authOrg) => [
+                    <Link key={authOrg.to.id} href={`/organisations/${authOrg.to.id}`}>
+                      {authOrg.to.displayName}
+                    </Link>,
+                    ", ",
+                  ])
+                  .slice(0, -1)}
+                .
+              </p>
+            )}
+          </>
         )}
       </div>
       {brand.productsByCategory.length > 0 && (

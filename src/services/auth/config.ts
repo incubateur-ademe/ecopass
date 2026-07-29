@@ -141,7 +141,7 @@ export const authOptions = {
       checks: ["nonce", "state"],
       authorization: {
         params: {
-          scope: "openid uid email",
+          scope: "openid uid email given_name family_name birthdate",
           acr_values: "eidas1",
           redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/franceconnect`,
           nonce: uuid(),
@@ -172,6 +172,9 @@ export const authOptions = {
         return {
           id: profile.email,
           email: profile.email,
+          nom: profile.family_name,
+          prenom: profile.given_name,
+          birthdate: profile.birthdate,
           agentconnect_info: profile,
           type: UserType.CITOYEN,
         }

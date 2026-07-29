@@ -47,7 +47,7 @@
   }
 }
 
-.bannerProConnected {
+.bannerConnected {
   margin: 0;
 }
 
@@ -91,10 +91,6 @@
   @media screen and (max-width: 62rem) {
     min-width: 100%;
   }
-}
-
-.small {
-  max-width: 200px;
 }
 
 .description {

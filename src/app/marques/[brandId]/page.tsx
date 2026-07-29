@@ -76,18 +76,19 @@ const BrandPage = async ({ params, searchParams }: Props) => {
         isDGCCRF={isDGCCRF}
         breadCrumbs={{
           currentPageLabel: brandData.name,
-          segments: isDGCCRF
-            ? [
-                { linkProps: { href: "/" }, label: "Accueil" },
-                {
-                  linkProps: { href: `/organisations/${brandData.organization.id}` },
-                  label: `Organisation - ${brandData.organization.displayName}`,
-                },
-              ]
-            : [
-                { linkProps: { href: "/" }, label: "Accueil" },
-                { linkProps: { href: "/marques" }, label: "Marques" },
-              ],
+          segments:
+            isDGCCRF && brandData.organization
+              ? [
+                  { linkProps: { href: "/" }, label: "Accueil" },
+                  {
+                    linkProps: { href: `/organisations/${brandData.organization.id}` },
+                    label: `Organisation - ${brandData.organization.displayName}`,
+                  },
+                ]
+              : [
+                  { linkProps: { href: "/" }, label: "Accueil" },
+                  { linkProps: { href: "/marques" }, label: "Marques" },
+                ],
         }}
       />
     </>

@@ -1,36 +1,46 @@
 import { prismaClient } from "./prismaClient"
 
+const userSelect = {
+  id: true,
+  email: true,
+  organization: {
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      authorizedBy: {
+        select: {
+          from: {
+            select: {
+              id: true,
+              name: true,
+              siret: true,
+              brands: { select: { active: true, id: true, name: true }, where: { active: true } },
+            },
+          },
+        },
+        where: { active: true },
+      },
+      brands: { select: { active: true, id: true, name: true, default: true }, where: { active: true } },
+    },
+  },
+}
+
+export const getUser = async (userId: string) =>
+  prismaClient.user.findUnique({
+    where: { id: userId },
+    select: userSelect,
+  })
+
+export type FullUser = NonNullable<Awaited<ReturnType<typeof getUser>>>
+
 export const getUserByApiKey = async (apiKey: string) =>
   prismaClient.aPIKey.findUnique({
     where: { key: apiKey },
     select: {
       key: true,
       user: {
-        select: {
-          id: true,
-          email: true,
-          organization: {
-            select: {
-              id: true,
-              name: true,
-              type: true,
-              authorizedBy: {
-                select: {
-                  from: {
-                    select: {
-                      id: true,
-                      name: true,
-                      siret: true,
-                      brands: { select: { active: true, id: true, name: true }, where: { active: true } },
-                    },
-                  },
-                },
-                where: { active: true },
-              },
-              brands: { select: { active: true, id: true, name: true, default: true }, where: { active: true } },
-            },
-          },
-        },
+        select: userSelect,
       },
     },
   })

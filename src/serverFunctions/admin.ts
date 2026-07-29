@@ -1,7 +1,7 @@
 "use server"
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
-import { OrganizationType } from "@prisma/client"
+import { OrganizationType, UserType } from "@prisma/client"
 import jwt from "jsonwebtoken"
 import { v4 as uuid } from "uuid"
 import { sendWelcomeEmail } from "../services/emails/email"
@@ -58,6 +58,7 @@ export const createUserAndOrganization = async (
       data: {
         email: email.toLowerCase(),
         organizationId: organization.id,
+        type: UserType.PROFESSIONNEL,
         accounts: {
           create: {
             provider: "credentials",

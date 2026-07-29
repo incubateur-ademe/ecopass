@@ -59,7 +59,7 @@ const SearchContainer = ({
 
   return (
     <>
-      <Block home>
+      <Block type='yellow'>
         <h1>Recherchez un produit par marque, code-barres ou catégorie</h1>
         <div className={styles.filter}>
           <div className={styles.box}>

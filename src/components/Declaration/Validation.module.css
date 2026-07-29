@@ -1,0 +1,13 @@
+.buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.label {
+  height: auto;
+  width: 20rem;
+  margin: 2rem auto;
+  display: block;
+}

@@ -8,7 +8,13 @@ import { uploadFileToS3 } from "../utils/s3/bucket"
 import { encryptAndZipFile } from "../utils/encryption/encryption"
 import path from "path"
 import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
-import { getUserOrganizationType } from "../db/user"
+import { getUser, getUserOrganizationType } from "../db/user"
+import { getUserProductAPIValidation } from "../services/validation/api"
+import { computeEcobalyseScore } from "../utils/ecobalyse/api"
+import { isGTINAlreadyDeclared } from "./product"
+import { createScore } from "../db/score"
+import { hashProduct } from "../utils/encryption/hash"
+import { prismaClient } from "../db/prismaClient"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -96,5 +102,105 @@ export const uploadFile = async (file: File) => {
   } catch (error) {
     console.error("Error during upload:", error)
     return "Erreur inconnue lors du traitement du fichier"
+  }
+}
+
+export type SimplifiedDeclarationData = {
+  brandName: string
+  brandId?: string
+  gtin: string
+  internalReference: string
+  product: string
+  mass: number
+  materials: { id: string; share: number }[]
+  countryFabric: string
+  countryDyeing: string
+  countryMaking: string
+}
+
+export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDeclarationData) => {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      throw new Error("Unauthorized")
+    }
+
+    const user = await getUser(session.user.id)
+    if (!user) {
+      throw new Error("User not found")
+    }
+
+    const normalizedBrandName = data.brandName.trim()
+    if (!normalizedBrandName) {
+      throw new Error("Le nom de la marque ne peut pas être vide")
+    }
+
+    const providedBrandId = data.brandId?.trim()
+
+    const selectedBrand = providedBrandId
+      ? await prismaClient.brand.findUnique({
+          where: { id: providedBrandId },
+          select: { id: true },
+        })
+      : await prismaClient.brand.findFirst({
+          where: {
+            name: {
+              equals: normalizedBrandName,
+              mode: "insensitive",
+            },
+          },
+          select: { id: true },
+        })
+
+    const resolvedBrand =
+      selectedBrand ||
+      (await prismaClient.brand.create({
+        data: {
+          name: normalizedBrandName,
+        },
+        select: { id: true },
+      }))
+
+    const validatedData = getUserProductAPIValidation([resolvedBrand.id]).safeParse({
+      ...data,
+      brandId: resolvedBrand.id,
+    })
+
+    if (validatedData.error) {
+      throw new Error(`Validation error: ${validatedData.error.message}`)
+    }
+    const alreadyDeclared = await isGTINAlreadyDeclared(data.gtin)
+
+    if (alreadyDeclared) {
+      throw new Error(`Le GTIN ${data.gtin} a déjà été déclaré`)
+    }
+
+    const { product, informations } = {
+      product: {
+        internalReference: validatedData.data.internalReference,
+        declaredScore: validatedData.data.declaredScore,
+        brandId: validatedData.data.brandId,
+        gtins: [data.gtin],
+      },
+      informations: [validatedData.data],
+    }
+
+    const hash = await hashProduct(product, informations, [resolvedBrand.id])
+    const scores = await Promise.all(informations.map((information) => computeEcobalyseScore(information)))
+    await createScore(user, product, informations, scores, hash, UploadType.SIMPLIFIED)
+
+    return {
+      success: true,
+      score: {
+        score: scores[0].score,
+        standardized: (scores[0].score / informations[0].mass) * 0.1,
+      },
+      message: "Produit créé avec succès",
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    }
   }
 }
