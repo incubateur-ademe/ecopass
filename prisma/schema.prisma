@@ -53,6 +53,11 @@ enum UserRole {
   BERCY
 }
 
+enum UserType {
+  CITOYEN
+  PROFESSIONNEL
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -60,9 +65,11 @@ model User {
 
   nom               String?
   prenom            String?
+  birthdate         String?
   agentconnect_info Json?
   role              UserRole?
 
+  type     UserType
   accounts Account[]
   sessions Session[]
 
@@ -89,6 +96,7 @@ model VerificationToken {
 enum UploadType {
   API
   FILE
+  SIMPLIFIED
 }
 
 model Upload {
@@ -104,8 +112,8 @@ model Upload {
   status Status  @default(Pending)
   error  String?
 
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String       @map("organization_id")
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @map("organization_id")
 
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String @map("created_by_id")
@@ -336,8 +344,8 @@ model Brand {
   default Boolean @default(false)
   active  Boolean @default(true)
 
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String       @map("organization_id")
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @map("organization_id")
   product        Product[]
 
   @@map("brands")

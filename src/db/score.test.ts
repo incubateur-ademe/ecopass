@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid"
-import { Prisma } from "@prisma/client"
+import { Prisma, UserType } from "@prisma/client"
 import { Status, UploadType } from "@prisma/enums"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
 jest.mock("./prismaClient", () => ({
@@ -7,13 +7,12 @@ jest.mock("./prismaClient", () => ({
 }))
 
 import { createScore, createScores } from "./score"
-import { APIUser } from "../services/auth/auth"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { cleanDB } from "./testUtils"
-import { trim } from "zod"
+import { FullUser } from "./user"
 
 describe("Score DB integration", () => {
-  let user: NonNullable<APIUser>["user"]
+  let user: FullUser
   let testOrganizationId: string
   let baseProduct: Prisma.ProductCreateInput
 
@@ -37,7 +36,7 @@ describe("Score DB integration", () => {
     })
     testOrganizationId = organization.id
     user = await mockPrismaTest.user.create({
-      data: { email: "test@example.com", organizationId: testOrganizationId },
+      data: { email: "test@example.com", organizationId: testOrganizationId, type: UserType.PROFESSIONNEL },
       select: {
         id: true,
         email: true,
@@ -283,7 +282,7 @@ describe("Score DB integration", () => {
       materials: [{ id: MaterialType.Viscose, share: 0.9 }],
       trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
     }
-    await createScore(user, product, [informations], [score], "test-hash")
+    await createScore(user, product, [informations], [score], "test-hash", UploadType.API)
 
     const createdScore = await mockPrismaTest.score.findFirst({
       where: { score: 85.5 },

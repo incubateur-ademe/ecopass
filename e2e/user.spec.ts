@@ -74,7 +74,7 @@ test("Connection with a distributor user", async ({ page }) => {
 
   await expect(page.getByRole("link", { name: "Informez-vous", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Les marques", exact: true })).toBeVisible()
-  await expect(page.getByRole("link", { name: "Recherchez un produit", exact: true })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Rechercher un produit", exact: true })).toBeVisible()
 
   await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).not.toBeVisible()
@@ -106,7 +106,7 @@ test("Connection with a other user", async ({ page }) => {
 
   await expect(page.getByRole("link", { name: "Informez-vous", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Les marques", exact: true })).toBeVisible()
-  await expect(page.getByRole("link", { name: "Recherchez un produit", exact: true })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Rechercher un produit", exact: true })).toBeVisible()
 
   await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).not.toBeVisible()

@@ -1,0 +1,21 @@
+.formContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+
+  @media screen and (max-width: 62rem) {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+}
+.form {
+  flex: 1;
+}
+
+.helpTile {
+  max-width: 22rem;
+  @media screen and (max-width: 62rem) {
+    max-width: 100%;
+  }
+}

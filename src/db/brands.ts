@@ -182,3 +182,14 @@ export const getBrandWithProducts = async (id: string) => {
 }
 
 export type BrandInformation = NonNullable<Awaited<ReturnType<typeof getBrandWithProducts>>>
+
+export const getAllAvailableBrands = async () =>
+  prismaClient.brand.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+    where: {
+      active: true,
+    },
+  })

@@ -1,5 +1,6 @@
 import { Status } from "@prisma/enums"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
+import { UserType } from "@prisma/enums"
 jest.mock("./prismaClient", () => ({
   prismaClient: mockPrismaTest,
 }))
@@ -26,6 +27,7 @@ describe("Export DB", () => {
       data: {
         email: "test@example.com",
         organizationId: testOrganizationId,
+        type: UserType.PROFESSIONNEL,
       },
     })
     testUserId = user.id

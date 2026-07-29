@@ -18,6 +18,12 @@ const Logout = ({ force }: { force?: boolean }) => {
     logOutUrl.searchParams.set("post_logout_redirect_uri", `${process.env.NEXT_PUBLIC_URL}/logout/proconnect`)
     logOutUrl.searchParams.set("state", uuid())
     router.push(logOutUrl.toString())
+  } else if (session.data && session.data.provider === "franceconnect") {
+    const logOutUrl = new URL(`${process.env.NEXT_PUBLIC_FRANCECONNECT_DOMAIN}/api/v2/session/end`)
+    logOutUrl.searchParams.set("id_token_hint", session.data.idToken || "")
+    logOutUrl.searchParams.set("post_logout_redirect_uri", `${process.env.NEXT_PUBLIC_URL}/logout/franceconnect`)
+    logOutUrl.searchParams.set("state", uuid())
+    router.push(logOutUrl.toString())
   } else {
     signOut({ callbackUrl: "/" })
   }

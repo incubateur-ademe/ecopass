@@ -13,7 +13,7 @@ const OrganizationTypePage = async () => {
   const session = await tryAndGetSession(true, false)
   const organization = await getUserOrganization(session.user.id)
   if (!organization) {
-    return redirect("/logout")
+    return redirect("/")
   }
 
   return (

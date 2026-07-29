@@ -23,7 +23,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const lang = "fr"
 
   const session = await auth()
-  const type = await getUserOrganizationType(session?.user.id)
+  const organizationType = await getUserOrganizationType(session?.user.id)
   return (
     <html lang={lang} {...getHtmlAttributes({ lang })}>
       <head>
@@ -33,7 +33,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <Matomo />
         <DsfrProvider lang={lang}>
           <AuthProvider session={session}>
-            <Header session={session} type={type} />
+            <Header session={session} organizationType={organizationType} userType={session?.user.type} />
             <main id='contenu' role='main' tabIndex={-1}>
               {isTestEnvironment() && <TestBanner />}
               {children}

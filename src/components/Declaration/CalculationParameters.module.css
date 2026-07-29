@@ -1,0 +1,22 @@
+.materialRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  :global(.fr-select-group),
+  :global(.fr-input-group) {
+    margin-bottom: 0;
+  }
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  @media screen and (max-width: 62rem) {
+    flex-direction: column;
+  }
+}

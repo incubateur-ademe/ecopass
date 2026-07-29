@@ -1,6 +1,7 @@
 import "dotenv/config"
 import { createOrganization } from "../db/organization"
 import { prismaClient } from "../db/prismaClient"
+import { UserType } from "@prisma/client"
 
 const email = "todo"
 const organizationName = ""
@@ -34,6 +35,7 @@ export const createMail = async () => {
         create: {
           email: email.toLowerCase(),
           organizationId: organization.id,
+          type: UserType.PROFESSIONNEL,
         },
       },
       provider: "credentials",

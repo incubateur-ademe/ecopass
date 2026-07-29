@@ -36,7 +36,7 @@ const Product = ({
   const icon = getProductIcon(categorySlug)
   return (
     <>
-      <Block home breadCrumbs={breadCrumbs}>
+      <Block type='yellow' breadCrumbs={breadCrumbs}>
         {isPro && (
           <Badge severity={isOld ? "warning" : "success"} className='fr-mb-4w'>
             {isOld ? "Déclaration obsolète" : "Déclaration validée"}
@@ -95,7 +95,7 @@ const Product = ({
         <ProductHistory gtin={gtin} brandId={brandId} />
       </Block>
       {!isPro && (
-        <Block secondary>
+        <Block type='yellow'>
           <InformationBanner />
         </Block>
       )}

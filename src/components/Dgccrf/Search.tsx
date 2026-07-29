@@ -36,7 +36,7 @@ const Search = ({ organizationsAndBrands }: { organizationsAndBrands: Organizati
 
   return (
     <>
-      <Block large home>
+      <Block large type='yellow'>
         <h1>Bienvenue sur le portail de déclaration de l’affichage environnemental</h1>
         <div className={searchStyles.filter}>
           <div>

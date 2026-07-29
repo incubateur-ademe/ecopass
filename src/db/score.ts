@@ -1,10 +1,10 @@
 import { Prisma } from "@prisma/client"
 import { Status, UploadType } from "@prisma/enums"
-import { APIUser } from "../services/auth/auth"
 import { ProductInformationAPI, ProductMetadataAPI } from "../services/validation/api"
 import { ecobalyseVersion } from "../utils/ecobalyse/config"
 import { encryptProductFields } from "../utils/encryption/encryption"
 import { prismaClient } from "./prismaClient"
+import { FullUser } from "./user"
 
 export const createScores = async (scores: Prisma.ScoreCreateManyInput[]) =>
   prismaClient.score.createMany({
@@ -12,18 +12,15 @@ export const createScores = async (scores: Prisma.ScoreCreateManyInput[]) =>
   })
 
 export const createScore = async (
-  user: NonNullable<APIUser>["user"],
+  user: FullUser,
   product: ProductMetadataAPI,
   informations: ProductInformationAPI[],
   scores: Omit<Prisma.ScoreCreateInput, "product" | "standardized">[],
   hash: string,
+  type: UploadType,
 ) =>
   prismaClient.$transaction(
     async (transaction) => {
-      if (!user.organization) {
-        throw new Error("User organization not found")
-      }
-
       const score = scores.reduce((acc, value) => acc + value.score, 0)
       const mass = informations.map((info) => info.mass).reduce((acc, value) => acc + value, 0)
 
@@ -40,9 +37,9 @@ export const createScore = async (
           upload: {
             create: {
               createdById: user.id,
-              organizationId: user.organization.id,
+              organizationId: user.organization ? user.organization.id : null,
               version: ecobalyseVersion,
-              type: UploadType.API,
+              type,
               status: Status.Done,
             },
           },

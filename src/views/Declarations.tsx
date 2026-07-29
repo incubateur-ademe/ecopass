@@ -14,7 +14,7 @@ const Declarations = ({ page }: { page: number }) => {
         <h2>Mes fichiers</h2>
         <Uploads page={page} />
       </Block>
-      <Block home>
+      <Block type='yellow'>
         <Contact />
       </Block>
     </>

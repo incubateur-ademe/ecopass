@@ -1,5 +1,6 @@
 "use server"
-import { getProductWithScoreHistory, getProductWithScoreHistoryCount } from "../db/product"
+
+import { getProductWithScore, getProductWithScoreHistory, getProductWithScoreHistoryCount } from "../db/product"
 
 export const getProductHistory = async (gtin: string, page: number, pageSize: number) => {
   const [products, total] = await Promise.all([
@@ -8,4 +9,14 @@ export const getProductHistory = async (gtin: string, page: number, pageSize: nu
   ])
 
   return { products, total }
+}
+
+export const isGTINAlreadyDeclared = async (gtin: string) => {
+  const product = await getProductWithScore(gtin)
+  return (
+    product !== null &&
+    product.brand &&
+    product.brand.organization &&
+    product.brand.organization.id === product.upload.createdBy.organization?.id
+  )
 }

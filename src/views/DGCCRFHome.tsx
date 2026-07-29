@@ -14,7 +14,7 @@ const DGCCRFHome = ({
   return (
     <>
       <Search organizationsAndBrands={organizationsAndBrands} />
-      <Block home>{isAdmin ? <InformationProBanner /> : <Informations />}</Block>
+      <Block type='yellow'>{isAdmin ? <InformationProBanner /> : <Informations />}</Block>
     </>
   )
 }

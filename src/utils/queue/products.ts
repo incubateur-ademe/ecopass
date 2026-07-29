@@ -56,25 +56,26 @@ export const processProductsQueue = async () => {
 
       const result = {
         product: userProductValidation.safeParse(product),
-        gtins: brand.organization.noGTIN
-          ? product.gtins.filter((gtin) => gtin).length > 0
-            ? {
-                success: false as const,
-                error: {
-                  issues: [
-                    {
-                      message:
-                        "Votre organisation n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
-                    },
-                  ],
-                },
-              }
-            : { success: true as const, data: getDefaultGTINs(brand.organization, product.internalReference) }
-          : gtinsValidation.safeParse(product.gtins),
+        gtins:
+          brand.organization && brand.organization.noGTIN
+            ? product.gtins.filter((gtin) => gtin).length > 0
+              ? {
+                  success: false as const,
+                  error: {
+                    issues: [
+                      {
+                        message:
+                          "Votre organisation n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
+                      },
+                    ],
+                  },
+                }
+              : { success: true as const, data: getDefaultGTINs(brand.organization, product.internalReference) }
+            : gtinsValidation.safeParse(product.gtins),
         id: product.id,
       }
 
-      if (brand.organization.noGTIN && result.gtins.success) {
+      if (brand.organization && brand.organization.noGTIN && result.gtins.success) {
         await prismaClient.product.update({
           where: { id: product.id },
           data: {

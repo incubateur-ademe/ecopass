@@ -19,6 +19,7 @@ import { hashProduct } from "../encryption/hash"
 import { getBrandById } from "../../db/brands"
 import { getDefaultGTINs } from "../validation/gtin"
 import { gtinsValidation } from "../../services/validation/gtins"
+import { UploadType } from "@prisma/client"
 
 type ProductAndInformations = {
   product: ProductMetadataAPI & { gtins: string[] }
@@ -193,22 +194,23 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
       )
     }
 
-    if (brand.organization.noGTIN && body.gtins) {
+    if (brand.organization && brand.organization.noGTIN && body.gtins) {
       return NextResponse.json(
         { error: "Votre organisation n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné." },
         { status: 400 },
       )
     }
 
-    const gtins = brand.organization.noGTIN
-      ? {
-          success: true,
-          error: {
-            issues: [],
-          },
-          data: getDefaultGTINs(brand.organization, body.internalReference),
-        }
-      : gtinsValidation.safeParse(body.gtins)
+    const gtins =
+      brand.organization && brand.organization.noGTIN
+        ? {
+            success: true,
+            error: {
+              issues: [],
+            },
+            data: getDefaultGTINs(brand.organization, body.internalReference),
+          }
+        : gtinsValidation.safeParse(body.gtins)
 
     let parseResult: NextResponse | ProductAndInformations
     switch (type) {
@@ -260,7 +262,7 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
       )
     }
 
-    await createScore(api.user, product, informations, scores, hash)
+    await createScore(api.user, product, informations, scores, hash, UploadType.API)
     return NextResponse.json({ result: "success" }, { status: 201 })
   } catch (error) {
     console.error("Erreur lors de la création du produit :", error)

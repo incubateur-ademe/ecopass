@@ -8,7 +8,7 @@ const OrganizationDetail = ({ organization, isAdmin }: { organization: Organizat
   return (
     <>
       <Block
-        home
+        type='yellow'
         breadCrumbs={{
           currentPageLabel: organization.displayName,
           segments: [{ linkProps: { href: "/" }, label: "Accueil" }],
@@ -18,7 +18,7 @@ const OrganizationDetail = ({ organization, isAdmin }: { organization: Organizat
       <Block>
         <Links organization={organization} />
       </Block>
-      <Block home>
+      <Block type='yellow'>
         <Informations />
       </Block>
     </>

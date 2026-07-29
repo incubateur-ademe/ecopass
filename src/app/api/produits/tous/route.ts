@@ -95,9 +95,11 @@ export async function GET(req: Request) {
       upload: {
         version: product.upload.version,
         createdBy: {
-          organization: {
-            name: product.upload.organization.name,
-          },
+          organization: product.upload.organization
+            ? {
+                name: product.upload.organization.name,
+              }
+            : undefined,
         },
       },
     }

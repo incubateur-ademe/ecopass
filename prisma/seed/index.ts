@@ -1,4 +1,4 @@
-import { OrganizationType, Status, UploadType, UserRole } from "@prisma/enums"
+import { OrganizationType, Status, UploadType, UserRole, UserType } from "@prisma/enums"
 import { prismaClient } from "../../src/db/prismaClient"
 import { signPassword } from "../../src/services/auth/user"
 import { encryptProductFields } from "../../src/utils/encryption/encryption"
@@ -97,6 +97,7 @@ const users = async () => {
         email: "ecopass-password@yopmail.com",
         nom: "Ecopass",
         prenom: "Password",
+        type: UserType.PROFESSIONNEL,
         organization: {
           connect: { siret: "31723624800017" },
         },
@@ -115,6 +116,7 @@ const users = async () => {
         email: "ecopass-dgccrf@yopmail.com",
         nom: "Ecopass",
         prenom: "DGCCRF",
+        type: UserType.PROFESSIONNEL,
         organization: {
           connect: { uniqueId: "5310fbe6-5975-458b-a5d2-53fd5ddb5ce0" },
         },
@@ -135,6 +137,7 @@ const users = async () => {
         role: UserRole.ADMIN,
         nom: "Ecopass",
         prenom: "Admin",
+        type: UserType.PROFESSIONNEL,
         organization: {
           connect: { siret: "31723624800017" },
         },
@@ -152,6 +155,7 @@ const users = async () => {
         email: "textile@yopmail.com",
         nom: "Textile",
         prenom: "Admin",
+        type: UserType.PROFESSIONNEL,
         organization: {
           connect: { id: "74b49447-2a89-4056-a112-24ba4597ffc8" },
         },
@@ -170,6 +174,7 @@ const users = async () => {
         email: "nogtin@yopmail.com",
         nom: "No",
         prenom: "GTIN",
+        type: UserType.PROFESSIONNEL,
         organization: {
           connect: { id: "676fc42f-97a8-427d-a133-536b6592bd67" },
         },
@@ -185,6 +190,22 @@ const users = async () => {
           create: {
             key: "7e729ca5-2c60-4755-8ca2-6d3c818ca8e8",
             name: "API Key for development",
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "ecopass-citoyen@yopmail.com",
+        type: UserType.CITOYEN,
+        nom: "Jane",
+        prenom: "Doe",
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "ecopass-citoyen@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
           },
         },
       },

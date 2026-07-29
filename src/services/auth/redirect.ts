@@ -2,13 +2,14 @@ import { auth } from "./auth"
 import { getUserOrganizationType } from "../../db/user"
 import { redirect } from "next/navigation"
 import type { Session } from "next-auth"
-import { OrganizationType } from "@prisma/enums"
+import { OrganizationType, UserType } from "@prisma/enums"
 
 export async function tryAndGetSession(
   redirectIfNoSession: true,
   checkOrganizationType: boolean,
   allowedOrganizationTypes?: OrganizationType[],
 ): Promise<Session>
+
 export async function tryAndGetSession(
   redirectIfNoSession: false,
   checkOrganizationType: boolean,
@@ -27,7 +28,7 @@ export async function tryAndGetSession(
     }
   }
 
-  if (checkOrganizationType && session && session.user) {
+  if (checkOrganizationType && session && session.user && session.user.type === UserType.PROFESSIONNEL) {
     const type = await getUserOrganizationType(session.user.id)
     if (!type) {
       redirect("/organisation/type")
