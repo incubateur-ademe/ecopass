@@ -174,12 +174,20 @@ model Score {
   @@map("scores")
 }
 
+enum ConfidenceLevel {
+  Low
+  Medium
+  High
+}
+
 model Product {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now()) @map("created_at")
   status    Status   @default(Pending)
   error     String?
   hash      String
+
+  confidenceLevel ConfidenceLevel @map("confidence_level")
 
   score        Float?
   standardized Float?

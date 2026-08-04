@@ -1,8 +1,10 @@
+import { UserSelect } from "@prisma/models"
 import { prismaClient } from "./prismaClient"
 
 const userSelect = {
   id: true,
   email: true,
+  type: true,
   organization: {
     select: {
       id: true,
@@ -24,7 +26,7 @@ const userSelect = {
       brands: { select: { active: true, id: true, name: true, default: true }, where: { active: true } },
     },
   },
-}
+} satisfies UserSelect
 
 export const getUser = async (userId: string) =>
   prismaClient.user.findUnique({

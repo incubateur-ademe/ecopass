@@ -15,6 +15,7 @@ import { encryptProductFields } from "../../encryption/encryption"
 import { checkHeaders, ColumnType, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
 import { hashProduct, ProductInformationForHash } from "../../encryption/hash"
+import { getProductConfidenceLevel } from "../../product/confidence"
 
 type CSVRow = {
   info: { records: number }
@@ -199,6 +200,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         ? getAuthorizedBrands(upload.createdBy.organization)
         : ([] as string[])
 
+      const confidenceLevel = getProductConfidenceLevel(upload.createdBy, brand)
       const product = {
         error: mainComponentError ? "Composant principal doit valoir 'Oui' ou 'Non'" : null,
         id: productId,
@@ -206,10 +208,11 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         standardized: null,
         hash: hashProduct(
           {
-            gtins: gtins,
-            internalReference: internalReference,
+            gtins,
+            internalReference,
             brandId: brand,
-            declaredScore: declaredScore,
+            declaredScore,
+            confidenceLevel,
           },
           [rawProduct],
           authorizedBrands,
@@ -223,6 +226,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         brandName: brand,
         brandId: authorizedBrands.includes(brand) ? brand : null,
         declaredScore: declaredScore || null,
+        confidenceLevel,
       }
 
       if (existingProduct) {
@@ -233,6 +237,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
             internalReference: product.internalReference,
             brandId: product.brandId || "",
             declaredScore: product.declaredScore || undefined,
+            confidenceLevel,
           },
           existingProduct.raw,
           authorizedBrands,

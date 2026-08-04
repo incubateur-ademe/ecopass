@@ -1,4 +1,4 @@
-import { OrganizationType, Status, UploadType, UserRole, UserType } from "@prisma/enums"
+import { ConfidenceLevel, OrganizationType, Status, UploadType, UserRole, UserType } from "@prisma/enums"
 import { prismaClient } from "../../src/db/prismaClient"
 import { signPassword } from "../../src/services/auth/user"
 import { encryptProductFields } from "../../src/utils/encryption/encryption"
@@ -253,6 +253,7 @@ const defaultProduct = async () => {
       brand: {
         connect: { id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d" },
       },
+      confidenceLevel: ConfidenceLevel.High,
       status: Status.Done,
       upload: {
         create: {

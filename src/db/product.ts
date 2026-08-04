@@ -24,7 +24,7 @@ export const createProducts = async ({
       const ids = new Set<string>()
 
       for (const product of products) {
-        const oldProductCheck = await checkOldProduct(product.gtins, product.hash)
+        const oldProductCheck = await checkOldProduct(product.gtins, product.hash, product.confidenceLevel)
         if (oldProductCheck.result === ProductCheckResult.Unchanged && oldProductCheck.lastProduct) {
           await transaction.uploadProduct.create({
             data: {
@@ -41,6 +41,16 @@ export const createProducts = async ({
               ...product,
               status: Status.Error,
               error: "Un produit avec le même GTIN a été déclaré trop récemment",
+            },
+          })
+          continue
+        }
+        if (oldProductCheck.result === ProductCheckResult.HigherConfidence && oldProductCheck.lastProduct) {
+          await transaction.product.create({
+            data: {
+              ...product,
+              status: Status.Error,
+              error: "Un produit avec le même GTIN a été déclaré avec une confiance plus élevée",
             },
           })
           continue
@@ -163,6 +173,7 @@ const productWithScoreSelect = {
   createdAt: true,
   score: true,
   standardized: true,
+  confidenceLevel: true,
   informations: {
     select: {
       categorySlug: true,
@@ -667,7 +678,7 @@ export const getLastProductsByGtins = async (gtins: string[]) => {
       status: Status.Done,
     },
     orderBy: { createdAt: "desc" },
-    select: { hash: true, id: true, gtins: true, createdAt: true },
+    select: { hash: true, id: true, gtins: true, createdAt: true, confidenceLevel: true },
   })
 
   return gtins

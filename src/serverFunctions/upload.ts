@@ -11,10 +11,11 @@ import { organizationTypesAllowedToDeclare } from "../utils/organization/canDecl
 import { getUser, getUserOrganizationType } from "../db/user"
 import { getUserProductAPIValidation } from "../services/validation/api"
 import { computeEcobalyseScore } from "../utils/ecobalyse/api"
-import { isGTINAlreadyDeclared } from "./product"
 import { createScore } from "../db/score"
 import { hashProduct } from "../utils/encryption/hash"
 import { prismaClient } from "../db/prismaClient"
+import { getProductConfidenceLevel } from "../utils/product/confidence"
+import { checkOldProduct, ProductCheckResult } from "../services/validation/oldProduct"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -169,25 +170,35 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
     if (validatedData.error) {
       throw new Error(`Validation error: ${validatedData.error.message}`)
     }
-    const alreadyDeclared = await isGTINAlreadyDeclared(data.gtin)
 
-    if (alreadyDeclared) {
-      throw new Error(`Le GTIN ${data.gtin} a déjà été déclaré`)
-    }
-
+    const confidenceLevel = getProductConfidenceLevel(user, validatedData.data.brandId)
     const { product, informations } = {
       product: {
         internalReference: validatedData.data.internalReference,
         declaredScore: validatedData.data.declaredScore,
         brandId: validatedData.data.brandId,
         gtins: [data.gtin],
+        confidenceLevel,
       },
       informations: [validatedData.data],
     }
 
     const hash = await hashProduct(product, informations, [resolvedBrand.id])
+    const oldProductCheck = await checkOldProduct([data.gtin], hash, confidenceLevel)
+    if (oldProductCheck.result === ProductCheckResult.Unchanged) {
+      throw new Error("Le produit existe déjà.")
+    }
+
+    if (oldProductCheck.result === ProductCheckResult.TooRecent) {
+      throw new Error("Un produit avec le même GTIN a été déclaré trop récemment.")
+    }
+
+    if (oldProductCheck.result === ProductCheckResult.HigherConfidence) {
+      throw new Error("Un produit avec le même GTIN a été déclaré avec une confiance plus élevée.")
+    }
+
     const scores = await Promise.all(informations.map((information) => computeEcobalyseScore(information)))
-    await createScore(user, product, informations, scores, hash, UploadType.SIMPLIFIED)
+    await createScore(user, product, informations, scores, hash, UploadType.SIMPLIFIED, confidenceLevel)
 
     return {
       success: true,

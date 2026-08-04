@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid"
-import { Status, UploadType, UserType } from "@prisma/enums"
+import { ConfidenceLevel, Status, UploadType, UserType } from "@prisma/enums"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
 
 jest.mock("./prismaClient", () => ({
@@ -34,6 +34,7 @@ describe("Upload DB integration", () => {
     internalReference: "REF-124",
     brandId: "abf5acc4-fabc-4082-b49a-61b00b5cfcad",
     declaredScore: 3000.5,
+    confidenceLevel: ConfidenceLevel.High,
     informations: {
       create: {
         category: "pull",

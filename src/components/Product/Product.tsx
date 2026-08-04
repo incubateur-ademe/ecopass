@@ -14,6 +14,7 @@ import DurabilityBadge from "./DurabilityBadge"
 import { BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
 import Link from "next/link"
 import { getProductCategory, getProductIcon } from "../../utils/product/category"
+import ConfidenceLevelBadge from "./ConfidenceLevelBadge"
 
 const Product = ({
   product,
@@ -89,6 +90,7 @@ const Product = ({
             Version Ecobalyse : <b>{product.upload.version}</b>
           </p>
         </div>
+        <ConfidenceLevelBadge confidenceLevel={product.confidenceLevel} />
       </Block>
       <Block>
         <ProductScoreImpacts score={totalScore} isPro={isPro} />

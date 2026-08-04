@@ -5,8 +5,8 @@ import Link from "next/link"
 import { FormEvent, ReactNode, useRef, useState } from "react"
 import styles from "./Identification.module.css"
 import { isValidGtin } from "../../utils/validation/gtin"
-import { isGTINAlreadyDeclared } from "../../serverFunctions/product"
 import BrandAutocomplete from "./BrandAutocomplete"
+import { isGTINAlreadyDeclared } from "../../serverFunctions/product"
 
 const Identification = ({
   data,
@@ -46,7 +46,7 @@ const Identification = ({
       }
       success = false
     } else {
-      const gtinDeclared = await isGTINAlreadyDeclared(data.gtin)
+      const gtinDeclared = await isGTINAlreadyDeclared(data.gtin, data.brandId)
       if (gtinDeclared) {
         newErrors.gtin = (
           <>

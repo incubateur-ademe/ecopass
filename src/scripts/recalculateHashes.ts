@@ -72,6 +72,7 @@ const recalculateHashes = async () => {
         internalReference: product.internalReference,
         declaredScore: product.declaredScore || undefined,
         brandId: product.brandId || "",
+        confidenceLevel: product.confidenceLevel,
       }
       const information = decryptedInformations[0]
       const newHash = hashProduct(

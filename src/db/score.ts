@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client"
+import { ConfidenceLevel, Prisma } from "@prisma/client"
 import { Status, UploadType } from "@prisma/enums"
 import { ProductInformationAPI, ProductMetadataAPI } from "../services/validation/api"
 import { ecobalyseVersion } from "../utils/ecobalyse/config"
@@ -18,6 +18,7 @@ export const createScore = async (
   scores: Omit<Prisma.ScoreCreateInput, "product" | "standardized">[],
   hash: string,
   type: UploadType,
+  confidenceLevel: ConfidenceLevel,
 ) =>
   prismaClient.$transaction(
     async (transaction) => {
@@ -27,6 +28,7 @@ export const createScore = async (
       const createdBatch = await transaction.product.create({
         data: {
           status: Status.Done,
+          confidenceLevel,
           hash,
           brand: { connect: { id: product.brandId } },
           gtins: product.gtins,
