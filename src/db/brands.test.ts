@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
-import { Status, UserType } from "@prisma/enums"
+import { ConfidenceLevel, Status, UserType } from "@prisma/enums"
 
 jest.mock("./prismaClient", () => ({
   prismaClient: mockPrismaTest,
@@ -102,6 +102,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: now,
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
         },
         {
           id: uuid(),
@@ -112,6 +113,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: earlier,
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
         },
         {
           id: uuid(),
@@ -122,6 +124,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: muchEarlier,
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
         },
         {
           id: uuid(),
@@ -132,6 +135,7 @@ describe("Brands DB", () => {
           brandId: brandB.id,
           createdAt: earlier,
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
         },
         {
           id: uuid(),
@@ -142,6 +146,7 @@ describe("Brands DB", () => {
           brandId: brandB.id,
           createdAt: now,
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
         },
       ],
     })
@@ -237,6 +242,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -256,6 +262,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -275,6 +282,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -294,6 +302,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -313,6 +322,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -332,6 +342,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -351,6 +362,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -374,6 +386,7 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
+          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {

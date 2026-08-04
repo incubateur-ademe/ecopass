@@ -1,5 +1,5 @@
 import { handleProductPOST } from "./products"
-import { OrganizationType } from "@prisma/enums"
+import { OrganizationType, UserType } from "@prisma/enums"
 import { getApiUser } from "../../services/auth/auth"
 import { computeBatchInformations, computeEcobalyseScore } from "../ecobalyse/api"
 import { createScore } from "../../db/score"
@@ -63,7 +63,9 @@ jest.mock("../validation/gtin", () => {
 
 describe("handleProductPOST", () => {
   const mockedGetApiUser = getApiUser as jest.MockedFunction<typeof getApiUser>
-  const mockedComputeBatchInformations = computeBatchInformations as jest.MockedFunction<typeof computeBatchInformations>
+  const mockedComputeBatchInformations = computeBatchInformations as jest.MockedFunction<
+    typeof computeBatchInformations
+  >
   const mockedComputeEcobalyseScore = computeEcobalyseScore as jest.MockedFunction<typeof computeEcobalyseScore>
   const mockedCreateScore = createScore as jest.MockedFunction<typeof createScore>
   const mockedUpdateAPIUse = updateAPIUse as jest.MockedFunction<typeof updateAPIUse>
@@ -86,6 +88,7 @@ describe("handleProductPOST", () => {
     user: {
       id: "user-1",
       email: "user-1@example.com",
+      type: UserType.PROFESSIONNEL,
       organization: {
         id: "org-1",
         name: "Org 1",
@@ -242,10 +245,12 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(400)
     const body = await response.json()
-    expect(body.map((issue: { path: (string | number)[]; message: string }) => ({
-      path: issue.path,
-      message: issue.message,
-    }))).toEqual([{ path: [0], message: "Le code GTIN doit contenir 8 ou 13 chiffres" }])
+    expect(
+      body.map((issue: { path: (string | number)[]; message: string }) => ({
+        path: issue.path,
+        message: issue.message,
+      })),
+    ).toEqual([{ path: [0], message: "Le code GTIN doit contenir 8 ou 13 chiffres" }])
     expect(mockedComputeEcobalyseScore).not.toHaveBeenCalled()
   })
 
@@ -262,7 +267,7 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(201)
     expect(mockedGetDefaultGTINs).not.toHaveBeenCalled()
-    expect(mockedCheckOldProduct).toHaveBeenCalledWith(["1234567890128"], "hash-1")
+    expect(mockedCheckOldProduct).toHaveBeenCalledWith(["1234567890128"], "hash-1", "High")
   })
 
   it("creates score and returns success on valid single product", async () => {
@@ -293,17 +298,16 @@ describe("handleProductPOST", () => {
   })
 
   it("returns 400 when single body is invalid", async () => {
-    const response = await handleProductPOST(
-      makeRequest({ ...validSingleBody, countryMaking: undefined }),
-      "single",
-    )
+    const response = await handleProductPOST(makeRequest({ ...validSingleBody, countryMaking: undefined }), "single")
 
     expect(response.status).toBe(400)
     const body = await response.json()
-    expect(body.map((issue: { path: (string | number)[]; message: string }) => ({
-      path: issue.path,
-      message: issue.message,
-    }))).toEqual([
+    expect(
+      body.map((issue: { path: (string | number)[]; message: string }) => ({
+        path: issue.path,
+        message: issue.message,
+      })),
+    ).toEqual([
       {
         path: ["countryMaking"],
         message:
@@ -357,10 +361,12 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(400)
     const body = await response.json()
-    expect(body.map((issue: { path: (string | number)[]; message: string }) => ({
-      path: issue.path,
-      message: issue.message,
-    }))).toEqual([{ path: ["components"], message: "Il doit y avoir exactement un composant principal." }])
+    expect(
+      body.map((issue: { path: (string | number)[]; message: string }) => ({
+        path: issue.path,
+        message: issue.message,
+      })),
+    ).toEqual([{ path: ["components"], message: "Il doit y avoir exactement un composant principal." }])
   })
 
   it("creates score and returns success on valid batch product", async () => {
@@ -391,10 +397,12 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(400)
     const body = await response.json()
-    expect(body.map((issue: { path: (string | number)[]; message: string }) => ({
-      path: issue.path,
-      message: issue.message,
-    }))).toEqual([
+    expect(
+      body.map((issue: { path: (string | number)[]; message: string }) => ({
+        path: issue.path,
+        message: issue.message,
+      })),
+    ).toEqual([
       {
         path: ["products"],
         message: "countryDyeing et countryFabric sont requis pour chaque produit quand upcycled n'est pas true",

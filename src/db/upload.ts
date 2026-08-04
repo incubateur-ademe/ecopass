@@ -165,6 +165,7 @@ export const getFirstFileUpload = async () =>
       createdBy: {
         select: {
           email: true,
+          type: true,
           organization: {
             select: {
               name: true,

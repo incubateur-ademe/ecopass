@@ -1,5 +1,6 @@
 import { checkOldProduct, ProductCheckResult } from "./oldProduct"
 import * as productDb from "../../db/product"
+import { ConfidenceLevel } from "@prisma/enums"
 
 describe("checkOldProduct", () => {
   const gtins = ["1234567890123"]
@@ -12,9 +13,9 @@ describe("checkOldProduct", () => {
   it("should return Unchanged if a product with the same hash exists", async () => {
     jest
       .spyOn(productDb, "getLastProductsByGtins")
-      .mockResolvedValueOnce([{ hash, createdAt: new Date(), gtins, id: "1" }])
+      .mockResolvedValueOnce([{ hash, createdAt: new Date(), gtins, id: "1", confidenceLevel: ConfidenceLevel.High }])
 
-    const result = await checkOldProduct(gtins, hash)
+    const result = await checkOldProduct(gtins, hash, ConfidenceLevel.High)
     expect(result.result).toBe(ProductCheckResult.Unchanged)
     expect(result.lastProduct?.hash).toBe(hash)
   })
@@ -22,8 +23,10 @@ describe("checkOldProduct", () => {
   it("should return TooRecent if a recent product exists", async () => {
     jest
       .spyOn(productDb, "getLastProductsByGtins")
-      .mockResolvedValueOnce([{ hash: "otherhash", createdAt: new Date(), gtins, id: "2" }])
-    const result = await checkOldProduct(gtins, "newhash")
+      .mockResolvedValueOnce([
+        { hash: "otherhash", createdAt: new Date(), gtins, id: "2", confidenceLevel: ConfidenceLevel.High },
+      ])
+    const result = await checkOldProduct(gtins, "newhash", ConfidenceLevel.High)
 
     expect(result.result).toBe(ProductCheckResult.TooRecent)
     expect(result.lastProduct?.hash).toBe("otherhash")
@@ -33,8 +36,10 @@ describe("checkOldProduct", () => {
     const oldDate = new Date(Date.now() - 91 * 24 * 60 * 60 * 1000)
     jest
       .spyOn(productDb, "getLastProductsByGtins")
-      .mockResolvedValueOnce([{ hash: "otherhash", createdAt: oldDate, gtins, id: "3" }])
-    const result = await checkOldProduct(gtins, "newhash")
+      .mockResolvedValueOnce([
+        { hash: "otherhash", createdAt: oldDate, gtins, id: "3", confidenceLevel: ConfidenceLevel.High },
+      ])
+    const result = await checkOldProduct(gtins, "newhash", ConfidenceLevel.High)
     expect(result.result).toBe(ProductCheckResult.Valid)
     expect(result.lastProduct).toBeUndefined()
   })

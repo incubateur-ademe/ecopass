@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid"
-import { Prisma, UserType } from "@prisma/client"
+import { ConfidenceLevel, Prisma, UserType } from "@prisma/client"
 import { Status, UploadType } from "@prisma/enums"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
 jest.mock("./prismaClient", () => ({
@@ -76,6 +76,7 @@ describe("Score DB integration", () => {
       declaredScore: 3000.5,
       upload: { connect: { id: upload.id } },
       status: Status.Done,
+      confidenceLevel: ConfidenceLevel.High,
       informations: {
         create: {
           id: "info-1",
@@ -282,7 +283,7 @@ describe("Score DB integration", () => {
       materials: [{ id: MaterialType.Viscose, share: 0.9 }],
       trims: [{ id: AccessoryType.BoutonEnMétal, quantity: 1 }],
     }
-    await createScore(user, product, [informations], [score], "test-hash", UploadType.API)
+    await createScore(user, product, [informations], [score], "test-hash", UploadType.API, ConfidenceLevel.High)
 
     const createdScore = await mockPrismaTest.score.findFirst({
       where: { score: 85.5 },

@@ -20,6 +20,7 @@ import { getBrandById } from "../../db/brands"
 import { getDefaultGTINs } from "../validation/gtin"
 import { gtinsValidation } from "../../services/validation/gtins"
 import { UploadType } from "@prisma/client"
+import { getProductConfidenceLevel } from "../product/confidence"
 
 type ProductAndInformations = {
   product: ProductMetadataAPI & { gtins: string[] }
@@ -231,8 +232,9 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
 
     const { product, informations } = parseResult
 
-    const hash = hashProduct(product, informations, brands)
-    const oldProductCheck = await checkOldProduct(product.gtins, hash)
+    const confidenceLevel = getProductConfidenceLevel(api.user, product.brandId)
+    const hash = hashProduct({ ...product, confidenceLevel }, informations, brands)
+    const oldProductCheck = await checkOldProduct(product.gtins, hash, confidenceLevel)
 
     if (oldProductCheck.result === ProductCheckResult.Unchanged) {
       return NextResponse.json({ message: "Le produit existe déjà." }, { status: 208 })
@@ -241,6 +243,13 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
     if (oldProductCheck.result === ProductCheckResult.TooRecent) {
       return NextResponse.json(
         { message: "Un produit avec le même GTIN a été déclaré trop récemment." },
+        { status: 400 },
+      )
+    }
+
+    if (oldProductCheck.result === ProductCheckResult.HigherConfidence) {
+      return NextResponse.json(
+        { message: "Un produit avec le même GTIN a été déclaré avec une confiance plus élevée." },
         { status: 400 },
       )
     }
@@ -262,7 +271,7 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
       )
     }
 
-    await createScore(api.user, product, informations, scores, hash, UploadType.API)
+    await createScore(api.user, product, informations, scores, hash, UploadType.API, confidenceLevel)
     return NextResponse.json({ result: "success" }, { status: 201 })
   } catch (error) {
     console.error("Erreur lors de la création du produit :", error)
