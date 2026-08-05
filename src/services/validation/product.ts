@@ -37,7 +37,10 @@ const informationValidation = z.object({
   upcycled: z.boolean({ message: "Remanufacturé doit valoir 'Oui' ou 'Non'" }).optional(),
   business: z.enum(Business, { message: "Taille de l'entreprise invalide" }).optional(),
   fading: z.boolean({ message: "Délavage doit valoir 'Oui' ou 'Non'" }).optional(),
-  mass: z.number({ message: "Le poids est obligatoire" }).min(0.01, "La masse doit être supérieure à 0,01 kg"),
+  mass: z
+    .number({ message: "Le poids est obligatoire" })
+    .min(0.01, "La masse doit être supérieure à 0,01 kg")
+    .max(10, "La masse doit être inférieure ou égale à 10 kg"),
   countryDyeing: z.enum(Country, { message: "Origine de l'ennoblissement/impression invalide" }).optional(),
   countryFabric: z.enum(Country, { message: "Origine de tissage/tricotage invalide" }).optional(),
   countryMaking: z.enum(Country, { message: "Origine de confection invalide" }),

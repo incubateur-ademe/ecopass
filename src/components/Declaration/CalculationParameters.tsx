@@ -73,6 +73,12 @@ const CalculationParameters = ({
         massRef.current?.focus()
       }
       success = false
+    } else if (data.mass > 10000) {
+      newErrors.mass = "La masse doit être inférieure ou égale à 10 000 g"
+      if (success) {
+        massRef.current?.focus()
+      }
+      success = false
     }
 
     for (let i = 0; i < data.materials.length; i++) {
@@ -169,21 +175,21 @@ const CalculationParameters = ({
       </Select>
 
       <Input
-        label='Masse du produit fini (en kg) *'
+        label='Masse du produit fini (en gramme) *'
         state={errors.mass ? "error" : undefined}
         stateRelatedMessage={errors.mass}
         nativeInputProps={{
           required: true,
           type: "number",
-          step: "0.001",
           min: "0",
+          max: "10000",
           value: data.mass > 0 ? data.mass : "",
           ref: massRef,
           onChange: (e) => {
             const parsedMass = e.target.value === "" ? 0 : Number.parseFloat(e.target.value)
             setData("mass", Number.isNaN(parsedMass) ? 0 : parsedMass)
           },
-          placeholder: "par exemple : 0.250",
+          placeholder: "par exemple : 250",
         }}
       />
 
