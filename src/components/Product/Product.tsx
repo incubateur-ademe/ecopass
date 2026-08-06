@@ -1,7 +1,6 @@
 import { ProductWithScore } from "../../db/product"
 import { formatDate } from "../../services/format"
 import Block from "../Block/Block"
-import { computeBatchScore } from "../../utils/ecobalyse/batches"
 import styles from "./Product.module.css"
 import Image from "next/image"
 import Label from "../Label/Label"
@@ -31,7 +30,12 @@ const Product = ({
   brandId?: string
   breadCrumbs?: BreadcrumbProps
 }) => {
-  const totalScore = computeBatchScore(product)
+  const totalScore = {
+    ...product.meanScores,
+    score: product.meanScores.score ?? 0,
+    standardized: product.meanScores.standardized ?? 0,
+    durability: product.meanScores.durability ?? 0,
+  }
 
   const categorySlug = getProductCategory(product.informations)
   const icon = getProductIcon(categorySlug)

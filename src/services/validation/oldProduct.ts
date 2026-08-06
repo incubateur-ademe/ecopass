@@ -29,6 +29,7 @@ export const checkOldProduct = async (gtins: string[], hash: string, confidenceL
   if (sameHash) {
     return { result: ProductCheckResult.Unchanged, lastProduct: sameHash }
   }
+
   if (process.env.FORBID_RECENT_DECLARATION === "true") {
     const now = Date.now()
     const tooRecentProduct = lastProducts.find((p) => now - new Date(p.createdAt).getTime() < TOO_RECENT_THRESHOLD)
@@ -36,5 +37,6 @@ export const checkOldProduct = async (gtins: string[], hash: string, confidenceL
       return { result: ProductCheckResult.TooRecent, lastProduct: tooRecentProduct }
     }
   }
+
   return { result: ProductCheckResult.Valid }
 }

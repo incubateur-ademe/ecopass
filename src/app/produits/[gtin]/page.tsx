@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${product.internalReference} - Affichage environnemental`,
+    title: `${product.internalReference || gtin} - Affichage environnemental`,
   }
 }
 

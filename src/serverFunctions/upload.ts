@@ -199,13 +199,21 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
     }
 
     const scores = await Promise.all(informations.map((information) => computeEcobalyseScore(information)))
-    await createScore(user, product, informations, scores, hash, UploadType.SIMPLIFIED, confidenceLevel)
+    const computedScores = await createScore(
+      user,
+      product,
+      informations,
+      scores,
+      hash,
+      UploadType.SIMPLIFIED,
+      confidenceLevel,
+    )
 
     return {
       success: true,
       score: {
-        score: scores[0].score,
-        standardized: (scores[0].score / informations[0].mass) * 0.1,
+        score: computedScores?.score || 0,
+        standardized: computedScores?.standardized || 0,
       },
       message: "Produit créé avec succès",
     }
