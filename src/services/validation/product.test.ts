@@ -209,6 +209,22 @@ describe("productValidation", () => {
     )
   })
 
+  it("does not allow product with mass > 10", () => {
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        informations: [
+          {
+            ...validProduct.informations[0],
+            mass: 10.01,
+          },
+        ],
+      },
+      [{ path: ["informations", "0", "mass"], message: "La masse doit être inférieure ou égale à 10 kg" }],
+    )
+  })
+
   it("does not allow product without mass", () => {
     expectZodValidationToFail(
       productValidation,

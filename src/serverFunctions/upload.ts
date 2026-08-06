@@ -164,6 +164,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
 
     const validatedData = getUserProductAPIValidation([resolvedBrand.id]).safeParse({
       ...data,
+      mass: data.mass / 1000,
       brandId: resolvedBrand.id,
     })
 

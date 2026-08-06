@@ -151,6 +151,12 @@ describe("productAPIValidation", () => {
     ])
   })
 
+  it("does not allow product with mass > 10", () => {
+    expectZodValidationToFail(productAPIValidation, validProduct, { mass: 10.01 }, [
+      { path: ["mass"], message: "Too big: expected number to be <=10" },
+    ])
+  })
+
   it("does not allow product with invalid upcycled", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { upcycled: "Non" }, [
       {
@@ -616,6 +622,15 @@ describe("productsAPIValidation", () => {
     )
   })
 
+  it("does not allow products with mass > 10", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      { products: [validProductBase, { ...validProductBase, mass: 10.01 }] },
+      [{ path: ["products", "1", "mass"], message: "Too big: expected number to be <=10" }],
+    )
+  })
+
   it("does not allow products with invalid upcycled", () => {
     expectZodValidationToFail(
       productsAPIValidation,
@@ -865,6 +880,20 @@ describe("multiComponentProductAPIValidation", () => {
           message: "Le composant principal doit avoir un countryMaking spécifié.",
         },
       ],
+    )
+  })
+
+  it("does not allow multi-component product with component mass > 10", () => {
+    expectZodValidationToFail(
+      multiComponentProductAPIValidation,
+      validMultiComponentProduct,
+      {
+        components: [
+          { ...validComponent, mainComponent: false },
+          { ...validComponent, mass: 10.01, mainComponent: true },
+        ],
+      },
+      [{ path: ["components", "1", "mass"], message: "Too big: expected number to be <=10" }],
     )
   })
 
