@@ -192,6 +192,9 @@ model Product {
   score        Float?
   standardized Float?
 
+  meanScore        Float?
+  meanStandardized Float?
+
   gtins             String[] @map("gtins")
   internalReference String   @map("internal_reference")
   declaredScore     Float?   @map("declared_score")

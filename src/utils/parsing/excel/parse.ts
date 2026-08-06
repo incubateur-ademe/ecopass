@@ -149,6 +149,8 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
       id: productId,
       score: null,
       standardized: null,
+      meanScore: null,
+      meanStandardized: null,
       hash: hashProduct(
         {
           gtins,

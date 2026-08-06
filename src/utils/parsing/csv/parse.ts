@@ -206,6 +206,8 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         id: productId,
         score: null,
         standardized: null,
+        meanScore: null,
+        meanStandardized: null,
         hash: hashProduct(
           {
             gtins,

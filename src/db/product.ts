@@ -1,11 +1,12 @@
 import { Accessory, Material, Prisma, Product, ProductInformation } from "@prisma/client"
-import { Status, UploadType } from "@prisma/enums"
+import { ConfidenceLevel, Status, UploadType } from "@prisma/enums"
 import { ParsedProductValidation } from "../services/validation/product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
 import { checkOldProduct, ProductCheckResult } from "../services/validation/oldProduct"
 import { getProductCategory } from "../utils/product/category"
+import { computeBatchScore } from "../utils/ecobalyse/batches"
 
 export const createProducts = async ({
   products,
@@ -99,7 +100,7 @@ export const createProductScore = async (
 ) => {
   const score = scores.reduce((acc, value) => acc + value.score, 0)
   const mass = product.informations.map((info) => info.mass).reduce((acc, value) => acc + value, 0)
-  return prismaClient.$transaction(async (transaction) =>
+  await prismaClient.$transaction(async (transaction) =>
     Promise.all([
       transaction.product.update({
         where: { id: product.id },
@@ -118,6 +119,8 @@ export const createProductScore = async (
       }),
     ]),
   )
+
+  return applyMeanScoreToProduct(product.id)
 }
 
 export const getProductsToProcess = async (take: number) => {
@@ -188,6 +191,8 @@ const productWithScoreSelect = {
           etf: true,
           fru: true,
           fwe: true,
+          htc: true,
+          htn: true,
           ior: true,
           ldu: true,
           mru: true,
@@ -215,13 +220,29 @@ const productWithScoreSelect = {
   upload: {
     select: {
       version: true,
-      createdBy: { select: { organization: { select: { displayName: true, id: true } } } },
+      createdBy: {
+        select: {
+          type: true,
+          organization: { select: { displayName: true, id: true } },
+        },
+      },
     },
   },
 } satisfies Prisma.ProductSelect
 
-export const getProductWithScoreHistory = async (gtin: string, page: number, pageSize: number) =>
-  prismaClient.product.findMany({
+type ProductWithScoreBase = Prisma.ProductGetPayload<{ select: typeof productWithScoreSelect }>
+export type BatchScore = ReturnType<typeof computeBatchScore>
+
+export type MeanScores = Omit<{ [K in keyof BatchScore]: number }, "scoreWithoutDurability">
+
+export type ProductWithScore = ProductWithScoreBase & {
+  meanScores: MeanScores
+  score: number | null
+  standardized: number | null
+}
+
+export const getProductWithScoreHistory = async (gtin: string, page: number, pageSize: number) => {
+  const products = await prismaClient.product.findMany({
     select: productWithScoreSelect,
     where: {
       gtins: { has: decodeURIComponent(gtin) },
@@ -232,6 +253,9 @@ export const getProductWithScoreHistory = async (gtin: string, page: number, pag
     take: pageSize,
   })
 
+  return (await Promise.all(products.map((product) => withMeanScores(product)))).filter((product) => product !== null)
+}
+
 export const getProductWithScoreHistoryCount = async (gtin: string) => {
   return prismaClient.product.count({
     where: {
@@ -241,8 +265,8 @@ export const getProductWithScoreHistoryCount = async (gtin: string) => {
   })
 }
 
-export const getProductWithScore = async (gtin: string) =>
-  prismaClient.product.findFirst({
+export const getProductWithScore = async (gtin: string) => {
+  const product = await prismaClient.product.findFirst({
     select: productWithScoreSelect,
     where: {
       gtins: { has: decodeURIComponent(gtin) },
@@ -251,7 +275,8 @@ export const getProductWithScore = async (gtin: string) =>
     orderBy: { createdAt: "desc" },
   })
 
-export type ProductWithScore = NonNullable<Awaited<ReturnType<typeof getProductWithScore>>>
+  return withMeanScores(product)
+}
 
 export const getProductByGtin = async (gtin: string, id?: string) =>
   prismaClient.product.findFirst({
@@ -264,8 +289,8 @@ export const getProductByGtin = async (gtin: string, id?: string) =>
     orderBy: { createdAt: "desc" },
   })
 
-export const getOldProductWithScore = async (gtin: string, version: string) =>
-  prismaClient.product.findFirst({
+export const getOldProductWithScore = async (gtin: string, version: string) => {
+  const product = await prismaClient.product.findFirst({
     select: productWithScoreSelect,
     where: {
       gtins: { has: decodeURIComponent(gtin) },
@@ -274,6 +299,9 @@ export const getOldProductWithScore = async (gtin: string, version: string) =>
     },
     orderBy: { createdAt: "desc" },
   })
+
+  return withMeanScores(product)
+}
 
 const getProducts = async (
   where: Pick<Prisma.ProductWhereInput, "upload" | "informations" | "uploadId" | "createdAt" | "brandId" | "status">,
@@ -293,18 +321,17 @@ const getProducts = async (
   })
 
   const products = await Promise.all(
-    uniqueGtins.map(async ({ internalReference }) =>
-      prismaClient.product.findFirst({
+    uniqueGtins.map(async ({ internalReference }) => {
+      const product = await prismaClient.product.findFirst({
         where: { internalReference, ...where, status: Status.Done },
         select: productWithScoreSelect,
         orderBy: { createdAt: "desc" },
-      }),
-    ),
+      })
+      return withMeanScores(product)
+    }),
   )
   return products.filter((product) => product !== null)
 }
-
-export type Products = Awaited<ReturnType<typeof getProducts>>
 
 export const countPublicProductsByBrandId = async (
   brandId: string | undefined,
@@ -670,6 +697,7 @@ export const searchProducts = async (options: {
     total,
   }
 }
+export type Products = Awaited<ReturnType<typeof searchProducts>>["products"]
 
 export const getLastProductsByGtins = async (gtins: string[]) => {
   const products = await prismaClient.product.findMany({
@@ -973,4 +1001,72 @@ export const forEachLatestProductsByBrandIdForExport = async (
   }
 
   return processedProducts
+}
+
+const mean = (values: (number | null | undefined)[]) => {
+  const numbers = values.filter((value) => value !== null && value !== undefined)
+  return numbers.length > 0 ? numbers.reduce((sum, value) => sum + value, 0) / numbers.length : null
+}
+
+export const getMeanScores = async (product: ProductWithScoreBase) => {
+  if (product.confidenceLevel === ConfidenceLevel.High) {
+    return computeBatchScore(product)
+  }
+
+  const oldProducts = await prismaClient.product.findMany({
+    where: {
+      gtins: { hasSome: product.gtins },
+      status: Status.Done,
+      confidenceLevel: product.confidenceLevel,
+      createdAt: { lt: product.createdAt },
+    },
+    select: productWithScoreSelect,
+  })
+
+  const products = [product, ...oldProducts]
+  const scores: BatchScore[] = products.map((item) => computeBatchScore(item))
+  const detailedScoreKeys = Object.keys(scores[0] || {}).filter(
+    (key) => key !== "scoreWithoutDurability" && typeof scores[0][key as keyof BatchScore] === "number",
+  )
+
+  const meanDetailedScores = Object.fromEntries(
+    detailedScoreKeys.map((key) => [key, mean(scores.map((score) => score[key as keyof BatchScore]))]),
+  )
+
+  return meanDetailedScores as MeanScores
+}
+
+export const applyMeanScoreToProduct = async (productId: string) => {
+  const product = await prismaClient.product.findUnique({
+    where: { id: productId },
+    select: productWithScoreSelect,
+  })
+
+  if (!product) {
+    return null
+  }
+
+  const meanScores = await getMeanScores(product)
+
+  await prismaClient.product.update({
+    where: { id: productId },
+    data: {
+      meanScore: meanScores.score,
+      meanStandardized: meanScores.standardized,
+    },
+  })
+
+  return meanScores
+}
+
+const withMeanScores = async (product: ProductWithScoreBase | null) => {
+  if (!product) {
+    return product
+  }
+
+  const meanScores = await getMeanScores(product)
+  return {
+    ...product,
+    meanScores,
+  }
 }

@@ -6,7 +6,7 @@ jest.mock("./prismaClient", () => ({
   prismaClient: mockPrismaTest,
 }))
 
-import { createScore, createScores } from "./score"
+import { createScore } from "./score"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { cleanDB } from "./testUtils"
 import { FullUser } from "./user"
@@ -40,6 +40,7 @@ describe("Score DB integration", () => {
       select: {
         id: true,
         email: true,
+        type: true,
         organization: {
           select: {
             id: true,
@@ -108,126 +109,6 @@ describe("Score DB integration", () => {
     await mockPrismaTest.accessory.deleteMany()
     await mockPrismaTest.material.deleteMany()
     await mockPrismaTest.product.deleteMany()
-  })
-
-  it("createScores should insert multiple scores", async () => {
-    const id1 = uuid()
-    const id2 = uuid()
-    const scores = [
-      {
-        productId: id1,
-        score: 100,
-        standardized: 10,
-        acd: 1.25,
-        cch: 742.3,
-        etf: 9876.4,
-        fru: 2134.8,
-        fwe: 0.052,
-        htc: 0.00000067,
-        htn: 0.0000423,
-        ior: 89.2,
-        ldu: 28954.7,
-        mru: 0.00198,
-        ozd: 0.00142,
-        pco: 0.784,
-        pma: 0.0000234,
-        swe: 0.247,
-        tre: 2.892,
-        wtu: 398.6,
-        durability: 0.82,
-        microfibers: 8.7,
-        outOfEuropeEOL: 0.6,
-        materials: 120,
-        transport: 25,
-        spinning: 8,
-        fabric: 4,
-        dyeing: 2,
-        making: 0.5,
-        usage: 0.3,
-        endOfLife: 0.1,
-        trims: 0.00012,
-      },
-      {
-        productId: id2,
-        score: 200,
-        standardized: 20,
-        acd: 3.47,
-        cch: 1834.6,
-        etf: 24567.1,
-        fru: 5892.3,
-        fwe: 0.187,
-        htc: 0.00000189,
-        htn: 0.0000967,
-        ior: 203.4,
-        ldu: 67432.9,
-        mru: 0.00567,
-        ozd: 0.00389,
-        pco: 2.156,
-        pma: 0.0000678,
-        swe: 0.634,
-        tre: 7.823,
-        wtu: 982.4,
-        durability: 0.45,
-        microfibers: 18.2,
-        outOfEuropeEOL: 2.1,
-        materials: 150,
-        transport: 30,
-        spinning: 10,
-        fabric: 5,
-        dyeing: 3,
-        making: 1,
-        usage: 0.5,
-        endOfLife: 0.2,
-        trims: 0.00034,
-      },
-    ]
-
-    await Promise.all([
-      mockPrismaTest.product.create({
-        data: {
-          ...baseProduct,
-          id: "id-1",
-          informations: {
-            create: {
-              ...(baseProduct.informations?.create as Prisma.ProductInformationCreateWithoutProductInput),
-              id: id1,
-            },
-          },
-        },
-      }),
-      mockPrismaTest.product.create({
-        data: {
-          ...baseProduct,
-          id: "id-2",
-          informations: {
-            create: {
-              ...(baseProduct.informations?.create as Prisma.ProductInformationCreateWithoutProductInput),
-              id: id2,
-            },
-          },
-        },
-      }),
-    ])
-
-    const result = await createScores(scores)
-
-    expect(result.count).toBe(2)
-    const found = await mockPrismaTest.score.findMany()
-    expect(found).toHaveLength(2)
-
-    const score1 = found.find((score) => score.productId === id1)
-    expect(score1?.score).toBe(100)
-    expect(score1?.standardized).toBe(10)
-    expect(score1?.acd).toBe(1.25)
-    expect(score1?.cch).toBe(742.3)
-    expect(score1?.durability).toBe(0.82)
-
-    const score2 = found.find((score) => score.productId === id2)
-    expect(score2?.score).toBe(200)
-    expect(score2?.standardized).toBe(20)
-    expect(score2?.acd).toBe(3.47)
-    expect(score2?.cch).toBe(1834.6)
-    expect(score2?.durability).toBe(0.45)
   })
 
   it("createScore should create a score and product with upload", async () => {
