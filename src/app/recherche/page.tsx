@@ -18,9 +18,7 @@ const SearchProductsPage = async ({ searchParams }: PageProps) => {
 
   const [brands, { products, total }] = await Promise.all([
     getAllBrands(),
-    brandId || search || category
-      ? searchProducts({ page, size, brandId, search, category })
-      : { products: [], total: 0 },
+    searchProducts({ page, size, brandId, search, category }),
   ])
 
   return (
