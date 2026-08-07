@@ -17,7 +17,7 @@ const Header = ({
   userType,
 }: {
   session: Session | null
-  organizationType: OrganizationType | null
+  organizationType?: OrganizationType | null
   userType?: UserType
 }) => {
   const canDeclare = organizationType ? organizationTypesAllowedToDeclare.includes(organizationType) : false

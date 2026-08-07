@@ -5,8 +5,18 @@ import Delegations from "../Delegation/Delegations"
 import NewDelegationModal from "../Delegation/NewDelegationModal"
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
 import GTINPrefixes from "./GTINPrefixes"
+import { OrganizationMember } from "../../../db/organization"
+import OrganizationMembers from "../OrganizationMembers"
 
-const BrandOrganization = ({ organization }: { organization: UserOrganization }) => {
+const BrandOrganization = ({
+  organization,
+  canEditMembers,
+  members,
+}: {
+  organization: UserOrganization
+  canEditMembers: boolean
+  members: OrganizationMember[]
+}) => {
   return (
     <div data-testid='brand-organization'>
       <Tabs
@@ -51,6 +61,19 @@ const BrandOrganization = ({ organization }: { organization: UserOrganization })
                   </>
                 ),
               },
+          {
+            label: "Membres",
+            content: (
+              <>
+                <h2>Membres de l'organisation</h2>
+                <OrganizationMembers
+                  organizationId={organization.id}
+                  members={members}
+                  canEditMembers={canEditMembers}
+                />
+              </>
+            ),
+          },
         ].filter((tab) => tab !== undefined)}
       />
     </div>

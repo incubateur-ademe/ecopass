@@ -17,7 +17,7 @@ const Home = ({
   isPro,
 }: {
   connected?: boolean
-  organizationType: OrganizationType | null
+  organizationType?: OrganizationType | null
   userType?: UserType
   isPro?: boolean
 }) => {

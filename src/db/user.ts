@@ -81,7 +81,11 @@ export const getUserOrganizationType = async (userId: string) => {
       },
     },
   })
-  return user?.organization?.type || null
+  if (!user) {
+    return undefined
+  }
+
+  return user.organization?.type
 }
 
 export const getUserOrganization = async (userId: string) => {

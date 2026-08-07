@@ -58,6 +58,11 @@ enum UserType {
   PROFESSIONNEL
 }
 
+enum OrganizationRole {
+  ADMIN
+  READER
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -68,6 +73,7 @@ model User {
   birthdate         String?
   agentconnect_info Json?
   role              UserRole?
+  organizationRole  OrganizationRole? @map("organization_role")
 
   type     UserType
   accounts Account[]

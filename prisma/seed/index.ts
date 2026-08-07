@@ -1,4 +1,12 @@
-import { ConfidenceLevel, OrganizationType, Status, UploadType, UserRole, UserType } from "@prisma/enums"
+import {
+  ConfidenceLevel,
+  OrganizationRole,
+  OrganizationType,
+  Status,
+  UploadType,
+  UserRole,
+  UserType,
+} from "@prisma/enums"
 import { prismaClient } from "../../src/db/prismaClient"
 import { signPassword } from "../../src/services/auth/user"
 import { encryptProductFields } from "../../src/utils/encryption/encryption"
@@ -98,6 +106,7 @@ const users = async () => {
         nom: "Ecopass",
         prenom: "Password",
         type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
         organization: {
           connect: { siret: "31723624800017" },
         },
@@ -117,6 +126,7 @@ const users = async () => {
         nom: "Ecopass",
         prenom: "DGCCRF",
         type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
         organization: {
           connect: { uniqueId: "5310fbe6-5975-458b-a5d2-53fd5ddb5ce0" },
         },
@@ -138,6 +148,7 @@ const users = async () => {
         nom: "Ecopass",
         prenom: "Admin",
         type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
         organization: {
           connect: { siret: "31723624800017" },
         },
@@ -156,6 +167,7 @@ const users = async () => {
         nom: "Textile",
         prenom: "Admin",
         type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
         organization: {
           connect: { id: "74b49447-2a89-4056-a112-24ba4597ffc8" },
         },
@@ -175,6 +187,7 @@ const users = async () => {
         nom: "No",
         prenom: "GTIN",
         type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
         organization: {
           connect: { id: "676fc42f-97a8-427d-a133-536b6592bd67" },
         },

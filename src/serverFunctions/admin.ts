@@ -1,7 +1,7 @@
 "use server"
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
-import { OrganizationType, UserType } from "@prisma/client"
+import { OrganizationRole, OrganizationType, UserType } from "@prisma/client"
 import jwt from "jsonwebtoken"
 import { v4 as uuid } from "uuid"
 import { sendWelcomeEmail } from "../services/emails/email"
@@ -54,11 +54,21 @@ export const createUserAndOrganization = async (
       })
     }
 
+    const hasOrganizationAdmin = await prismaClient.user.findFirst({
+      where: {
+        organizationId: organization.id,
+        type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
+      },
+      select: { id: true },
+    })
+
     const user = await prismaClient.user.create({
       data: {
         email: email.toLowerCase(),
         organizationId: organization.id,
         type: UserType.PROFESSIONNEL,
+        organizationRole: hasOrganizationAdmin ? OrganizationRole.READER : OrganizationRole.ADMIN,
         accounts: {
           create: {
             provider: "credentials",
@@ -139,4 +149,59 @@ export const changeOrganizationSettings = async (
           : false,
     },
   })
+}
+
+export const changeOrganizationMemberRole = async (
+  organizationId: string,
+  memberId: string,
+  role: OrganizationRole,
+) => {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return { error: "Unauthorized" }
+    }
+
+    const currentUser = await prismaClient.user.findFirst({
+      where: { id: session.user.id, organizationId },
+      select: { id: true, organizationId: true, organizationRole: true },
+    })
+
+    if (!currentUser || currentUser.organizationRole !== OrganizationRole.ADMIN) {
+      return { error: "Unauthorized" }
+    }
+
+    const member = await prismaClient.user.findFirst({
+      where: { id: memberId, organizationId },
+      select: { id: true, organizationId: true, type: true, organizationRole: true },
+    })
+
+    if (!member) {
+      return { error: "Utilisateur introuvable" }
+    }
+
+    if (role === OrganizationRole.READER && member.organizationRole === OrganizationRole.ADMIN) {
+      const adminCount = await prismaClient.user.count({
+        where: {
+          organizationId,
+          organizationRole: OrganizationRole.ADMIN,
+        },
+      })
+
+      if (adminCount <= 1) {
+        return { error: "Impossible de retirer le dernier admin de l'organisation" }
+      }
+    }
+
+    await prismaClient.user.update({
+      where: { id: memberId, organizationId },
+      data: {
+        organizationRole: role,
+      },
+    })
+
+    return true
+  } catch {
+    return { error: "Erreur lors de la mise à jour des droits" }
+  }
 }
