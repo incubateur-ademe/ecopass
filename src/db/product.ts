@@ -176,6 +176,8 @@ const productWithScoreSelect = {
   createdAt: true,
   score: true,
   standardized: true,
+  meanScore: true,
+  meanStandardized: true,
   confidenceLevel: true,
   informations: {
     select: {

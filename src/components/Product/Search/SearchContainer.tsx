@@ -78,18 +78,16 @@ const SearchContainer = ({
           <Image src='/images/searchicon.svg' alt='' width={252} height={175} />
         </div>
       </Block>
-      {(selectedBrandId || searchQuery || selectedCategory) && (
-        <Block>
-          <h2>Résultats de recherche</h2>
-          <SearchResults
-            products={products}
-            total={total}
-            page={page}
-            totalPages={totalPages}
-            onPageChange={handleSearch}
-          />
-        </Block>
-      )}
+      <Block>
+        <h2>Résultats de recherche</h2>
+        <SearchResults
+          products={products}
+          total={total}
+          page={page}
+          totalPages={totalPages}
+          onPageChange={handleSearch}
+        />
+      </Block>
     </>
   )
 }

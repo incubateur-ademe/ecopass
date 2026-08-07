@@ -53,7 +53,7 @@ const ProductHistory = ({ brandId, gtin }: { brandId?: string; gtin: string }) =
             : version.upload.createdBy.organization?.displayName,
           version.upload.version,
           <Badge severity='info' noIcon key={version.id}>
-            {version.score ? formatNumber(version.score) : "-"}
+            {version.meanScore ? formatNumber(version.meanScore) : "-"}
           </Badge>,
           <ProductLink product={version} brandId={brandId} key={version.id} />,
         ])}
