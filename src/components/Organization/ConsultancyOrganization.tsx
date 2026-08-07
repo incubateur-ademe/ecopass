@@ -2,8 +2,18 @@ import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
 import { UserOrganization } from "../../db/user"
 import OtherBrands from "./Brand/OtherBrands"
 import OtherDelegations from "./Delegation/OtherDelegations"
+import { OrganizationMember } from "../../db/organization"
+import OrganizationMembers from "./OrganizationMembers"
 
-const ConsultancyOrganization = ({ organization }: { organization: UserOrganization }) => {
+const ConsultancyOrganization = ({
+  organization,
+  canEditMembers,
+  members,
+}: {
+  organization: UserOrganization
+  canEditMembers: boolean
+  members: OrganizationMember[]
+}) => {
   return (
     <div data-testid='consultancy-organization'>
       <Tabs
@@ -23,6 +33,19 @@ const ConsultancyOrganization = ({ organization }: { organization: UserOrganizat
               <>
                 <h2>Délégations</h2>
                 <OtherDelegations organization={organization} />
+              </>
+            ),
+          },
+          {
+            label: "Membres",
+            content: (
+              <>
+                <h2>Membres de l'organisation</h2>
+                <OrganizationMembers
+                  organizationId={organization.id}
+                  members={members}
+                  canEditMembers={canEditMembers}
+                />
               </>
             ),
           },

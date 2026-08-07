@@ -33,8 +33,10 @@ export async function tryAndGetSession(
 
   if (checkOrganizationType && session && session.user && session.user.type === UserType.PROFESSIONNEL) {
     const type = await getUserOrganizationType(session.user.id)
-    if (!type) {
+    if (type === null) {
       redirect(redirection || "/organisation/type")
+    } else if (type === undefined) {
+      redirect("/logout")
     }
   }
 

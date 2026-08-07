@@ -4,7 +4,7 @@ import bcrypt from "bcrypt"
 import { AuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prismaClient } from "../../db/prismaClient"
-import { UserRole, UserType } from "@prisma/enums"
+import { OrganizationRole, UserRole, UserType } from "@prisma/enums"
 import { createOrganization } from "../../db/organization"
 
 export const authOptions = {
@@ -22,10 +22,15 @@ export const authOptions = {
             if (!organization) {
               organization = await createOrganization(siret)
             }
+
+            const usersCount = await prismaClient.user.count({
+              where: { organizationId: organization.id },
+            })
             await prismaClient.user.update({
               where: { id: user.id },
               data: {
                 organizationId: organization.id,
+                organizationRole: usersCount === 1 ? OrganizationRole.ADMIN : OrganizationRole.READER,
               },
             })
           }
