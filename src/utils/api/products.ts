@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { OrganizationRole } from "@prisma/client"
 import { getApiUser } from "../../services/auth/auth"
 import { computeBatchInformations, computeEcobalyseScore } from "../ecobalyse/api"
 import { createScore } from "../../db/score"
@@ -155,6 +156,13 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
             "Votre organisation n'est pas autorisée à déclarer des produits. Si vous pensez que c'est une erreur, veuillez contacter le support.",
           organizationType: api.user.organization.type ? organizationTypes[api.user.organization.type] : "Non défini",
         },
+        { status: 403 },
+      )
+    }
+
+    if (api.user.organizationRole !== OrganizationRole.ADMIN) {
+      return NextResponse.json(
+        { error: "Seuls les admins de l'organisation peuvent déclarer des produits" },
         { status: 403 },
       )
     }

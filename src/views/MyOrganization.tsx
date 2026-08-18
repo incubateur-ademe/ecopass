@@ -4,14 +4,14 @@ import { UserOrganization } from "../db/user"
 
 const Organization = ({
   organization,
-  canEditMembers,
+  isAdmin,
   members,
 }: {
   organization: UserOrganization
-  canEditMembers: boolean
+  isAdmin: boolean
   members: OrganizationMember[]
 }) => {
-  return <MyOrganization organization={organization} canEditMembers={canEditMembers} members={members} />
+  return <MyOrganization organization={organization} isAdmin={isAdmin} members={members} />
 }
 
 export default Organization

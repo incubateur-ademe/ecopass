@@ -162,6 +162,18 @@ const users = async () => {
     }),
     prismaClient.user.create({
       data: {
+        email: "ecopass-e2e@yopmail.com",
+        nom: "Ecopass",
+        prenom: "E2E",
+        type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
+        organization: {
+          connect: { siret: "31723624800017" },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
         id: "0eb6fb02-edcd-4efe-9b8e-49a6fc61307a",
         email: "textile@yopmail.com",
         nom: "Textile",
@@ -175,6 +187,26 @@ const users = async () => {
           create: {
             provider: "credentials",
             providerAccountId: "textile@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "textile-reader@yopmail.com",
+        nom: "Textile",
+        prenom: "Reader",
+        type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.READER,
+        organization: {
+          connect: { id: "74b49447-2a89-4056-a112-24ba4597ffc8" },
+        },
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "textile-reader@yopmail.com",
             type: "credentials",
             password: await signPassword("ecopasscestsupercool"),
           },

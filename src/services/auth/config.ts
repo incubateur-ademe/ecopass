@@ -30,7 +30,7 @@ export const authOptions = {
               where: { id: user.id },
               data: {
                 organizationId: organization.id,
-                organizationRole: usersCount === 1 ? OrganizationRole.ADMIN : OrganizationRole.READER,
+                organizationRole: usersCount === 0 ? OrganizationRole.ADMIN : OrganizationRole.READER,
               },
             })
           }

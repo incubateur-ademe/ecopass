@@ -1,5 +1,5 @@
 "use server"
-import { OrganizationType } from "@prisma/client"
+import { OrganizationRole, OrganizationType } from "@prisma/client"
 import { createOrganization } from "../db/organization"
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
@@ -19,6 +19,7 @@ export const authorizeOrganization = async (siret: string) => {
     prismaClient.user.findUnique({
       where: { id: session.user.id },
       select: {
+        organizationRole: true,
         organization: {
           select: {
             id: true,
@@ -43,6 +44,10 @@ export const authorizeOrganization = async (siret: string) => {
 
   if (!userOrganization || !userOrganization.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
+  }
+
+  if (userOrganization.organizationRole !== OrganizationRole.ADMIN) {
+    return "Vous n'avez pas les droits pour autoriser une organisation"
   }
 
   if (userOrganization.organization.siret === siret) {
@@ -93,6 +98,7 @@ export const authorizeOrganizationById = async (id: string) => {
     prismaClient.user.findUnique({
       where: { id: session.user.id },
       select: {
+        organizationRole: true,
         organization: {
           select: {
             id: true,
@@ -121,6 +127,10 @@ export const authorizeOrganizationById = async (id: string) => {
 
   if (!userOrganization || !userOrganization.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
+  }
+
+  if (userOrganization.organizationRole !== OrganizationRole.ADMIN) {
+    return "Vous n'avez pas les droits pour autoriser une organisation"
   }
 
   if (userOrganization.organization.id === id) {
@@ -199,12 +209,18 @@ export const updateDisplayName = async (displayName: string) => {
     where: { id: session.user.id },
     select: {
       organization: true,
+      organizationRole: true,
     },
   })
 
   if (!user || !user.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
   }
+
+  if (user.organizationRole !== OrganizationRole.ADMIN) {
+    return "Vous n'avez pas les droits pour modifier le nom d'usage de l'organisation"
+  }
+
   await prismaClient.organization.update({
     where: { id: user.organization.id },
     data: { displayName },
@@ -237,12 +253,17 @@ export const addNewGTINPrefix = async (prefix: string) => {
   const user = await prismaClient.user.findUnique({
     where: { id: session.user.id },
     select: {
+      organizationRole: true,
       organization: true,
     },
   })
 
   if (!user || !user.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
+  }
+
+  if (user.organizationRole !== OrganizationRole.ADMIN) {
+    return "Vous n'avez pas les droits pour ajouter un préfixe GTIN"
   }
 
   const existingPrefix = await prismaClient.gTINPrefix.findUnique({
@@ -269,12 +290,17 @@ export const deleteGTINPrefix = async (id: string) => {
   const user = await prismaClient.user.findUnique({
     where: { id: session.user.id },
     select: {
+      organizationRole: true,
       organization: true,
     },
   })
 
   if (!user || !user.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
+  }
+
+  if (user.organizationRole !== OrganizationRole.ADMIN) {
+    return "Vous n'avez pas les droits pour ajouter un préfixe GTIN"
   }
 
   await prismaClient.gTINPrefix.deleteMany({
