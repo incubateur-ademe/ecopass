@@ -185,7 +185,11 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
     }
 
     const hash = await hashProduct(product, informations, [resolvedBrand.id])
-    const oldProductCheck = await checkOldProduct([data.gtin], hash, confidenceLevel)
+    const oldProductCheck = await checkOldProduct([data.gtin], hash, confidenceLevel, {
+      userId: user.id,
+      userType: user.type,
+      organizationId: user.organization?.id ?? null,
+    })
     if (oldProductCheck.result === ProductCheckResult.Unchanged) {
       throw new Error("Le produit existe déjà.")
     }

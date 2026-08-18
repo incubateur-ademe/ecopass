@@ -28,7 +28,11 @@ export const isGTINAlreadyDeclared = async (gtin: string, brandId?: string) => {
   }
 
   const confidenceLevel = brandId ? getProductConfidenceLevel(user, brandId) : ConfidenceLevel.Low
-  const { result, lastProduct } = await checkOldProduct([gtin], "", confidenceLevel)
+  const { result, lastProduct } = await checkOldProduct([gtin], "", confidenceLevel, {
+    userId: user.id,
+    userType: user.type,
+    organizationId: user.organization?.id ?? null,
+  })
   if (result === ProductCheckResult.HigherConfidence) {
     return lastProduct?.gtins[0]
   }

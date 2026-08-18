@@ -7,7 +7,7 @@ import { failUpload, completeUpload } from "../../services/upload"
 import { checkUploadsStatus, getFirstFileUpload, updateUploadToPending } from "../../db/upload"
 import { downloadFileFromS3 } from "../s3/bucket"
 import { FileUpload } from "../../db/upload"
-import { Status } from "@prisma/enums"
+import { ConfidenceLevel, Status, UserType } from "@prisma/enums"
 import { decryptAndDezipFile } from "../encryption/encryption"
 
 jest.mock("chardet")
@@ -44,9 +44,14 @@ describe("processUploadsToQueue", () => {
     name: "test-file.csv",
     createdAt: new Date("2023-01-01T00:00:00Z"),
     createdBy: {
+      id: "user-1",
       email: "test@example.com",
+      type: UserType.PROFESSIONNEL,
       organization: {
+        id: "org-1",
         name: "Test Organization",
+        authorizedBy: [],
+        brands: [],
       },
     },
     products: [{ status: Status.Pending }],
@@ -67,8 +72,22 @@ describe("processUploadsToQueue", () => {
         id: "product-1",
         gtins: ["1234567891113", "1234567891012"],
         internalReference: "My-ref",
-        brand: "TOTALENERGIES SE",
         declaredScore: 123,
+        confidenceLevel: ConfidenceLevel.High,
+        score: null,
+        standardized: null,
+        meanScore: null,
+        meanStandardized: null,
+        brandId: "brand-1",
+        brandName: "TOTALENERGIES SE",
+      },
+    ],
+    informations: [
+      {
+        id: "info-1",
+        productId: "product-1",
+        emptyTrims: false,
+        mainComponent: false,
         business: "large-business-without-services",
         countrySpinning: "CN",
         countryDyeing: "FR",
@@ -78,6 +97,7 @@ describe("processUploadsToQueue", () => {
         numberOfReferences: "100000",
         price: "10",
         category: "tshirt",
+        categorySlug: "tshirt",
         upcycled: "false",
         impression: "",
         impressionPercentage: "undefined",
@@ -107,7 +127,11 @@ describe("processUploadsToQueue", () => {
     expect(mockedUpdateUploadToPending).toHaveBeenCalledWith("test-upload-id")
     expect(mockedChardet.detect).toHaveBeenCalledWith(mockBuffer)
     expect(mockedParseCSV).toHaveBeenCalledWith(mockBuffer, "utf-8", mockUpload)
-    expect(mockedCreateProducts).toHaveBeenCalledWith(mockParsedData)
+    expect(mockedCreateProducts).toHaveBeenCalledWith(mockParsedData, {
+      organizationId: "org-1",
+      userId: "user-1",
+      userType: "PROFESSIONNEL",
+    })
     expect(mockedCompleteUpload).not.toHaveBeenCalled()
   })
 
@@ -141,6 +165,7 @@ describe("processUploadsToQueue", () => {
   it("should check upload status when 0 products are created", async () => {
     const mockEmptyParsedData = {
       products: [],
+      informations: [],
       materials: [],
       accessories: [],
     }
@@ -160,7 +185,11 @@ describe("processUploadsToQueue", () => {
     expect(mockedUpdateUploadToPending).toHaveBeenCalledWith("test-upload-id")
     expect(mockedChardet.detect).toHaveBeenCalledWith(mockBuffer)
     expect(mockedParseCSV).toHaveBeenCalledWith(mockBuffer, "utf-8", mockUpload)
-    expect(mockedCreateProducts).toHaveBeenCalledWith(mockEmptyParsedData)
+    expect(mockedCreateProducts).toHaveBeenCalledWith(mockEmptyParsedData, {
+      organizationId: "org-1",
+      userId: "user-1",
+      userType: UserType.PROFESSIONNEL,
+    })
     expect(mockedCheckUploadStatus).toHaveBeenCalledWith([mockUpload.id])
     expect(mockedFailUpload).not.toHaveBeenCalled()
   })

@@ -164,10 +164,12 @@ export const getFirstFileUpload = async () =>
       createdAt: true,
       createdBy: {
         select: {
+          id: true,
           email: true,
           type: true,
           organization: {
             select: {
+              id: true,
               name: true,
               brands: { select: { default: true, name: true, id: true, active: true } },
               authorizedBy: {
