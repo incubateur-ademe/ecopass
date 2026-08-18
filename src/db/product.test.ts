@@ -145,47 +145,52 @@ describe("Product DB integration", () => {
       countryMaking: "FR",
     } satisfies ProductInformationAPI)
 
-    await createProducts({
-      products: [
-        {
-          error: null,
-          hash: "test-hash",
-          id: productId,
-          createdAt: new Date(),
-          uploadId: testUploadId,
-          uploadOrder: 5,
-          status: Status.Pending,
-          gtins: ["2234567891001"],
-          internalReference: "REF-123",
-          brandName: null,
-          brandId: BRAND_ID_1,
-          declaredScore: 2222.63,
-          score: null,
-          standardized: null,
-          confidenceLevel: ConfidenceLevel.High,
-        },
-      ],
-      informations: [
-        {
-          id: "info-1",
-          productId,
-          ...encrypted.product,
-          emptyTrims: false,
-        },
-      ],
-      materials: encrypted.materials.map((material) => ({
-        ...material,
-        id: uuid(),
-        productId: "info-1",
-      })),
-      accessories: encrypted.accessories
-        ? encrypted.accessories.map((accessory) => ({
-            ...accessory,
-            id: uuid(),
-            productId: "info-1",
-          }))
-        : [],
-    })
+    await createProducts(
+      {
+        products: [
+          {
+            error: null,
+            hash: "test-hash",
+            id: productId,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 5,
+            status: Status.Pending,
+            gtins: ["2234567891001"],
+            internalReference: "REF-123",
+            brandName: null,
+            brandId: BRAND_ID_1,
+            declaredScore: 2222.63,
+            score: null,
+            standardized: null,
+            meanScore: null,
+            meanStandardized: null,
+            confidenceLevel: ConfidenceLevel.High,
+          },
+        ],
+        informations: [
+          {
+            id: "info-1",
+            productId,
+            ...encrypted.product,
+            emptyTrims: false,
+          },
+        ],
+        materials: encrypted.materials.map((material) => ({
+          ...material,
+          id: uuid(),
+          productId: "info-1",
+        })),
+        accessories: encrypted.accessories
+          ? encrypted.accessories.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: "info-1",
+            }))
+          : [],
+      },
+      { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+    )
   })
 
   it("getProductsByUploadId", async () => {
@@ -214,37 +219,42 @@ describe("Product DB integration", () => {
     } satisfies ProductInformationAPI)
 
     let newId = uuid()
-    await createProducts({
-      products: [
-        {
-          error: null,
-          hash: "new-hash",
-          id: newId,
-          createdAt: new Date(),
-          uploadId: testUploadId,
-          uploadOrder: 2,
-          status: Status.Pending,
-          gtins: ["2234567891001"],
-          internalReference: "REF-123",
-          brandName: null,
-          brandId: BRAND_ID_1,
-          declaredScore: 2222.63,
-          score: null,
-          standardized: null,
-          confidenceLevel: ConfidenceLevel.High,
-        },
-      ],
-      informations: [
-        {
-          id: "info-1",
-          productId,
-          ...encrypted.product,
-          emptyTrims: false,
-        },
-      ],
-      materials: [],
-      accessories: [],
-    })
+    await createProducts(
+      {
+        products: [
+          {
+            error: null,
+            hash: "new-hash",
+            id: newId,
+            createdAt: new Date(),
+            uploadId: testUploadId,
+            uploadOrder: 2,
+            status: Status.Pending,
+            gtins: ["2234567891001"],
+            internalReference: "REF-123",
+            brandName: null,
+            brandId: BRAND_ID_1,
+            declaredScore: 2222.63,
+            score: null,
+            standardized: null,
+            meanScore: null,
+            meanStandardized: null,
+            confidenceLevel: ConfidenceLevel.High,
+          },
+        ],
+        informations: [
+          {
+            id: "info-1",
+            productId,
+            ...encrypted.product,
+            emptyTrims: false,
+          },
+        ],
+        materials: [],
+        accessories: [],
+      },
+      { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+    )
     const found = await getProductsByUploadId(testUploadId)
 
     expect(found).toHaveLength(2)
@@ -559,46 +569,51 @@ describe("Product DB integration", () => {
         countryMaking: "FR",
       } satisfies ProductInformationAPI)
 
-      const numberOfCreatedProducts = await createProducts({
-        products: [
-          {
-            error: null,
-            hash: "unique-hash-001",
-            id: newProductId,
-            createdAt: new Date(),
-            uploadId: testUploadId,
-            uploadOrder: 1,
-            status: Status.Pending,
-            gtins: ["9999999999999"],
-            internalReference: "NEW-REF-001",
-            brandName: null,
-            brandId: BRAND_ID_1,
-            declaredScore: 1500.0,
-            score: null,
-            standardized: null,
-            confidenceLevel: ConfidenceLevel.High,
-          },
-        ],
-        informations: [
-          {
-            id: "info-2",
-            productId: newProductId,
-            ...encrypted.product,
-            emptyTrims: false,
-          },
-        ],
-        materials: encrypted.materials.map((material) => ({
-          ...material,
-          id: uuid(),
-          productId: "info-2",
-        })),
-        accessories:
-          encrypted.accessories?.map((accessory) => ({
-            ...accessory,
+      const numberOfCreatedProducts = await createProducts(
+        {
+          products: [
+            {
+              error: null,
+              hash: "unique-hash-001",
+              id: newProductId,
+              createdAt: new Date(),
+              uploadId: testUploadId,
+              uploadOrder: 1,
+              status: Status.Pending,
+              gtins: ["9999999999999"],
+              internalReference: "NEW-REF-001",
+              brandName: null,
+              brandId: BRAND_ID_1,
+              declaredScore: 1500.0,
+              score: null,
+              standardized: null,
+              meanScore: null,
+              meanStandardized: null,
+              confidenceLevel: ConfidenceLevel.High,
+            },
+          ],
+          informations: [
+            {
+              id: "info-2",
+              productId: newProductId,
+              ...encrypted.product,
+              emptyTrims: false,
+            },
+          ],
+          materials: encrypted.materials.map((material) => ({
+            ...material,
             id: uuid(),
             productId: "info-2",
-          })) || [],
-      })
+          })),
+          accessories:
+            encrypted.accessories?.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: "info-2",
+            })) || [],
+        },
+        { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+      )
 
       expect(numberOfCreatedProducts).toBe(1)
 
@@ -644,46 +659,51 @@ describe("Product DB integration", () => {
         countryMaking: "FR",
       } satisfies ProductInformationAPI)
 
-      const numberOfCreatedProducts = await createProducts({
-        products: [
-          {
-            error: null,
-            hash: existingHash,
-            id: newProductId,
-            createdAt: new Date(),
-            uploadId: testUploadId,
-            uploadOrder: 1,
-            status: Status.Pending,
-            gtins: [existingGtin],
-            internalReference: "NEW-REF-002",
-            brandName: null,
-            brandId: BRAND_ID_1,
-            declaredScore: 2000.0,
-            score: null,
-            standardized: null,
-            confidenceLevel: ConfidenceLevel.High,
-          },
-        ],
-        informations: [
-          {
-            id: "info-1",
-            productId,
-            ...encrypted.product,
-            emptyTrims: false,
-          },
-        ],
-        materials: encrypted.materials.map((material) => ({
-          ...material,
-          id: uuid(),
-          productId: newProductId,
-        })),
-        accessories:
-          encrypted.accessories?.map((accessory) => ({
-            ...accessory,
+      const numberOfCreatedProducts = await createProducts(
+        {
+          products: [
+            {
+              error: null,
+              hash: existingHash,
+              id: newProductId,
+              createdAt: new Date(),
+              uploadId: testUploadId,
+              uploadOrder: 1,
+              status: Status.Pending,
+              gtins: [existingGtin],
+              internalReference: "NEW-REF-002",
+              brandName: null,
+              brandId: BRAND_ID_1,
+              declaredScore: 2000.0,
+              score: null,
+              standardized: null,
+              meanScore: null,
+              meanStandardized: null,
+              confidenceLevel: ConfidenceLevel.High,
+            },
+          ],
+          informations: [
+            {
+              id: "info-1",
+              productId,
+              ...encrypted.product,
+              emptyTrims: false,
+            },
+          ],
+          materials: encrypted.materials.map((material) => ({
+            ...material,
             id: uuid(),
             productId: newProductId,
-          })) || [],
-      })
+          })),
+          accessories:
+            encrypted.accessories?.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: newProductId,
+            })) || [],
+        },
+        { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+      )
 
       expect(numberOfCreatedProducts).toBe(0)
 
@@ -733,46 +753,51 @@ describe("Product DB integration", () => {
         countryMaking: "FR",
       } satisfies ProductInformationAPI)
 
-      const numberOfCreatedProducts = await createProducts({
-        products: [
-          {
-            error: null,
-            hash: newHash,
-            id: newProductId,
-            createdAt: new Date(),
-            uploadId: testUploadId,
-            uploadOrder: 1,
-            status: Status.Pending,
-            gtins: [sameGtin],
-            internalReference: "UPDATED-REF",
-            brandName: null,
-            brandId: BRAND_ID_1,
-            declaredScore: 2500.0,
-            score: null,
-            standardized: null,
-            confidenceLevel: ConfidenceLevel.High,
-          },
-        ],
-        informations: [
-          {
-            id: "info-2",
-            productId: newProductId,
-            ...encrypted.product,
-            emptyTrims: false,
-          },
-        ],
-        materials: encrypted.materials.map((material) => ({
-          ...material,
-          id: uuid(),
-          productId: "info-2",
-        })),
-        accessories:
-          encrypted.accessories?.map((accessory) => ({
-            ...accessory,
+      const numberOfCreatedProducts = await createProducts(
+        {
+          products: [
+            {
+              error: null,
+              hash: newHash,
+              id: newProductId,
+              createdAt: new Date(),
+              uploadId: testUploadId,
+              uploadOrder: 1,
+              status: Status.Pending,
+              gtins: [sameGtin],
+              internalReference: "UPDATED-REF",
+              brandName: null,
+              brandId: BRAND_ID_1,
+              declaredScore: 2500.0,
+              score: null,
+              standardized: null,
+              meanScore: null,
+              meanStandardized: null,
+              confidenceLevel: ConfidenceLevel.High,
+            },
+          ],
+          informations: [
+            {
+              id: "info-2",
+              productId: newProductId,
+              ...encrypted.product,
+              emptyTrims: false,
+            },
+          ],
+          materials: encrypted.materials.map((material) => ({
+            ...material,
             id: uuid(),
             productId: "info-2",
-          })) || [],
-      })
+          })),
+          accessories:
+            encrypted.accessories?.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: "info-2",
+            })) || [],
+        },
+        { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+      )
 
       expect(numberOfCreatedProducts).toBe(1)
 
@@ -825,46 +850,51 @@ describe("Product DB integration", () => {
         countryMaking: "FR",
       } satisfies ProductInformationAPI)
 
-      const numberOfCreatedProducts = await createProducts({
-        products: [
-          {
-            error: null,
-            hash: "new-hash",
-            id: newProductId,
-            createdAt: new Date(),
-            uploadId: testUploadId,
-            uploadOrder: 1,
-            status: Status.Pending,
-            gtins: ["1111111111111"],
-            internalReference: "UPDATED-REF",
-            brandName: null,
-            brandId: BRAND_ID_1,
-            declaredScore: 2500.0,
-            score: null,
-            standardized: null,
-            confidenceLevel: ConfidenceLevel.High,
-          },
-        ],
-        informations: [
-          {
-            id: "info-2",
-            productId: newProductId,
-            ...encrypted.product,
-            emptyTrims: false,
-          },
-        ],
-        materials: encrypted.materials.map((material) => ({
-          ...material,
-          id: uuid(),
-          productId: "info-2",
-        })),
-        accessories:
-          encrypted.accessories?.map((accessory) => ({
-            ...accessory,
+      const numberOfCreatedProducts = await createProducts(
+        {
+          products: [
+            {
+              error: null,
+              hash: "new-hash",
+              id: newProductId,
+              createdAt: new Date(),
+              uploadId: testUploadId,
+              uploadOrder: 1,
+              status: Status.Pending,
+              gtins: ["1111111111111"],
+              internalReference: "UPDATED-REF",
+              brandName: null,
+              brandId: BRAND_ID_1,
+              declaredScore: 2500.0,
+              score: null,
+              standardized: null,
+              meanScore: null,
+              meanStandardized: null,
+              confidenceLevel: ConfidenceLevel.High,
+            },
+          ],
+          informations: [
+            {
+              id: "info-2",
+              productId: newProductId,
+              ...encrypted.product,
+              emptyTrims: false,
+            },
+          ],
+          materials: encrypted.materials.map((material) => ({
+            ...material,
             id: uuid(),
             productId: "info-2",
-          })) || [],
-      })
+          })),
+          accessories:
+            encrypted.accessories?.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: "info-2",
+            })) || [],
+        },
+        { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+      )
 
       expect(numberOfCreatedProducts).toBe(0)
 
@@ -908,46 +938,51 @@ describe("Product DB integration", () => {
         countryMaking: "FR",
       } satisfies ProductInformationAPI)
 
-      const numberOfCreatedProducts = await createProducts({
-        products: [
-          {
-            error: null,
-            hash: "new-hash",
-            id: newProductId,
-            createdAt: new Date(),
-            uploadId: testUploadId,
-            uploadOrder: 1,
-            status: Status.Pending,
-            gtins: ["1111111111111"],
-            internalReference: "UPDATED-REF",
-            brandName: null,
-            brandId: BRAND_ID_1,
-            declaredScore: 2500.0,
-            score: null,
-            standardized: null,
-            confidenceLevel: ConfidenceLevel.High,
-          },
-        ],
-        informations: [
-          {
-            id: "info-2",
-            productId: newProductId,
-            ...encrypted.product,
-            emptyTrims: false,
-          },
-        ],
-        materials: encrypted.materials.map((material) => ({
-          ...material,
-          id: uuid(),
-          productId: "info-2",
-        })),
-        accessories:
-          encrypted.accessories?.map((accessory) => ({
-            ...accessory,
+      const numberOfCreatedProducts = await createProducts(
+        {
+          products: [
+            {
+              error: null,
+              hash: "new-hash",
+              id: newProductId,
+              createdAt: new Date(),
+              uploadId: testUploadId,
+              uploadOrder: 1,
+              status: Status.Pending,
+              gtins: ["1111111111111"],
+              internalReference: "UPDATED-REF",
+              brandName: null,
+              brandId: BRAND_ID_1,
+              declaredScore: 2500.0,
+              score: null,
+              standardized: null,
+              meanScore: null,
+              meanStandardized: null,
+              confidenceLevel: ConfidenceLevel.High,
+            },
+          ],
+          informations: [
+            {
+              id: "info-2",
+              productId: newProductId,
+              ...encrypted.product,
+              emptyTrims: false,
+            },
+          ],
+          materials: encrypted.materials.map((material) => ({
+            ...material,
             id: uuid(),
             productId: "info-2",
-          })) || [],
-      })
+          })),
+          accessories:
+            encrypted.accessories?.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: "info-2",
+            })) || [],
+        },
+        { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+      )
 
       expect(numberOfCreatedProducts).toBe(1)
 
@@ -1005,46 +1040,51 @@ describe("Product DB integration", () => {
         countryMaking: "FR",
       } satisfies ProductInformationAPI)
 
-      const numberOfCreatedProducts = await createProducts({
-        products: [
-          {
-            error: null,
-            hash: "new-hash",
-            id: newProductId,
-            createdAt: new Date(),
-            uploadId: testUploadId,
-            uploadOrder: 1,
-            status: Status.Pending,
-            gtins: ["1111111111111"],
-            internalReference: "UPDATED-REF",
-            brandName: null,
-            brandId: BRAND_ID_1,
-            declaredScore: 2500.0,
-            score: null,
-            standardized: null,
-            confidenceLevel: ConfidenceLevel.High,
-          },
-        ],
-        informations: [
-          {
-            id: "info-2",
-            productId: newProductId,
-            ...encrypted.product,
-            emptyTrims: false,
-          },
-        ],
-        materials: encrypted.materials.map((material) => ({
-          ...material,
-          id: uuid(),
-          productId: "info-2",
-        })),
-        accessories:
-          encrypted.accessories?.map((accessory) => ({
-            ...accessory,
+      const numberOfCreatedProducts = await createProducts(
+        {
+          products: [
+            {
+              error: null,
+              hash: "new-hash",
+              id: newProductId,
+              createdAt: new Date(),
+              uploadId: testUploadId,
+              uploadOrder: 1,
+              status: Status.Pending,
+              gtins: ["1111111111111"],
+              internalReference: "UPDATED-REF",
+              brandName: null,
+              brandId: BRAND_ID_1,
+              declaredScore: 2500.0,
+              score: null,
+              standardized: null,
+              meanScore: null,
+              meanStandardized: null,
+              confidenceLevel: ConfidenceLevel.High,
+            },
+          ],
+          informations: [
+            {
+              id: "info-2",
+              productId: newProductId,
+              ...encrypted.product,
+              emptyTrims: false,
+            },
+          ],
+          materials: encrypted.materials.map((material) => ({
+            ...material,
             id: uuid(),
             productId: "info-2",
-          })) || [],
-      })
+          })),
+          accessories:
+            encrypted.accessories?.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: "info-2",
+            })) || [],
+        },
+        { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+      )
 
       expect(numberOfCreatedProducts).toBe(0)
 
@@ -1101,46 +1141,51 @@ describe("Product DB integration", () => {
         countryMaking: "FR",
       } satisfies ProductInformationAPI)
 
-      const numberOfCreatedProducts = await createProducts({
-        products: [
-          {
-            error: null,
-            hash: "new-hash",
-            id: newProductId,
-            createdAt: new Date(),
-            uploadId: testUploadId,
-            uploadOrder: 1,
-            status: Status.Pending,
-            gtins: ["2222222222222", "1111111111111"],
-            internalReference: "UPDATED-REF",
-            brandName: null,
-            brandId: BRAND_ID_1,
-            declaredScore: 2500.0,
-            score: null,
-            standardized: null,
-            confidenceLevel: ConfidenceLevel.High,
-          },
-        ],
-        informations: [
-          {
-            id: "info-2",
-            productId: newProductId,
-            ...encrypted.product,
-            emptyTrims: false,
-          },
-        ],
-        materials: encrypted.materials.map((material) => ({
-          ...material,
-          id: uuid(),
-          productId: "info-2",
-        })),
-        accessories:
-          encrypted.accessories?.map((accessory) => ({
-            ...accessory,
+      const numberOfCreatedProducts = await createProducts(
+        {
+          products: [
+            {
+              error: null,
+              hash: "new-hash",
+              id: newProductId,
+              createdAt: new Date(),
+              uploadId: testUploadId,
+              uploadOrder: 1,
+              status: Status.Pending,
+              gtins: ["2222222222222", "1111111111111"],
+              internalReference: "UPDATED-REF",
+              brandName: null,
+              brandId: BRAND_ID_1,
+              declaredScore: 2500.0,
+              score: null,
+              standardized: null,
+              meanScore: null,
+              meanStandardized: null,
+              confidenceLevel: ConfidenceLevel.High,
+            },
+          ],
+          informations: [
+            {
+              id: "info-2",
+              productId: newProductId,
+              ...encrypted.product,
+              emptyTrims: false,
+            },
+          ],
+          materials: encrypted.materials.map((material) => ({
+            ...material,
             id: uuid(),
             productId: "info-2",
-          })) || [],
-      })
+          })),
+          accessories:
+            encrypted.accessories?.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: "info-2",
+            })) || [],
+        },
+        { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+      )
 
       expect(numberOfCreatedProducts).toBe(0)
 
@@ -1197,46 +1242,51 @@ describe("Product DB integration", () => {
         countryMaking: "FR",
       } satisfies ProductInformationAPI)
 
-      const numberOfCreatedProducts = await createProducts({
-        products: [
-          {
-            error: null,
-            hash: oldHash,
-            id: newProductId,
-            createdAt: new Date(),
-            uploadId: testUploadId,
-            uploadOrder: 1,
-            status: Status.Pending,
-            gtins: [gtin],
-            internalReference: "NEW-WITH-OLD-HASH",
-            brandName: null,
-            brandId: BRAND_ID_1,
-            declaredScore: 2800.0,
-            score: null,
-            standardized: null,
-            confidenceLevel: ConfidenceLevel.High,
-          },
-        ],
-        informations: [
-          {
-            id: "info-1",
-            productId,
-            ...encrypted.product,
-            emptyTrims: false,
-          },
-        ],
-        materials: encrypted.materials.map((material) => ({
-          ...material,
-          id: uuid(),
-          productId: newProductId,
-        })),
-        accessories:
-          encrypted.accessories?.map((accessory) => ({
-            ...accessory,
+      const numberOfCreatedProducts = await createProducts(
+        {
+          products: [
+            {
+              error: null,
+              hash: oldHash,
+              id: newProductId,
+              createdAt: new Date(),
+              uploadId: testUploadId,
+              uploadOrder: 1,
+              status: Status.Pending,
+              gtins: [gtin],
+              internalReference: "NEW-WITH-OLD-HASH",
+              brandName: null,
+              brandId: BRAND_ID_1,
+              declaredScore: 2800.0,
+              score: null,
+              standardized: null,
+              meanScore: null,
+              meanStandardized: null,
+              confidenceLevel: ConfidenceLevel.High,
+            },
+          ],
+          informations: [
+            {
+              id: "info-1",
+              productId,
+              ...encrypted.product,
+              emptyTrims: false,
+            },
+          ],
+          materials: encrypted.materials.map((material) => ({
+            ...material,
             id: uuid(),
             productId: newProductId,
-          })) || [],
-      })
+          })),
+          accessories:
+            encrypted.accessories?.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: newProductId,
+            })) || [],
+        },
+        { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+      )
 
       expect(numberOfCreatedProducts).toBe(1)
 
@@ -1292,46 +1342,51 @@ describe("Product DB integration", () => {
         countryMaking: "FR",
       } satisfies ProductInformationAPI)
 
-      const numberOfCreatedProducts = await createProducts({
-        products: [
-          {
-            error: null,
-            hash: oldHash,
-            id: newProductId,
-            createdAt: new Date(),
-            uploadId: testUploadId,
-            uploadOrder: 1,
-            status: Status.Pending,
-            gtins: [gtin],
-            internalReference: "NEW-WITH-OLD-HASH",
-            brandName: null,
-            brandId: BRAND_ID_1,
-            declaredScore: 2800.0,
-            score: null,
-            standardized: null,
-            confidenceLevel: ConfidenceLevel.High,
-          },
-        ],
-        informations: [
-          {
-            id: "info-1",
-            productId,
-            ...encrypted.product,
-            emptyTrims: false,
-          },
-        ],
-        materials: encrypted.materials.map((material) => ({
-          ...material,
-          id: uuid(),
-          productId: newProductId,
-        })),
-        accessories:
-          encrypted.accessories?.map((accessory) => ({
-            ...accessory,
+      const numberOfCreatedProducts = await createProducts(
+        {
+          products: [
+            {
+              error: null,
+              hash: oldHash,
+              id: newProductId,
+              createdAt: new Date(),
+              uploadId: testUploadId,
+              uploadOrder: 1,
+              status: Status.Pending,
+              gtins: [gtin],
+              internalReference: "NEW-WITH-OLD-HASH",
+              brandName: null,
+              brandId: BRAND_ID_1,
+              declaredScore: 2800.0,
+              score: null,
+              standardized: null,
+              meanScore: null,
+              meanStandardized: null,
+              confidenceLevel: ConfidenceLevel.High,
+            },
+          ],
+          informations: [
+            {
+              id: "info-1",
+              productId,
+              ...encrypted.product,
+              emptyTrims: false,
+            },
+          ],
+          materials: encrypted.materials.map((material) => ({
+            ...material,
             id: uuid(),
             productId: newProductId,
-          })) || [],
-      })
+          })),
+          accessories:
+            encrypted.accessories?.map((accessory) => ({
+              ...accessory,
+              id: uuid(),
+              productId: newProductId,
+            })) || [],
+        },
+        { userId: testUserId, organizationId: testOrganizationId, userType: UserType.PROFESSIONNEL },
+      )
 
       expect(numberOfCreatedProducts).toBe(0)
 

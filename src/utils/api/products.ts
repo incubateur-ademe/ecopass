@@ -234,7 +234,11 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
 
     const confidenceLevel = getProductConfidenceLevel(api.user, product.brandId)
     const hash = hashProduct({ ...product, confidenceLevel }, informations, brands)
-    const oldProductCheck = await checkOldProduct(product.gtins, hash, confidenceLevel)
+    const oldProductCheck = await checkOldProduct(product.gtins, hash, confidenceLevel, {
+      userId: api.user.id,
+      userType: api.user.type,
+      organizationId: api.user.organization?.id ?? null,
+    })
 
     if (oldProductCheck.result === ProductCheckResult.Unchanged) {
       return NextResponse.json({ message: "Le produit existe déjà." }, { status: 208 })

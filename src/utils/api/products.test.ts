@@ -179,7 +179,7 @@ describe("handleProductPOST", () => {
     mockedComputeEcobalyseScore.mockResolvedValue({ score: 42 } as any)
     mockedScoreIsValid.mockReturnValue(true)
     mockedUpdateAPIUse.mockResolvedValue()
-    mockedCreateScore.mockResolvedValue(undefined)
+    mockedCreateScore.mockResolvedValue(null)
   })
 
   it("returns 401 when api user is missing", async () => {
@@ -267,7 +267,11 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(201)
     expect(mockedGetDefaultGTINs).not.toHaveBeenCalled()
-    expect(mockedCheckOldProduct).toHaveBeenCalledWith(["1234567890128"], "hash-1", "High")
+    expect(mockedCheckOldProduct).toHaveBeenCalledWith(["1234567890128"], "hash-1", "High", {
+      organizationId: "org-1",
+      userId: "user-1",
+      userType: "PROFESSIONNEL",
+    })
   })
 
   it("creates score and returns success on valid single product", async () => {

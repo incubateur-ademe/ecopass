@@ -4,28 +4,31 @@ import { ParsedProductValidation } from "../services/validation/product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
-import { checkOldProduct, ProductCheckResult } from "../services/validation/oldProduct"
+import { checkOldProduct, ProductCheckResult, ProductDeclarationContext } from "../services/validation/oldProduct"
 import { getProductCategory } from "../utils/product/category"
 import { computeBatchScore } from "../utils/ecobalyse/batches"
 
-export const createProducts = async ({
-  products,
-  materials,
-  accessories,
-  informations,
-}: {
-  products: Product[]
-  materials: Material[]
-  accessories: Accessory[]
-  informations: (ProductInformation & { materials: undefined; accessories: undefined })[]
-}) => {
+export const createProducts = async (
+  {
+    products,
+    materials,
+    accessories,
+    informations,
+  }: {
+    products: Product[]
+    materials: Material[]
+    accessories: Accessory[]
+    informations: (ProductInformation & { materials: undefined; accessories: undefined })[]
+  },
+  currentUser: ProductDeclarationContext,
+) => {
   return prismaClient.$transaction(
     async (transaction) => {
       const productsToCreate = []
       const ids = new Set<string>()
 
       for (const product of products) {
-        const oldProductCheck = await checkOldProduct(product.gtins, product.hash, product.confidenceLevel)
+        const oldProductCheck = await checkOldProduct(product.gtins, product.hash, product.confidenceLevel, currentUser)
         if (oldProductCheck.result === ProductCheckResult.Unchanged && oldProductCheck.lastProduct) {
           await transaction.uploadProduct.create({
             data: {
@@ -708,7 +711,25 @@ export const getLastProductsByGtins = async (gtins: string[]) => {
       status: Status.Done,
     },
     orderBy: { createdAt: "desc" },
-    select: { hash: true, id: true, gtins: true, createdAt: true, confidenceLevel: true },
+    select: {
+      hash: true,
+      id: true,
+      gtins: true,
+      createdAt: true,
+      confidenceLevel: true,
+      upload: {
+        select: {
+          organizationId: true,
+          createdBy: {
+            select: {
+              id: true,
+              type: true,
+              organizationId: true,
+            },
+          },
+        },
+      },
+    },
   })
 
   return gtins
