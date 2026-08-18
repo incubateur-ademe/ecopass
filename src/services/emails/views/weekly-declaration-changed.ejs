@@ -1,0 +1,24 @@
+<html>
+  <body>
+    <p>Bonjour,</p>
+    <p>
+      Une declaration anterieure a ete modifiee cette semaine pour un ou plusieurs produits que vous aviez deja declares.
+    </p>
+    <p>Periode analysee: du <%= periodStart %> au <%= periodEnd %>.</p>
+    <p>Produits concernes:</p>
+    <ul>
+      <% declarations.forEach((declaration) => { %>
+        <li>
+          GTIN: <b><%= declaration.gtin %></b> - Reference: <b><%= declaration.internalReference %></b> - Confiance:
+          <b><%= declaration.confidenceLevel %></b> - Date: <%= declaration.declaredAt.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) %>
+        </li>
+      <% }) %>
+    </ul>
+    <p>
+      Vous pouvez consulter l'historique des produits sur la plateforme:
+      <a href="<%= link %>"><%= link %></a>
+    </p>
+    <p>Bonne journee,</p>
+    <p>L'equipe du portail de l'Affichage environnemental</p>
+  </body>
+</html>

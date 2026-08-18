@@ -2,6 +2,7 @@ import ejs, { Data } from "ejs"
 import nodemailer from "nodemailer"
 import SMTPTransport from "nodemailer/lib/smtp-transport"
 import { isTestEnvironment } from "../../utils/test"
+import { ConfidenceLevel } from "@prisma/enums"
 
 const mailTransport = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
@@ -83,6 +84,52 @@ export const sendUploadErrorEmail = async (
       error: total - success,
       link: `${process.env.NEXTAUTH_URL}/declarations`,
       support: process.env.NEXT_PUBLIC_SUPPORT_MAIL,
+    }),
+  )
+}
+
+export const sendWeeklyDeclarationAlertToOwnerAdmins = async (
+  toEmails: string[],
+  declarations: {
+    gtin: string
+    internalReference: string
+    confidenceLevel: ConfidenceLevel
+    declaredAt: Date
+  }[],
+  periodStart: Date,
+  periodEnd: Date,
+) => {
+  return send(
+    toEmails,
+    "Déclarations hebdomadaires: produits déclarés avec confiance faible ou moyenne",
+    await getHtml("weekly-owner-low-medium-alert", {
+      declarations,
+      periodStart: periodStart.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+      periodEnd: periodEnd.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+      link: `${process.env.NEXTAUTH_URL}/declarations`,
+    }),
+  )
+}
+
+export const sendWeeklyDeclarationChangedEmail = async (
+  toEmails: string[],
+  declarations: {
+    gtin: string
+    internalReference: string
+    confidenceLevel: ConfidenceLevel
+    declaredAt: Date
+  }[],
+  periodStart: Date,
+  periodEnd: Date,
+) => {
+  return send(
+    toEmails,
+    "Mise à jour de déclaration: un produit déjà déclaré a changé",
+    await getHtml("weekly-declaration-changed", {
+      declarations,
+      periodStart: periodStart.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+      periodEnd: periodEnd.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+      link: `${process.env.NEXTAUTH_URL}/produits`,
     }),
   )
 }

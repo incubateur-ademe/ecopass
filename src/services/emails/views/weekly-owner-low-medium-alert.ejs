@@ -1,0 +1,25 @@
+<html>
+  <body>
+    <p>Bonjour,</p>
+    <p>
+      Cette semaine, un ou plusieurs produits correspondant a vos GTIN ont ete declares avec un niveau de confiance
+      <b>faible</b> ou <b>moyen</b>.
+    </p>
+    <p>Periode analysee: du <%= periodStart %> au <%= periodEnd %>.</p>
+    <p>Produits concernes:</p>
+    <ul>
+      <% declarations.forEach((declaration) => { %>
+        <li>
+          GTIN: <b><%= declaration.gtin %></b> - Reference: <b><%= declaration.internalReference %></b> - Confiance:
+          <b><%= declaration.confidenceLevel %></b> - Date: <%= declaration.declaredAt.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) %>
+        </li>
+      <% }) %>
+    </ul>
+    <p>
+      Vous pouvez consulter le detail des declarations dans votre espace:
+      <a href="<%= link %>"><%= link %></a>
+    </p>
+    <p>Bonne journee,</p>
+    <p>L'equipe du portail de l'Affichage environnemental</p>
+  </body>
+</html>
