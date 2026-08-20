@@ -1,4 +1,5 @@
-import { ProductInformationAPI, ProductMetadataAPI } from "../../services/validation/api"
+import { ConfidenceLevel } from "@prisma/enums"
+import { ProductInformationAPI } from "../../services/validation/api"
 import { Business, Country, ParsedProduct, ProductCategory } from "../../types/Product"
 import { hashProduct } from "./hash"
 
@@ -7,11 +8,12 @@ jest.mock("../ecobalyse/config", () => ({
 }))
 
 describe("hashProduct", () => {
-  const baseProduct: ProductMetadataAPI = {
+  const baseProduct = {
     gtins: ["1234567890123"],
     internalReference: "REF-TEST",
     brandId: "f05259c6-1599-431a-91ae-e7943405e4d6",
     declaredScore: 1500,
+    confidenceLevel: ConfidenceLevel.High,
   }
 
   const baseParsedInformations: ParsedProduct = {

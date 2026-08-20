@@ -4,7 +4,7 @@ import { getBrandsByIds } from "../../db/brands"
 import { checkUploadsStatus } from "../../db/upload"
 import { saveEcobalyseResults } from "../ecobalyse/api"
 import { prismaClient } from "../../db/prismaClient"
-import { Status, UploadType } from "@prisma/enums"
+import { ConfidenceLevel, Status, UploadType, UserType } from "@prisma/enums"
 import { Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 
 jest.mock("../../db/product")
@@ -55,6 +55,9 @@ describe("processProductsQueue", () => {
         nom: "Jane",
         prenom: "Dane",
         agentconnect_info: null,
+        birthdate: null,
+        organizationRole: null,
+        type: UserType.PROFESSIONNEL,
         role: null,
         organizationId: "org-1",
         organization: {
@@ -70,8 +73,11 @@ describe("processProductsQueue", () => {
     brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
     brandName: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
     declaredScore: 123,
+    confidenceLevel: ConfidenceLevel.High,
     score: null,
     standardized: null,
+    meanScore: null,
+    meanStandardized: null,
     informations: [
       {
         id: "info-1",

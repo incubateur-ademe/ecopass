@@ -12,6 +12,7 @@ jest.mock("../../db/user", () => ({
 
 import { getApiUser } from "./auth"
 import { getUserByApiKey } from "../../db/user"
+import { OrganizationRole, OrganizationType, UserType } from "@prisma/enums"
 
 const mockGetUserByApiKey = getUserByApiKey as jest.MockedFunction<typeof getUserByApiKey>
 
@@ -27,10 +28,13 @@ describe("getApiUser", () => {
         user: {
           id: "user-123",
           email: "test@example.com",
+          type: UserType.PROFESSIONNEL,
+          organizationRole: OrganizationRole.ADMIN,
           organization: {
             id: "org-123",
             name: "Test Organization",
-            brands: [{ name: "Test Brand" }],
+            type: OrganizationType.Brand,
+            brands: [{ name: "Test Brand", active: true, default: false, id: "brand-1" }],
             authorizedBy: [],
           },
         },
@@ -140,17 +144,23 @@ describe("getApiUser", () => {
         user: {
           id: "user-id",
           email: "user@test.com",
+          type: UserType.PROFESSIONNEL,
+          organizationRole: OrganizationRole.ADMIN,
           organization: {
             id: "org-id",
             name: "Organization Name",
-            brands: [{ name: "Brand 1" }, { name: "Brand 2" }],
+            type: OrganizationType.Brand,
+            brands: [
+              { name: "Brand 1", active: true, default: false, id: "brand-1" },
+              { name: "Brand 2", active: true, default: false, id: "brand-2" },
+            ],
             authorizedBy: [
               {
                 from: {
                   id: "auth-org-id",
                   name: "Auth Org",
                   siret: "1234567890128",
-                  brands: [{ id: "brand-id", name: "Auth Brand" }],
+                  brands: [{ id: "brand-id", name: "Auth Brand", active: true, default: false }],
                 },
               },
             ],
