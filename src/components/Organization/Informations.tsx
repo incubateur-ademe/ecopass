@@ -4,10 +4,10 @@ import styles from "./Informations.module.css"
 import { organizationTypeByNaf } from "../../utils/admin/nafs"
 import Link from "next/link"
 import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
-import OrganizationName from "./OrganizationName"
 import { organizationTypes } from "../../utils/organization/types"
+import OrganizationName from "./OrganizationName"
 
-const Informations = ({ organization }: { organization: UserOrganization }) => {
+const Informations = ({ organization, isAdmin }: { organization: UserOrganization; isAdmin: boolean }) => {
   return (
     <div className={styles.container}>
       <h2>Organisation</h2>
@@ -16,9 +16,16 @@ const Informations = ({ organization }: { organization: UserOrganization }) => {
         <Badge className={styles.badge} severity='success'>
           En activité
         </Badge>
-        {organization.type && organizationTypesAllowedToDeclare.includes(organization.type) && (
-          <OrganizationName organization={organization} />
-        )}
+        {organization.type &&
+          organizationTypesAllowedToDeclare.includes(organization.type) &&
+          (isAdmin ? (
+            <OrganizationName organization={organization} />
+          ) : (
+            <div className='fr-mt-2w'>
+              <b>Nom d'usage</b>
+              <p>{organization.displayName}</p>
+            </div>
+          ))}
       </div>
       {organization.type && (
         <div>

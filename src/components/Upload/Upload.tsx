@@ -4,7 +4,7 @@ import styles from "./Upload.module.css"
 import Link from "next/link"
 import UploadPanel from "./UploadPanel"
 
-const Upload = () => {
+const Upload = ({ canDeclare }: { canDeclare?: boolean }) => {
   return (
     <div className={styles.layout}>
       <div>
@@ -31,7 +31,7 @@ const Upload = () => {
           </Link>
           .
         </CallOut>
-        <UploadPanel />
+        {canDeclare && <UploadPanel />}
       </div>
       <aside className={styles.aside}>
         <Tile

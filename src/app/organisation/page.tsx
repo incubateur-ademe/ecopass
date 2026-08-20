@@ -18,14 +18,14 @@ const OrganizationPage = async () => {
   if (!organization) {
     return redirect("/")
   }
+
   const members = await getOrganizationMembers(organization.id)
-  const canEditMembers =
-    members.find((user) => user.id === session.user.id)?.organizationRole === OrganizationRole.ADMIN
+  const isAdmin = members.find((user) => user.id === session.user.id)?.organizationRole === OrganizationRole.ADMIN
 
   return (
     <>
       <StartDsfrOnHydration />
-      <Organization organization={organization} canEditMembers={canEditMembers} members={members} />
+      <Organization organization={organization} isAdmin={isAdmin} members={members} />
     </>
   )
 }

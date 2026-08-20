@@ -1,5 +1,5 @@
 import { handleProductPOST } from "./products"
-import { OrganizationType, UserType } from "@prisma/enums"
+import { OrganizationRole, OrganizationType, UserType } from "@prisma/enums"
 import { getApiUser } from "../../services/auth/auth"
 import { computeBatchInformations, computeEcobalyseScore } from "../ecobalyse/api"
 import { createScore } from "../../db/score"
@@ -89,6 +89,7 @@ describe("handleProductPOST", () => {
       id: "user-1",
       email: "user-1@example.com",
       type: UserType.PROFESSIONNEL,
+      organizationRole: OrganizationRole.ADMIN,
       organization: {
         id: "org-1",
         name: "Org 1",
@@ -210,6 +211,23 @@ describe("handleProductPOST", () => {
       error:
         "Votre organisation n'est pas autorisée à déclarer des produits. Si vous pensez que c'est une erreur, veuillez contacter le support.",
       organizationType: "Distributeur",
+    })
+  })
+
+  it("returns 403 when user is not an organization admin", async () => {
+    mockedGetApiUser.mockResolvedValue({
+      ...validApi,
+      user: {
+        ...validApi.user,
+        organizationRole: OrganizationRole.READER,
+      },
+    })
+
+    const response = await handleProductPOST(makeRequest(validSingleBody), "single")
+
+    expect(response.status).toBe(403)
+    await expect(response.json()).resolves.toEqual({
+      error: "Seuls les admins de l'organisation peuvent déclarer des produits",
     })
   })
 

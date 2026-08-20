@@ -7,11 +7,11 @@ import OrganizationMembers from "./OrganizationMembers"
 
 const ConsultancyOrganization = ({
   organization,
-  canEditMembers,
+  isAdmin,
   members,
 }: {
   organization: UserOrganization
-  canEditMembers: boolean
+  isAdmin: boolean
   members: OrganizationMember[]
 }) => {
   return (
@@ -41,11 +41,7 @@ const ConsultancyOrganization = ({
             content: (
               <>
                 <h2>Membres de l'organisation</h2>
-                <OrganizationMembers
-                  organizationId={organization.id}
-                  members={members}
-                  canEditMembers={canEditMembers}
-                />
+                <OrganizationMembers organizationId={organization.id} members={members} isAdmin={isAdmin} />
               </>
             ),
           },

@@ -10,11 +10,11 @@ import { OrganizationMember } from "../../db/organization"
 
 const MyOrganization = ({
   organization,
-  canEditMembers,
+  isAdmin,
   members,
 }: {
   organization: UserOrganization
-  canEditMembers: boolean
+  isAdmin: boolean
   members: OrganizationMember[]
 }) => {
   return (
@@ -26,18 +26,14 @@ const MyOrganization = ({
           <h1>Mon organisation</h1>
           <div className='fr-grid-row fr-grid-row--gutters'>
             <div className='fr-col-12 fr-col-md-4'>
-              <Informations organization={organization} />
+              <Informations organization={organization} isAdmin={isAdmin} />
             </div>
             <div className='fr-col-12 fr-col-md-8'>
               {organization.type === OrganizationType.Brand ||
               organization.type === OrganizationType.BrandAndDistributor ? (
-                <BrandOrganization organization={organization} canEditMembers={canEditMembers} members={members} />
+                <BrandOrganization organization={organization} isAdmin={isAdmin} members={members} />
               ) : organization.type === OrganizationType.Consultancy ? (
-                <ConsultancyOrganization
-                  organization={organization}
-                  canEditMembers={canEditMembers}
-                  members={members}
-                />
+                <ConsultancyOrganization organization={organization} isAdmin={isAdmin} members={members} />
               ) : organization.type === OrganizationType.Distributor ? (
                 <DistributorOrganization />
               ) : null}

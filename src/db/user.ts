@@ -5,6 +5,7 @@ const userSelect = {
   id: true,
   email: true,
   type: true,
+  organizationRole: true,
   organization: {
     select: {
       id: true,

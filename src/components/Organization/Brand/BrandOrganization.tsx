@@ -7,14 +7,15 @@ import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
 import GTINPrefixes from "./GTINPrefixes"
 import { OrganizationMember } from "../../../db/organization"
 import OrganizationMembers from "../OrganizationMembers"
+import { Alert } from "@codegouvfr/react-dsfr/Alert"
 
 const BrandOrganization = ({
   organization,
-  canEditMembers,
+  isAdmin,
   members,
 }: {
   organization: UserOrganization
-  canEditMembers: boolean
+  isAdmin: boolean
   members: OrganizationMember[]
 }) => {
   return (
@@ -26,7 +27,7 @@ const BrandOrganization = ({
             content: (
               <>
                 <h2>Marques déclarées</h2>
-                <MyBrands organization={organization} />
+                <MyBrands organization={organization} isAdmin={isAdmin} />
               </>
             ),
           },
@@ -35,12 +36,16 @@ const BrandOrganization = ({
             content: (
               <>
                 {organization.authorizedOrganizations.length === 0 ? (
-                  <NewDelegation />
+                  isAdmin ? (
+                    <NewDelegation />
+                  ) : (
+                    <Alert small severity='info' description="Vous n'avez pas encore de délégations." />
+                  )
                 ) : (
                   <>
                     <h2>Délégations</h2>
                     <Delegations organizations={organization.authorizedOrganizations} type='to' />
-                    <NewDelegationModal />
+                    {isAdmin && <NewDelegationModal />}
                   </>
                 )}
               </>
@@ -57,7 +62,7 @@ const BrandOrganization = ({
                       Pour associer votre marque aux produits déclarés par des tiers et vous notifier, vous devez
                       renseigner les 6 premiers chiffres de vos codes GTIN.
                     </p>
-                    <GTINPrefixes prefixes={organization.gtinPrefixes} />
+                    <GTINPrefixes prefixes={organization.gtinPrefixes} isAdmin={isAdmin} />
                   </>
                 ),
               },
@@ -66,11 +71,7 @@ const BrandOrganization = ({
             content: (
               <>
                 <h2>Membres de l'organisation</h2>
-                <OrganizationMembers
-                  organizationId={organization.id}
-                  members={members}
-                  canEditMembers={canEditMembers}
-                />
+                <OrganizationMembers organizationId={organization.id} members={members} isAdmin={isAdmin} />
               </>
             ),
           },

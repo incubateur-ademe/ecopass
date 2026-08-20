@@ -12,11 +12,11 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert"
 const OrganizationMembers = ({
   organizationId,
   members,
-  canEditMembers,
+  isAdmin,
 }: {
   organizationId: string
   members: OrganizationMember[]
-  canEditMembers: boolean
+  isAdmin: boolean
 }) => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -50,7 +50,7 @@ const OrganizationMembers = ({
         data={members.map((member) => [
           member.email,
           [member.prenom, member.nom].filter(Boolean).join(" ") || "-",
-          canEditMembers ? (
+          isAdmin ? (
             <Select
               key={member.id}
               label=''

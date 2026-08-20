@@ -1,7 +1,7 @@
 "use server"
 
 import { v4 as uuid } from "uuid"
-import { UploadType } from "@prisma/client"
+import { OrganizationRole, UploadType } from "@prisma/client"
 import { createUpload } from "../db/upload"
 import { auth } from "../services/auth/auth"
 import { uploadFileToS3 } from "../utils/s3/bucket"
@@ -63,6 +63,15 @@ export const uploadFile = async (file: File) => {
   const session = await auth()
   if (!session || !session.user) {
     return "Veuillez vous reconnecter et réessayer"
+  }
+
+  const user = await getUser(session.user.id)
+  if (!user) {
+    return "Utilisateur non trouvé"
+  }
+
+  if (user.organizationRole !== OrganizationRole.ADMIN) {
+    return "Vous n'avez pas les droits pour uploader des fichiers"
   }
 
   const organizationType = await getUserOrganizationType(session.user.id)
