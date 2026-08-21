@@ -69,6 +69,10 @@ export const authOptions = {
           if (user.accounts.find((account) => account.provider === "proconnect")) {
             throw new Error("proconnect")
           }
+
+          if (user.accounts.find((account) => account.provider === "franceconnect")) {
+            throw new Error("franceconnect")
+          }
           throw new Error("Invalid credentials")
         }
 

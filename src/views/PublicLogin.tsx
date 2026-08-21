@@ -34,7 +34,7 @@ const PublicLogin = ({ callbackUrl }: { callbackUrl: string }) => {
               </Link>
               .
             </p>
-            <PublicLoginForm callbackUrl={callbackUrl} />
+            <PublicLoginForm callbackUrl={callbackUrl} test={test} />
           </div>
         </div>
       </div>
