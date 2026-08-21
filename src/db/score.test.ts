@@ -41,6 +41,7 @@ describe("Score DB integration", () => {
         id: true,
         email: true,
         type: true,
+        organizationRole: true,
         organization: {
           select: {
             id: true,

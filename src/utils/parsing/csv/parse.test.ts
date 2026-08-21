@@ -1,7 +1,7 @@
 import { FileUpload } from "../../../db/upload"
 import { v4 as uuid } from "uuid"
 import { parseCSV } from "./parse"
-import { Status } from "@prisma/enums"
+import { Status, UserType } from "@prisma/enums"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../../types/Product"
 import { decryptBoolean, decryptNumber, decryptProductFields } from "../../encryption/encryption"
 import { defaultHeaders, defaultProductRow } from "../parsingTest"
@@ -16,8 +16,11 @@ describe("parseCSV", () => {
     createdAt: new Date(),
     products: [],
     createdBy: {
+      id: "user-1",
       email: "test@test.fr",
+      type: UserType.PROFESSIONNEL,
       organization: {
+        id: "orga-1",
         name: "TestOrg",
         authorizedBy: [
           {

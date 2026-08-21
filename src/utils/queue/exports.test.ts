@@ -3,7 +3,7 @@ import { completeExport, failExport, getFirstExport } from "../../db/export"
 import { getProductsByOrganizationIdAndBrandBefore } from "../../db/product"
 import { getSVG } from "../label/simple"
 import { uploadFileToS3 } from "../s3/bucket"
-import { Status } from "@prisma/enums"
+import { ConfidenceLevel, Status, UserType } from "@prisma/enums"
 import JSZip from "jszip"
 
 jest.mock("../../db/export")
@@ -44,14 +44,52 @@ describe("processExportsQueue", () => {
   const mockProduct = {
     id: "product-1",
     internalReference: "REF001",
-    brand: "Test Brand",
+    brand: { id: "brand-1", name: "Test Brand", organization: { displayName: "Test Organization", id: "orga-1" } },
     gtins: ["1234567890123"],
     createdAt: new Date("2023-01-01T00:00:00Z"),
     score: 85.5,
     standardized: 8.5,
+    confidenceLevel: ConfidenceLevel.High,
+    meanScore: 85.5,
+    meanStandardized: 8.5,
+    meanScores: {
+      score: 85.5,
+      standardized: 8.5,
+      durability: 0.75,
+      acd: 2.73,
+      cch: 1589.45,
+      etf: 21287.2,
+      fru: 4289.7,
+      fwe: 0.106,
+      htc: 9.04e-8,
+      htn: 0.000127,
+      ior: 167.8,
+      ldu: 51743.2,
+      mru: 0.00423,
+      ozd: 0.00268,
+      pco: 1.548,
+      pma: 0.0000423,
+      swe: 0.459,
+      tre: 5.207,
+      wtu: 0,
+      microfibers: 0,
+      outOfEuropeEOL: 0,
+      materials: 0,
+      spinning: 0,
+      fabric: 0,
+      dyeing: 0,
+      making: 0,
+      printing: 0,
+      trims: 0,
+      usage: 0,
+      endOfLife: 0,
+      transport: 0,
+    },
     informations: [
       {
         category: "T-shirt",
+        categorySlug: "t-shirt",
+        mainComponent: false,
         countryDyeing: "FR",
         countryFabric: "CN",
         countryMaking: "MM",
@@ -79,14 +117,26 @@ describe("processExportsQueue", () => {
           wtu: 0,
           microfibers: 0,
           outOfEuropeEOL: 0,
+          materials: 0,
+          spinning: 0,
+          fabric: 0,
+          dyeing: 0,
+          making: 0,
+          printing: 0,
+          trims: 0,
+          usage: 0,
+          endOfLife: 0,
+          transport: 0,
         },
       },
     ],
     upload: {
       version: "1.0",
       createdBy: {
+        type: UserType.PROFESSIONNEL,
         organization: {
-          name: "Test Organization",
+          displayName: "Test Organization",
+          id: "orga-1",
         },
       },
     },
