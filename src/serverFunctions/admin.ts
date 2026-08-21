@@ -7,6 +7,33 @@ import { v4 as uuid } from "uuid"
 import { sendWelcomeEmail } from "../services/emails/email"
 import { canAccessAdminSpace } from "../utils/authorization/authorizations"
 
+const sendPassword = async (email: string, accountId: string, citoyen?: boolean) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined")
+  }
+
+  const expires = new Date()
+  expires.setHours(expires.getHours() + 24 * 7)
+  const token = uuid()
+  const resetToken = jwt.sign(
+    {
+      email: email.toLowerCase(),
+      uuid: token,
+      exp: Math.floor(expires.getTime() / 1000),
+    },
+    process.env.JWT_SECRET,
+  )
+
+  await prismaClient.account.update({
+    where: { id: accountId },
+    data: {
+      resetPasswordToken: token,
+    },
+  })
+
+  await sendWelcomeEmail(email.toLowerCase(), resetToken, citoyen)
+}
+
 export const createUserAndOrganization = async (
   email: string,
   organizationName: string,
@@ -83,44 +110,69 @@ export const createUserAndOrganization = async (
       },
     })
 
-    if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET is not defined")
+    const account = user.accounts.find((acc) => acc.provider === "credentials")
+    if (!account) {
+      throw new Error("Account not found")
     }
+    await sendPassword(email.toLowerCase(), user.accounts[0].id)
+
+    return {
+      success: true,
+      message: "Utilisateur créé avec succès et email de bienvenue envoyé",
+    }
+  } catch (error) {
+    console.error("Error creating user:", error)
+    return {
+      error: error instanceof Error ? error.message : "Erreur lors de la création de l'utilisateur",
+    }
+  }
+}
+
+export const createUser = async (email: string) => {
+  try {
+    const session = await auth()
+    if (!session || !session.user || !canAccessAdminSpace(session.user.role)) {
+      return { error: "Unauthorized" }
+    }
+
+    if (!email) {
+      return { error: "Email est requis" }
+    }
+
+    const existingUser = await prismaClient.user.findUnique({
+      where: { email: email.toLowerCase() },
+    })
+    if (existingUser) {
+      return { error: "Un utilisateur avec cet email existe déjà" }
+    }
+
+    const user = await prismaClient.user.create({
+      data: {
+        email: email.toLowerCase(),
+        type: UserType.CITOYEN,
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: email.toLowerCase(),
+            type: "credentials",
+            password: "",
+          },
+        },
+      },
+      include: {
+        accounts: true,
+      },
+    })
 
     const account = user.accounts.find((acc) => acc.provider === "credentials")
     if (!account) {
       throw new Error("Account not found")
     }
-
-    const expires = new Date()
-    expires.setHours(expires.getHours() + 24 * 7)
-    const token = uuid()
-    const resetToken = jwt.sign(
-      {
-        email: email.toLowerCase(),
-        uuid: token,
-        exp: Math.floor(expires.getTime() / 1000),
-      },
-      process.env.JWT_SECRET,
-    )
-
-    await prismaClient.account.update({
-      where: { id: account.id },
-      data: {
-        resetPasswordToken: token,
-      },
-    })
-
-    await sendWelcomeEmail(email.toLowerCase(), resetToken)
+    await sendPassword(email.toLowerCase(), user.accounts[0].id, true)
 
     return {
       success: true,
       message: "Utilisateur créé avec succès et email de bienvenue envoyé",
-      user: {
-        id: user.id,
-        email: user.email,
-        organizationId: organization.id,
-      },
     }
   } catch (error) {
     console.error("Error creating user:", error)
