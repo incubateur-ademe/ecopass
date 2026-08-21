@@ -1,8 +1,8 @@
 {
   "jobs": [
     {
-      "command": "tsx ./src/scripts/weeklyDeclarationNotifications.ts",
-      "schedule": "0 10 * * 1"
+      "command": "0 10 * * 1 tsx src/scripts/weeklyDeclarationNotifications.ts",
+      "size": "S"
     }
   ]
 }
