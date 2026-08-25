@@ -20,7 +20,7 @@ test("admin can create a new user", async ({ page }) => {
   const newUserEmail = "test-user@yopmail.com"
   const organizationName = "Test Org"
 
-  await page.getByLabel("Adresse email").fill(newUserEmail)
+  await page.getByLabel("Adresse email").first().fill(newUserEmail)
   await page.getByLabel("Nom de l'organisation").fill(organizationName)
   await page.getByLabel("Type d'organisation").selectOption("Brand")
 
