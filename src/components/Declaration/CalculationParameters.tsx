@@ -4,19 +4,16 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Input } from "@codegouvfr/react-dsfr/Input"
 import { Select } from "@codegouvfr/react-dsfr/Select"
+import CategoryDropdown from "../CategoryDropdown/CategoryDropdown"
 import { FormEvent, ReactNode, useRef, useState } from "react"
 import styles from "./CalculationParameters.module.css"
-import { ProductCategory, MaterialType, Country } from "../../types/Product"
+import { MaterialType, Country } from "../../types/Product"
 import LoadingButton from "../Button/LoadingButton"
-import { materialMapping, productMapping, countryMapping } from "../../utils/ecobalyse/mappings"
+import { materialMapping, countryMapping } from "../../utils/ecobalyse/mappings"
 
 const materialOptions = Object.entries(MaterialType).map(([, label]) => ({
   label,
   value: materialMapping[label] || label,
-}))
-const productOptions = Object.entries(ProductCategory).map(([, label]) => ({
-  label,
-  value: productMapping[label] || label,
 }))
 const countryOptions = Object.entries(Country).map(([, label]) => ({
   label,
@@ -46,7 +43,7 @@ const CalculationParameters = ({
   error: string
 }) => {
   const [errors, setErrors] = useState<{ [key in keyof typeof data]?: ReactNode }>({})
-  const productRef = useRef<HTMLSelectElement>(null)
+  const productRef = useRef<HTMLInputElement>(null)
   const massRef = useRef<HTMLInputElement>(null)
   const materialTypeRefs = useRef<(HTMLSelectElement | null)[]>([])
   const materialShareRefs = useRef<(HTMLInputElement | null)[]>([])
@@ -154,25 +151,17 @@ const CalculationParameters = ({
     setData("materials", newMaterials)
   }
 
+  console.log("product", data)
   return (
     <form onSubmit={submit} noValidate>
-      <Select
-        label='Catégorie de produit *'
+      <CategoryDropdown
+        selectedCategory={data.product}
+        setCategory={(value) => setData("product", value)}
+        placeholder='Sélectionner une catégorie'
+        ref={productRef}
         state={errors.product ? "error" : undefined}
         stateRelatedMessage={errors.product}
-        nativeSelectProps={{
-          required: true,
-          value: data.product,
-          ref: productRef,
-          onChange: (e) => setData("product", e.target.value),
-        }}>
-        <option value=''>Sélectionner une catégorie</option>
-        {productOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
+      />
 
       <Input
         label='Masse du produit fini (en gramme) *'
