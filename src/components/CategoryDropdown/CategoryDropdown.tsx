@@ -4,6 +4,7 @@ import Fuse from "fuse.js"
 import { productMapping } from "../../utils/ecobalyse/mappings"
 import styles from "./CategoryDropdown.module.css"
 import { ProductCategory } from "../../types/Product"
+import classNames from "classnames"
 
 const subtitles: Record<ProductCategory, string> = {
   [ProductCategory.BoxerSlipTricoté]: "Boxer, culotte, slip, string, tanga, shorty",
@@ -141,7 +142,7 @@ const CategoryDropdown = (
           "aria-autocomplete": "list",
         }}
       />
-      <div className={styles.dropdownContent} id='select-categorie-list'>
+      <div className={classNames(styles.dropdownContent, { [styles.open]: open })} id='select-categorie-list'>
         {open && (
           <ul className={styles.categoryList}>
             {filtered.map((item, index) => (

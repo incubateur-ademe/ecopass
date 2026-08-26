@@ -7,6 +7,7 @@ import styles from "./Identification.module.css"
 import { isValidGtin } from "../../utils/validation/gtin"
 import BrandAutocomplete from "./BrandAutocomplete"
 import { isGTINAlreadyDeclared } from "../../serverFunctions/product"
+import { ProductCheckResult } from "../../services/validation/productCheckResult"
 
 const Identification = ({
   data,
@@ -47,10 +48,16 @@ const Identification = ({
       success = false
     } else {
       const gtinDeclared = await isGTINAlreadyDeclared(data.gtin, data.brandId)
-      if (gtinDeclared) {
+      if (
+        gtinDeclared.result === ProductCheckResult.HigherConfidence ||
+        gtinDeclared.result === ProductCheckResult.TooRecent
+      ) {
         newErrors.gtin = (
           <>
-            Ce produit a déjà été déclaré par sa marque. <Link href={`/produits/${data.gtin}`}>Voir le produit</Link>
+            {gtinDeclared.result === ProductCheckResult.TooRecent
+              ? "Vous avez déjà déclaré ce produit récemment."
+              : "Ce produit a déjà été déclaré par sa marque."}{" "}
+            <Link href={`/produits/${data.gtin}`}>Voir le produit</Link>
           </>
         )
         if (success) {

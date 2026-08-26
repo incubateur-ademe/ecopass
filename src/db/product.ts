@@ -4,9 +4,10 @@ import { ParsedProductValidation } from "../services/validation/product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
-import { checkOldProduct, ProductCheckResult, ProductDeclarationContext } from "../services/validation/oldProduct"
+import { checkOldProduct, ProductDeclarationContext } from "../services/validation/oldProduct"
 import { getProductCategory } from "../utils/product/category"
 import { computeBatchScore } from "../utils/ecobalyse/batches"
+import { ProductCheckResult } from "../services/validation/productCheckResult"
 
 export const createProducts = async (
   {

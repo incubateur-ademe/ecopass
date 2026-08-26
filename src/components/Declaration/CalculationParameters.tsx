@@ -308,15 +308,12 @@ const CalculationParameters = ({
       {error && <Alert severity='error' title={error} className='fr-mt-4w' />}
 
       <div className={styles.buttons}>
-        <LoadingButton
-          type='button'
-          priority='secondary'
-          onClick={goToPreviousStep}
-          iconId='ri-arrow-left-line'
-          loading={loading}>
+        <Button type='button' priority='secondary' onClick={goToPreviousStep} iconId='ri-arrow-left-line'>
           Étape précédente
+        </Button>
+        <LoadingButton type='submit' loading={loading}>
+          Valider ma déclaration
         </LoadingButton>
-        <Button type='submit'>Valider ma déclaration</Button>
       </div>
     </form>
   )

@@ -1,6 +1,7 @@
-import { checkOldProduct, ProductCheckResult } from "./oldProduct"
+import { checkOldProduct } from "./oldProduct"
 import * as productDb from "../../db/product"
 import { ConfidenceLevel, UserType } from "@prisma/enums"
+import { ProductCheckResult } from "./productCheckResult"
 
 describe("checkOldProduct", () => {
   const gtins = ["1234567890123"]

@@ -4,7 +4,7 @@ import { ConfidenceLevel } from "@prisma/enums"
 import { getProductWithScoreHistory, getProductWithScoreHistoryCount } from "../db/product"
 import { getUser } from "../db/user"
 import { auth } from "../services/auth/auth"
-import { checkOldProduct, ProductCheckResult } from "../services/validation/oldProduct"
+import { checkOldProduct } from "../services/validation/oldProduct"
 import { getProductConfidenceLevel } from "../utils/product/confidence"
 
 export const getProductHistory = async (gtin: string, page: number, pageSize: number) => {
@@ -28,14 +28,9 @@ export const isGTINAlreadyDeclared = async (gtin: string, brandId?: string) => {
   }
 
   const confidenceLevel = brandId ? getProductConfidenceLevel(user, brandId) : ConfidenceLevel.Low
-  const { result, lastProduct } = await checkOldProduct([gtin], "", confidenceLevel, {
+  return checkOldProduct([gtin], "", confidenceLevel, {
     userId: user.id,
     userType: user.type,
     organizationId: user.organization?.id ?? null,
   })
-  if (result === ProductCheckResult.HigherConfidence) {
-    return lastProduct?.gtins[0]
-  }
-
-  return false
 }

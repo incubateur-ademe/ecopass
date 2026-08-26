@@ -6,10 +6,11 @@ import { createScore } from "../../db/score"
 import { updateAPIUse } from "../../db/user"
 import { getAuthorizedBrands } from "../organization/brands"
 import { scoreIsValid } from "../validation/score"
-import { checkOldProduct, ProductCheckResult } from "../../services/validation/oldProduct"
+import { checkOldProduct } from "../../services/validation/oldProduct"
 import { hashProduct } from "../encryption/hash"
 import { getBrandById } from "../../db/brands"
 import { getDefaultGTINs } from "../validation/gtin"
+import { ProductCheckResult } from "../../services/validation/productCheckResult"
 
 jest.mock("../../services/auth/auth", () => ({
   getApiUser: jest.fn(),
