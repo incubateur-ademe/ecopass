@@ -20,7 +20,7 @@ const modal = createModal({
 const ConfidenceLevelBadge = ({ confidenceLevel }: { confidenceLevel: ConfidenceLevel }) => {
   return (
     <>
-      <div className={styles.container}>
+      <div className={styles.container} data-testid='confidence-level-badge'>
         <p>Indice de confiance :</p>
         <Badge severity='info' noIcon>
           {confidencesLevel[confidenceLevel]}

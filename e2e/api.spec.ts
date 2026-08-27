@@ -70,6 +70,28 @@ const batch = {
   ],
 }
 
+test("citoyen cannot declare by API", async ({ page }) => {
+  let response = await page.request.post("http://localhost:3000/api/produits", {
+    data: product,
+    headers: {
+      Authorization: "Bearer 60b084be-197c-46c1-8be2-eed838318f8c",
+    },
+  })
+  expect(response.status()).toBe(403)
+  expect((await response.json()).error).toBe("Seul les professionnels peuvent déclarer des produits via l'API")
+})
+
+test("reader cannot declare by API", async ({ page }) => {
+  let response = await page.request.post("http://localhost:3000/api/produits", {
+    data: product,
+    headers: {
+      Authorization: "Bearer 3eea089a-dc26-44c7-a54c-6f6db9fa9f4c",
+    },
+  })
+  expect(response.status()).toBe(403)
+  expect((await response.json()).error).toBe("Seuls les admins de l'organisation peuvent déclarer des produits")
+})
+
 test("declare my products by API", async ({ page }) => {
   await login(page)
 

@@ -15,7 +15,8 @@ import { createScore } from "../db/score"
 import { hashProduct } from "../utils/encryption/hash"
 import { prismaClient } from "../db/prismaClient"
 import { getProductConfidenceLevel } from "../utils/product/confidence"
-import { checkOldProduct, ProductCheckResult } from "../services/validation/oldProduct"
+import { checkOldProduct } from "../services/validation/oldProduct"
+import { ProductCheckResult } from "../services/validation/productCheckResult"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",

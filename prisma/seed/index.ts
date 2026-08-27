@@ -211,6 +211,12 @@ const users = async () => {
             password: await signPassword("ecopasscestsupercool"),
           },
         },
+        apiKeys: {
+          create: {
+            key: "3eea089a-dc26-44c7-a54c-6f6db9fa9f4c",
+            name: "API Key for development",
+          },
+        },
       },
     }),
     prismaClient.user.create({
@@ -244,13 +250,35 @@ const users = async () => {
         email: "ecopass-citoyen@yopmail.com",
         type: UserType.CITOYEN,
         nom: "Jane",
-        prenom: "Doe",
+        prenom: "Dane",
         accounts: {
           create: {
             provider: "credentials",
             providerAccountId: "ecopass-citoyen@yopmail.com",
             type: "credentials",
             password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "ecopass-citoyen-2@yopmail.com",
+        type: UserType.CITOYEN,
+        nom: "John",
+        prenom: "Doe",
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "ecopass-citoyen-2@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+        apiKeys: {
+          create: {
+            key: "60b084be-197c-46c1-8be2-eed838318f8c",
+            name: "API Key for development",
           },
         },
       },

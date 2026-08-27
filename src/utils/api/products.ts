@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { OrganizationRole } from "@prisma/client"
+import { OrganizationRole, UserType } from "@prisma/client"
 import { getApiUser } from "../../services/auth/auth"
 import { computeBatchInformations, computeEcobalyseScore } from "../ecobalyse/api"
 import { createScore } from "../../db/score"
@@ -15,13 +15,14 @@ import { getAuthorizedBrands } from "../organization/brands"
 import { scoreIsValid } from "../validation/score"
 import { organizationTypesAllowedToDeclare } from "../organization/canDeclare"
 import { organizationTypes } from "../organization/types"
-import { checkOldProduct, ProductCheckResult } from "../../services/validation/oldProduct"
+import { checkOldProduct } from "../../services/validation/oldProduct"
 import { hashProduct } from "../encryption/hash"
 import { getBrandById } from "../../db/brands"
 import { getDefaultGTINs } from "../validation/gtin"
 import { gtinsValidation } from "../../services/validation/gtins"
 import { UploadType } from "@prisma/client"
 import { getProductConfidenceLevel } from "../product/confidence"
+import { ProductCheckResult } from "../../services/validation/productCheckResult"
 
 type ProductAndInformations = {
   product: ProductMetadataAPI & { gtins: string[] }
@@ -145,16 +146,29 @@ const parseSingleProduct = (
 export async function handleProductPOST(req: Request, type: "single" | "batch" | "multicomponents") {
   try {
     const api = await getApiUser(req.headers)
-    if (!api || !api.user || !api.user.organization) {
+    if (!api || !api.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    if (!api.user.organization.type || !organizationTypesAllowedToDeclare.includes(api.user.organization.type)) {
+    if (api.user.type !== UserType.PROFESSIONNEL) {
+      return NextResponse.json(
+        {
+          error: "Seul les professionnels peuvent déclarer des produits via l'API",
+        },
+        { status: 403 },
+      )
+    }
+
+    if (
+      !api.user.organization ||
+      !api.user.organization.type ||
+      !organizationTypesAllowedToDeclare.includes(api.user.organization.type)
+    ) {
       return NextResponse.json(
         {
           error:
             "Votre organisation n'est pas autorisée à déclarer des produits. Si vous pensez que c'est une erreur, veuillez contacter le support.",
-          organizationType: api.user.organization.type ? organizationTypes[api.user.organization.type] : "Non défini",
+          organizationType: api.user.organization?.type ? organizationTypes[api.user.organization.type] : "Non défini",
         },
         { status: 403 },
       )

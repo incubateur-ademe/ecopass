@@ -2,13 +2,7 @@
 
 import { ConfidenceLevel, UserType } from "@prisma/enums"
 import { getLastProductsByGtins } from "../../db/product"
-
-export enum ProductCheckResult {
-  Valid,
-  TooRecent,
-  Unchanged,
-  HigherConfidence,
-}
+import { ProductCheckResult } from "./productCheckResult"
 
 export type ProductDeclarationContext = {
   userId?: string
