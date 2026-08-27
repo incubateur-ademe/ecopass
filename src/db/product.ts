@@ -30,6 +30,7 @@ export const createProducts = async (
 
       for (const product of products) {
         const oldProductCheck = await checkOldProduct(product.gtins, product.hash, product.confidenceLevel, currentUser)
+
         if (oldProductCheck.result === ProductCheckResult.Unchanged && oldProductCheck.lastProduct) {
           await transaction.uploadProduct.create({
             data: {
@@ -236,7 +237,7 @@ const productWithScoreSelect = {
   },
 } satisfies Prisma.ProductSelect
 
-type ProductWithScoreBase = Prisma.ProductGetPayload<{ select: typeof productWithScoreSelect }>
+export type ProductWithScoreBase = Prisma.ProductGetPayload<{ select: typeof productWithScoreSelect }>
 export type BatchScore = ReturnType<typeof computeBatchScore>
 
 export type MeanScores = Omit<{ [K in keyof BatchScore]: number }, "scoreWithoutDurability">
