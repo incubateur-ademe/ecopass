@@ -68,6 +68,7 @@ export const computeBatchScore = (product: Pick<ProductWithScore, "informations"
       htn: 0,
     },
   )
+
   return {
     ...scores,
     durability: product.score ? scores.scoreWithoutDurability / product.score : 0,
