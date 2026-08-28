@@ -60,6 +60,7 @@ export type ProductInformationAPI = z.infer<typeof product> & { numberOfItem?: n
 
 const metaData = z.object({
   internalReference: z.string(),
+  url: z.string().optional(),
   declaredScore: z.number().optional(),
 })
 

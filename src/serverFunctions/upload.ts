@@ -121,6 +121,7 @@ export type SimplifiedDeclarationData = {
   brandId?: string
   gtin: string
   internalReference: string
+  url: string
   product: string
   mass: number
   materials: { id: string; share: number }[]

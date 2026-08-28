@@ -63,6 +63,7 @@ describe("processUploadsToQueue", () => {
     products: [
       {
         error: null,
+        url: null,
         hash: "test-hash",
         status: Status.Pending,
         createdAt: new Date(),

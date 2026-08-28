@@ -152,6 +152,7 @@ describe("Product DB integration", () => {
         products: [
           {
             error: null,
+            url: null,
             hash: "test-hash",
             id: productId,
             createdAt: new Date(),
@@ -226,6 +227,7 @@ describe("Product DB integration", () => {
         products: [
           {
             error: null,
+            url: null,
             hash: "new-hash",
             id: newId,
             createdAt: new Date(),
@@ -576,6 +578,7 @@ describe("Product DB integration", () => {
           products: [
             {
               error: null,
+              url: null,
               hash: "unique-hash-001",
               id: newProductId,
               createdAt: new Date(),
@@ -666,6 +669,7 @@ describe("Product DB integration", () => {
           products: [
             {
               error: null,
+              url: null,
               hash: existingHash,
               id: newProductId,
               createdAt: new Date(),
@@ -760,6 +764,7 @@ describe("Product DB integration", () => {
           products: [
             {
               error: null,
+              url: null,
               hash: newHash,
               id: newProductId,
               createdAt: new Date(),
@@ -857,6 +862,7 @@ describe("Product DB integration", () => {
           products: [
             {
               error: null,
+              url: null,
               hash: "new-hash",
               id: newProductId,
               createdAt: new Date(),
@@ -945,6 +951,7 @@ describe("Product DB integration", () => {
           products: [
             {
               error: null,
+              url: null,
               hash: "new-hash",
               id: newProductId,
               createdAt: new Date(),
@@ -1047,6 +1054,7 @@ describe("Product DB integration", () => {
           products: [
             {
               error: null,
+              url: null,
               hash: "new-hash",
               id: newProductId,
               createdAt: new Date(),
@@ -1148,6 +1156,7 @@ describe("Product DB integration", () => {
           products: [
             {
               error: null,
+              url: null,
               hash: "new-hash",
               id: newProductId,
               createdAt: new Date(),
@@ -1228,6 +1237,7 @@ describe("Product DB integration", () => {
           products: [
             {
               error: null,
+              url: null,
               hash: "new-hash",
               id: newProductId,
               createdAt: new Date(),
@@ -1329,6 +1339,7 @@ describe("Product DB integration", () => {
           products: [
             {
               error: null,
+              url: null,
               hash: oldHash,
               id: newProductId,
               createdAt: new Date(),
@@ -1429,6 +1440,7 @@ describe("Product DB integration", () => {
           products: [
             {
               error: null,
+              url: null,
               hash: oldHash,
               id: newProductId,
               createdAt: new Date(),

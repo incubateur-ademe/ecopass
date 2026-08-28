@@ -20,6 +20,7 @@ const Identification = ({
     brandId?: string
     gtin: string
     internalReference: string
+    url: string
   }
   brands: { id: string; name: string }[]
   setData: (key: keyof typeof data, value: string) => void
@@ -116,6 +117,13 @@ const Identification = ({
           nativeInputProps={{
             value: data.internalReference,
             onChange: (e) => setData("internalReference", e.target.value),
+          }}
+        />
+        <Input
+          label='URL du produit'
+          nativeInputProps={{
+            value: data.url,
+            onChange: (e) => setData("url", e.target.value),
           }}
         />
         <Alert

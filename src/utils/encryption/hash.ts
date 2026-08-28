@@ -44,6 +44,7 @@ export const hashProduct = (
     {
       gtins: product.gtins,
       internalReference: product.internalReference,
+      url: product.url,
       declaredScore: product.declaredScore,
       brand: product.brandId,
       informations: informations?.map((informations) => ({
