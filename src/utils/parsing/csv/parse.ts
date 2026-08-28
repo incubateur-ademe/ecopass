@@ -203,6 +203,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       const confidenceLevel = getProductConfidenceLevel(upload.createdBy, brand)
       const product = {
         error: mainComponentError ? "Composant principal doit valoir 'Oui' ou 'Non'" : null,
+        url: null,
         id: productId,
         score: null,
         standardized: null,

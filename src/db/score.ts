@@ -31,6 +31,7 @@ export const createScore = async (
             gtins: product.gtins,
             declaredScore: product.declaredScore || null,
             internalReference: product.internalReference,
+            url: product.url,
             score,
             standardized: (score / mass) * 0.1,
             upload: {

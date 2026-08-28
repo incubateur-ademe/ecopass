@@ -203,6 +203,7 @@ model Product {
 
   gtins             String[] @map("gtins")
   internalReference String   @map("internal_reference")
+  url               String?
   declaredScore     Float?   @map("declared_score")
 
   brandName String? @map("brand_name")
