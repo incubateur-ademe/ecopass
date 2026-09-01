@@ -36,7 +36,7 @@ test("simplified declaration", async ({ page }) => {
   await expect(page.locator(".fr-alert--error").nth(0)).toHaveText("La matière première est requise")
 
   await page.getByLabel("Matière").selectOption("elasthane")
-  await page.getByRole("spinbutton", { name: "Proportion 1 (%)" }).fill("75")
+  await page.getByRole("spinbutton", { name: "Proportion (%)" }).fill("75")
 
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
 
@@ -53,7 +53,7 @@ test("simplified declaration", async ({ page }) => {
   await page.getByLabel("Lieu de confection *").selectOption("VN")
   await page.getByRole("button", { name: "Ajouter une matière" }).click()
   await page.getByLabel("Matière 2").selectOption("ei-jute-kenaf")
-  await page.getByRole("spinbutton", { name: "Proportion 2 (%)" }).fill("25")
+  await page.getByRole("spinbutton", { name: "Proportion (%)" }).nth(1).fill("25")
 
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
 

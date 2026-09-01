@@ -267,12 +267,12 @@ const CalculationParameters = ({
           </Select>
 
           <Input
-            label={`Proportion ${index + 1} (%)`}
+            label={`Proportion (%)`}
             nativeInputProps={{
               type: "number",
               min: "0",
               max: "100",
-              value: material.share,
+              value: material.share > 0 ? material.share : "",
               ref: (element) => {
                 if (element) {
                   materialShareRefs.current[index] = element
