@@ -112,7 +112,7 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
             titleAs='h2'
             desc="Consultez l'aide en ligne"
             linkProps={{
-              href: "https://docs.numerique.gouv.fr/docs/4c19480c-746e-49d9-aa1c-8b94f8790720/",
+              href: "https://docs.numerique.gouv.fr/docs/00cbad93-a2b7-4d7d-8e25-1948b4254daf/ ",
               target: "_blank",
               rel: "noopener noreferrer",
             }}
