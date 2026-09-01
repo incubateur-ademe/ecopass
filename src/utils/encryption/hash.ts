@@ -12,7 +12,7 @@ export type ProductInformationForHash = {
   price?: string | number | undefined
   countryDyeing?: string
   countryFabric?: string
-  countryMaking: string
+  countryMaking?: string
   countrySpinning?: string
   upcycled?: string | boolean | undefined
   printing?:

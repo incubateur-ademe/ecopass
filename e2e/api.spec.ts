@@ -318,7 +318,7 @@ test("declare my products by API", async ({ page }) => {
   )
   await page.getByTestId("products-table").locator("table tbody tr").nth(0).getByRole("link").click()
   await expect(page.getByTestId("product-details")).toHaveText(
-    `Code-barres : 1234567891125Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
+    `Code-barres : 1234567891125Déposé le : ${formatDate(new Date())}Version Ecobalyse : ${ecobalyseVersion}Par : Emmaus`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
     `Coût environnemental : 4594 points d'impact, 510 pour 100g510 pts/100g4 594Télécharger le SVGcoût pour 100g : 510 pointscoefficient de durabilité : 1.12 points?`,
@@ -349,7 +349,7 @@ test("declare my products by API", async ({ page }) => {
   )
   await page.getByTestId("products-table").locator("table tbody tr").nth(1).getByRole("link").click()
   await expect(page.getByTestId("product-details")).toHaveText(
-    `Code-barres : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
+    `Code-barres : 1234567890128Déposé le : ${formatDate(new Date())}Version Ecobalyse : ${ecobalyseVersion}Par : Emmaus`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
     "Coût environnemental : 1755 points d'impact, 1032 pour 100g1 032 pts/100g1 755Télécharger le SVGcoût pour 100g : 1 032 pointscoefficient de durabilité : 0.67 points?",

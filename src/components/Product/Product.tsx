@@ -82,16 +82,18 @@ const Product = ({
           <p>
             Déposé le : <b>{formatDate(product.createdAt)}</b>
           </p>
-          {product.upload.createdBy.organization && (
-            <p>
-              Par :{" "}
+          <p>
+            Version Ecobalyse : <b>{product.upload.version}</b>
+          </p>
+          <p>
+            Par :{" "}
+            {product.upload.createdBy.organization ? (
               <Link href={`/organisations/${product.upload.createdBy.organization.id}`}>
                 <b>{product.upload.createdBy.organization.displayName}</b>
               </Link>
-            </p>
-          )}
-          <p>
-            Version Ecobalyse : <b>{product.upload.version}</b>
+            ) : (
+              <b>Un citoyen</b>
+            )}
           </p>
         </div>
         <ConfidenceLevelBadge confidenceLevel={product.confidenceLevel} />

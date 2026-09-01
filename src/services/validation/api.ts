@@ -56,7 +56,10 @@ const product = z.object({
   mainComponent: z.boolean().nullable().optional(),
 })
 
-export type ProductInformationAPI = z.infer<typeof product> & { numberOfItem?: number }
+export type ProductInformationAPI = Omit<z.infer<typeof product>, "countryMaking"> & {
+  numberOfItem?: number
+  countryMaking?: string
+}
 
 const metaData = z.object({
   internalReference: z.string(),
@@ -89,6 +92,12 @@ export const getUserProductAPIValidation = (brands: [string, ...string[]]) =>
         path: [""],
       },
     )
+
+export const getUserProductSimplifiedDeclarationValidation = (brands: [string, ...string[]]) =>
+  productAPIValidation.omit({ countryMaking: true }).extend({
+    brandId: z.enum(brands),
+    countryMaking: z.enum(countryValues).optional(),
+  })
 
 export type ProductAPIValidation = z.infer<ReturnType<typeof getUserProductAPIValidation>>
 
