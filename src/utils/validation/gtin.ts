@@ -2,7 +2,7 @@ import { Organization } from "@prisma/client"
 import { v4 as uuid } from "uuid"
 
 export const isValidGtin = (gtin: string): boolean => {
-  const digits = gtin.split("").map(Number)
+  const digits = (gtin.length === 12 ? `0${gtin}` : gtin).split("").map(Number)
 
   let sum = 0
   let multiplier = 3

@@ -30,7 +30,7 @@ describe("GTINsValidation", () => {
 
   it("does not allow product with invalid GTINs", () => {
     expectZodValidationToFail(validation, validGTINs, { gtins: ["123"] }, [
-      { path: ["gtins", "0"], message: "Le code GTIN doit contenir 8 ou 13 chiffres" },
+      { path: ["gtins", "0"], message: "Le code GTIN doit contenir 8, 12 ou 13 chiffres" },
     ])
   })
 
@@ -44,7 +44,7 @@ describe("GTINsValidation", () => {
     expectZodValidationToFail(validation, validGTINs, { gtins: ["1234567891012", "12345670", "12345678", "123"] }, [
       { path: ["gtins", "0"], message: "Le code GTIN n'est pas valide (somme de contrôle incorrecte)" },
       { path: ["gtins", "2"], message: "Le code GTIN n'est pas valide (somme de contrôle incorrecte)" },
-      { path: ["gtins", "3"], message: "Le code GTIN doit contenir 8 ou 13 chiffres" },
+      { path: ["gtins", "3"], message: "Le code GTIN doit contenir 8, 12 ou 13 chiffres" },
     ])
   })
 })

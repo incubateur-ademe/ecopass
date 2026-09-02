@@ -103,7 +103,7 @@ test("Search", async ({ page }) => {
   await page.getByRole("button", { name: "Réinitialiser" }).click()
 
   await page
-    .getByRole("textbox", { name: "Saisir un code-barres (8 ou 13 chiffres) ou une référence produit" })
+    .getByRole("textbox", { name: "Saisir un code-barres (8, 12 ou 13 chiffres) ou une référence produit" })
     .fill("ref-101")
   await page.getByRole("button", { name: "Rechercher" }).click()
   await expect(page.getByTestId("search-results-count")).toContainText("1 référence produit trouvée")

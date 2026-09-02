@@ -242,10 +242,12 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(400)
     const body = await response.json()
-    expect(body.map((issue: { path: (string | number)[]; message: string }) => ({
-      path: issue.path,
-      message: issue.message,
-    }))).toEqual([{ path: [0], message: "Le code GTIN doit contenir 8 ou 13 chiffres" }])
+    expect(
+      body.map((issue: { path: (string | number)[]; message: string }) => ({
+        path: issue.path,
+        message: issue.message,
+      })),
+    ).toEqual([{ path: [0], message: "Le code GTIN doit contenir 8, 12 ou 13 chiffres" }])
     expect(mockedComputeEcobalyseScore).not.toHaveBeenCalled()
   })
 

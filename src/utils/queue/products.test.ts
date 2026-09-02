@@ -409,7 +409,7 @@ describe("processProductsQueue", () => {
       {
         id: "product-1",
         error:
-          "Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
+          "Le code GTIN doit contenir 8, 12 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
     ])
     expect(mockedPrismaUpdate).not.toHaveBeenCalled()
@@ -434,7 +434,7 @@ describe("processProductsQueue", () => {
       {
         id: "product-1",
         error:
-          "Le poids est obligatoire, Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
+          "Le poids est obligatoire, Le code GTIN doit contenir 8, 12 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
     ])
     expect(mockedPrismaUpdate).not.toHaveBeenCalled()
@@ -498,7 +498,7 @@ describe("processProductsQueue", () => {
       {
         id: "product-2",
         error:
-          "Le code GTIN doit contenir 8 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
+          "Le code GTIN doit contenir 8, 12 ou 13 chiffres, Le code GTIN n'est pas valide (somme de contrôle incorrecte)",
       },
     ])
     expect(mockedPrismaUpdate).not.toHaveBeenCalled()

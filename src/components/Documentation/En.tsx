@@ -17,8 +17,8 @@ const En = () => {
       <ul>
         <li>
           <p>
-            <b>GTINs/EANs</b> : all GTIN (or EAN) codes of the product, separated by semicolon. These codes must consist
-            of 8 or 13 digits. If you don't use GTIN codes, please{" "}
+            <b>GTINs/EANs</b> : all GTIN (or EAN, or UPC) codes of the product, separated by semicolon. These codes must
+            consist of 8, 12 or 13 digits. If you don't use GTIN codes, please{" "}
             <Link
               href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'
               target='_blank'

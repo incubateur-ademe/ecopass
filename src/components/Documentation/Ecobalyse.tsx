@@ -17,8 +17,8 @@ const Ecobalyse = () => {
       <ul>
         <li>
           <p>
-            <b>GTINs/EANs</b> : tous les codes GTIN (ou EAN) du produit, séparés par des points virgules. Ces derniers
-            doivent être composés de 8 ou 13 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez{" "}
+            <b>GTINs/EANs</b> : tous les codes GTIN (ou EAN, ou UPC) du produit, séparés par des points virgules. Ces
+            derniers doivent être composés de 8, 12 ou 13 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez{" "}
             <Link
               href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'
               target='_blank'
