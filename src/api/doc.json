@@ -559,7 +559,7 @@
               "type": "string",
               "pattern": "^\\d{8}|\\d{13}$"
             },
-            "description": "Le code GTIN du produit (8 ou 13 chiffres)",
+            "description": "Le code GTIN du produit (8, 12 ou 13 chiffres)",
             "example": "1234567890123"
           }
         ],
@@ -599,9 +599,9 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^\\d{8}|\\d{13}$"
+              "pattern": "^\\d{8}|\\d{13}|\\d${12}$"
             },
-            "description": "Le code GTIN du produit (8 ou 13 chiffres)",
+            "description": "Le code GTIN du produit (8, 12 ou 13 chiffres)",
             "example": "1234567890123"
           },
           {
@@ -686,9 +686,9 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "pattern": "^\\d{8}|\\d{13}$"
+              "pattern": "^\\d{8}|\\d{13}|\\d${12}$"
             },
-            "description": "Le GTIN du produit, format 8 ou 13 chiffres. Doit être fourni si `type` est `gtin`"
+            "description": "Le GTIN du produit, format 8, 12 ou 13 chiffres. Doit être fourni si `type` est `gtin`"
           },
           {
             "name": "score",
@@ -1117,10 +1117,10 @@
         "properties": {
           "gtins": {
             "type": "array",
-            "description": "Les codes GTIN (ou EAN) du produit, format 13 ou 8 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez [nous contacter](mailto:affichage-environnemental@ecobalyse.beta.gouv.fr).",
+            "description": "Les codes GTIN (ou EAN, ou UPC) du produit, format 8, 12 ou 13 chiffres. Si vous n'utilisez pas de codes GTIN, veuillez [nous contacter](mailto:affichage-environnemental@ecobalyse.beta.gouv.fr).",
             "items": {
               "type": "string",
-              "pattern": "^(\\d{8}|\\d{13})$",
+              "pattern": "^(\\d{8}|\\d{12}|\\d{13})$",
               "example": "1234567890123"
             }
           },
