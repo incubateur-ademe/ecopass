@@ -90,6 +90,7 @@ const Identification = ({
         className='fr-mb-4w'
       />
       <form onSubmit={submit} noValidate>
+        <p className='fr-hint-text fr-mb-4w'>Les champs marqués d'un * sont obligatoires</p>
         <BrandAutocomplete
           brands={brands}
           brandName={data.brandName}

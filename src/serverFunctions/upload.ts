@@ -9,7 +9,7 @@ import { encryptAndZipFile } from "../utils/encryption/encryption"
 import path from "path"
 import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
 import { getUser, getUserOrganizationType } from "../db/user"
-import { getUserProductAPIValidation } from "../services/validation/api"
+import { getUserProductSimplifiedDeclarationValidation } from "../services/validation/api"
 import { computeEcobalyseScore } from "../utils/ecobalyse/api"
 import { createScore } from "../db/score"
 import { hashProduct } from "../utils/encryption/hash"
@@ -125,9 +125,10 @@ export type SimplifiedDeclarationData = {
   product: string
   mass: number
   materials: { id: string; share: number }[]
-  countryFabric: string
-  countryDyeing: string
-  countryMaking: string
+  countryFabric?: string
+  countryDyeing?: string
+  countryMaking?: string
+  countrySpinning?: string
 }
 
 export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDeclarationData) => {
@@ -173,7 +174,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
         select: { id: true },
       }))
 
-    const validatedData = getUserProductAPIValidation([resolvedBrand.id]).safeParse({
+    const validatedData = getUserProductSimplifiedDeclarationValidation([resolvedBrand.id]).safeParse({
       ...data,
       mass: data.mass / 1000,
       brandId: resolvedBrand.id,

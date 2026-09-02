@@ -32,9 +32,10 @@ const CalculationParameters = ({
     product: string
     mass: number
     materials: { id: string; share: number }[]
-    countryFabric: string
-    countryDyeing: string
-    countryMaking: string
+    countryFabric?: string
+    countryDyeing?: string
+    countryMaking?: string
+    countrySpinning?: string
   }
   setData: (key: keyof typeof data, value: string | number | typeof data.materials) => void
   goToNextStep: () => void
@@ -47,9 +48,6 @@ const CalculationParameters = ({
   const massRef = useRef<HTMLInputElement>(null)
   const materialTypeRefs = useRef<(HTMLSelectElement | null)[]>([])
   const materialShareRefs = useRef<(HTMLInputElement | null)[]>([])
-  const countryMakingRef = useRef<HTMLSelectElement>(null)
-  const countryDyeingRef = useRef<HTMLSelectElement>(null)
-  const countryFabricRef = useRef<HTMLSelectElement>(null)
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -110,30 +108,6 @@ const CalculationParameters = ({
       success = false
     }
 
-    if (!data.countryMaking) {
-      newErrors.countryMaking = "Le lieu de confection est requis"
-      if (success) {
-        countryMakingRef.current?.focus()
-      }
-      success = false
-    }
-
-    if (!data.countryDyeing) {
-      newErrors.countryDyeing = "Le lieu d'ennoblissement est requis"
-      if (success) {
-        countryDyeingRef.current?.focus()
-      }
-      success = false
-    }
-
-    if (!data.countryFabric) {
-      newErrors.countryFabric = "Le lieu de tissage / tricotage est requis"
-      if (success) {
-        countryFabricRef.current?.focus()
-      }
-      success = false
-    }
-
     setErrors(newErrors)
 
     if (success) {
@@ -151,9 +125,9 @@ const CalculationParameters = ({
     setData("materials", newMaterials)
   }
 
-  console.log("product", data)
   return (
     <form onSubmit={submit} noValidate>
+      <p className='fr-hint-text fr-mb-4w'>Les champs marqués d'un * sont obligatoires</p>
       <CategoryDropdown
         selectedCategory={data.product}
         setCategory={(value) => setData("product", value)}
@@ -183,16 +157,14 @@ const CalculationParameters = ({
       />
 
       <Select
-        label='Lieu de tissage / tricotage *'
+        label='Lieu de tissage / tricotage'
         state={errors.countryFabric ? "error" : undefined}
         stateRelatedMessage={errors.countryFabric}
         nativeSelectProps={{
-          required: true,
           value: data.countryFabric,
-          ref: countryFabricRef,
           onChange: (e) => setData("countryFabric", e.target.value),
         }}>
-        <option value=''>Sélectionner une option</option>
+        <option value=''>Pays inconnu</option>
         {countryOptions.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -201,16 +173,14 @@ const CalculationParameters = ({
       </Select>
 
       <Select
-        label="Lieu d'ennoblissement *"
+        label="Lieu d'ennoblissement"
         state={errors.countryDyeing ? "error" : undefined}
         stateRelatedMessage={errors.countryDyeing}
         nativeSelectProps={{
-          required: true,
           value: data.countryDyeing,
-          ref: countryDyeingRef,
           onChange: (e) => setData("countryDyeing", e.target.value),
         }}>
-        <option value=''>Sélectionner une option</option>
+        <option value=''>Pays inconnu</option>
         {countryOptions.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -219,16 +189,30 @@ const CalculationParameters = ({
       </Select>
 
       <Select
-        label='Lieu de confection *'
+        label='Lieu de confection'
         state={errors.countryMaking ? "error" : undefined}
         stateRelatedMessage={errors.countryMaking}
         nativeSelectProps={{
-          required: true,
           value: data.countryMaking,
-          ref: countryMakingRef,
           onChange: (e) => setData("countryMaking", e.target.value),
         }}>
-        <option value=''>Sélectionner une option</option>
+        <option value=''>Pays inconnu</option>
+        {countryOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </Select>
+
+      <Select
+        label='Lieu de filature'
+        state={errors.countrySpinning ? "error" : undefined}
+        stateRelatedMessage={errors.countrySpinning}
+        nativeSelectProps={{
+          value: data.countrySpinning,
+          onChange: (e) => setData("countrySpinning", e.target.value),
+        }}>
+        <option value=''>Pays inconnu</option>
         {countryOptions.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -267,7 +251,8 @@ const CalculationParameters = ({
           </Select>
 
           <Input
-            label={`Proportion (%)`}
+            label='Proportion (%)'
+            aria-label={`Proportion de la matière ${index + 1} en pourcentage`}
             nativeInputProps={{
               type: "number",
               min: "0",
