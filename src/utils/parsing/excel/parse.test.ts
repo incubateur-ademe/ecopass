@@ -292,4 +292,217 @@ describe("parseExcel", () => {
     expect(products).toHaveLength(1)
     expect(materials).toHaveLength(2)
   })
+
+  it("should regroup products with same gtins", async () => {
+    const initialExcelBuffer = createExcelBuffer([defaultHeaders, defaultProducts])
+    const { products: initialProducts } = await parseExcel(initialExcelBuffer, upload)
+    expect(initialProducts).toHaveLength(1)
+
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+    const excelBuffer = createExcelBuffer([defaultHeaders, defaultProducts, secondRow])
+
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(informations[0].productId).toBe(products[0].id)
+    expect(informations[1].productId).toBe(products[0].id)
+
+    expect(initialProducts[0].hash).not.toBe(products[0].hash)
+  })
+
+  it("should fail product with same gtins but different internal reference", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const internalReferenceIndex = defaultHeaders.indexOf("Référence interne")
+
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+    secondRow[internalReferenceIndex] = "REF-456"
+
+    const excelBuffer = createExcelBuffer([defaultHeaders, defaultProducts, secondRow])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("La référence interne doit être identique pour toutes les composantes du produit")
+  })
+
+  it("should fail product with same gtins but different declared score", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const declaredScoreIndex = defaultHeaders.indexOf("Score")
+
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+    secondRow[declaredScoreIndex] = 3333.64
+
+    const excelBuffer = createExcelBuffer([defaultHeaders, defaultProducts, secondRow])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Le score déclaré doit être identique pour toutes les composantes du produit")
+  })
+
+  it("should fail product with same gtins but different brand name", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const brandIndex = defaultHeaders.indexOf("Marque ID")
+
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+    secondRow[brandIndex] = "Other Brand"
+
+    const excelBuffer = createExcelBuffer([defaultHeaders, defaultProducts, secondRow])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("La marque doit être identique pour toutes les composantes du produit")
+  })
+
+  it("should fail product with same gtins but different price", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const priceIndex = defaultHeaders.indexOf("Prix (en euros, TTC)")
+
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+    secondRow[priceIndex] = 200
+
+    const excelBuffer = createExcelBuffer([defaultHeaders, defaultProducts, secondRow])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Le prix doit être identique pour toutes les composantes du produit")
+  })
+
+  it("should fail product with same gtins but different number of references", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const numberOfReferencesIndex = defaultHeaders.indexOf("Nombre de références")
+
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+    secondRow[numberOfReferencesIndex] = 9999
+
+    const excelBuffer = createExcelBuffer([defaultHeaders, defaultProducts, secondRow])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Le nombre de références doit être identique pour toutes les composantes du produit")
+  })
+
+  it("should fail product with combined error when same gtins but different values", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const internalReferenceIndex = defaultHeaders.indexOf("Référence interne")
+    const declaredScoreIndex = defaultHeaders.indexOf("Score")
+    const brandIndex = defaultHeaders.indexOf("Marque ID")
+    const priceIndex = defaultHeaders.indexOf("Prix (en euros, TTC)")
+    const numberOfReferencesIndex = defaultHeaders.indexOf("Nombre de références")
+
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+    secondRow[internalReferenceIndex] = "REF-456"
+    secondRow[declaredScoreIndex] = 3333.64
+    secondRow[brandIndex] = "Other Brand"
+    secondRow[priceIndex] = 200
+    secondRow[numberOfReferencesIndex] = 9999
+
+    const excelBuffer = createExcelBuffer([defaultHeaders, defaultProducts, secondRow])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe(
+      "La référence interne doit être identique pour toutes les composantes du produit, Le score déclaré doit être identique pour toutes les composantes du produit, La marque doit être identique pour toutes les composantes du produit, Le prix doit être identique pour toutes les composantes du produit, Le nombre de références doit être identique pour toutes les composantes du produit",
+    )
+  })
+
+  it("should regroup multicomponent products", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const headersWithMainComponent = [...defaultHeaders, "Composant principal"]
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+
+    const excelBuffer = createExcelBuffer([
+      headersWithMainComponent,
+      [...defaultProducts, "oui"],
+      [...secondRow, "non"],
+    ])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(informations[0].mainComponent).toBe(true)
+    expect(informations[1].mainComponent).toBe(false)
+  })
+
+  it("should fail if multiple categories in multicomponent products", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const categoryIndex = defaultHeaders.indexOf("Catégorie")
+    const headersWithMainComponent = [...defaultHeaders, "Composant principal"]
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+    secondRow[categoryIndex] = "jeans"
+
+    const excelBuffer = createExcelBuffer([
+      headersWithMainComponent,
+      [...defaultProducts, "oui"],
+      [...secondRow, "non"],
+    ])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Tous les composants du produit doivent avoir la même catégorie")
+  })
+
+  it("should fail if multiple main components in multicomponent products", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const headersWithMainComponent = [...defaultHeaders, "Composant principal"]
+    const secondRow = [...defaultProducts]
+    secondRow[gtinsIndex] = "3234567891000;2234567891001"
+
+    const excelBuffer = createExcelBuffer([
+      headersWithMainComponent,
+      [...defaultProducts, "oui"],
+      [...secondRow, "oui"],
+    ])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Il ne peut y avoir qu'un seul composant principal par produit")
+  })
+
+  it("should fail if main component value is wrong", async () => {
+    const headersWithMainComponent = [...defaultHeaders, "Composant principal"]
+    const excelBuffer = createExcelBuffer([headersWithMainComponent, [...defaultProducts, "nimps"]])
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(1)
+
+    expect(products[0].status).toBe(Status.Error)
+    expect(products[0].error).toBe("Composant principal doit valoir 'Oui' ou 'Non'")
+    expect(informations[0].mainComponent).toBe(null)
+  })
 })

@@ -10,131 +10,261 @@ const En = () => {
       </Button>
       <h2>Columns</h2>
       <h3>Product information</h3>
+      <p>
+        For optional fields, if the value is not defined, the <Link href='#default'>default values</Link> of Ecobalyse
+        will be used.
+      </p>
       <ul>
         <li>
-          <b>GTINs/EANs</b> : all GTIN (or EAN) codes of the product, separated by semi colon. These codes must consist
-          of 8 or 13 digits. If you don't use GTIN codes, please{" "}
-          <Link
-            href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'
-            target='_blank'
-            rel='noopener noreferrer'>
-            contact us.
-          </Link>
+          <p>
+            <b>GTINs/EANs</b> : all GTIN (or EAN) codes of the product, separated by semicolon. These codes must consist
+            of 8 or 13 digits. If you don't use GTIN codes, please{" "}
+            <Link
+              href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'
+              target='_blank'
+              rel='noopener noreferrer'>
+              contact us.
+            </Link>
+          </p>
         </li>
         <li>
-          <b>Référence interne</b> : reference used internally for your product. If you don't have one, you can use the
-          main GTIN (or EAN).
+          <p>
+            <b>Référence interne</b> : reference used internally for your product. If you don't have one, you can use
+            the main GTIN (or EAN).
+          </p>
         </li>
         <li>
-          <b>Marque ID</b> (optional): product brand id, you can find it on your{" "}
-          <Link href='/organisation'>organization page</Link> .
+          <p>
+            <b>Marque ID</b> (optional): product brand id, you can find it on your{" "}
+            <Link href='/organisation'>organization page</Link>.
+          </p>
+          <p className='fr-hint-text'>If the value is not defined, the default brand will be used.</p>
         </li>
         <li>
-          <b>Score</b> (optional): Ecobalyse score (version {ecobalyseVersion}), if you have calculated it. Warning: if
-          it is different from our calculation, the product will be flagged as an error.
-          <p className='fr-hint-text'>If not defined, the calculated score will be used.</p>
+          <p>
+            <b>Score</b> (optional): Ecobalyse score (version {ecobalyseVersion}), if you have calculated it. Warning:
+            if it is different from our calculation, the product will be flagged as an error.
+          </p>
+          <p className='fr-hint-text'>If the value is not defined, the calculated score will be used.</p>
         </li>
         <li>
-          <b>Catégorie</b>: product type to choose from the following list:
+          <p>
+            <b>Catégorie</b>: product type to choose from the following list:
+          </p>
           <ul>
-            <li>Shirt</li>
-            <li>Jeans</li>
-            <li>Dress / Skirt</li>
-            <li>Coat / Jacket</li>
-            <li>Pants</li>
-            <li>Sweater</li>
-            <li>T-shirt</li>
-            <li>Socks</li>
-            <li>Woven boxer</li>
-            <li>Knitted boxer</li>
-            <li>Swimsuit</li>
+            <li>
+              <p>Shirt</p>
+            </li>
+            <li>
+              <p>Jeans</p>
+            </li>
+            <li>
+              <p>Dress / Skirt</p>
+            </li>
+            <li>
+              <p>Coat / Jacket</p>
+            </li>
+            <li>
+              <p>Pants</p>
+            </li>
+            <li>
+              <p>Sweater</p>
+            </li>
+            <li>
+              <p>T-shirt</p>
+            </li>
+            <li>
+              <p>Socks</p>
+            </li>
+            <li>
+              <p>Woven boxer</p>
+            </li>
+            <li>
+              <p>Knitted boxer</p>
+            </li>
+            <li>
+              <p>Swimsuit</p>
+            </li>
           </ul>
         </li>
         <li>
-          <b>Masse (en kg)</b>: mass of the finished product, in kilograms (min: 0.01 kg).
+          <p>
+            <b>Masse (en kg)</b>: mass of the finished product, in kilograms (min: 0.01 kg).
+          </p>
         </li>
         <li>
-          <b>Remanufacturé</b> (optional): is the product remanufactured? Yes/No.
+          <p>
+            <b>Remanufacturé</b> (optional): is the product remanufactured? Yes/No.
+          </p>
         </li>
         <li>
-          <b>Nombre de références</b> (optional): number of references in the brand's catalog (min: 1, max: 999999).
+          <p>
+            <b>Nombre de références</b> (optional): number of references in the brand's catalog (min: 1, max: 999999).
+          </p>
         </li>
         <li>
-          <b>Prix (en euros, TTC)</b> (optional): product price, in Euros (€), VAT included (min: 1).
+          <p>
+            <b>Prix (en euros, TTC)</b> (optional): product price, in Euros (€), VAT included (min: 1).
+          </p>
         </li>
         <li>
-          <b>Taille de l'entreprise</b> (optional): type of company and service offer:
+          <p>
+            <b>Taille de l'entreprise</b> (optional): type of company and service offer:
+          </p>
           <ul>
-            <li>Small company</li>
-            <li>Large company with repair service</li>
-            <li>Large company without repair service</li>
+            <li>
+              <p>Small company</p>
+            </li>
+            <li>
+              <p>Large company with repair service</p>
+            </li>
+            <li>
+              <p>Large company without repair service</p>
+            </li>
           </ul>
         </li>
         <li>
-          <b>Origine de filature</b> (optional): country for the spinning stage.
+          <p>
+            <b>Origine de filature</b> (optional): country for the spinning stage.
+          </p>
           <p className='fr-hint-text'>
             If not defined, the country of the most represented material in the mix will be used.
           </p>
         </li>
         <li>
-          <b>Origine de tissage/tricotage</b> (optional): country for the weaving/knitting stage. Mandatory if the
-          product is not upcycled.
+          <p>
+            <b>Origine de tissage/tricotage</b> (optional): country for the weaving/knitting stage. Mandatory if the
+            product is not upcycled.
+          </p>
         </li>
         <li>
-          <b>Origine de l'ennoblissement/impression</b> (optional): country for the finishing/printing stage. Mandatory
-          if the product is not upcycled.
+          <p>
+            <b>Origine de l'ennoblissement/impression</b> (optional): country for the finishing/printing stage.
+            Mandatory if the product is not upcycled.
+          </p>
         </li>
         <li>
-          <b>Origine de confection</b>: country for the manufacturing stage.
+          <p>
+            <b>Origine de confection</b>: country for the manufacturing stage.
+          </p>
         </li>
         <li>
-          <b>Type d'impression</b> (optional): type of printing process performed on the product, to choose from:
+          <p>
+            <b>Type d'impression</b> (optional): type of printing process performed on the product, to choose from:
+          </p>
           <ul>
-            <li>Fix-washed</li>
-            <li>Pigmentary</li>
+            <li>
+              <p>Fix-washed</p>
+            </li>
+            <li>
+              <p>Pigmentary</p>
+            </li>
           </ul>
         </li>
         <li>
-          <b>Pourcentage d'impression</b> (optional): percentage of printed surface (1%, 5%, 20%, 50% or 80%).
+          <p>
+            <b>Pourcentage d'impression</b> (optional): percentage of printed surface (1%, 5%, 20%, 50% or 80%).
+          </p>
         </li>
         <li>
-          <b>Délavage</b> (optional): Is there a fading process applied during the manufacturing stage? Yes/No.
+          <p>
+            <b>Délavage</b> (optional): Is there a fading process applied during the manufacturing stage? Yes/No.
+          </p>
         </li>
         <li>
-          <b>Part du transport aérien</b> (optional): percentage of air transport between manufacturing and
-          distribution.
+          <p>
+            <b>Part du transport aérien</b> (optional): percentage of air transport between manufacturing and
+            distribution.
+          </p>
         </li>
       </ul>
+      <br />
+      <h3>Declare a batch</h3>
+      <p>To declare a batch of products, indicate one line per product in the batch.</p>
+      <p>
+        Make sure to provide the same common information (GTINs/EANs, Internal Reference, Brand ID, Score, Price, and
+        Number of References) on each line.
+      </p>
+      <p>To redeclare a batch, you must redeclare all products in the batch.</p>
+      <br />
+      <h3>Declare a multi-component product</h3>
+      <p>
+        To declare a product with multiple components, you can add the column "Composant principal". This column must be
+        "Yes" for the main component and "No" for the others.
+      </p>
+      <p>If the product has accessories, they must only be declared on the main component.</p>
+      <p>
+        Make sure to provide the same common information (GTINs/EANs, Internal Reference, Brand ID, Score, Category,
+        Price, and Number of References) on each line.
+      </p>
       <br />
       <h3>Material information</h3>
       <p>For each material used, add the following columns (up to 16 materials):</p>
       <ul>
         <li>
-          <b>Matière X</b>: type of material to choose from the following list:
+          <p>
+            <b>Matière X</b>: type of material to choose from the following list:
+          </p>
           <ul>
-            <li>Elastane</li>
-            <li>Acrylic</li>
-            <li>Jute</li>
-            <li>Polypropylene</li>
-            <li>Polyester</li>
-            <li>Recycled polyester</li>
-            <li>Nylon</li>
-            <li>Linen</li>
-            <li>Default wool</li>
-            <li>New supply chain wool</li>
-            <li>Cotton</li>
-            <li>Organic cotton</li>
-            <li>Hemp</li>
-            <li>Viscose</li>
-            <li>Recycled cotton (post-consumer waste)</li>
-            <li>Recycled cotton (production waste)</li>
+            <li>
+              <p>Elastane</p>
+            </li>
+            <li>
+              <p>Acrylic</p>
+            </li>
+            <li>
+              <p>Jute</p>
+            </li>
+            <li>
+              <p>Polypropylene</p>
+            </li>
+            <li>
+              <p>Polyester</p>
+            </li>
+            <li>
+              <p>Recycled polyester</p>
+            </li>
+            <li>
+              <p>Nylon</p>
+            </li>
+            <li>
+              <p>Linen</p>
+            </li>
+            <li>
+              <p>Default wool</p>
+            </li>
+            <li>
+              <p>New supply chain wool</p>
+            </li>
+            <li>
+              <p>Cotton</p>
+            </li>
+            <li>
+              <p>Organic cotton</p>
+            </li>
+            <li>
+              <p>Hemp</p>
+            </li>
+            <li>
+              <p>Viscose</p>
+            </li>
+            <li>
+              <p>Recycled cotton (post-consumer waste)</p>
+            </li>
+            <li>
+              <p>Recycled cotton (production waste)</p>
+            </li>
           </ul>
         </li>
         <li>
-          <b>Matière X pourcentage</b>: Share of the product that this material represents, in percentage.
+          <p>
+            <b>Matière X pourcentage</b>: Share of the product that this material represents, in percentage.
+          </p>
         </li>
         <li>
-          <b>Matière X origine</b> (optional): country or region of origin of the material.
+          <p>
+            <b>Matière X origine</b> (optional): country or region of origin of the material.
+          </p>
         </li>
       </ul>
       <p>
@@ -150,41 +280,87 @@ const En = () => {
       </p>
       <ul>
         <li>
-          <b>Quantité de zip long</b>: Long zipper quantity
+          <p>
+            <b>Quantité de zip long</b>: Long zipper quantity
+          </p>
         </li>
         <li>
-          <b>Quantité de zip court</b>: Short zipper quantity
+          <p>
+            <b>Quantité de zip court</b>: Short zipper quantity
+          </p>
         </li>
         <li>
-          <b>Quantité de bouton en plastique</b>: Plastic button quantity
+          <p>
+            <b>Quantité de bouton en plastique</b>: Plastic button quantity
+          </p>
         </li>
         <li>
-          <b>Quantité de bouton en métal</b>: Metal button quantity
+          <p>
+            <b>Quantité de bouton en métal</b>: Metal button quantity
+          </p>
         </li>
       </ul>
       <br />
       <h3>Countries</h3>
       <p>The list of available countries is as follows:</p>
       <ul>
-        <li>Africa</li>
-        <li>Asia</li>
-        <li>Bangladesh</li>
-        <li>Cambodia</li>
-        <li>China</li>
-        <li>Eastern Europe</li>
-        <li>France</li>
-        <li>India</li>
-        <li>Latin America</li>
-        <li>Middle East</li>
-        <li>Morocco</li>
-        <li>Myanmar</li>
-        <li>North America</li>
-        <li>Oceania</li>
-        <li>Pakistan</li>
-        <li>Tunisia</li>
-        <li>Turkey</li>
-        <li>Vietnam</li>
-        <li>Western Europe</li>
+        <li>
+          <p>Africa</p>
+        </li>
+        <li>
+          <p>Asia</p>
+        </li>
+        <li>
+          <p>Bangladesh</p>
+        </li>
+        <li>
+          <p>Cambodia</p>
+        </li>
+        <li>
+          <p>China</p>
+        </li>
+        <li>
+          <p>Eastern Europe</p>
+        </li>
+        <li>
+          <p>France</p>
+        </li>
+        <li>
+          <p>India</p>
+        </li>
+        <li>
+          <p>Latin America</p>
+        </li>
+        <li>
+          <p>Middle East</p>
+        </li>
+        <li>
+          <p>Morocco</p>
+        </li>
+        <li>
+          <p>Myanmar</p>
+        </li>
+        <li>
+          <p>North America</p>
+        </li>
+        <li>
+          <p>Oceania</p>
+        </li>
+        <li>
+          <p>Pakistan</p>
+        </li>
+        <li>
+          <p>Tunisia</p>
+        </li>
+        <li>
+          <p>Turkey</p>
+        </li>
+        <li>
+          <p>Vietnam</p>
+        </li>
+        <li>
+          <p>Western Europe</p>
+        </li>
       </ul>
     </>
   )

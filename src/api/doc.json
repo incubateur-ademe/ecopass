@@ -266,7 +266,7 @@
           }
         ],
         "tags": ["Déclaration"],
-        "summary": "Déclare un produit multicomposants sur le portail de l'Affichage Environnemental. Uniquement disponible sur l'environnement de test pour le moment.",
+        "summary": "Déclare un produit multicomposants sur le portail de l'Affichage Environnemental.",
         "description": "Permet de déclarer un produit regroupant plusieurs composants. Tous les composants du produit partagent les mêmes métadonnées (GTINs, référence interne, marque, score déclaré) et le même type de produit, mais peuvent avoir des informations techniques différentes (masse, matières, pays, impression, etc.). Un seul composant doit être défini comme composant principal.",
         "requestBody": {
           "description": "Requête modélisant les paramètres du produit multicomposants à déclarer",
@@ -673,6 +673,15 @@
             "description": "Type des paramètres pour l'image à générer, soit `score` pour l'image avec le score, soit `gtin` pour l'image avec le GTIN du produit"
           },
           {
+            "name": "modele",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["simple", "avecComparaison", "avecComparaisonSimple"]
+            },
+            "description": "Modèle de l'image à générer, soit `simple` pour une image simple, soit `avecComparaison` ou `avecComparaisonSimple` pour une image avec jauge de comparaison. Attention, les images avec comparaison sont uniquement disponibles sur [l'environnement de test](https://test-affichage-environnemental.ecobalyse.beta.gouv.fr/). Pour en savoir plus sur le produit moyen considéré, merci de nous contacter à l'adresse [affichage-environnemental@ecobalyse.beta.gouv.fr](mailto:affichage-environnemental@ecobalyse.beta.gouv.fr)"
+          },
+          {
             "name": "gtin",
             "in": "query",
             "schema": {
@@ -696,6 +705,27 @@
               "type": "number"
             },
             "description": "La masse du produit (en kg), doit être fournie si `type` est `score`"
+          },
+          {
+            "name": "categorie",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "chemise",
+                "jean",
+                "jupe",
+                "manteau",
+                "pantalon",
+                "pull",
+                "tshirt",
+                "chaussettes",
+                "calecon",
+                "slip",
+                "maillot-de-bain"
+              ]
+            },
+            "description": "La catégorie du produit, doit être fournie si `type` est `score` et que le modele est `avecComparaison` ou `avecComparaisonSimple`"
           }
         ],
         "responses": {

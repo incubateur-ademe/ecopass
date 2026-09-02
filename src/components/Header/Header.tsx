@@ -68,7 +68,7 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
           : null,
         {
           linkProps: { href: "/marques" },
-          text: "Les marques déclarantes",
+          text: "Les marques",
           isActive: pathname.startsWith("/marques"),
         },
         {
@@ -92,7 +92,7 @@ const Header = ({ session, type }: { session: Session | null; type: Organization
     { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" },
     {
       linkProps: { href: "/marques" },
-      text: "Les marques déclarantes",
+      text: "Les marques",
       isActive: pathname.startsWith("/marques"),
     },
     {

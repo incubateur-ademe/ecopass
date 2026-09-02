@@ -14,7 +14,7 @@ import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
 import { checkHeaders, ColumnType, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
 import { getAuthorizedBrands } from "../../organization/brands"
-import { hashProduct } from "../../encryption/hash"
+import { hashProduct, ProductInformationForHash } from "../../encryption/hash"
 
 type CSVRow = {
   info: { records: number }
@@ -87,6 +87,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
   let hasAccessoire1 = false
 
   const now = new Date()
+  const productsByGtins = {} as Record<string, { product: Product; raw: ProductInformationForHash[] }>
   await new Promise<void>((resolve, reject) => {
     const parser = parse({
       columns: (headers: string[]) => {
@@ -105,9 +106,6 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
     stream.pipe(parser)
 
     parser.on("data", (row: CSVRow) => {
-      const id = uuid()
-      const productId = uuid()
-
       const gtins = (row.record["gtinseans"] || "").split(";").map((gtin) => gtin.trim())
       const internalReference = row.record["referenceinterne"] || ""
       const brand = (
@@ -117,7 +115,18 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       ).trim()
       const declaredScore = getNumberValue(row.record["score"], 1, -1) as number | undefined
 
+      const gtin = gtins.sort((a, b) => a.localeCompare(b)).join(",")
+      const existingProduct = productsByGtins[gtin]
+
+      const id = uuid()
+      const productId = existingProduct ? existingProduct.product.id : uuid()
+
+      const mainComponentValue = getBooleanValue(row.record["composantprincipal"])
+      const mainComponentError = typeof mainComponentValue === "string"
+      const mainComponent = mainComponentError ? undefined : mainComponentValue
+
       const rawProduct = {
+        mainComponent,
         product: getValue<ProductCategory>(productCategories, row.record["categorie"]),
         airTransportRatio: getNumberValue(row.record["partdutransportaerien"], 0.01),
         business: getValue<Business>(businesses, row.record["tailledelentreprise"]),
@@ -190,8 +199,8 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         ? getAuthorizedBrands(upload.createdBy.organization)
         : ([] as string[])
 
-      products.push({
-        error: null,
+      const product = {
+        error: mainComponentError ? "Composant principal doit valoir 'Oui' ou 'Non'" : null,
         id: productId,
         score: null,
         standardized: null,
@@ -208,13 +217,58 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         createdAt: now,
         uploadId: upload.id,
         uploadOrder: row.info.records,
-        status: Status.Pending,
+        status: mainComponentError ? Status.Error : Status.Pending,
         gtins: gtins,
         internalReference: internalReference,
         brandName: brand,
         brandId: authorizedBrands.includes(brand) ? brand : null,
         declaredScore: declaredScore || null,
-      })
+      }
+
+      if (existingProduct) {
+        existingProduct.raw.push(rawProduct)
+        existingProduct.product.hash = hashProduct(
+          {
+            gtins: product.gtins,
+            internalReference: product.internalReference,
+            brandId: product.brandId || "",
+            declaredScore: product.declaredScore || undefined,
+          },
+          existingProduct.raw,
+          authorizedBrands,
+        )
+
+        const errors = []
+        if (existingProduct.product.internalReference !== product.internalReference) {
+          errors.push("La référence interne doit être identique pour toutes les composantes du produit")
+        }
+        if (existingProduct.product.declaredScore !== product.declaredScore) {
+          errors.push("Le score déclaré doit être identique pour toutes les composantes du produit")
+        }
+        if (existingProduct.product.brandName !== product.brandName) {
+          errors.push("La marque doit être identique pour toutes les composantes du produit")
+        }
+        if (existingProduct.raw[0].price !== rawProduct.price) {
+          errors.push("Le prix doit être identique pour toutes les composantes du produit")
+        }
+        if (existingProduct.raw[0].numberOfReferences !== rawProduct.numberOfReferences) {
+          errors.push("Le nombre de références doit être identique pour toutes les composantes du produit")
+        }
+        if (
+          rawProduct.mainComponent === true &&
+          existingProduct.raw.some((component) => component.mainComponent === true)
+        ) {
+          errors.push("Il ne peut y avoir qu'un seul composant principal par produit")
+        }
+
+        if (errors.length > 0) {
+          existingProduct.product.status = Status.Error
+          existingProduct.product.error = errors.join(", ")
+        }
+      } else {
+        productsByGtins[gtin] = { product, raw: [rawProduct] }
+        products.push(product)
+      }
 
       informations.push({
         id,
@@ -224,7 +278,18 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       })
     })
 
-    parser.on("end", resolve)
+    parser.on("end", () => {
+      for (const { product, raw } of Object.values(productsByGtins)) {
+        if (raw.findIndex((component) => component.mainComponent === true) !== -1) {
+          if (raw.findIndex((component) => component.product !== raw[0].product) !== -1) {
+            product.status = Status.Error
+            product.error = "Tous les composants du produit doivent avoir la même catégorie"
+          }
+        }
+      }
+
+      resolve()
+    })
     parser.on("error", reject)
     stream.on("error", reject)
   })

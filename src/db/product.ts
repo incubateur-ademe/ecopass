@@ -18,40 +18,13 @@ export const createProducts = async ({
   accessories: Accessory[]
   informations: (ProductInformation & { materials: undefined; accessories: undefined })[]
 }) => {
-  const gtinToProductIds = new Map<string, string[]>()
-  products.forEach((product) =>
-    product.gtins
-      .filter((gtin) => gtin)
-      .forEach((gtin) => {
-        if (!gtinToProductIds.has(gtin)) {
-          gtinToProductIds.set(gtin, [])
-        }
-        gtinToProductIds.get(gtin)!.push(product.id)
-      }),
-  )
-
-  const duplicatedProductIds = new Set<string>()
-  for (const ids of gtinToProductIds.values()) {
-    if (ids.length > 1) {
-      ids.forEach((id) => duplicatedProductIds.add(id))
-    }
-  }
-
   return prismaClient.$transaction(
     async (transaction) => {
       const productsToCreate = []
       const ids = new Set<string>()
 
       for (const product of products) {
-        if (duplicatedProductIds.has(product.id)) {
-          await transaction.product.create({
-            data: { ...product, status: Status.Error, error: "GTIN dupliqué dans le fichier" },
-          })
-          continue
-        }
-
         const oldProductCheck = await checkOldProduct(product.gtins, product.hash)
-
         if (oldProductCheck.result === ProductCheckResult.Unchanged && oldProductCheck.lastProduct) {
           await transaction.uploadProduct.create({
             data: {
@@ -111,28 +84,31 @@ export const createProducts = async ({
 }
 
 export const createProductScore = async (
-  score: Omit<Prisma.ScoreCreateInput, "standardized">,
+  scores: Omit<Prisma.ScoreCreateInput, "standardized">[],
   product: ParsedProductValidation,
-) =>
-  prismaClient.$transaction(async (transaction) =>
+) => {
+  const score = scores.reduce((acc, value) => acc + value.score, 0)
+  const mass = product.informations.map((info) => info.mass).reduce((acc, value) => acc + value, 0)
+  return prismaClient.$transaction(async (transaction) =>
     Promise.all([
       transaction.product.update({
-        where: { id: product.productId },
+        where: { id: product.id },
         data: {
           status: Status.Done,
-          score: score.score,
-          standardized: (score.score / product.mass) * 0.1,
+          score: score,
+          standardized: (score / mass) * 0.1,
         },
       }),
-      transaction.score.create({
-        data: {
+      transaction.score.createMany({
+        data: scores.map((score, index) => ({
           ...score,
-          product: { connect: { id: product.id } },
-          standardized: (score.score / product.mass) * 0.1,
-        },
+          productId: product.informations[index].id,
+          standardized: (score.score / product.informations[index].mass) * 0.1,
+        })),
       }),
     ]),
   )
+}
 
 export const getProductsToProcess = async (take: number) => {
   const products = await prismaClient.product.findMany({
@@ -534,11 +510,11 @@ export const getProductsByUploadId = async (uploadId: string) => {
     }))
 }
 
-export const failProducts = async (products: { productId: string; error: string }[]) => {
+export const failProducts = async (products: { id: string; error: string }[]) => {
   await Promise.all(
     products.map((product) =>
       prismaClient.product.update({
-        where: { id: product.productId },
+        where: { id: product.id },
         data: {
           status: Status.Error,
           error: product.error,
@@ -698,6 +674,15 @@ export const getLastProductsByGtins = async (gtins: string[]) => {
     .map((gtin) => products.find((product) => product.gtins.includes(gtin)))
     .filter((product) => product !== undefined)
 }
+
+export const getAllProducts = async () =>
+  prismaClient.product.groupBy({
+    by: ["internalReference"],
+    where: {
+      status: Status.Done,
+    },
+    _min: { createdAt: true },
+  })
 
 export const getProductCountByCategory = async () => {
   const allProducts = await prismaClient.product.findMany({
