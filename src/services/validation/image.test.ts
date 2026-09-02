@@ -121,7 +121,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.issues[0].message).toBe("Le GTIN doit contenir 8 ou 13 chiffres")
+      expect(result.error?.issues[0].message).toBe("Le GTIN doit contenir 8, 12 ou 13 chiffres")
     })
 
     it("should reject GTIN with non-numeric characters", () => {
@@ -132,7 +132,7 @@ describe("imageValidation", () => {
       })
 
       expect(result.success).toBe(false)
-      expect(result.error?.issues[0].message).toBe("Le GTIN doit contenir 8 ou 13 chiffres")
+      expect(result.error?.issues[0].message).toBe("Le GTIN doit contenir 8, 12 ou 13 chiffres")
     })
   })
 

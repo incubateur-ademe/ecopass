@@ -27,7 +27,7 @@ const SearchFilters = ({
     <div className={classNames("fr-grid-row", "fr-grid-row--gutters")}>
       <div className='fr-col-12'>
         <Input
-          label='Saisir un code-barres (8 ou 13 chiffres) ou une référence produit'
+          label='Saisir un code-barres (8, 12 ou 13 chiffres) ou une référence produit'
           nativeInputProps={{
             value: search,
             onChange: (e) => onSearchChange(e.target.value),

@@ -269,7 +269,7 @@ describe("handleProductPOST", () => {
         path: issue.path,
         message: issue.message,
       })),
-    ).toEqual([{ path: [0], message: "Le code GTIN doit contenir 8 ou 13 chiffres" }])
+    ).toEqual([{ path: [0], message: "Le code GTIN doit contenir 8, 12 ou 13 chiffres" }])
     expect(mockedComputeEcobalyseScore).not.toHaveBeenCalled()
   })
 

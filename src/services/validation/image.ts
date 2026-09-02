@@ -19,7 +19,7 @@ const scoreBase = z.object({
 
 const gtinBase = z.object({
   type: z.literal("gtin"),
-  gtin: z.string().regex(gtinRegex, { message: "Le GTIN doit contenir 8 ou 13 chiffres" }),
+  gtin: z.string().regex(gtinRegex, { message: "Le GTIN doit contenir 8, 12 ou 13 chiffres" }),
 })
 
 const typeSchema = z.discriminatedUnion("type", [scoreBase, gtinBase])

@@ -19,6 +19,13 @@ describe("isValidGtin", () => {
 
     expect(isValidGtin("12345671")).toBe(false)
   })
+
+  it("should validate UPC codes", () => {
+    expect(isValidGtin("123456789104")).toBe(true)
+    expect(isValidGtin("012345678905")).toBe(true)
+
+    expect(isValidGtin("123456789106")).toBe(false)
+  })
 })
 
 describe("getDefaultGTINs", () => {

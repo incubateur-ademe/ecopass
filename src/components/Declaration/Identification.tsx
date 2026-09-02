@@ -42,7 +42,7 @@ const Identification = ({
       success = false
     } else if (/^\d{8}$|^\d{13}$/.test(data.gtin) === false || !isValidGtin(data.gtin)) {
       newErrors.gtin =
-        "Le code GTIN n'est pas valide (doit contenir 8 ou 13 chiffres et avoir une somme de contrôle correcte)"
+        "Le code GTIN n'est pas valide (doit contenir 8, 12 ou 13 chiffres et avoir une somme de contrôle correcte)"
       if (success) {
         gtinRef.current?.focus()
       }
