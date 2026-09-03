@@ -81,6 +81,7 @@ const Header = ({
               isActive: pathname.startsWith("/declaration-simplifiee"),
             }
           : null,
+        { linkProps: { href: "/produits" }, text: "Produits déclarés", isActive: pathname == "/produits" },
         {
           linkProps: { href: "/marques" },
           text: "Les marques",

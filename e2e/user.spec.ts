@@ -76,15 +76,11 @@ test("Connection with a distributor user", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Les marques", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Rechercher un produit", exact: true })).toBeVisible()
 
-  await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).not.toBeVisible()
+  await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarer vos produits", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "API" })).toHaveCount(1)
-
-  await page.goto("http://localhost:3000/produits")
-  await expect(page).toHaveURL(/.*\//)
-  await expect(page.getByRole("heading", { name: "Mes produits", exact: true })).not.toBeVisible()
 
   await page.goto("http://localhost:3000/declarations")
   await expect(page).toHaveURL(/.*\//)
@@ -108,15 +104,11 @@ test("Connection with a other user", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Les marques", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Rechercher un produit", exact: true })).toBeVisible()
 
-  await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).not.toBeVisible()
+  await expect(page.getByRole("link", { name: "Produits déclarés", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarer vos produits", exact: true })).not.toBeVisible()
   await expect(page.getByRole("link", { name: "API", exact: true })).not.toBeVisible()
-
-  await page.goto("http://localhost:3000/produits")
-  await expect(page).toHaveURL(/.*\//)
-  await expect(page.getByRole("heading", { name: "Mes produits", exact: true })).not.toBeVisible()
 
   await page.goto("http://localhost:3000/declarations")
   await expect(page).toHaveURL(/.*\//)
@@ -135,10 +127,6 @@ test("Connection with a other user", async ({ page }) => {
 test("Connection with an unknown user", async ({ page }) => {
   await login(page, "ecopass-unknown@yopmail.com")
   await expect(page).toHaveURL(/.*\/organisation\/type/)
-
-  await page.goto("http://localhost:3000/produits")
-  await expect(page).toHaveURL(/.*\/organisation\/type/)
-  await expect(page.getByRole("heading", { name: "Mes produits", exact: true })).not.toBeVisible()
 
   await page.goto("http://localhost:3000/declarations")
   await expect(page).toHaveURL(/.*\/organisation\/type/)
