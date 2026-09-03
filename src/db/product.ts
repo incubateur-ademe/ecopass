@@ -1,5 +1,5 @@
 import { Accessory, Material, Prisma, Product, ProductInformation } from "@prisma/client"
-import { ConfidenceLevel, Status, UploadType } from "@prisma/enums"
+import { ConfidenceLevel, Status, UploadType, UserType } from "@prisma/enums"
 import { ParsedProductValidation } from "../services/validation/product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { productCategories } from "../utils/types/productCategory"
@@ -311,7 +311,10 @@ export const getOldProductWithScore = async (gtin: string, version: string) => {
 }
 
 const getProducts = async (
-  where: Pick<Prisma.ProductWhereInput, "upload" | "informations" | "uploadId" | "createdAt" | "brandId" | "status">,
+  where: Pick<
+    Prisma.ProductWhereInput,
+    "upload" | "informations" | "uploadId" | "createdAt" | "brandId" | "status" | "AND"
+  >,
   skip?: number,
   take?: number,
 ) => {
@@ -402,6 +405,7 @@ export const getOrganizationProductsCountByUserIdAndBrand = async (userId: strin
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
     select: {
+      type: true,
       organization: {
         select: {
           id: true,
@@ -415,25 +419,35 @@ export const getOrganizationProductsCountByUserIdAndBrand = async (userId: strin
     },
   })
 
-  if (!user || !user.organization) {
+  if (!user) {
     return 0
   }
+  const authorizedBrandIds = user.organization
+    ? [
+        ...user.organization.brands.map((brand) => brand.id),
+        ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
+      ]
+    : []
 
-  const authorizedBrands = new Set([
-    ...user.organization.brands.map((brand) => brand.id),
-    ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
-  ])
-
-  if (brandId && !authorizedBrands.has(brandId)) {
-    return 0
-  }
+  const where =
+    user.type === UserType.CITOYEN || !user.organization
+      ? { status: Status.Done, upload: { createdById: userId } }
+      : {
+          OR: [
+            {
+              brandId: { in: authorizedBrandIds },
+              status: Status.Done,
+            },
+            {
+              upload: { organizationId: user.organization.id },
+              status: Status.Done,
+            },
+          ],
+        }
 
   const products = await prismaClient.product.groupBy({
     by: ["internalReference"],
-    where: {
-      brandId: brandId ? brandId : { in: Array.from(authorizedBrands) },
-      status: Status.Done,
-    },
+    where: brandId ? { AND: [where, { brandId }] } : where,
     _count: { internalReference: true },
   })
   return products.length
@@ -448,6 +462,7 @@ export const getOrganizationProductsByUserIdAndBrandId = async (
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
     select: {
+      type: true,
       organization: {
         select: {
           id: true,
@@ -460,33 +475,35 @@ export const getOrganizationProductsByUserIdAndBrandId = async (
       },
     },
   })
-
-  if (!user || !user.organization) {
+  if (!user) {
     return []
   }
 
-  const authorizedBrands = new Set([
-    ...user.organization.brands.map((brand) => brand.id),
-    ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
-  ])
-
-  if (brandId && !authorizedBrands.has(brandId)) {
-    return []
-  }
+  const authorizedBrandIds = user.organization
+    ? [
+        ...user.organization.brands.map((brand) => brand.id),
+        ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
+      ]
+    : []
+  const where =
+    user.type === UserType.CITOYEN || !user.organization
+      ? { status: Status.Done, upload: { createdById: userId } }
+      : {
+          OR: [
+            {
+              brandId: { in: authorizedBrandIds },
+              status: Status.Done,
+            },
+            {
+              upload: { organizationId: user.organization.id },
+              status: Status.Done,
+            },
+          ],
+        }
 
   return size
-    ? getProducts(
-        {
-          brandId: brandId ? brandId : { in: Array.from(authorizedBrands) },
-          status: Status.Done,
-        },
-        (page || 0) * size,
-        size,
-      )
-    : getProducts({
-        brandId: brandId ? brandId : { in: Array.from(authorizedBrands) },
-        status: Status.Done,
-      })
+    ? getProducts(brandId ? { AND: [where, { brandId }] } : where, (page || 0) * size, size)
+    : getProducts(brandId ? { AND: [where, { brandId }] } : where)
 }
 export const getProductsByUploadId = async (uploadId: string) => {
   const upload = await prismaClient.upload.findFirst({
@@ -806,6 +823,7 @@ export const getOrganizationProductsByUserId = async (userId: string) => {
   const user = await prismaClient.user.findUnique({
     where: { id: userId },
     select: {
+      type: true,
       organization: {
         select: {
           id: true,
@@ -815,22 +833,28 @@ export const getOrganizationProductsByUserId = async (userId: string) => {
     },
   })
 
-  if (!user || !user.organization) {
+  if (!user) {
     return []
   }
+
+  const where =
+    user.type === UserType.CITOYEN || !user.organization
+      ? { status: Status.Done, upload: { createdById: userId } }
+      : {
+          OR: [
+            {
+              brandId: { in: user.organization.brands.map((brand) => brand.id) },
+              status: Status.Done,
+            },
+            {
+              upload: { organizationId: user.organization.id },
+              status: Status.Done,
+            },
+          ],
+        }
+
   const products = await prismaClient.product.findMany({
-    where: {
-      OR: [
-        {
-          brandId: { in: user.organization.brands.map((brand) => brand.id) },
-          status: Status.Done,
-        },
-        {
-          upload: { organizationId: user.organization.id },
-          status: Status.Done,
-        },
-      ],
-    },
+    where,
     select: {
       brand: { select: { id: true, name: true } },
     },
