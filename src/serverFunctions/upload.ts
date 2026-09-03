@@ -17,6 +17,7 @@ import { prismaClient } from "../db/prismaClient"
 import { getProductConfidenceLevel } from "../utils/product/confidence"
 import { checkOldProduct } from "../services/validation/oldProduct"
 import { ProductCheckResult } from "../services/validation/productCheckResult"
+import { gtinsValidation } from "../services/validation/gtins"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -182,6 +183,11 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
 
     if (validatedData.error) {
       throw new Error(`Validation error: ${validatedData.error.message}`)
+    }
+
+    const gtin = gtinsValidation.safeParse([data.gtin])
+    if (gtin.error) {
+      throw new Error(`Validation error: ${gtin.error.message}`)
     }
 
     const confidenceLevel = getProductConfidenceLevel(user, validatedData.data.brandId)
