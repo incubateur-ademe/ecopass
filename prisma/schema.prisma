@@ -390,6 +390,8 @@ model Export {
   name  String
   brand String?
 
+  count Int?
+
   user   User   @relation(fields: [userId], references: [id])
   userId String @map("user_id")
 
