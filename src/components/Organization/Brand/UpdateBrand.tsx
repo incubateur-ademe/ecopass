@@ -31,13 +31,19 @@ const UpdateBrand = ({ brand }: { brand: UserOrganization["brands"][number] }) =
           { children: "Annuler" },
           {
             children: "Enregistrer",
-            onClick: () => updateBrand(brand.id, { name, active }).finally(() => router.refresh()),
+            disabled: !name.trim(),
+            onClick: () => {
+              if (name.trim()) {
+                updateBrand(brand.id, { name, active }).finally(() => router.refresh())
+              }
+            },
           },
         ]}>
         <>
           <Input
             label='Nom'
             nativeInputProps={{
+              required: true,
               value: name,
               onChange: (e) => {
                 e.preventDefault()

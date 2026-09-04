@@ -46,12 +46,26 @@ export const updateBrand = async (id: string, data: { name: string; active: bool
   const user = await prismaClient.user.findUnique({
     where: { id: session.user.id },
     select: {
-      organization: true,
+      organizationRole: true,
+      organization: { select: { id: true, brands: { select: { id: true, name: true } } } },
     },
   })
 
   if (!user || !user.organization) {
     return "Vous n'êtes pas membre d'une organisation"
+  }
+
+  if (user.organizationRole !== OrganizationRole.ADMIN) {
+    return "Vous n'avez pas les droits pour modifier une marque"
+  }
+
+  const trimmedBrand = data.name.trim()
+  if (trimmedBrand.length === 0) {
+    return "Le nom de la marque ne peut pas être vide"
+  }
+
+  if (user.organization.brands.some(({ name, id: brandId }) => name === trimmedBrand && brandId !== id)) {
+    return "Vous avez déjà une marque avec ce nom"
   }
 
   return prismaClient.brand.update({
@@ -61,7 +75,7 @@ export const updateBrand = async (id: string, data: { name: string; active: bool
       default: false,
     },
     data: {
-      name: data.name.trim(),
+      name: trimmedBrand,
       active: data.active,
     },
   })
