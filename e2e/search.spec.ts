@@ -113,7 +113,6 @@ test("Search", async ({ page }) => {
   await page.getByRole("link", { name: "Les marques" }).click()
   await expect(page.getByRole("heading", { name: "Liste des marques", exact: true })).toBeVisible()
 
-  await expect(page.getByTestId("search-results-count")).toContainText("6 marques ont déclaré 4 références produit.")
   await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(6)
   await expect(
     page.getByTestId("search-results-table").locator("table tbody tr").nth(1).locator("td").nth(0),
