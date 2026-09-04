@@ -1,10 +1,10 @@
 import { processExportsQueue } from "./exports"
 import { completeExport, failExport, getFirstExport } from "../../db/export"
-import { getProductsByOrganizationIdAndBrandBefore } from "../../db/product"
 import { getSVG } from "../label/simple"
 import { uploadFileToS3 } from "../s3/bucket"
 import { Status } from "@prisma/enums"
 import JSZip from "jszip"
+import { getOrganizationAuthorizedBrands, getProducts } from "../../db/product"
 
 jest.mock("../../db/export")
 jest.mock("../../db/product")
@@ -18,8 +18,10 @@ jest.mock("jszip")
 const mockedCompleteExport = completeExport as jest.MockedFunction<typeof completeExport>
 const mockedFailExport = failExport as jest.MockedFunction<typeof failExport>
 const mockedGetFirstExport = getFirstExport as jest.MockedFunction<typeof getFirstExport>
-const mockedGetProductsByOrganizationIdAndBrandBefore =
-  getProductsByOrganizationIdAndBrandBefore as jest.MockedFunction<typeof getProductsByOrganizationIdAndBrandBefore>
+const mockedGetOrganizationAuthorizedBrands = getOrganizationAuthorizedBrands as jest.MockedFunction<
+  typeof getOrganizationAuthorizedBrands
+>
+const mockedGetProducts = getProducts as jest.MockedFunction<typeof getProducts>
 const mockedGetSVG = getSVG as jest.MockedFunction<typeof getSVG>
 const mockedUploadFileToS3 = uploadFileToS3 as jest.MockedFunction<typeof uploadFileToS3>
 const mockedJSZip = JSZip as jest.MockedClass<typeof JSZip>
@@ -36,6 +38,7 @@ describe("processExportsQueue", () => {
     createdAt: new Date("2023-01-01T00:00:00Z"),
     status: Status.Pending,
     brand: "Test Brand" as string | null,
+    count: 1,
     user: {
       organizationId: "org-1" as string | null,
     },
@@ -98,32 +101,36 @@ describe("processExportsQueue", () => {
     await processExportsQueue()
 
     expect(mockedGetFirstExport).toHaveBeenCalledTimes(1)
-    expect(mockedGetProductsByOrganizationIdAndBrandBefore).not.toHaveBeenCalled()
+    expect(mockedGetOrganizationAuthorizedBrands).not.toHaveBeenCalled()
+    expect(mockedGetProducts).not.toHaveBeenCalled()
     expect(mockedCompleteExport).not.toHaveBeenCalled()
   })
 
-  it("should complete export immediately when user has no organization", async () => {
+  it("should fail export immediately when user has no organization", async () => {
     mockedGetFirstExport.mockResolvedValue({ ...mockExport, user: { organizationId: null } })
 
     await processExportsQueue()
 
     expect(mockedGetFirstExport).toHaveBeenCalledTimes(1)
-    expect(mockedCompleteExport).toHaveBeenCalledWith("export-1")
-    expect(mockedGetProductsByOrganizationIdAndBrandBefore).not.toHaveBeenCalled()
+    expect(mockedFailExport).toHaveBeenCalledWith("export-1")
+    expect(mockedGetOrganizationAuthorizedBrands).not.toHaveBeenCalled()
+    expect(mockedGetProducts).not.toHaveBeenCalled()
     expect(mockedGetSVG).not.toHaveBeenCalled()
   })
 
   it("should return early when no products found", async () => {
     mockedGetFirstExport.mockResolvedValue(mockExport)
-    mockedGetProductsByOrganizationIdAndBrandBefore.mockResolvedValue([])
+    mockedGetProducts.mockResolvedValue([])
+    mockedGetOrganizationAuthorizedBrands.mockResolvedValue(new Set(["Test Brand"]))
 
     await processExportsQueue()
 
     expect(mockedGetFirstExport).toHaveBeenCalledTimes(1)
-    expect(mockedGetProductsByOrganizationIdAndBrandBefore).toHaveBeenCalledWith(
-      "org-1",
-      mockExport.createdAt,
-      "Test Brand",
+    expect(mockedGetProducts).toHaveBeenNthCalledWith(
+      1,
+      { brandId: "Test Brand", createdAt: { lt: mockExport.createdAt }, status: "Done" },
+      0,
+      1000,
     )
     expect(mockedFailExport).toHaveBeenCalledWith("export-1")
     expect(mockedGetSVG).not.toHaveBeenCalled()
@@ -140,22 +147,30 @@ describe("processExportsQueue", () => {
     mockedJSZip.mockImplementation(() => mockZipInstance as any)
 
     mockedGetFirstExport.mockResolvedValue(mockExport)
-    mockedGetProductsByOrganizationIdAndBrandBefore.mockResolvedValue([mockProduct])
+    mockedGetProducts.mockResolvedValueOnce([mockProduct]).mockResolvedValueOnce([])
+    mockedGetOrganizationAuthorizedBrands.mockResolvedValue(new Set(["Test Brand"]))
     mockedGetSVG.mockReturnValue(mockSvgContent)
 
     await processExportsQueue()
 
     expect(mockedGetFirstExport).toHaveBeenCalledTimes(1)
-    expect(mockedGetProductsByOrganizationIdAndBrandBefore).toHaveBeenCalledWith(
-      "org-1",
-      mockExport.createdAt,
-      "Test Brand",
+    expect(mockedGetProducts).toHaveBeenNthCalledWith(
+      1,
+      { brandId: "Test Brand", createdAt: { lt: mockExport.createdAt }, status: "Done" },
+      0,
+      1000,
+    )
+    expect(mockedGetProducts).toHaveBeenNthCalledWith(
+      2,
+      { brandId: "Test Brand", createdAt: { lt: mockExport.createdAt }, status: "Done" },
+      1000,
+      1000,
     )
     expect(mockedGetSVG).toHaveBeenCalledWith(85.5, 8.5)
     expect(mockZipFile).toHaveBeenCalledWith("REF001.svg", mockSvgContent)
     expect(mockZipGenerateAsync).toHaveBeenCalledWith({ type: "nodebuffer" })
     expect(mockedUploadFileToS3).toHaveBeenCalledWith("test-export.zip", Buffer.from("zip-content"), "export")
-    expect(mockedCompleteExport).toHaveBeenCalledWith("export-1")
+    expect(mockedCompleteExport).toHaveBeenCalledWith("export-1", 1)
   })
 
   it("should skip products without score", async () => {
@@ -168,12 +183,15 @@ describe("processExportsQueue", () => {
     mockedJSZip.mockImplementation(() => mockZipInstance as any)
 
     mockedGetFirstExport.mockResolvedValue(mockExport)
-    mockedGetProductsByOrganizationIdAndBrandBefore.mockResolvedValue([
-      {
-        ...mockProduct,
-        score: null,
-      },
-    ])
+    mockedGetOrganizationAuthorizedBrands.mockResolvedValue(new Set(["Test Brand"]))
+    mockedGetProducts
+      .mockResolvedValueOnce([
+        {
+          ...mockProduct,
+          score: null,
+        },
+      ])
+      .mockResolvedValueOnce([])
 
     await processExportsQueue()
 
@@ -181,6 +199,6 @@ describe("processExportsQueue", () => {
     expect(mockZipFile).not.toHaveBeenCalled()
     expect(mockZipGenerateAsync).toHaveBeenCalledWith({ type: "nodebuffer" })
     expect(mockedUploadFileToS3).toHaveBeenCalledWith("test-export.zip", Buffer.from("zip-content"), "export")
-    expect(mockedCompleteExport).toHaveBeenCalledWith("export-1")
+    expect(mockedCompleteExport).toHaveBeenCalledWith("export-1", 1)
   })
 })
