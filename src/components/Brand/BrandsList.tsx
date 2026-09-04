@@ -5,7 +5,6 @@ import Table from "../Table/Table"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
 import { formatDate } from "../../services/format"
 import SearchInput from "../Search/SearchInput"
-import Alert from "@codegouvfr/react-dsfr/Alert"
 import Block from "../Block/Block"
 import Image from "next/image"
 import styles from "./BrandsList.module.css"
@@ -13,6 +12,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge"
 import Link from "next/link"
 import { BrandWithStats } from "../../db/brands"
 import { useRouter } from "next/navigation"
+import { Alert } from "@codegouvfr/react-dsfr/Alert"
 
 const getSearchParams = (search: string, newPage?: number) => {
   const params = new URLSearchParams()
@@ -82,24 +82,14 @@ const BrandsList = ({
               value={search}
               onChange={handleSearchChange}
             />
-            <Alert
-              className='fr-mt-2w'
-              severity='info'
-              small
-              description={
-                <p data-testid='search-results-count'>
-                  {filteredBrands.length > 0 ? (
-                    <>
-                      <b>{brands.length}</b> marques ont déclaré{" "}
-                      <b>{brands.reduce((acc, brand) => acc + brand.productCount, 0).toLocaleString("fr-FR")}</b>{" "}
-                      références produit.
-                    </>
-                  ) : (
-                    <>Aucun résultat pour votre recherche</>
-                  )}
-                </p>
-              }
-            />
+            {filteredBrands.length === 0 && (
+              <Alert
+                className='fr-mt-2w'
+                severity='info'
+                small
+                description={<p data-testid='search-results-count'>Aucun résultat pour votre recherche</p>}
+              />
+            )}
           </div>
           <Image src='/images/information.png' alt='Information' width={200} height={200} className={styles.image} />
         </div>
