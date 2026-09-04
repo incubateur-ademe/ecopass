@@ -27,10 +27,10 @@ export const getFirstExport = async () =>
     orderBy: { createdAt: "asc" },
   })
 
-export const completeExport = async (exportId: string) =>
+export const completeExport = async (exportId: string, page: number) =>
   prismaClient.export.update({
     where: { id: exportId },
-    data: { status: Status.Done },
+    data: { status: Status.Done, count: page },
   })
 
 export const failExport = async (exportId: string) =>

@@ -309,8 +309,7 @@ export const getOldProductWithScore = async (gtin: string, version: string) => {
 
   return withMeanScores(product)
 }
-
-const getProducts = async (
+export const getProducts = async (
   where: Pick<
     Prisma.ProductWhereInput,
     "upload" | "informations" | "uploadId" | "createdAt" | "brandId" | "status" | "AND"
@@ -586,11 +585,7 @@ export const failProducts = async (products: { id: string; error: string }[]) =>
   )
 }
 
-export const getProductsByOrganizationIdAndBrandBefore = async (
-  organizationId: string,
-  before: Date,
-  brand: string | null,
-) => {
+export const getOrganizationAuthorizedBrands = async (organizationId: string) => {
   const organization = await prismaClient.organization.findUnique({
     where: { id: organizationId },
     select: {
@@ -604,23 +599,13 @@ export const getProductsByOrganizationIdAndBrandBefore = async (
   })
 
   if (!organization) {
-    return []
+    return new Set<string>([])
   }
 
-  const authorizedBrands = new Set([
+  return new Set([
     ...organization.brands.map((brand) => brand.id),
     ...organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
   ])
-
-  if (brand && !authorizedBrands.has(brand)) {
-    return []
-  }
-
-  return getProducts({
-    brandId: brand ? brand : { in: Array.from(authorizedBrands) },
-    status: Status.Done,
-    createdAt: { lt: before },
-  })
 }
 
 export const getAllBrands = async () => {
