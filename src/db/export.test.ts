@@ -163,7 +163,7 @@ describe("Export DB", () => {
       const export1 = await createExport(testUserId)
       expect(export1.status).toBe(Status.Pending)
 
-      await completeExport(export1.id)
+      await completeExport(export1.id, 3)
 
       const exportUpdated = await mockPrismaTest.export.findUnique({
         where: { id: export1.id },
@@ -171,10 +171,11 @@ describe("Export DB", () => {
 
       expect(exportUpdated?.status).toBe(Status.Done)
       expect(exportUpdated?.id).toBe(export1.id)
+      expect(exportUpdated?.count).toBe(3)
     })
 
     it("should throw error when export doesn't exist", async () => {
-      await expect(completeExport("non-existent-id")).rejects.toThrow()
+      await expect(completeExport("non-existent-id", 3)).rejects.toThrow()
     })
   })
 

@@ -24,13 +24,34 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
         fixed
         caption='Mes produits'
         noCaption
-        headers={["Date", "Status", "Nom", ""]}
-        data={exports.map((item) => [
-          formatDateTime(item.createdAt),
-          <StatusBadge status={item.status} key={item.id} />,
-          item.name,
-          item.status == Status.Done ? <DownloadExport name={item.name} key={item.id} setError={setError} /> : "",
-        ])}
+        headers={["Date", "Status", "Fichier", "Nom", ""]}
+        data={exports.flatMap((item) =>
+          item.count
+            ? Array.from({ length: item.count }).map((_, index) => [
+                formatDateTime(item.createdAt),
+                <StatusBadge status={item.status} key={`${item.id}-${index}`} />,
+                `${index + 1} / ${item.count}`,
+                `${item.name} - Partie ${index + 1}`,
+                item.status == Status.Done ? (
+                  <DownloadExport name={item.name} key={`${item.id}-${index}`} setError={setError} index={index} />
+                ) : (
+                  ""
+                ),
+              ])
+            : [
+                [
+                  formatDateTime(item.createdAt),
+                  <StatusBadge status={item.status} key={item.id} />,
+                  item.status == Status.Done ? "1 / 1" : "",
+                  item.name,
+                  item.status == Status.Done ? (
+                    <DownloadExport name={item.name} key={item.id} setError={setError} />
+                  ) : (
+                    ""
+                  ),
+                ],
+              ],
+        )}
       />
     </>
   )
