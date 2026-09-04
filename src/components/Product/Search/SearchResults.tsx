@@ -9,6 +9,7 @@ import { formatNumber } from "../../../services/format"
 import Table from "../../Table/Table"
 import ProductLink from "../ProductLink"
 import { getProductCategory, getProductIcon } from "../../../utils/product/category"
+import ProductNotFound from "../../Home/ProductNotFound"
 
 const SearchResults = ({
   products,
@@ -16,15 +17,26 @@ const SearchResults = ({
   page,
   totalPages,
   onPageChange,
+  hasCriteria,
 }: {
   products: Products
   total: number
   page: number
   totalPages: number
   onPageChange: (page: number) => void
+  hasCriteria: boolean
 }) => {
   if (total === 0) {
-    return <Alert severity='info' small description='Aucun produit ne correspond à vos critères de recherche.' />
+    return (
+      <>
+        <Alert severity='info' small description='Aucun produit ne correspond à vos critères de recherche.' />
+        {hasCriteria && (
+          <div className='fr-mt-4w'>
+            <ProductNotFound fromSearch />
+          </div>
+        )}
+      </>
+    )
   }
 
   return (

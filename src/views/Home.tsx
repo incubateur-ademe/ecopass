@@ -8,7 +8,6 @@ import { organizationTypesAllowedToDeclare } from "../utils/organization/canDecl
 import InformationBanner from "../components/Home/InformationBanner"
 import InformationProBanner from "../components/Home/InformationProBanner"
 import ContributionBanner from "../components/Home/ContributionBanner"
-import FAQ from "../components/Home/FAQ"
 
 const Home = ({
   connected,
@@ -47,7 +46,7 @@ const Home = ({
           ) : (
             <>
               <InformationBanner />
-              <FAQ />
+              {/*<FAQ />*/}
               <Block>
                 <KeyResults />
               </Block>

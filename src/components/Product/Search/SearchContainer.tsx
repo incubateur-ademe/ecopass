@@ -86,6 +86,7 @@ const SearchContainer = ({
           page={page}
           totalPages={totalPages}
           onPageChange={handleSearch}
+          hasCriteria={!!(brandId || search || category)}
         />
       </Block>
     </>
