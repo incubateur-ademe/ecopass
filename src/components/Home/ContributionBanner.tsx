@@ -15,16 +15,16 @@ const ContributionBanner = ({ pro }: { pro?: boolean }) => {
           <p>
             {pro ? (
               <>
-                Depuis octobre 2026, citoyen, selon{" "}
+                Depuis octobre 2026, selon{" "}
                 <Link
                   href='https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000052212871'
                   target='_blank'
                   rel='noopener noreferrer'>
                   Art. D. 541-244 du décret n° 2025-957 du 6 septembre 2025 relatif aux modalités de calcul et de
                   communication du coût environnemental des produits textiles
-                </Link>{" "}
-                les associations et autres professionnels peuvent eux aussi déclarer le coût environnemental de
-                référence textile.
+                </Link>
+                , les citoyens, les associations et autres professionnels peuvent eux aussi déclarer le coût
+                environnemental de référence textile.
               </>
             ) : (
               <>

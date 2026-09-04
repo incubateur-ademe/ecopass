@@ -20,7 +20,7 @@ const InformationBanner = () => {
           </Button>
         </div>
       </Block>
-      <Block noMargin className={styles.reversedContainer}>
+      {/*<Block noMargin className={styles.reversedContainer}>
         <Image className={styles.image} src='/images/hometshirt.png' alt='Jeans' width={500} height={500} />
         <div className={styles.text}>
           <h2>Les outils pour vous donner les moyens d’agir</h2>
@@ -32,7 +32,7 @@ const InformationBanner = () => {
             Comment ça marche
           </Button>
         </div>
-      </Block>
+      </Block>*/}
     </>
   )
 }

@@ -74,7 +74,7 @@ const HomeBanner = ({
             {isTestEnvironment()
               ? "Serveur de test pour la déclaration du coût environnemental de produits textiles"
               : proView
-                ? "Déclarer le coût environnemental de produits textiles"
+                ? "Déclarer le coût environnemental de vos produits textiles"
                 : "Affichage environnemental"}
           </h1>
           {!isTestEnvironment() &&
