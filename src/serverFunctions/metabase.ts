@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken"
 
 export const getMetabaseToken = (question: number) => {
+  console.log(`[getMetabaseToken] Starting - question: ${question}`)
   const payload = {
     resource: { question },
     params: {},
