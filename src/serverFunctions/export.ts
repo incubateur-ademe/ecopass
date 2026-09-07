@@ -10,6 +10,7 @@ import { organizationTypesAllowedToDeclare } from "../utils/organization/canDecl
 import { getUserOrganizationType } from "../db/user"
 
 export const exportScores = async (brandId?: string) => {
+  console.log(`[exportScores] Starting - brandId: ${brandId}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -33,6 +34,7 @@ export const exportScores = async (brandId?: string) => {
 }
 
 export const exportUpload = async (uploadId: string) => {
+  console.log(`[exportUpload] Starting - uploadId: ${uploadId}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -89,6 +91,7 @@ export const exportUpload = async (uploadId: string) => {
 }
 
 export const exportProducts = async (brand?: string) => {
+  console.log(`[exportProducts] Starting - brand: ${brand}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"

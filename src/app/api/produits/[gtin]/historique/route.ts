@@ -4,6 +4,7 @@ import { paginationValidation } from "../../../../../services/validation/api"
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ gtin: string }> }) {
   const { gtin } = await params
+  console.log(`[GET] /api/produits/${gtin}/historique - Starting`)
   const { searchParams } = new URL(request.url)
 
   const validationResult = paginationValidation.safeParse({
@@ -16,5 +17,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
 
   const products = await getProductWithScoreHistory(gtin, validationResult.data.page, validationResult.data.size)
+  console.log(`[GET] /api/produits/${gtin}/historique - Completed`)
   return NextResponse.json(products)
 }

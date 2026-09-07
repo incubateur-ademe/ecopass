@@ -4,6 +4,7 @@ import axios from "axios"
 import { SiretAPI } from "../types/Siret"
 
 export const getSiretInfo = async (siret: string) => {
+  console.log(`[getSiretInfo] Starting - siret: ${siret}`)
   try {
     const result = await axios.get<SiretAPI>(`https://api.insee.fr/api-sirene/3.11/siret/${siret}`, {
       headers: { "X-INSEE-Api-Key-Integration": process.env.INSEE_API_KEY },
@@ -19,7 +20,7 @@ export const getSiretInfo = async (siret: string) => {
 
     return result.data
   } catch (e) {
-    console.error("Error fetching SIRET information:", e)
+    console.error(`[getSiretInfo] Error fetching SIRET ${siret}:`, e)
     return null
   }
 }
