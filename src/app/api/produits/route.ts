@@ -5,6 +5,7 @@ import { getOrganizationProductsByUserIdAndBrandId } from "../../../db/product"
 import { handleProductPOST } from "../../../utils/api/products"
 
 export async function GET(req: Request) {
+  console.log(`[GET] /api/produits - Starting`)
   const api = await getApiUser(req.headers)
   if (!api || !api.user || !api.user.organization) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -29,9 +30,13 @@ export async function GET(req: Request) {
     validationResult.data.brandId,
   )
 
+  console.log(`[GET] /api/produits - Completed`)
   return NextResponse.json(products)
 }
 
 export async function POST(req: Request) {
-  return handleProductPOST(req, "single")
+  console.log(`[POST] /api/produits - Starting`)
+  const result = await handleProductPOST(req, "single")
+  console.log(`[POST] /api/produits - Completed`)
+  return result
 }

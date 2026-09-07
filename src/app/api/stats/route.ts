@@ -54,6 +54,7 @@ const addPeriods = (date: Date, periodicity: Periodicity, amount: number) => {
 }
 
 export async function GET(req: NextRequest) {
+  console.log(`[GET] /api/stats - Starting`)
   const { searchParams } = new URL(req.url)
 
   const periodicity = (searchParams.get("periodicity") || "month") as Periodicity
@@ -90,5 +91,6 @@ export async function GET(req: NextRequest) {
   const response = NextResponse.json({ description: "Nombre de références produits déposées", stats })
   response.headers.set("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=86400")
 
+  console.log(`[GET] /api/stats - Completed - stats count: ${stats.length}`)
   return response
 }

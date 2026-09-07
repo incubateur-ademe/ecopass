@@ -3,6 +3,7 @@ import { getUserOrganization } from "../../../db/user"
 import { getApiUser } from "../../../services/auth/auth"
 
 export async function GET(req: Request) {
+  console.log(`[GET] /api/organisation - Starting`)
   try {
     const api = await getApiUser(req.headers)
     if (!api || !api.user || !api.user.organization) {
@@ -38,8 +39,9 @@ export async function GET(req: Request) {
         }))
         .sort((a, b) => a.name.localeCompare(b.name)),
     })
+    console.log(`[GET] /api/organisation - Completed`)
   } catch (error) {
-    console.error("Error fetching organization:", error)
+    console.error(`[GET] /api/organisation - Error:`, error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

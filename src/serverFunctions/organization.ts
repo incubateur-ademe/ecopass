@@ -6,6 +6,7 @@ import { auth } from "../services/auth/auth"
 import { getSiretInfo } from "./siret"
 
 export const authorizeOrganization = async (siret: string) => {
+  console.log(`[authorizeOrganization] Starting - siret: ${siret}`)
   if (!siret || !/^\d{14}$/.test(siret)) {
     return "SIRET invalide"
   }
@@ -77,9 +78,11 @@ export const authorizeOrganization = async (siret: string) => {
       },
     },
   })
+  console.log(`[authorizeOrganization] Completed - siret: ${siret}`)
 }
 
 export const authorizeOrganizationById = async (id: string) => {
+  console.log(`[authorizeOrganizationById] Starting - id: ${id}`)
   if (!id) {
     return "ID invalide"
   }
@@ -145,9 +148,11 @@ export const authorizeOrganizationById = async (id: string) => {
       },
     },
   })
+  console.log(`[authorizeOrganizationById] Completed - id: ${id}`)
 }
 
 export const removeOrganizationAuthorization = async (id: string) => {
+  console.log(`[removeOrganizationAuthorization] Starting - id: ${id}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -167,9 +172,11 @@ export const removeOrganizationAuthorization = async (id: string) => {
     where: { id, fromId: user.organization.id, active: true },
     data: { active: false, removedAt: new Date() },
   })
+  console.log(`[removeOrganizationAuthorization] Completed - id: ${id}`)
 }
 
 export const updateOrganizationType = async (type: OrganizationType) => {
+  console.log(`[updateOrganizationType] Starting - type: ${type}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -188,9 +195,11 @@ export const updateOrganizationType = async (type: OrganizationType) => {
     where: { id: user.organization.id },
     data: { type },
   })
+  console.log(`[updateOrganizationType] Completed - type: ${type}`)
 }
 
 export const updateDisplayName = async (displayName: string) => {
+  console.log(`[updateDisplayName] Starting - displayName: ${displayName}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"

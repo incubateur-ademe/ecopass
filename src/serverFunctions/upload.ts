@@ -53,6 +53,7 @@ const scanFileContent = async (buffer: Buffer): Promise<boolean> => {
 }
 
 export const uploadFile = async (file: File) => {
+  console.log(`[uploadFile] Starting - fileName: ${file.name}, size: ${file.size}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Veuillez vous reconnecter et réessayer"
@@ -92,9 +93,10 @@ export const uploadFile = async (file: File) => {
     await uploadFileToS3(id, zip, "upload")
     await createUpload(session.user.id, UploadType.FILE, sanitizedFileName, id)
 
+    console.log(`[uploadFile] Completed - fileName: ${file.name}, uploadId: ${id}`)
     return null
   } catch (error) {
-    console.error("Error during upload:", error)
+    console.error(`[uploadFile] Error - fileName: ${file.name}:`, error)
     return "Erreur inconnue lors du traitement du fichier"
   }
 }
