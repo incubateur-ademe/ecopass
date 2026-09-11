@@ -1,4 +1,4 @@
-import { Status } from "@prisma/enums"
+import { ExportType, Status } from "@prisma/enums"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
 import { UserType } from "@prisma/enums"
 jest.mock("./prismaClient", () => ({
@@ -43,7 +43,7 @@ describe("Export DB", () => {
 
   describe("createExport", () => {
     it("should create an export without brand", async () => {
-      const result = await createExport(testUserId)
+      const result = await createExport(testUserId, undefined, ExportType.SVG)
 
       expect(result).toBeDefined()
       expect(result.userId).toBe(testUserId)
@@ -51,24 +51,26 @@ describe("Export DB", () => {
       expect(result.brand).toBeNull()
       expect(result.name).toMatch(/^affichage-environnemental-\d{4}-\d{2}-\d{2}T/)
       expect(result.createdAt).toBeInstanceOf(Date)
+      expect(result.type).toBe(ExportType.SVG)
     })
 
     it("should create an export with brand", async () => {
       const brand = "Test Brand"
-      const result = await createExport(testUserId, brand)
+      const result = await createExport(testUserId, brand, ExportType.CSV)
 
       expect(result).toBeDefined()
       expect(result.userId).toBe(testUserId)
       expect(result.status).toBe(Status.Pending)
       expect(result.brand).toBe(brand)
       expect(result.name).toMatch(/^affichage-environnemental-\d{4}-\d{2}-\d{2}T/)
+      expect(result.type).toBe(ExportType.CSV)
     })
   })
 
   describe("getExportsByUserIdAndBrand", () => {
     it("should return exports from the last 30 days without brand filter", async () => {
-      const export1 = await createExport(testUserId)
-      const export2 = await createExport(testUserId)
+      const export1 = await createExport(testUserId, undefined, ExportType.SVG)
+      const export2 = await createExport(testUserId, undefined, ExportType.SVG)
 
       const oldDate = new Date()
       oldDate.setDate(oldDate.getDate() - 35)
@@ -78,10 +80,11 @@ describe("Export DB", () => {
           name: "old-export",
           status: Status.Pending,
           createdAt: oldDate,
+          type: ExportType.SVG,
         },
       })
 
-      const result = await getExportsByUserIdAndBrand(testUserId)
+      const result = await getExportsByUserIdAndBrand(testUserId, undefined, ExportType.SVG)
 
       expect(result).toHaveLength(2)
       expect(result.map((e) => e.id)).toContain(export1.id)
@@ -92,11 +95,11 @@ describe("Export DB", () => {
       const brand1 = "Brand 1"
       const brand2 = "Brand 2"
 
-      const export1 = await createExport(testUserId, brand1)
-      await createExport(testUserId, brand2)
-      const export3 = await createExport(testUserId, brand1)
+      const export1 = await createExport(testUserId, brand1, ExportType.SVG)
+      await createExport(testUserId, brand2, ExportType.SVG)
+      const export3 = await createExport(testUserId, brand1, ExportType.SVG)
 
-      const result = await getExportsByUserIdAndBrand(testUserId, brand1)
+      const result = await getExportsByUserIdAndBrand(testUserId, brand1, ExportType.SVG)
 
       expect(result).toHaveLength(2)
       expect(result.map((e) => e.id)).toContain(export1.id)
@@ -104,16 +107,16 @@ describe("Export DB", () => {
     })
 
     it("should return empty array when no exports found", async () => {
-      const result = await getExportsByUserIdAndBrand("non-existent-user")
+      const result = await getExportsByUserIdAndBrand("non-existent-user", undefined, ExportType.SVG)
 
       expect(result).toHaveLength(0)
     })
 
     it("should return exports without brand when brand filter is null", async () => {
-      await createExport(testUserId)
-      await createExport(testUserId, "Some Brand")
+      await createExport(testUserId, undefined, ExportType.SVG)
+      await createExport(testUserId, "Some Brand", ExportType.SVG)
 
-      const result = await getExportsByUserIdAndBrand(testUserId)
+      const result = await getExportsByUserIdAndBrand(testUserId, undefined, ExportType.SVG)
 
       expect(result).toHaveLength(1)
       expect(result[0].brand).toBeNull()
@@ -122,9 +125,9 @@ describe("Export DB", () => {
 
   describe("getFirstExport", () => {
     it("should return the oldest pending export with user organization", async () => {
-      const export1 = await createExport(testUserId)
+      const export1 = await createExport(testUserId, undefined, ExportType.SVG)
       await new Promise((resolve) => setTimeout(resolve, 10))
-      const export2 = await createExport(testUserId)
+      const export2 = await createExport(testUserId, undefined, ExportType.SVG)
 
       await mockPrismaTest.export.update({
         where: { id: export2.id },
@@ -141,7 +144,7 @@ describe("Export DB", () => {
     })
 
     it("should return null when no pending exports exist", async () => {
-      const export1 = await createExport(testUserId)
+      const export1 = await createExport(testUserId, undefined, ExportType.SVG)
 
       await mockPrismaTest.export.update({
         where: { id: export1.id },
@@ -162,7 +165,7 @@ describe("Export DB", () => {
 
   describe("completeExport", () => {
     it("should update export status to Done", async () => {
-      const export1 = await createExport(testUserId)
+      const export1 = await createExport(testUserId, undefined, ExportType.SVG)
       expect(export1.status).toBe(Status.Pending)
 
       await completeExport(export1.id, 3)
@@ -189,6 +192,7 @@ describe("Export DB", () => {
           userId: testUserId,
           name: exportName,
           status: Status.Pending,
+          type: ExportType.SVG,
         },
       })
 
@@ -212,6 +216,7 @@ describe("Export DB", () => {
           userId: testUserId,
           name: exportName,
           status: Status.Pending,
+          type: ExportType.SVG,
         },
       })
 
