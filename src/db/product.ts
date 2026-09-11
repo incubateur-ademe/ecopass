@@ -281,16 +281,20 @@ export const getProducts = async (
     take,
   })
 
-  const products = await Promise.all(
-    uniqueGtins.map(async ({ internalReference }) =>
-      prismaClient.product.findFirst({
-        where: { internalReference, ...where, status: Status.Done },
-        select: productWithScoreSelect,
-        orderBy: { createdAt: "desc" },
-      }),
-    ),
+  const allProducts = await prismaClient.product.findMany({
+    where: {
+      internalReference: { in: uniqueGtins.map(({ internalReference }) => internalReference) },
+      ...where,
+      status: Status.Done,
+    },
+    select: productWithScoreSelect,
+    orderBy: { createdAt: "desc" },
+  })
+
+  return allProducts.filter(
+    (product, index, self) =>
+      product !== null && self.findIndex((p) => p.internalReference === product.internalReference) === index,
   )
-  return products.filter((product) => product !== null)
 }
 
 export type Products = Awaited<ReturnType<typeof getProducts>>

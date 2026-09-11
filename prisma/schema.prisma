@@ -356,6 +356,11 @@ model APIKey {
   @@map("api_keys")
 }
 
+enum ExportType {
+  CSV
+  SVG
+}
+
 model Export {
   id        String   @id @default(uuid())
   status    Status   @default(Pending)
@@ -363,6 +368,7 @@ model Export {
 
   name  String
   brand String?
+  type  ExportType
 
   count Int?
 
