@@ -88,6 +88,8 @@ describe("handleProductPOST", () => {
     key: "api-key",
     user: {
       id: "user-1",
+      nom: "user",
+      prenom: "john",
       email: "user-1@example.com",
       type: UserType.PROFESSIONNEL,
       organizationRole: OrganizationRole.ADMIN,

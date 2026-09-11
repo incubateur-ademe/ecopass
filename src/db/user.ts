@@ -4,6 +4,8 @@ import { prismaClient } from "./prismaClient"
 const userSelect = {
   id: true,
   email: true,
+  nom: true,
+  prenom: true,
   type: true,
   organizationRole: true,
   organization: {
