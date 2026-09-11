@@ -1,6 +1,6 @@
 "use server"
-import { Status } from "@prisma/client"
-import { getOrganizationProductsByUserIdAndBrandId, getProductsByUploadId } from "../db/product"
+import { ExportType, Status } from "@prisma/client"
+import { getProductsByUploadId } from "../db/product"
 import { stringify } from "csv-stringify/sync"
 import * as XLSX from "xlsx"
 import { getUploadById } from "../db/upload"
@@ -8,30 +8,6 @@ import { auth } from "../services/auth/auth"
 import { createExport } from "../db/export"
 import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
 import { getUserOrganizationType } from "../db/user"
-
-export const exportScores = async (brandId?: string) => {
-  console.log(`[exportScores] Starting - brandId: ${brandId}`)
-  const session = await auth()
-  if (!session || !session.user) {
-    return "Utilisateur non authentifié"
-  }
-
-  const organizationType = await getUserOrganizationType(session.user.id)
-  if (!organizationTypesAllowedToDeclare.includes(organizationType!)) {
-    return "Vous n'êtes pas autorisé à exporter ces scores"
-  }
-
-  const products = await getOrganizationProductsByUserIdAndBrandId(session.user.id, 0, undefined, brandId)
-
-  const data = products.map((product) => [product.internalReference, product.score ? Math.round(product.score) : ""])
-
-  const headers = ["Référence interne", "Score"]
-
-  return stringify(data, {
-    header: true,
-    columns: headers,
-  })
-}
 
 export const exportUpload = async (uploadId: string) => {
   console.log(`[exportUpload] Starting - uploadId: ${uploadId}`)
@@ -90,7 +66,7 @@ export const exportUpload = async (uploadId: string) => {
   })
 }
 
-export const exportProducts = async (brand?: string) => {
+export const exportProducts = async (brand: string | undefined, type: ExportType) => {
   console.log(`[exportProducts] Starting - brand: ${brand}`)
   const session = await auth()
   if (!session || !session.user) {
@@ -102,5 +78,5 @@ export const exportProducts = async (brand?: string) => {
     return "Vous n'êtes pas autorisé à exporter ces produits"
   }
 
-  return createExport(session.user.id, brand)
+  return createExport(session.user.id, brand, type)
 }

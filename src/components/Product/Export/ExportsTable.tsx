@@ -1,12 +1,12 @@
 "use client"
-import Table from "../Table/Table"
+import Table from "../../Table/Table"
 import { Export } from "@prisma/client"
 import { Status } from "@prisma/enums"
-import DownloadExport from "./DownloadExport"
-import { formatDateTime } from "../../services/format"
+import DownloadExport from "../DownloadExport"
+import { formatDateTime } from "../../../services/format"
 import { useState } from "react"
 import Alert from "@codegouvfr/react-dsfr/Alert"
-import StatusBadge from "./StatusBadge"
+import StatusBadge from "../StatusBadge"
 
 const ExportsTable = ({ exports }: { exports: Export[] }) => {
   const [error, setError] = useState<boolean>(false)
@@ -26,14 +26,20 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
         noCaption
         headers={["Date", "Status", "Fichier", "Nom", ""]}
         data={exports.flatMap((item) =>
-          item.count
+          item.count && item.count > 1
             ? Array.from({ length: item.count }).map((_, index) => [
                 formatDateTime(item.createdAt),
                 <StatusBadge status={item.status} key={`${item.id}-${index}`} />,
                 `${index + 1} / ${item.count}`,
                 `${item.name} - Partie ${index + 1}`,
                 item.status == Status.Done ? (
-                  <DownloadExport name={item.name} key={`${item.id}-${index}`} setError={setError} index={index} />
+                  <DownloadExport
+                    name={item.name}
+                    key={`${item.id}-${index}`}
+                    setError={setError}
+                    index={index}
+                    exportType={item.type}
+                  />
                 ) : (
                   ""
                 ),
@@ -45,7 +51,7 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
                   item.status == Status.Done ? "1 / 1" : "",
                   item.name,
                   item.status == Status.Done ? (
-                    <DownloadExport name={item.name} key={item.id} setError={setError} />
+                    <DownloadExport name={item.name} key={item.id} setError={setError} exportType={item.type} />
                   ) : (
                     ""
                   ),
