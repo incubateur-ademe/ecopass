@@ -1,21 +1,22 @@
-import { Status } from "@prisma/enums"
+import { ExportType, Status } from "@prisma/enums"
 import { prismaClient } from "./prismaClient"
 
-export const createExport = async (userId: string, brand?: string) =>
+export const createExport = async (userId: string, brand: string | undefined, type: ExportType) =>
   prismaClient.export.create({
     data: {
       userId,
       name: `affichage-environnemental-${new Date().toISOString()}`,
       status: Status.Pending,
       brand,
+      type,
     },
   })
 
-export const getExportsByUserIdAndBrand = async (userId: string, brand?: string) => {
+export const getExportsByUserIdAndBrand = async (userId: string, brand: string | undefined, type: ExportType) => {
   const date = new Date()
   date.setDate(date.getDate() - 30)
   return prismaClient.export.findMany({
-    where: { userId, createdAt: { gte: date }, brand: brand || null },
+    where: { userId, createdAt: { gte: date }, brand: brand || null, type },
     orderBy: { createdAt: "desc" },
   })
 }

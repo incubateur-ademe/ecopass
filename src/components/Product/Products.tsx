@@ -1,10 +1,10 @@
 "use server"
+
 import { getOrganizationProductsByUserIdAndBrandId } from "../../db/product"
 import { auth } from "../../services/auth/auth"
 import Search from "./Search"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
 import Link from "next/link"
-import DownloadScores from "./DownloadScores"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import Image from "next/image"
@@ -38,7 +38,6 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
     />
   ) : (
     <>
-      <DownloadScores brand={brand} />
       <Search withoutHint />
       <div data-testid='products-table'>
         <Table

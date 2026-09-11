@@ -1,10 +1,9 @@
 import { Suspense } from "react"
 import Block from "../components/Block/Block"
-import Exports from "../components/Product/Exports"
-import NewExport from "../components/Product/NewExport"
 import Products from "../components/Product/Products"
 import BrandSelection from "../components/Product/BrandSelection"
 import Alert from "@codegouvfr/react-dsfr/Alert"
+import ExportProducts from "../components/Product/Export/ExportProducts"
 
 const ProductsPage = ({
   page,
@@ -40,14 +39,7 @@ const ProductsPage = ({
       </Block>
       {productsCount > 0 && (
         <Block>
-          <h2>Coût environnemental</h2>
-          <p>Pour télécharger le coût environnemental de vos produits, veuillez cliquer sur le bouton ci dessous.</p>
-          <p>Note : Vos fichiers restent disponibles 30 jours.</p>
-          <br />
-          <NewExport brand={brand} />
-          <Suspense>
-            <Exports brand={brand} />
-          </Suspense>
+          <ExportProducts brand={brand} />
         </Block>
       )}
       <Block>

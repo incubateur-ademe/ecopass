@@ -2,7 +2,7 @@ import { processExportsQueue } from "./exports"
 import { completeExport, failExport, getFirstExport } from "../../db/export"
 import { getSVG } from "../label/simple"
 import { uploadFileToS3 } from "../s3/bucket"
-import { ConfidenceLevel, Status, UserType } from "@prisma/enums"
+import { ConfidenceLevel, ExportType, Status, UserType } from "@prisma/enums"
 import JSZip from "jszip"
 import { getOrganizationAuthorizedBrands, getProducts } from "../../db/product"
 
@@ -39,6 +39,7 @@ describe("processExportsQueue", () => {
     status: Status.Pending,
     brand: "Test Brand" as string | null,
     count: 1,
+    type: ExportType.SVG,
     user: {
       organizationId: "org-1" as string | null,
     },

@@ -329,17 +329,24 @@ export const getProducts = async (
     take,
   })
 
-  const products = await Promise.all(
-    uniqueGtins.map(async ({ internalReference }) => {
-      const product = await prismaClient.product.findFirst({
-        where: { internalReference, ...where, status: Status.Done },
-        select: productWithScoreSelect,
-        orderBy: { createdAt: "desc" },
-      })
-      return withMeanScores(product)
-    }),
+  const allProducts = await prismaClient.product.findMany({
+    where: {
+      internalReference: { in: uniqueGtins.map(({ internalReference }) => internalReference) },
+      ...where,
+      status: Status.Done,
+    },
+    select: productWithScoreSelect,
+    orderBy: { createdAt: "desc" },
+  })
+
+  const results = await Promise.all(
+    allProducts
+      .filter(
+        (product, index, self) => self.findIndex((p) => p.internalReference === product.internalReference) === index,
+      )
+      .map((product) => withMeanScores(product)),
   )
-  return products.filter((product) => product !== null)
+  return results.filter((product) => product !== null)
 }
 
 export const countPublicProductsByBrandId = async (

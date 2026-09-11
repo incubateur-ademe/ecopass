@@ -12,7 +12,12 @@ const s3 = new S3Client({
   },
 })
 
-export const uploadFileToS3 = async (name: string, file: PutObjectCommandInput["Body"], tag: "export" | "upload") => {
+export const uploadFileToS3 = async (
+  name: string,
+  file: PutObjectCommandInput["Body"],
+  tag: "export" | "upload",
+  contentType?: string,
+) => {
   if (process.env.LOCAL_STORAGE === "true") {
     const dir = path.resolve(process.cwd(), "s3", `${tag}s`)
     if (!fs.existsSync(dir)) {
@@ -41,7 +46,7 @@ export const uploadFileToS3 = async (name: string, file: PutObjectCommandInput["
       Key: `${tag}s/${name}`,
       Body: file,
       Tagging: `type=${tag}`,
-      ContentType: "application/zip",
+      ContentType: contentType || "application/zip",
     }),
   )
 }
