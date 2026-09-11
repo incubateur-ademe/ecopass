@@ -9,6 +9,10 @@ import { createOrganization } from "../../db/organization"
 
 export const authOptions = {
   adapter: PrismaAdapter(prismaClient),
+  pages: {
+    error: "/auth/error",
+    signIn: "/auth/error",
+  },
   events: {
     createUser: async ({ user }) => {
       try {
@@ -194,6 +198,43 @@ export const authOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "franceconnect" && user.email) {
+        const existingUser = await prismaClient.user.findUnique({
+          include: { accounts: true },
+          where: { email: user.email.toLowerCase() },
+        })
+
+        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "credentials")) {
+          throw new Error(
+            "Vous avez déjà un compte sur le site, veuillez utiliser la connexion avec votre email et votre mot de passe directement.",
+          )
+        }
+        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "proconnect")) {
+          throw new Error("Vous avez déjà un compte ProConnect sur le site, veuillez utiliser la connexion ProConnect.")
+        }
+      }
+
+      if (account?.provider === "proconnect" && user.email) {
+        const existingUser = await prismaClient.user.findUnique({
+          include: { accounts: true },
+          where: { email: user.email.toLowerCase() },
+        })
+
+        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "credentials")) {
+          throw new Error(
+            "Vous avez déjà un compte sur le site, veuillez utiliser la connexion avec votre email et votre mot de passe directement.",
+          )
+        }
+        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "franceconnect")) {
+          throw new Error(
+            "Vous avez déjà un compte FranceConnect sur le site, veuillez utiliser la connexion FranceConnect.",
+          )
+        }
+      }
+
+      return true
+    },
     async jwt({ token, account, user }) {
       if (user) {
         token.id = user.id
