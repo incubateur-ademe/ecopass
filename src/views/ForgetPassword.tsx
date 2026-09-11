@@ -38,6 +38,11 @@ const ForgetPassword = () => {
                 Veuillez renseigner votre adresse email. Un lien de réinitialisation de mot de passe vous sera envoyé
                 par email.
               </p>
+              <br />
+              <p>
+                Ce mot de passe concerne uniquement votre compte local. Il sera utilisé lors de vos connexions avec
+                votre adresse e-mail, et non via FranceConnect ou ProConnect.
+              </p>
               <div className='fr-fieldset__element fr-mt-4w'>
                 <fieldset className='fr-fieldset'>
                   <div className='fr-fieldset__element'>

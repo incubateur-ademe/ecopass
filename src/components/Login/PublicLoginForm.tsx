@@ -17,6 +17,10 @@ const PublicLoginForm = ({ test, callbackUrl }: { test?: boolean; callbackUrl: s
           Via l’outil France Connect. Votre identité reste connue de la plateforme mais sera non visible du grand
           public, vous déclarez en tant que “citoyen”.
         </p>
+        <p className={styles.description}>
+          FranceConnect est la solution proposée par l’État pour sécuriser et simplifier la connexion à vos services en
+          ligne.
+        </p>
         <FranceConnectButton
           onClick={() => {
             track("Login", "FranceConnect", "FranceConnect")
@@ -29,6 +33,7 @@ const PublicLoginForm = ({ test, callbackUrl }: { test?: boolean; callbackUrl: s
           </div>
         )}
       </div>
+      <p className={styles.or}>OU</p>
       <div className={styles.box}>
         <h2>Vous souhaitez déclarer en tant que professionnel ?</h2>
         <p className={styles.description}>
