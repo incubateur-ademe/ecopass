@@ -1,32 +1,28 @@
 "use client"
+
 import { signOut, useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { v4 as uuid } from "uuid"
+import { useEffect } from "react"
+import { performLogout } from "../utils/auth/logoutHelpers"
 
 const Logout = ({ force }: { force?: boolean }) => {
   const session = useSession()
-  const router = useRouter()
 
-  if (force) {
-    signOut({ callbackUrl: "/" })
-    return null
-  }
+  useEffect(() => {
+    if (force) {
+      signOut({ callbackUrl: "/" })
+      return
+    }
 
-  if (session.data && session.data.provider === "proconnect") {
-    const logOutUrl = new URL(`${process.env.NEXT_PUBLIC_PROCONNECT_DOMAIN}/api/v2/session/end`)
-    logOutUrl.searchParams.set("id_token_hint", session.data.idToken || "")
-    logOutUrl.searchParams.set("post_logout_redirect_uri", `${process.env.NEXT_PUBLIC_URL}/logout/proconnect`)
-    logOutUrl.searchParams.set("state", uuid())
-    router.push(logOutUrl.toString())
-  } else if (session.data && session.data.provider === "franceconnect") {
-    const logOutUrl = new URL(`${process.env.NEXT_PUBLIC_FRANCECONNECT_DOMAIN}/api/v2/session/end`)
-    logOutUrl.searchParams.set("id_token_hint", session.data.idToken || "")
-    logOutUrl.searchParams.set("post_logout_redirect_uri", `${process.env.NEXT_PUBLIC_URL}/logout/franceconnect`)
-    logOutUrl.searchParams.set("state", uuid())
-    router.push(logOutUrl.toString())
-  } else {
-    signOut({ callbackUrl: "/" })
-  }
+    if (session.data?.idToken && session.data?.provider === "proconnect") {
+      const postLogoutUri = `${process.env.NEXT_PUBLIC_URL}/logout/proconnect`
+      performLogout("proconnect", postLogoutUri, session.data.idToken)
+    } else if (session.data?.idToken && session.data?.provider === "franceconnect") {
+      const postLogoutUri = `${process.env.NEXT_PUBLIC_URL}/logout/franceconnect`
+      performLogout("franceconnect", postLogoutUri, session.data.idToken)
+    } else if (session.status === "authenticated") {
+      signOut({ callbackUrl: "/" })
+    }
+  }, [session, force])
 
   return null
 }

@@ -27,6 +27,8 @@ describe("getApiUser", () => {
         key: "valid-api-key",
         user: {
           id: "user-123",
+          nom: "test",
+          prenom: "john",
           email: "test@example.com",
           type: UserType.PROFESSIONNEL,
           organizationRole: OrganizationRole.ADMIN,
@@ -143,6 +145,8 @@ describe("getApiUser", () => {
         key: "test-key",
         user: {
           id: "user-id",
+          nom: "user",
+          prenom: "john",
           email: "user@test.com",
           type: UserType.PROFESSIONNEL,
           organizationRole: OrganizationRole.ADMIN,

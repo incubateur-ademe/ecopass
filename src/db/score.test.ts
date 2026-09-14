@@ -39,6 +39,8 @@ describe("Score DB integration", () => {
       data: { email: "test@example.com", organizationId: testOrganizationId, type: UserType.PROFESSIONNEL },
       select: {
         id: true,
+        nom: true,
+        prenom: true,
         email: true,
         type: true,
         organizationRole: true,

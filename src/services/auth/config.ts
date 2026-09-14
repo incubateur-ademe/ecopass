@@ -9,6 +9,10 @@ import { createOrganization } from "../../db/organization"
 
 export const authOptions = {
   adapter: PrismaAdapter(prismaClient),
+  pages: {
+    error: "/auth/error",
+    signIn: "/auth/error",
+  },
   events: {
     createUser: async ({ user }) => {
       try {
@@ -194,6 +198,37 @@ export const authOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "franceconnect" && user.email) {
+        const existingUser = await prismaClient.user.findUnique({
+          include: { accounts: true },
+          where: { email: user.email.toLowerCase() },
+        })
+
+        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "credentials")) {
+          throw new Error(`credentials_conflict|franceconnect|${account.id_token}`)
+        }
+        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "proconnect")) {
+          throw new Error(`proconnect_conflict|franceconnect|${account.id_token}`)
+        }
+      }
+
+      if (account?.provider === "proconnect" && user.email) {
+        const existingUser = await prismaClient.user.findUnique({
+          include: { accounts: true },
+          where: { email: user.email.toLowerCase() },
+        })
+
+        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "credentials")) {
+          throw new Error(`credentials_conflict|proconnect|${account.id_token}`)
+        }
+        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "franceconnect")) {
+          throw new Error(`franceconnect_conflict|proconnect|${account.id_token}`)
+        }
+      }
+
+      return true
+    },
     async jwt({ token, account, user }) {
       if (user) {
         token.id = user.id

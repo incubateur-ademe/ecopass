@@ -15,10 +15,12 @@ const Header = ({
   session,
   organizationType,
   userType,
+  displayName,
 }: {
   session: Session | null
   organizationType?: OrganizationType | null
   userType?: UserType
+  displayName?: string
 }) => {
   const canDeclare = organizationType ? organizationTypesAllowedToDeclare.includes(organizationType) : false
   const role = session?.user?.role
@@ -137,6 +139,11 @@ const Header = ({
       serviceTagline={isTestEnvironment() ? "Serveur de test" : undefined}
       navigation={(connected ? connectedNavigation : visitorNavigation).filter((item) => item !== null)}
       quickAccessItems={[
+        connected ? (
+          <div className='fr-btn'>
+            <p>{displayName}</p>
+          </div>
+        ) : null,
         {
           linkProps: {
             href: isTestEnvironment()
