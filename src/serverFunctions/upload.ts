@@ -2,7 +2,7 @@
 
 import { v4 as uuid } from "uuid"
 import { OrganizationRole, UploadType } from "@prisma/client"
-import { createUpload } from "../db/upload"
+import { UserType } from "@prisma/enums"
 import { auth } from "../services/auth/auth"
 import { uploadFileToS3 } from "../utils/s3/bucket"
 import { encryptAndZipFile } from "../utils/encryption/encryption"
@@ -18,6 +18,7 @@ import { getProductConfidenceLevel } from "../utils/product/confidence"
 import { checkOldProduct } from "../services/validation/oldProduct"
 import { ProductCheckResult } from "../services/validation/productCheckResult"
 import { gtinsValidation } from "../services/validation/gtins"
+import { createUpload } from "../db/upload"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -142,6 +143,9 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
     const user = await getUser(session.user.id)
     if (!user) {
       throw new Error("User not found")
+    }
+    if (user.type !== UserType.CITOYEN) {
+      throw new Error("Seulement les citoyens peuvent effectuer une déclaration simplifiée")
     }
 
     const normalizedBrandName = data.brandName.trim()
