@@ -3,7 +3,7 @@ import { productMapping } from "../../utils/ecobalyse/mappings"
 
 const categorySlugs = Object.values(productMapping) as [string, ...string[]]
 
-const gtinRegex = /^\d{8}$|^\d{13}$/
+const gtinRegex = /^\d{8}$|^\d{12}$|^\d{13}$/
 
 const modelSchema = z.discriminatedUnion("modele", [
   z.object({ modele: z.literal("avecComparaison"), categorie: z.enum(categorySlugs).nullable().optional() }),
