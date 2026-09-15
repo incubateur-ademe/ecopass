@@ -31,11 +31,11 @@ const CalculationParameters = ({
   data: {
     product: string
     mass: number
+    price: number
     materials: { id: string; share: number }[]
     countryFabric?: string
     countryDyeing?: string
     countryMaking?: string
-    countrySpinning?: string
   }
   setData: (key: keyof typeof data, value: string | number | typeof data.materials) => void
   goToNextStep: () => void
@@ -46,6 +46,7 @@ const CalculationParameters = ({
   const [errors, setErrors] = useState<{ [key in keyof typeof data]?: ReactNode }>({})
   const productRef = useRef<HTMLInputElement>(null)
   const massRef = useRef<HTMLInputElement>(null)
+  const priceRef = useRef<HTMLInputElement>(null)
   const materialTypeRefs = useRef<(HTMLSelectElement | null)[]>([])
   const materialShareRefs = useRef<(HTMLInputElement | null)[]>([])
 
@@ -72,6 +73,14 @@ const CalculationParameters = ({
       newErrors.mass = "La masse doit être inférieure ou égale à 10 000 g"
       if (success) {
         massRef.current?.focus()
+      }
+      success = false
+    }
+
+    if (!Number.isFinite(data.price) || data.price < 1) {
+      newErrors.price = "Le prix doit être supérieur ou égal à 1 €"
+      if (success) {
+        priceRef.current?.focus()
       }
       success = false
     }
@@ -156,6 +165,24 @@ const CalculationParameters = ({
         }}
       />
 
+      <Input
+        label='Prix du produit (en euros) *'
+        state={errors.price ? "error" : undefined}
+        stateRelatedMessage={errors.price}
+        nativeInputProps={{
+          required: true,
+          type: "number",
+          min: "0",
+          value: data.price > 0 ? data.price : "",
+          ref: priceRef,
+          onChange: (e) => {
+            const parsedPrice = e.target.value === "" ? 0 : Number.parseFloat(e.target.value)
+            setData("price", Number.isNaN(parsedPrice) ? 0 : parsedPrice)
+          },
+          placeholder: "par exemple : 10€",
+        }}
+      />
+
       <Select
         label='Lieu de tissage / tricotage'
         state={errors.countryFabric ? "error" : undefined}
@@ -195,22 +222,6 @@ const CalculationParameters = ({
         nativeSelectProps={{
           value: data.countryMaking,
           onChange: (e) => setData("countryMaking", e.target.value),
-        }}>
-        <option value=''>Pays inconnu</option>
-        {countryOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
-
-      <Select
-        label='Lieu de filature'
-        state={errors.countrySpinning ? "error" : undefined}
-        stateRelatedMessage={errors.countrySpinning}
-        nativeSelectProps={{
-          value: data.countrySpinning,
-          onChange: (e) => setData("countrySpinning", e.target.value),
         }}>
         <option value=''>Pays inconnu</option>
         {countryOptions.map((option) => (

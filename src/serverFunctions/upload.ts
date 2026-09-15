@@ -126,11 +126,11 @@ export type SimplifiedDeclarationData = {
   url: string
   product: string
   mass: number
+  price: number
   materials: { id: string; share: number }[]
   countryFabric?: string
   countryDyeing?: string
   countryMaking?: string
-  countrySpinning?: string
 }
 
 export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDeclarationData) => {
@@ -203,7 +203,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
         gtins: [data.gtin],
         confidenceLevel,
       },
-      informations: [validatedData.data],
+      informations: [{ ...validatedData.data, airTransportRatio: 1 }],
     }
 
     const hash = await hashProduct(product, informations, [resolvedBrand.id])
