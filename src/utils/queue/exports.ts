@@ -4,7 +4,7 @@ import JSZip from "jszip"
 import { getSVG } from "../label/simple"
 import { uploadFileToS3 } from "../s3/bucket"
 import { ExportType, Status } from "@prisma/enums"
-import { stringify } from "csv-stringify"
+import { stringify } from "csv-stringify/sync"
 
 const renderLabelSVG = (product: ProductWithScore) => {
   if (!product.score || !product.standardized) {

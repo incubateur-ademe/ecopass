@@ -200,9 +200,10 @@ export const authOptions = {
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "franceconnect" && user.email) {
-        const existingUser = await prismaClient.user.findUnique({
+        const existingUser = await prismaClient.user.findFirst({
           include: { accounts: true },
-          where: { email: user.email.toLowerCase() },
+          // @ts-expect-error: Nom et prenom available
+          where: { OR: [{ email: user.email.toLowerCase() }, { nom: user.nom, prenom: user.prenom }] },
         })
 
         if (existingUser && existingUser.accounts.some((acc) => acc.provider === "credentials")) {
@@ -214,9 +215,10 @@ export const authOptions = {
       }
 
       if (account?.provider === "proconnect" && user.email) {
-        const existingUser = await prismaClient.user.findUnique({
+        const existingUser = await prismaClient.user.findFirst({
           include: { accounts: true },
-          where: { email: user.email.toLowerCase() },
+          // @ts-expect-error: Nom et prenom available
+          where: { OR: [{ email: user.email.toLowerCase() }, { nom: user.nom, prenom: user.prenom }] },
         })
 
         if (existingUser && existingUser.accounts.some((acc) => acc.provider === "credentials")) {
