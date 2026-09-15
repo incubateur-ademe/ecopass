@@ -9,30 +9,30 @@ import { performLogout } from "../../utils/auth/logoutHelpers"
 const errorMessages: Record<string, { title: string; description: string }> = {
   credentials_conflict: {
     title: "Cet email est déjà enregistré avec un compte de connexion classique",
-    description: "Veuillez utiliser la connexion avec votre email et votre mot de passe directement.",
+    description: "Veuillez utiliser la connexion avec votre email et votre mot de passe directement",
   },
   proconnect_conflict: {
     title: "Cet email est déjà enregistré avec un compte ProConnect",
-    description: "Veuillez utiliser la connexion ProConnect.",
+    description: "Veuillez utiliser la connexion ProConnect",
   },
   franceconnect_conflict: {
     title: "Cet email est déjà enregistré avec un compte FranceConnect",
-    description: "Veuillez utiliser la connexion FranceConnect.",
+    description: "Veuillez utiliser la connexion FranceConnect",
   },
   Callback: {
     title: "La tentative de connexion a été annulée",
-    description: "Veuillez réessayer si nécessaire.",
+    description: "Veuillez réessayer si nécessaire",
   },
   conflict: {
     title: "Connexion impossible",
     description:
-      "Vous possedez déjà un compte sur la plateforme avec cet email et un autre moyen de connexion. Veuillez l'utiliser directement.",
+      "Vous possedez déjà un compte sur la plateforme avec cet email et un autre moyen de connexion. Veuillez l'utiliser directement ",
   },
 }
 
 const defaultError = {
   title: "La tentative de connexion a échoué",
-  description: "Veuillez réessayer.",
+  description: "Veuillez réessayer",
 }
 const ErrorPageClient = ({ error }: { error?: string }) => {
   const [errorCode, provider, idToken] = error?.split("|") || []
@@ -61,7 +61,7 @@ const ErrorPageClient = ({ error }: { error?: string }) => {
         title={errorConfig.title}
         description={
           <>
-            {errorConfig.description}{" "}
+            {errorConfig.description} ou{" "}
             <Link
               href='mailto:affichage-environnemental@ecobalyse.beta.gouv.fr'
               target='_blank'
