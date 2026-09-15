@@ -7,7 +7,6 @@ import { productMapping } from "../../../utils/ecobalyse/mappings"
 import { ProductCategory } from "../../../types/Product"
 
 export async function GET(request: NextRequest) {
-  console.log(`[GET] /api/image - Starting`)
   try {
     const { searchParams } = new URL(request.url)
 
@@ -88,7 +87,6 @@ export async function GET(request: NextRequest) {
       svgContent = getSVG(productScore, productStandardized)
     }
 
-    console.log(`[GET] /api/image - Completed`)
     return new NextResponse(svgContent, {
       status: 200,
       headers: {
