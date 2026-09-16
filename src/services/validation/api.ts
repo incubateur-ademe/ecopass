@@ -8,6 +8,7 @@ import {
   productMapping,
 } from "../../utils/ecobalyse/mappings"
 import { PrintingRatio } from "./printing"
+import { Audience } from "@prisma/enums"
 
 const epsilon = 1e-10
 
@@ -59,6 +60,10 @@ const product = z.object({
 export type ProductInformationAPI = Omit<z.infer<typeof product>, "countryMaking"> & {
   numberOfItem?: number
   countryMaking?: string
+}
+
+export type SimplifiedProductInformationAPI = ProductInformationAPI & {
+  audience: Audience
 }
 
 const metaData = z.object({

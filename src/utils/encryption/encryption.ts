@@ -1,5 +1,5 @@
 import crypto from "crypto"
-import { ProductInformationAPI } from "../../services/validation/api"
+import { ProductInformationAPI, SimplifiedProductInformationAPI } from "../../services/validation/api"
 import { ParsedProduct } from "../../types/Product"
 import JSZip from "jszip"
 import { Accessory, Material, ProductInformation } from "@prisma/client"
@@ -100,10 +100,11 @@ const computeCategorySlug = (category: string) => {
   return productCategories[value]
 }
 
-export function encryptProductFields(product: ProductInformationAPI | ParsedProduct) {
+export function encryptProductFields(product: ProductInformationAPI | SimplifiedProductInformationAPI | ParsedProduct) {
   return {
     product: {
       category: product.product,
+      audience: "audience" in product ? product.audience : null,
       mainComponent: product.mainComponent === undefined ? null : product.mainComponent,
       categorySlug: computeCategorySlug(product.product),
       airTransportRatio: encrypt(product.airTransportRatio),

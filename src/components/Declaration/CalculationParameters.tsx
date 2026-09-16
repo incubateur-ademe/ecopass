@@ -4,12 +4,14 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Input } from "@codegouvfr/react-dsfr/Input"
 import { Select } from "@codegouvfr/react-dsfr/Select"
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import CategoryDropdown from "../CategoryDropdown/CategoryDropdown"
 import { FormEvent, ReactNode, useRef, useState } from "react"
 import styles from "./CalculationParameters.module.css"
 import { MaterialType, Country } from "../../types/Product"
 import LoadingButton from "../Button/LoadingButton"
 import { materialMapping, countryMapping } from "../../utils/ecobalyse/mappings"
+import { Audience } from "@prisma/enums"
 
 const materialOptions = Object.entries(MaterialType).map(([, label]) => ({
   label,
@@ -19,6 +21,13 @@ const countryOptions = Object.entries(Country).map(([, label]) => ({
   label,
   value: countryMapping[label] || label,
 }))
+export const AUDIENCE_LABELS: Record<Audience, string> = {
+  Man: "Homme",
+  Mixed: "Mixte",
+  Woman: "Femme",
+  Kid: "Enfant",
+  Baby: "Bébé",
+}
 
 const CalculationParameters = ({
   data,
@@ -30,14 +39,14 @@ const CalculationParameters = ({
 }: {
   data: {
     product: string
-    mass: number
+    audience: Audience
     price: number
     materials: { id: string; share: number }[]
     countryFabric?: string
     countryDyeing?: string
     countryMaking?: string
   }
-  setData: (key: keyof typeof data, value: string | number | typeof data.materials) => void
+  setData: (key: keyof typeof data, value: string | number | Audience | typeof data.materials) => void
   goToNextStep: () => void
   goToPreviousStep: () => void
   loading: boolean
@@ -45,7 +54,6 @@ const CalculationParameters = ({
 }) => {
   const [errors, setErrors] = useState<{ [key in keyof typeof data]?: ReactNode }>({})
   const productRef = useRef<HTMLInputElement>(null)
-  const massRef = useRef<HTMLInputElement>(null)
   const priceRef = useRef<HTMLInputElement>(null)
   const materialTypeRefs = useRef<(HTMLSelectElement | null)[]>([])
   const materialShareRefs = useRef<(HTMLInputElement | null)[]>([])
@@ -59,20 +67,6 @@ const CalculationParameters = ({
       newErrors.product = "La catégorie de produit est requise"
       if (success) {
         productRef.current?.focus()
-      }
-      success = false
-    }
-
-    if (!Number.isFinite(data.mass) || data.mass <= 0) {
-      newErrors.mass = "La masse doit être un nombre positif"
-      if (success) {
-        massRef.current?.focus()
-      }
-      success = false
-    } else if (data.mass > 10000) {
-      newErrors.mass = "La masse doit être inférieure ou égale à 10 000 g"
-      if (success) {
-        massRef.current?.focus()
       }
       success = false
     }
@@ -146,23 +140,15 @@ const CalculationParameters = ({
         stateRelatedMessage={errors.product}
       />
 
-      <Input
-        label='Masse du produit fini (en gramme) *'
-        state={errors.mass ? "error" : undefined}
-        stateRelatedMessage={errors.mass}
-        nativeInputProps={{
-          required: true,
-          type: "number",
-          min: "0",
-          max: "10000",
-          value: data.mass > 0 ? data.mass : "",
-          ref: massRef,
-          onChange: (e) => {
-            const parsedMass = e.target.value === "" ? 0 : Number.parseFloat(e.target.value)
-            setData("mass", Number.isNaN(parsedMass) ? 0 : parsedMass)
+      <RadioButtons
+        legend='Audience *'
+        options={Object.entries(AUDIENCE_LABELS).map(([key, label]) => ({
+          label: label,
+          nativeInputProps: {
+            checked: data.audience === key,
+            onChange: () => setData("audience", key),
           },
-          placeholder: "par exemple : 250",
-        }}
+        }))}
       />
 
       <Input

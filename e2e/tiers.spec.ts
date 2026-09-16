@@ -29,8 +29,7 @@ test("simplified declaration", async ({ page }) => {
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
 
   await expect(page.locator(".fr-message--error").nth(0)).toHaveText("La catégorie de produit est requise")
-  await expect(page.locator(".fr-message--error").nth(1)).toHaveText("La masse doit être un nombre positif")
-  await expect(page.locator(".fr-message--error").nth(2)).toHaveText("Le prix doit être supérieur ou égal à 1 €")
+  await expect(page.locator(".fr-message--error").nth(1)).toHaveText("Le prix doit être supérieur ou égal à 1 €")
   await expect(page.locator(".fr-alert--error").nth(0)).toHaveText("La matière première est requise")
 
   await page.getByLabel("Matière 1", { exact: true }).selectOption("elasthane")
@@ -42,7 +41,6 @@ test("simplified declaration", async ({ page }) => {
 
   await page.getByRole("combobox", { name: "Catégorie de produit" }).click()
   await page.getByText("Caleçon", { exact: true }).click()
-  await page.getByRole("spinbutton", { name: "Masse du produit fini (en" }).fill("109")
   await page.getByRole("spinbutton", { name: "Prix du produit" }).fill("15")
   await page.getByLabel("Lieu de tissage / tricotage").click()
   await page.getByLabel("Lieu de tissage / tricotage").selectOption("REE")
@@ -59,7 +57,7 @@ test("simplified declaration", async ({ page }) => {
   await page.getByRole("link", { name: "Voir le produit" }).click()
 
   await expect(page.getByTestId("product-score")).toContainText(
-    "Coût environnemental : 871 points d'impact, 799 pour 100g",
+    "Coût environnemental : 1605 points d'impact, 791 pour 100g",
   )
   await expect(page.getByTestId("confidence-level-badge")).toContainText("Indice de confiance :FAIBLE?")
 
@@ -84,42 +82,42 @@ test("simplified declaration", async ({ page }) => {
 
   let response = await (await page.request.get("http://localhost:3000/api/produits/6234567891007")).json()
 
-  await expect(response.score).toBe(870.5449134818682)
-  await expect(response.standardized).toBe(798.6650582402461)
-  await expect(response.meanScore).toBe(870.5449134818682)
-  await expect(response.meanStandardized).toBe(798.6650582402461)
+  await expect(response.score).toBe(1604.761094970975)
+  await expect(response.standardized).toBe(790.5227068822537)
+  await expect(response.meanScore).toBe(1604.761094970975)
+  await expect(response.meanStandardized).toBe(790.5227068822537)
   await expect(response.confidenceLevel).toBe("Low")
   await expect(response.meanScores).toStrictEqual({
-    acd: 0.0361370834155042,
-    cch: 5.716673461641866,
-    etf: 87.43368613459887,
-    fru: 84.04406038634843,
-    fwe: 0.0019004946108311103,
-    ior: 9.251672503698895,
-    ldu: 21.45263981536722,
-    microfibers: 97.16776315789473,
-    mru: 0.000019368767969496584,
-    outOfEuropeEOL: 86.76973684210526,
-    ozd: 1.6478686846418843e-7,
-    pco: 0.02169001009366494,
-    pma: 3.170714155101269e-7,
-    swe: 0.008750285896582262,
-    tre: 0.08750852539508294,
-    wtu: 1.0404065128012912,
-    materials: 241.23897013115052,
-    spinning: 23.458431494863078,
-    fabric: 39.89407211055,
-    dyeing: 93.84621368602942,
+    acd: 0.06448635576669458,
+    cch: 10.345767019077131,
+    etf: 162.84516055421506,
+    fru: 153.33439407528604,
+    fwe: 0.0035434758959010902,
+    ior: 17.231311266241917,
+    ldu: 39.563352253192264,
+    microfibers: 180.96381578947367,
+    mru: 0.000035856212181523,
+    outOfEuropeEOL: 161.59868421052633,
+    ozd: 2.713343746378104e-7,
+    pco: 0.03925235636473845,
+    pma: 5.889003995403203e-7,
+    swe: 0.015965054194432678,
+    tre: 0.15921115901049931,
+    wtu: 1.943451130969505,
+    materials: 450.99693852865653,
+    spinning: 43.943221972864265,
+    fabric: 74.7708310566,
+    dyeing: 175.86512574485295,
     making: 18.208012500000002,
-    usage: 102.6903160408,
-    endOfLife: 69.57336559999999,
-    transport: 72.16625868282694,
+    usage: 191.24893721360002,
+    endOfLife: 129.55566800000003,
+    transport: 134.49120316136705,
     trims: 0.538494,
-    htc: 3.3146455329084597e-9,
-    htn: 5.395417732533047e-9,
+    htc: 6.172515582258055e-9,
+    htn: 9.960747161018389e-9,
     durability: 0.76,
-    score: 870.5449134818682,
-    standardized: 798.6650582402461,
+    score: 1604.761094970975,
+    standardized: 790.5227068822537,
   })
 
   await logout(page)
@@ -134,7 +132,7 @@ test("simplified declaration", async ({ page }) => {
   await page.getByRole("button", { name: "Étape suivante" }).click()
   await page.getByRole("combobox", { name: "Catégorie de produit" }).click()
   await page.getByText("Chemise", { exact: true }).click()
-  await page.getByRole("spinbutton", { name: "Masse du produit fini (en" }).fill("200")
+  await page.getByRole("radio", { name: "Femme" }).click({ force: true })
   await page.getByRole("spinbutton", { name: "Prix du produit" }).fill("55")
   await page.getByLabel("Lieu de tissage / tricotage").click()
   await page.getByLabel("Lieu de tissage / tricotage").selectOption("REE")
@@ -149,47 +147,47 @@ test("simplified declaration", async ({ page }) => {
   await page.getByRole("link", { name: "Voir le produit" }).click()
 
   await expect(page.getByTestId("product-score")).toContainText(
-    "Coût environnemental : 1030 points d'impact, 697 pour 100g",
+    "Coût environnemental : 1362 points d'impact, 693 pour 100g",
   )
   await expect(page.getByTestId("confidence-level-badge")).toContainText("Indice de confiance :FAIBLE?")
 
   response = await (await page.request.get("http://localhost:3000/api/produits/6234567891007")).json()
 
-  await expect(response.score).toBe(1189.8725171319338)
-  await expect(response.standardized).toBe(594.9362585659669)
-  await expect(response.meanScore).toBe(1030.208715306901)
-  await expect(response.meanStandardized).toBe(696.8006584031066)
+  await expect(response.score).toBe(1119.5054067289818)
+  await expect(response.standardized).toBe(595.4815993239265)
+  await expect(response.meanScore).toBe(1362.1332508499784)
+  await expect(response.meanStandardized).toBe(693.0021531030901)
   await expect(response.confidenceLevel).toBe("Low")
   await expect(response.meanScores).toStrictEqual({
-    acd: 0.0405882814254724,
-    cch: 6.835095502789818,
-    etf: 109.74644644002926,
-    fru: 99.58980537732536,
-    fwe: 0.0015094046262644385,
-    ior: 7.58577043025935,
-    ldu: 22.239910783298825,
-    microfibers: 136.75592458970004,
-    mru: 0.000023242952545824307,
-    outOfEuropeEOL: 108.43863186191284,
-    ozd: 2.442523529983722e-7,
-    pco: 0.026352633597011402,
-    pma: 3.8790059073455856e-7,
-    swe: 0.00929772736713189,
-    tre: 0.09381384780597848,
-    wtu: 1.4587760272047325,
-    materials: 365.4922122018431,
-    spinning: 25.748056524595498,
-    fabric: 53.672385954599996,
-    dyeing: 121.87244773225001,
+    acd: 0.05348415891809148,
+    cch: 8.918162894011534,
+    etf: 143.41337917989986,
+    fru: 131.03925605184332,
+    fwe: 0.0022967012397251936,
+    ior: 11.401078619638511,
+    ldu: 30.62020772027863,
+    microfibers: 173.36362832484434,
+    mru: 0.00003078501620887079,
+    outOfEuropeEOL: 141.94987973967176,
+    ozd: 2.932304822543942e-7,
+    pco: 0.03423172263881552,
+    pma: 5.098593735125762e-7,
+    swe: 0.01261758774345615,
+    tre: 0.1267550739348203,
+    wtu: 1.852907154502577,
+    materials: 455.33477807242,
+    spinning: 35.118758551766255,
+    fabric: 69.00735337020001,
+    dyeing: 158.21022242636764,
     making: 18.208012500000002,
-    usage: 96.2154019164,
-    endOfLife: 98.6267716,
-    transport: 102.51239365977065,
+    usage: 138.28881024104,
+    endOfLife: 124.78926520000002,
+    transport: 129.6719243561531,
     trims: 1.7501055,
-    htc: 4.572492901542395e-9,
-    htn: 7.1518157992828155e-9,
+    htc: 5.823881099922897e-9,
+    htn: 9.176719888192154e-9,
     durability: 0.845,
-    score: 1030.208715306901,
-    standardized: 696.8006584031066,
+    score: 1362.1332508499784,
+    standardized: 693.0021531030901,
   })
 })

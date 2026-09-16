@@ -106,6 +106,7 @@ describe("processUploadsToQueue", () => {
         fading: "false",
         materials: undefined,
         accessories: undefined,
+        audience: null,
       },
     ],
     materials: [],

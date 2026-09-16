@@ -110,6 +110,7 @@ describe("processProductsQueue", () => {
         ],
         accessories: [],
         emptyTrims: false,
+        audience: null,
       },
     ],
   }
