@@ -8,6 +8,7 @@ import { Stepper } from "@codegouvfr/react-dsfr/Stepper"
 import styles from "./SimplifiedDeclaration.module.css"
 import { Tile } from "@codegouvfr/react-dsfr/Tile"
 import { createProductFromSimplifiedDeclaration, SimplifiedDeclarationData } from "../../serverFunctions/upload"
+import { Audience } from "@prisma/enums"
 
 const steps: Record<number, string> = {
   1: "Identification du produit",
@@ -24,7 +25,7 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
     internalReference: "",
     url: "",
     product: "",
-    mass: 0,
+    audience: Audience.Man,
     price: 0,
     materials: [{ id: "", share: 100 }],
     countryFabric: "",
@@ -95,7 +96,7 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
                   internalReference: "",
                   url: "",
                   product: "",
-                  mass: 0,
+                  audience: Audience.Man,
                   price: 0,
                   materials: [{ id: "", share: 100 }],
                   countryFabric: "",

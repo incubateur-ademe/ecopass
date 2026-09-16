@@ -40,7 +40,11 @@ const removeUndefined = <T>(obj: T): T => {
 }
 
 const convertProductToEcobalyse = (
-  product: ParsedProductInformationValidation & { price?: number; numberOfReferences?: number; emptyTrims?: boolean },
+  product: ParsedProductInformationValidation & {
+    price?: number
+    numberOfReferences?: number
+    emptyTrims?: boolean
+  },
 ) => {
   const result = {
     airTransportRatio: product.airTransportRatio,

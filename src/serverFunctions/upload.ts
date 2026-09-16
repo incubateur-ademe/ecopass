@@ -1,7 +1,7 @@
 "use server"
 
 import { v4 as uuid } from "uuid"
-import { OrganizationRole, UploadType } from "@prisma/client"
+import { OrganizationRole, UploadType, Audience } from "@prisma/client"
 import { UserType } from "@prisma/enums"
 import { auth } from "../services/auth/auth"
 import { uploadFileToS3 } from "../utils/s3/bucket"
@@ -19,6 +19,7 @@ import { checkOldProduct } from "../services/validation/oldProduct"
 import { ProductCheckResult } from "../services/validation/productCheckResult"
 import { gtinsValidation } from "../services/validation/gtins"
 import { createUpload } from "../db/upload"
+import { getMassByAudience } from "../utils/product/audienceMassMapping"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -125,7 +126,7 @@ export type SimplifiedDeclarationData = {
   internalReference: string
   url: string
   product: string
-  mass: number
+  audience: Audience
   price: number
   materials: { id: string; share: number }[]
   countryFabric?: string
@@ -179,9 +180,14 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
         select: { id: true },
       }))
 
+    const massInGrams = getMassByAudience(data.product, data.audience)
+    if (massInGrams === null || massInGrams === undefined) {
+      throw new Error(`Validation error: Audience mass could not be determined`)
+    }
+
     const validatedData = getUserProductSimplifiedDeclarationValidation([resolvedBrand.id]).safeParse({
       ...data,
-      mass: data.mass / 1000,
+      mass: massInGrams / 1000,
       brandId: resolvedBrand.id,
     })
 
@@ -203,7 +209,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
         gtins: [data.gtin],
         confidenceLevel,
       },
-      informations: [{ ...validatedData.data, airTransportRatio: 1 }],
+      informations: [{ ...validatedData.data, airTransportRatio: 1, audience: data.audience }],
     }
 
     const hash = await hashProduct(product, informations, [resolvedBrand.id])

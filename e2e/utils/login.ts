@@ -5,7 +5,7 @@ export const loginWithFranceConnectCredentials = async (
   email = "ecopass-citoyen@yopmail.com",
   password = "ecopasscestsupercool",
 ) => {
-  await page.goto("http://localhost:3000/login/public")
+  await page.goto("http://localhost:3000/login/public", { waitUntil: "networkidle" })
   await page.getByRole("tab", { name: "Connexion", exact: true }).first().click()
 
   await page.getByRole("textbox", { name: "Email" }).fill(email)

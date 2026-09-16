@@ -17,6 +17,7 @@ const clean = async () => {
   await prismaClient.material.deleteMany()
   await prismaClient.accessory.deleteMany()
   await prismaClient.uploadProduct.deleteMany()
+  await prismaClient.productInformation.deleteMany()
   await prismaClient.product.deleteMany()
   await prismaClient.upload.deleteMany()
   await prismaClient.brand.deleteMany({})
