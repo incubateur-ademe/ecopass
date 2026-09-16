@@ -97,7 +97,7 @@ export const exportDgccrfBrandProducts = async (brandId?: string, category?: str
     return { error: "Marque invalide" }
   }
 
-  const csvChunks: string[] = []
+  let csv = ""
   let hasRows = false
 
   const processedProducts = await forEachLatestProductsByBrandIdForExport(
@@ -198,7 +198,7 @@ export const exportDgccrfBrandProducts = async (brandId?: string, category?: str
         return
       }
 
-      csvChunks.push(
+      csv = csv.concat(
         stringify(rows, {
           header: !hasRows,
           columns: headers,
@@ -217,7 +217,7 @@ export const exportDgccrfBrandProducts = async (brandId?: string, category?: str
   }
 
   console.log(`[exportDgccrfBrandProducts] Completed - processedProducts: ${processedProducts}`)
-  return csvChunks.join("")
+  return csv
 }
 
 export const searchOrganizationsAndBrands = async (query: string) => {
