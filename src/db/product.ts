@@ -5,9 +5,10 @@ import { decryptProductFields } from "../utils/encryption/encryption"
 import { productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
 import { checkOldProduct, ProductDeclarationContext } from "../services/validation/oldProduct"
-import { getProductCategory } from "../utils/product/category"
+import { BATCH_CATEGORY, getProductCategory } from "../utils/product/category"
 import { computeBatchScore } from "../utils/ecobalyse/batches"
 import { ProductCheckResult } from "../services/validation/productCheckResult"
+import { simplifyValue } from "../utils/parsing/parsing"
 
 export const createProducts = async (
   {
@@ -328,7 +329,6 @@ export const getProducts = async (
     skip,
     take,
   })
-
   const allProducts = await prismaClient.product.findMany({
     where: {
       internalReference: { in: uniqueGtins.map(({ internalReference }) => internalReference) },
@@ -356,25 +356,21 @@ export const countPublicProductsByBrandId = async (
   from: Date | undefined,
   to: Date | undefined,
 ) => {
-  const result = await prismaClient.product.findMany({
-    where: {
-      status: Status.Done,
-      brandId,
-      informations: category
-        ? {
-            some: {
-              categorySlug: category,
-            },
-          }
-        : undefined,
-      upload: organization ? { organizationId: organization } : undefined,
-      createdAt: {
-        gte: from,
-        lte: to,
-      },
+  const baseWhere = {
+    status: Status.Done,
+    brandId,
+    upload: organization ? { organizationId: organization } : undefined,
+    createdAt: {
+      gte: from,
+      lte: to,
     },
-    select: { internalReference: true },
-    distinct: ["internalReference"],
+  } as Prisma.ProductWhereInput
+
+  const where = await applyBatchCategoryFilter(baseWhere, category)
+
+  const result = await prismaClient.product.groupBy({
+    by: ["internalReference"],
+    where: where,
   })
   return result.length
 }
@@ -386,26 +382,20 @@ export const getPublicProductsByBrandId = async (
   from: Date | undefined,
   to: Date | undefined,
   page: number,
-) =>
-  getProducts(
-    {
-      brandId,
-      informations: category
-        ? {
-            some: {
-              categorySlug: category,
-            },
-          }
-        : undefined,
-      upload: organization ? { organizationId: organization } : undefined,
-      createdAt: {
-        gte: from,
-        lte: to,
-      },
+) => {
+  const baseWhere = {
+    status: Status.Done,
+    brandId,
+    upload: organization ? { organizationId: organization } : undefined,
+    createdAt: {
+      gte: from,
+      lte: to,
     },
-    (page - 1) * 10,
-    10,
-  )
+  } as Prisma.ProductWhereInput
+
+  const where = await applyBatchCategoryFilter(baseWhere, category)
+  return getProducts(where, (page - 1) * 10, 10)
+}
 
 export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brandId?: string) => {
   const user = await prismaClient.user.findUnique({
@@ -632,6 +622,43 @@ export const getAllBrands = async () => {
     .sort((a, b) => a.name.localeCompare(b.name))
 }
 
+const applyBatchCategoryFilter = async (baseWhere: Prisma.ProductWhereInput, category: string | undefined) => {
+  if (category === BATCH_CATEGORY) {
+    const productsWithMultipleInfos = await prismaClient.productInformation.groupBy({
+      by: ["productId"],
+      where: {
+        mainComponent: null,
+      },
+      _count: {
+        id: true,
+      },
+      having: {
+        id: {
+          _count: {
+            gt: 1,
+          },
+        },
+      },
+    })
+
+    const productIds = productsWithMultipleInfos.map((p) => p.productId).filter((id) => id !== null)
+    return {
+      ...baseWhere,
+      id: { in: productIds },
+    }
+  } else if (category) {
+    return {
+      ...baseWhere,
+      informations: {
+        some: {
+          categorySlug: productCategories[simplifyValue(category)] || category,
+        },
+      },
+    }
+  }
+  return baseWhere
+}
+
 export const searchProducts = async (options: {
   page: number
   size: number
@@ -642,18 +669,12 @@ export const searchProducts = async (options: {
   const baseWhere: Prisma.ProductWhereInput = {
     status: Status.Done,
     ...(options.brandId && { brandId: options.brandId }),
-    ...(options.category && {
-      informations: {
-        some: {
-          categorySlug: productCategories[options.category],
-        },
-      },
-    }),
   }
 
+  const where = await applyBatchCategoryFilter(baseWhere, options.category)
   const searchTerm = options.search?.trim()
   if (searchTerm) {
-    baseWhere.AND = [
+    where.AND = [
       {
         OR: [
           {
@@ -674,7 +695,7 @@ export const searchProducts = async (options: {
 
   const [uniqueReferences, total] = await Promise.all([
     prismaClient.product.findMany({
-      where: baseWhere,
+      where: where,
       select: { internalReference: true, createdAt: true },
       distinct: ["internalReference"],
       orderBy: [{ createdAt: "desc" }, { internalReference: "asc" }],
@@ -684,7 +705,7 @@ export const searchProducts = async (options: {
     prismaClient.product
       .groupBy({
         by: ["internalReference"],
-        where: baseWhere,
+        where: where,
       })
       .then((res) => res.length),
   ])
@@ -692,7 +713,7 @@ export const searchProducts = async (options: {
   const allProducts = await prismaClient.product.findMany({
     where: {
       internalReference: { in: uniqueReferences.map((r) => r.internalReference) },
-      ...baseWhere,
+      ...where,
     },
     select: productWithScoreSelect,
     orderBy: { createdAt: "desc" },
@@ -713,6 +734,7 @@ export const searchProducts = async (options: {
     total,
   }
 }
+
 export type Products = Awaited<ReturnType<typeof searchProducts>>["products"]
 
 export const getLastProductsByGtins = async (gtins: string[]) => {
