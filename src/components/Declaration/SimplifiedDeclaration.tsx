@@ -25,11 +25,11 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
     url: "",
     product: "",
     mass: 0,
+    price: 0,
     materials: [{ id: "", share: 100 }],
     countryFabric: "",
     countryDyeing: "",
     countryMaking: "",
-    countrySpinning: "",
   })
   const [loading, setLoading] = useState(false)
   const [score, setScore] = useState({ score: 0, standardized: 0 })
@@ -48,7 +48,6 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
         countryFabric: data.countryFabric === "" ? undefined : data.countryFabric,
         countryDyeing: data.countryDyeing === "" ? undefined : data.countryDyeing,
         countryMaking: data.countryMaking === "" ? undefined : data.countryMaking,
-        countrySpinning: data.countrySpinning === "" ? undefined : data.countrySpinning,
         materials: data.materials
           .filter((material) => material.share > 0)
           .map((material) => ({ id: material.id, share: material.share / 100 })),
@@ -97,11 +96,11 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
                   url: "",
                   product: "",
                   mass: 0,
+                  price: 0,
                   materials: [{ id: "", share: 100 }],
                   countryFabric: "",
                   countryDyeing: "",
                   countryMaking: "",
-                  countrySpinning: "",
                 })
                 setError("")
                 setStep(1)
