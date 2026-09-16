@@ -26,7 +26,6 @@ const DGCCRFExport = ({
     try {
       const result = await exportDgccrfBrandProducts(brandId, filter.category, filter.organization)
       if (typeof result === "object") {
-        console.log(result)
         setError(result.error || "Une erreur est survenue lors de l'export")
         return
       }
