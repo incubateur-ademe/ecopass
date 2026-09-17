@@ -12,32 +12,43 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Invalid pagination parameters" }, { status: 400 })
   }
 
-  const productsWithGtins = await prismaClient.product.findMany({
-    where: {
-      status: "Done",
-    },
-    select: {
-      gtins: true,
-      createdAt: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  })
+  const skip = page * size
 
-  const gtinToLatestDate = new Map<string, Date>()
-  for (const product of productsWithGtins) {
-    for (const gtin of product.gtins) {
-      const existing = gtinToLatestDate.get(gtin)
-      if (!existing || product.createdAt > existing) {
-        gtinToLatestDate.set(gtin, product.createdAt)
-      }
-    }
+  const uniqueGtinsResult = (await prismaClient.$queryRaw`
+    SELECT DISTINCT gtin
+    FROM (
+      SELECT unnest(gtins) as gtin
+      FROM "products"
+      WHERE status = 'Done'
+    ) AS flattened
+    ORDER BY gtin
+    LIMIT ${BigInt(size)} OFFSET ${BigInt(skip)}
+  `) as { gtin: string }[]
+
+  const paginatedGtins = uniqueGtinsResult.map((r) => r.gtin)
+
+  const totalResult = (await prismaClient.$queryRaw`
+    SELECT COUNT(DISTINCT gtin) as total
+    FROM (
+      SELECT unnest(gtins) as gtin
+      FROM "products"
+      WHERE status = 'Done'
+    ) AS flattened
+  `) as { total: bigint }[]
+
+  const total = Number(totalResult[0]?.total || 0)
+
+  if (paginatedGtins.length === 0) {
+    return NextResponse.json({
+      data: [],
+      pagination: {
+        page,
+        size,
+        total,
+        totalPages: Math.ceil(total / size),
+      },
+    })
   }
-
-  const uniqueGtins = Array.from(gtinToLatestDate.keys())
-  const total = gtinToLatestDate.size
-  const paginatedGtins = uniqueGtins.slice(page * size, (page + 1) * size)
 
   const products = await prismaClient.product.findMany({
     where: {
