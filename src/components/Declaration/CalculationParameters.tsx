@@ -5,18 +5,15 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Input } from "@codegouvfr/react-dsfr/Input"
 import { Select } from "@codegouvfr/react-dsfr/Select"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
-import CategoryDropdown from "../CategoryDropdown/CategoryDropdown"
+import CategoryDropdown from "../Dropdown/CategoryDropdown"
+import MaterialDropdown from "../Dropdown/MaterialDropdown"
 import { FormEvent, ReactNode, useRef, useState } from "react"
 import styles from "./CalculationParameters.module.css"
-import { MaterialType, Country } from "../../types/Product"
+import { Country } from "../../types/Product"
 import LoadingButton from "../Button/LoadingButton"
-import { materialMapping, countryMapping } from "../../utils/ecobalyse/mappings"
+import { countryMapping } from "../../utils/ecobalyse/mappings"
 import { Audience } from "@prisma/enums"
 
-const materialOptions = Object.entries(MaterialType).map(([, label]) => ({
-  label,
-  value: materialMapping[label] || label,
-}))
 const countryOptions = Object.entries(Country).map(([, label]) => ({
   label,
   value: countryMapping[label] || label,
@@ -55,7 +52,7 @@ const CalculationParameters = ({
   const [errors, setErrors] = useState<{ [key in keyof typeof data]?: ReactNode }>({})
   const productRef = useRef<HTMLInputElement>(null)
   const priceRef = useRef<HTMLInputElement>(null)
-  const materialTypeRefs = useRef<(HTMLSelectElement | null)[]>([])
+  const materialTypeRefs = useRef<(HTMLInputElement | null)[]>([])
   const materialShareRefs = useRef<(HTMLInputElement | null)[]>([])
 
   const submit = (e: FormEvent) => {
@@ -221,31 +218,24 @@ const CalculationParameters = ({
       {errors.materials && <Alert severity='error' small description={errors.materials} className='fr-mb-4w' />}
       {data.materials.map((material, index) => (
         <div key={index} className={styles.materialRow}>
-          <Select
+          <MaterialDropdown
             label={`Matière ${index + 1}`}
-            nativeSelectProps={{
-              value: material.id,
-              ref: (element) => {
-                if (element) {
-                  materialTypeRefs.current[index] = element
-                }
-              },
-              onChange: (e) => {
-                const newMaterials = [...data.materials]
-                newMaterials[index] = {
-                  ...newMaterials[index],
-                  id: e.target.value,
-                }
-                setData("materials", newMaterials)
-              },
-            }}>
-            <option value=''>Sélectionner une option</option>
-            {materialOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
+            selectedMaterial={material.id}
+            setMaterial={(value) => {
+              const newMaterials = [...data.materials]
+              newMaterials[index] = {
+                ...newMaterials[index],
+                id: value,
+              }
+              setData("materials", newMaterials)
+            }}
+            placeholder='Sélectionner une matière'
+            ref={(element) => {
+              if (element) {
+                materialTypeRefs.current[index] = element
+              }
+            }}
+          />
 
           <Input
             label='Proportion (%)'
