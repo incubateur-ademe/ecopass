@@ -23,24 +23,28 @@
   overflow-y: auto;
 }
 
+.noMargin {
+  top: 100%;
+}
+
 .open {
   border: 1px solid var(--border-default-grey);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.categoryList {
+.itemList {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
 
-.category {
+.item {
   padding: 0.5rem 1rem;
   cursor: pointer;
 }
 
-.category:hover,
-.category[aria-selected="true"] {
+.item:hover,
+.item[aria-selected="true"] {
   background: var(--background-default-grey-hover);
   outline: 2px solid var(--blue-france-sun-113-625);
   outline-offset: -2px;

@@ -136,6 +136,49 @@ const BrandAutocomplete = ({
     })
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault()
+      if (!isOpen) {
+        setIsOpen(true)
+      }
+      moveActive(1)
+      return
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault()
+      if (!isOpen) {
+        setIsOpen(true)
+      }
+      moveActive(-1)
+      return
+    }
+
+    if (event.key === "Home" && suggestions.length > 0) {
+      event.preventDefault()
+      setActiveIndex(0)
+      return
+    }
+
+    if (event.key === "End" && suggestions.length > 0) {
+      event.preventDefault()
+      setActiveIndex(suggestions.length - 1)
+      return
+    }
+
+    if (event.key === "Enter" && isOpen && activeIndex >= 0) {
+      event.preventDefault()
+      selectSuggestion(suggestions[activeIndex])
+      return
+    }
+
+    if (event.key === "Escape") {
+      setIsOpen(false)
+      setActiveIndex(-1)
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Input
@@ -167,48 +210,7 @@ const BrandAutocomplete = ({
               setActiveIndex(-1)
             }, 120)
           },
-          onKeyDown: (event) => {
-            if (event.key === "ArrowDown") {
-              event.preventDefault()
-              if (!isOpen) {
-                setIsOpen(true)
-              }
-              moveActive(1)
-              return
-            }
-
-            if (event.key === "ArrowUp") {
-              event.preventDefault()
-              if (!isOpen) {
-                setIsOpen(true)
-              }
-              moveActive(-1)
-              return
-            }
-
-            if (event.key === "Home" && suggestions.length > 0) {
-              event.preventDefault()
-              setActiveIndex(0)
-              return
-            }
-
-            if (event.key === "End" && suggestions.length > 0) {
-              event.preventDefault()
-              setActiveIndex(suggestions.length - 1)
-              return
-            }
-
-            if (event.key === "Enter" && isOpen && activeIndex >= 0) {
-              event.preventDefault()
-              selectSuggestion(suggestions[activeIndex])
-              return
-            }
-
-            if (event.key === "Escape") {
-              setIsOpen(false)
-              setActiveIndex(-1)
-            }
-          },
+          onKeyDown: handleKeyDown,
           autoComplete: "off",
         }}
       />
