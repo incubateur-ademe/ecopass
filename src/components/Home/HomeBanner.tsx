@@ -156,32 +156,40 @@ const HomeBanner = ({
             </div>
           )}
           {connected && userType === UserType.CITOYEN && (
-            <div className={styles.tiles}>
-              <Tile
-                orientation='horizontal'
-                title='Déclarer des produits un par un via un formulaire simplifié'
-                imageUrl='/images/conclusion.svg'
-                imageAlt=''
-                titleAs='h2'
-                desc='L’essentiel pour une déclaration'
-                linkProps={{ href: "/declaration-simplifiee" }}
-                start={<Badge>DÉCLARATION SIMPLIFIÉE</Badge>}
+            <>
+              <div className={styles.tiles}>
+                <Tile
+                  orientation='horizontal'
+                  title='Déclarer des produits un par un via un formulaire simplifié'
+                  imageUrl='/images/conclusion.svg'
+                  imageAlt=''
+                  titleAs='h2'
+                  desc='L’essentiel pour une déclaration'
+                  linkProps={{ href: "/declaration-simplifiee" }}
+                  start={<Badge>DÉCLARATION SIMPLIFIÉE</Badge>}
+                />
+                <Tile
+                  orientation='horizontal'
+                  title='Comment trouver les informations nécessaires à la déclaration de données'
+                  imageUrl='/images/document-search.svg'
+                  imageAlt=''
+                  titleAs='h2'
+                  desc='Consultez le centre d’aide - Docs'
+                  linkProps={{
+                    href: "https://docs.numerique.gouv.fr/docs/4c19480c-746e-49d9-aa1c-8b94f8790720/",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  }}
+                  start={<Badge>AIDE</Badge>}
+                />
+              </div>
+              <Alert
+                severity='info'
+                small
+                description='Vous ne pouvez pas encore déclarer de produits des catégories : linge de maison, accessoires, chaussures, produits rembourrés (doudoune, peluche...), lots de vêtements.'
+                className='fr-mt-4w'
               />
-              <Tile
-                orientation='horizontal'
-                title='Comment trouver les informations nécessaires à la déclaration de données'
-                imageUrl='/images/document-search.svg'
-                imageAlt=''
-                titleAs='h2'
-                desc='Consultez le centre d’aide - Docs'
-                linkProps={{
-                  href: "https://docs.numerique.gouv.fr/docs/4c19480c-746e-49d9-aa1c-8b94f8790720/",
-                  target: "_blank",
-                  rel: "noopener noreferrer",
-                }}
-                start={<Badge>AIDE</Badge>}
-              />
-            </div>
+            </>
           )}
         </div>
       </div>
