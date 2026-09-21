@@ -51,7 +51,6 @@ const CalculationParameters = ({
 }) => {
   const [errors, setErrors] = useState<{ [key in keyof typeof data]?: ReactNode }>({})
   const productRef = useRef<HTMLInputElement>(null)
-  const priceRef = useRef<HTMLInputElement>(null)
   const materialTypeRefs = useRef<(HTMLInputElement | null)[]>([])
   const materialShareRefs = useRef<(HTMLInputElement | null)[]>([])
 
@@ -64,14 +63,6 @@ const CalculationParameters = ({
       newErrors.product = "La catégorie de produit est requise"
       if (success) {
         productRef.current?.focus()
-      }
-      success = false
-    }
-
-    if (!Number.isFinite(data.price) || data.price < 1) {
-      newErrors.price = "Le prix doit être supérieur ou égal à 1 €"
-      if (success) {
-        priceRef.current?.focus()
       }
       success = false
     }
@@ -149,15 +140,13 @@ const CalculationParameters = ({
       />
 
       <Input
-        label='Prix du produit (en euros) *'
+        label='Prix du produit (en euros)'
         state={errors.price ? "error" : undefined}
         stateRelatedMessage={errors.price}
         nativeInputProps={{
-          required: true,
           type: "number",
           min: "0",
           value: data.price > 0 ? data.price : "",
-          ref: priceRef,
           onChange: (e) => {
             const parsedPrice = e.target.value === "" ? 0 : Number.parseFloat(e.target.value)
             setData("price", Number.isNaN(parsedPrice) ? 0 : parsedPrice)
