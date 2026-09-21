@@ -33,7 +33,7 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
     countryMaking: "",
   })
   const [loading, setLoading] = useState(false)
-  const [score, setScore] = useState({ score: 0, standardized: 0 })
+  const [score, setScore] = useState({ score: 0, standardized: 0, durability: 0 })
   const [error, setError] = useState<string>("")
 
   const handleChange = (field: keyof typeof data, value: string | number | typeof data.materials) => {
@@ -54,7 +54,7 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
           .map((material) => ({ id: material.id, share: material.share / 100 })),
       })
       if (response.success) {
-        setScore(response.score || { score: 0, standardized: 0 })
+        setScore(response.score || { score: 0, standardized: 0, durability: 0 })
         setStep(3)
       } else {
         setError(response.error || "Une erreur est survenue lors de la création du produit")
@@ -84,11 +84,13 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
           )}
           {step === 3 && (
             <Validation
+              data={data}
               score={score.score}
               standardized={score.standardized}
+              durability={score.durability}
               gtin={data.gtin}
               reset={() => {
-                setScore({ score: 0, standardized: 0 })
+                setScore({ score: 0, standardized: 0, durability: 0 })
                 setData({
                   brandName: "",
                   brandId: "",

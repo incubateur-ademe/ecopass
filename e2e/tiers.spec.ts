@@ -54,7 +54,7 @@ test("simplified declaration", async ({ page }) => {
 
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
 
-  await page.getByRole("link", { name: "Voir le produit" }).click()
+  await page.getByRole("link", { name: "Voir ce produit" }).click()
 
   await expect(page.getByTestId("product-score")).toContainText(
     "Coût environnemental : 1605 points d'impact, 791 pour 100g",
@@ -144,7 +144,7 @@ test("simplified declaration", async ({ page }) => {
 
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
 
-  await page.getByRole("link", { name: "Voir le produit" }).click()
+  await page.getByRole("link", { name: "Voir ce produit" }).click()
 
   await expect(page.getByTestId("product-score")).toContainText(
     "Coût environnemental : 1362 points d'impact, 693 pour 100g",
