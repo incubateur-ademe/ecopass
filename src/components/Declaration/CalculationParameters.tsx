@@ -3,21 +3,15 @@
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Input } from "@codegouvfr/react-dsfr/Input"
-import { Select } from "@codegouvfr/react-dsfr/Select"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import CategoryDropdown from "../Dropdown/CategoryDropdown"
+import CountryDropdown from "../Dropdown/CountryDropdown"
 import MaterialDropdown from "../Dropdown/MaterialDropdown"
 import { FormEvent, ReactNode, useRef, useState } from "react"
 import styles from "./CalculationParameters.module.css"
-import { Country } from "../../types/Product"
 import LoadingButton from "../Button/LoadingButton"
-import { countryMapping } from "../../utils/ecobalyse/mappings"
 import { Audience } from "@prisma/enums"
 
-const countryOptions = Object.entries(Country).map(([, label]) => ({
-  label,
-  value: countryMapping[label] || label,
-}))
 export const AUDIENCE_LABELS: Record<Audience, string> = {
   Man: "Homme",
   Mixed: "Mixte",
@@ -155,53 +149,32 @@ const CalculationParameters = ({
         }}
       />
 
-      <Select
+      <CountryDropdown
+        selectedCountry={data.countryFabric || ""}
+        setCountry={(value) => setData("countryFabric", value)}
         label='Lieu de tissage / tricotage'
+        placeholder='Sélectionner un pays'
         state={errors.countryFabric ? "error" : undefined}
         stateRelatedMessage={errors.countryFabric}
-        nativeSelectProps={{
-          value: data.countryFabric,
-          onChange: (e) => setData("countryFabric", e.target.value),
-        }}>
-        <option value=''>Pays inconnu</option>
-        {countryOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
+      />
 
-      <Select
+      <CountryDropdown
+        selectedCountry={data.countryDyeing || ""}
+        setCountry={(value) => setData("countryDyeing", value)}
         label="Lieu d'ennoblissement"
+        placeholder='Sélectionner un pays'
         state={errors.countryDyeing ? "error" : undefined}
         stateRelatedMessage={errors.countryDyeing}
-        nativeSelectProps={{
-          value: data.countryDyeing,
-          onChange: (e) => setData("countryDyeing", e.target.value),
-        }}>
-        <option value=''>Pays inconnu</option>
-        {countryOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
+      />
 
-      <Select
+      <CountryDropdown
+        selectedCountry={data.countryMaking || ""}
+        setCountry={(value) => setData("countryMaking", value)}
         label='Lieu de confection'
+        placeholder='Sélectionner un pays'
         state={errors.countryMaking ? "error" : undefined}
         stateRelatedMessage={errors.countryMaking}
-        nativeSelectProps={{
-          value: data.countryMaking,
-          onChange: (e) => setData("countryMaking", e.target.value),
-        }}>
-        <option value=''>Pays inconnu</option>
-        {countryOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
+      />
 
       <h3>Matières premières *</h3>
       {errors.materials && <Alert severity='error' small description={errors.materials} className='fr-mb-4w' />}
