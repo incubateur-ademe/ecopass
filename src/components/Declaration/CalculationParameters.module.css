@@ -8,6 +8,11 @@
   :global(.fr-input-group) {
     margin-bottom: 0;
   }
+  flex-wrap: wrap;
+}
+
+.material {
+  width: min(20rem, 100%);
 }
 
 .buttons {

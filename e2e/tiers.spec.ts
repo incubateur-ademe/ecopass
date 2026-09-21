@@ -32,7 +32,9 @@ test("simplified declaration", async ({ page }) => {
   await expect(page.locator(".fr-message--error").nth(1)).toHaveText("Le prix doit être supérieur ou égal à 1 €")
   await expect(page.locator(".fr-alert--error").nth(0)).toHaveText("La matière première est requise")
 
-  await page.getByLabel("Matière 1", { exact: true }).selectOption("elasthane")
+  await page.getByRole("combobox", { name: "Matière 1" }).click()
+  await page.getByText("Elasthane (Lycra)", { exact: true }).click()
+
   await page.getByRole("spinbutton", { name: "Proportion (%)" }).fill("75")
 
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
@@ -49,7 +51,8 @@ test("simplified declaration", async ({ page }) => {
   await page.getByLabel("Lieu de confection").click()
   await page.getByLabel("Lieu de confection").selectOption("VN")
   await page.getByRole("button", { name: "Ajouter une matière" }).click()
-  await page.getByLabel("Matière 2", { exact: true }).selectOption("ei-jute-kenaf")
+  await page.getByRole("combobox", { name: "Matière 2" }).click()
+  await page.getByText("Jute", { exact: true }).click()
   await page.getByRole("spinbutton", { name: "Proportion (%)" }).nth(1).fill("25")
 
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
@@ -140,7 +143,8 @@ test("simplified declaration", async ({ page }) => {
   await page.getByLabel("Lieu d'ennoblissement").selectOption("TR")
   await page.getByLabel("Lieu de confection").click()
   await page.getByLabel("Lieu de confection").selectOption("VN")
-  await page.getByLabel("Matière 1", { exact: true }).selectOption("elasthane")
+  await page.getByRole("combobox", { name: "Matière 1" }).click()
+  await page.getByText("Elasthane (Lycra)", { exact: true }).click()
 
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
 
