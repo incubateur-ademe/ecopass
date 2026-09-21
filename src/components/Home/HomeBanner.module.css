@@ -110,7 +110,12 @@
   display: flex;
   gap: 1.25rem;
   width: 100%;
+
   @media screen and (max-width: 62rem) {
     flex-direction: column;
+  }
+
+  > div {
+    flex: 1;
   }
 }
