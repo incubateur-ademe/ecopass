@@ -46,6 +46,7 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
     try {
       const response = await createProductFromSimplifiedDeclaration({
         ...data,
+        price: data.price === 0 ? undefined : data.price,
         countryFabric: data.countryFabric === "" ? undefined : data.countryFabric,
         countryDyeing: data.countryDyeing === "" ? undefined : data.countryDyeing,
         countryMaking: data.countryMaking === "" ? undefined : data.countryMaking,

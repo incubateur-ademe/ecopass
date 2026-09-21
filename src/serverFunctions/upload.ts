@@ -127,7 +127,7 @@ export type SimplifiedDeclarationData = {
   url: string
   product: string
   audience: Audience
-  price: number
+  price?: number
   materials: { id: string; share: number }[]
   countryFabric?: string
   countryDyeing?: string
