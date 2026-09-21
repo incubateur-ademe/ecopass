@@ -86,7 +86,7 @@ const Identification = ({
       <Alert
         severity='warning'
         small
-        description='Vous ne pouvez pas encore déclarer de produits des catégories : linge de maison, accessoires, chaussures.'
+        description='Vous ne pouvez pas encore déclarer de produits des catégories : linge de maison, accessoires, chaussures, produits rembourrés (doudoune, peluche...), lots de vêtements.'
         className='fr-mb-4w'
       />
       <form onSubmit={submit} noValidate>

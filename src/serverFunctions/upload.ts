@@ -246,6 +246,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
       score: {
         score: computedScores?.score || 0,
         standardized: computedScores?.standardized || 0,
+        durability: computedScores?.durability || 0,
       },
       message: "Produit créé avec succès",
     }
