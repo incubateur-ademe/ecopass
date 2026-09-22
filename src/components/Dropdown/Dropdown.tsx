@@ -1,4 +1,4 @@
-import { ForwardedRef, ReactNode, forwardRef, useId, useMemo, useState } from "react"
+import { ForwardedRef, ReactNode, forwardRef, useEffect, useId, useMemo, useRef, useState } from "react"
 import Input from "@codegouvfr/react-dsfr/Input"
 import Fuse from "fuse.js"
 import classNames from "classnames"
@@ -36,11 +36,18 @@ const Dropdown = (
 ) => {
   const instanceId = useId()
   const listboxId = `dropdown-listbox-${instanceId}`
+  const itemRefs = useRef<Map<number, HTMLLIElement>>(new Map())
 
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
-  const [filtered, setFiltered] = useState<typeof items>(items)
   const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    const currentElement = itemRefs.current.get(current)
+    if (currentElement) {
+      currentElement.scrollIntoView({ block: "nearest" })
+    }
+  }, [current])
 
   const fuse = useMemo(
     () =>
@@ -54,6 +61,15 @@ const Dropdown = (
       }),
     [items, searchThreshold],
   )
+
+  const filtered = useMemo(() => {
+    if (search.trim() === "") {
+      return items
+    } else {
+      const result = fuse.search(search)
+      return result.map((r) => r.item)
+    }
+  }, [search, fuse, items])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.code === "ArrowDown") {
@@ -77,8 +93,7 @@ const Dropdown = (
       if (open && current >= 0) {
         const result = filtered[current]
         if (result) {
-          setOpen(false)
-          onSelect(result.value)
+          handleSelect(result.value)
         }
       }
     }
@@ -92,6 +107,8 @@ const Dropdown = (
 
   const handleSelect = (value: string) => {
     onSelect(value)
+    const selectedItem = items.find((item) => item.value === value)
+    setSearch(selectedItem?.title || "")
     setOpen(false)
   }
 
@@ -113,21 +130,13 @@ const Dropdown = (
             setSearch(e.target.value)
             onSelect("")
             setOpen(true)
-            if (e.target.value.trim() === "") {
-              setFiltered(items)
-            } else {
-              const result = fuse.search(e.target.value)
-              setFiltered(result.map((r) => r.item))
-            }
             setCurrent(0)
           },
           onFocus: () => {
             setOpen(true)
           },
           onBlur: () => {
-            setTimeout(() => {
-              setOpen(false)
-            }, 120)
+            setOpen(false)
           },
           onKeyDown: handleKeyDown,
           role: "combobox",
@@ -144,11 +153,20 @@ const Dropdown = (
             {filtered.map((item, index) => (
               <li
                 key={item.value}
+                ref={(el) => {
+                  if (el) {
+                    itemRefs.current.set(index, el)
+                  } else {
+                    itemRefs.current.delete(index)
+                  }
+                }}
                 className={styles.item}
                 role='option'
                 aria-selected={current === index}
                 tabIndex={-1}
-                onClick={() => handleSelect(item.value)}>
+                onMouseDown={() => {
+                  handleSelect(item.value)
+                }}>
                 <p>
                   <b>{item.title}</b>
                 </p>
