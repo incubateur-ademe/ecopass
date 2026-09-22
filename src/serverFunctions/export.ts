@@ -71,10 +71,5 @@ export const exportProducts = async (brand: string | undefined, type: ExportType
     return "Utilisateur non authentifié"
   }
 
-  const organizationType = await getUserOrganizationType(session.user.id)
-  if (!organizationTypesAllowedToDeclare.includes(organizationType!)) {
-    return "Vous n'êtes pas autorisé à exporter ces produits"
-  }
-
   return createExport(session.user.id, brand, type)
 }
