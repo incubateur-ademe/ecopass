@@ -21,7 +21,11 @@
   gap: 1rem;
   margin-top: 2rem;
 
-  @media screen and (max-width: 62rem) {
-    flex-direction: column;
+  @media screen and (max-width: 22rem) {
+    button {
+      &::before {
+        display: none;
+      }
+    }
   }
 }
