@@ -1,3 +1,10 @@
+.toggle {
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border: 1px solid var(--border-default-grey);
+  border-radius: 0.25rem;
+}
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -12,16 +19,9 @@
   }
 }
 
-.toggle {
-  padding: 0.5rem 1rem;
-  background: #fff;
-  border: 1px solid var(--border-default-grey);
-  border-radius: 0.25rem;
-}
-
 .dropdownContent {
   position: absolute;
-  top: calc(100% - 1.5rem);
+  top: 100%;
   left: 0;
   right: 0;
   z-index: 1000;
