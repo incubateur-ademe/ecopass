@@ -63,7 +63,7 @@ const CitoyenCredentials = () => {
                 <Button
                   className={classNames("fr-mt-4w", styles.button)}
                   linkProps={{
-                    href: "https://demarche.numerique.gouv.fr/commencer/registration-of-companies-without-a-siret-number-o",
+                    href: "https://demarche.numerique.gouv.fr/commencer/registration-of-citizens-without-franceconnect-acc",
                     onClick: () => track("Login", "Credentials", "Create account"),
                   }}>
                   Je crée mon compte
