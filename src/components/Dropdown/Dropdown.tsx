@@ -111,6 +111,7 @@ const Dropdown = (
           value: displayValue,
           onChange: (e) => {
             setSearch(e.target.value)
+            onSelect("")
             setOpen(true)
             if (e.target.value.trim() === "") {
               setFiltered(items)
@@ -126,7 +127,6 @@ const Dropdown = (
           onBlur: () => {
             setTimeout(() => {
               setOpen(false)
-              setSearch("")
             }, 120)
           },
           onKeyDown: handleKeyDown,
