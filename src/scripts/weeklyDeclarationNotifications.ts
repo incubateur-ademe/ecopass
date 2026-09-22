@@ -1,5 +1,5 @@
 import "dotenv/config"
-import { runWeeklyDeclarationNotifications } from "../services/cron/weeklyDeclarationNotifications"
+import { runDailyDeclarationNotifications } from "../services/cron/dailyDeclarationNotifications"
 
 const run = async () => {
   if (process.env.ENABLE_WEEKLY_DECLARATION_NOTIFICATIONS !== "true") {
@@ -7,14 +7,14 @@ const run = async () => {
     return
   }
 
-  const result = await runWeeklyDeclarationNotifications(new Date())
+  const result = await runDailyDeclarationNotifications(new Date())
   console.log(
     JSON.stringify(
       {
         message: "Weekly declaration notifications completed",
         periodStart: result.period.start.toISOString(),
         periodEnd: result.period.end.toISOString(),
-        weeklyProducts: result.weeklyProducts,
+        dailyProducts: result.dailyProducts,
         ownerAlerts: result.ownerAlerts,
         changedNotifications: result.changedNotifications,
       },

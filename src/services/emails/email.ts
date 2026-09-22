@@ -88,7 +88,7 @@ export const sendUploadErrorEmail = async (
   )
 }
 
-export const sendWeeklyDeclarationAlertToOwnerAdmins = async (
+export const sendDailyDeclarationAlertToOwnerAdmins = async (
   toEmails: string[],
   declarations: {
     gtin: string
@@ -101,8 +101,8 @@ export const sendWeeklyDeclarationAlertToOwnerAdmins = async (
 ) => {
   return send(
     toEmails,
-    "Déclarations hebdomadaires: produits déclarés avec confiance faible ou moyenne",
-    await getHtml("weekly-owner-low-medium-alert", {
+    "Déclarations journalières",
+    await getHtml("daily-owner-low-medium-alert", {
       declarations,
       periodStart: periodStart.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
       periodEnd: periodEnd.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
@@ -111,7 +111,7 @@ export const sendWeeklyDeclarationAlertToOwnerAdmins = async (
   )
 }
 
-export const sendWeeklyDeclarationChangedEmail = async (
+export const sendDailyDeclarationChangedEmail = async (
   toEmails: string[],
   declarations: {
     gtin: string
@@ -124,8 +124,8 @@ export const sendWeeklyDeclarationChangedEmail = async (
 ) => {
   return send(
     toEmails,
-    "Mise à jour de déclaration: un produit déjà déclaré a changé",
-    await getHtml("weekly-declaration-changed", {
+    "Mise à jour de déclaration",
+    await getHtml("daily-declaration-changed", {
       declarations,
       periodStart: periodStart.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
       periodEnd: periodEnd.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),

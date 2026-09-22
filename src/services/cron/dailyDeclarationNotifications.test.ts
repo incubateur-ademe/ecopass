@@ -4,8 +4,8 @@ const mockFindManyProduct = jest.fn()
 const mockFindManyPrefix = jest.fn()
 const mockFindManyUser = jest.fn()
 
-const mockSendWeeklyDeclarationChangedEmail = jest.fn()
-const mockSendWeeklyDeclarationAlertToOwnerAdmins = jest.fn()
+const mockSendDailyDeclarationChangedEmail = jest.fn()
+const mockSendDailyDeclarationAlertToOwnerAdmins = jest.fn()
 
 jest.mock("../../db/prismaClient", () => ({
   prismaClient: {
@@ -22,42 +22,42 @@ jest.mock("../../db/prismaClient", () => ({
 }))
 
 jest.mock("../emails/email", () => ({
-  sendWeeklyDeclarationChangedEmail: mockSendWeeklyDeclarationChangedEmail,
-  sendWeeklyDeclarationAlertToOwnerAdmins: mockSendWeeklyDeclarationAlertToOwnerAdmins,
+  sendDailyDeclarationChangedEmail: mockSendDailyDeclarationChangedEmail,
+  sendDailyDeclarationAlertToOwnerAdmins: mockSendDailyDeclarationAlertToOwnerAdmins,
 }))
 
-describe("runWeeklyDeclarationNotifications", () => {
-  const loadModule = async () => import("./weeklyDeclarationNotifications")
+describe("runDailyDeclarationNotifications", () => {
+  const loadModule = async () => import("./dailyDeclarationNotifications")
 
   beforeEach(() => {
     jest.resetModules()
     mockFindManyProduct.mockReset()
     mockFindManyPrefix.mockReset()
     mockFindManyUser.mockReset()
-    mockSendWeeklyDeclarationChangedEmail.mockReset()
-    mockSendWeeklyDeclarationAlertToOwnerAdmins.mockReset()
+    mockSendDailyDeclarationChangedEmail.mockReset()
+    mockSendDailyDeclarationAlertToOwnerAdmins.mockReset()
   })
 
-  it("returns empty counters when no weekly done products exist", async () => {
-    // 1st product.findMany call: no weekly Done products in the target period.
+  it("returns empty counters when no daily done products exist", async () => {
+    // 1st product.findMany call: no daily Done products in the target period.
     mockFindManyProduct.mockResolvedValueOnce([])
 
-    const { runWeeklyDeclarationNotifications } = await loadModule()
-    const result = await runWeeklyDeclarationNotifications(new Date("2026-08-18T12:00:00.000Z"))
+    const { runDailyDeclarationNotifications } = await loadModule()
+    const result = await runDailyDeclarationNotifications(new Date("2026-08-18T12:00:00.000Z"))
 
-    expect(result.weeklyProducts).toBe(0)
+    expect(result.dailyProducts).toBe(0)
     expect(result.ownerAlerts).toBe(0)
     expect(result.changedNotifications).toBe(0)
     expect(mockFindManyPrefix).not.toHaveBeenCalled()
     expect(mockFindManyUser).not.toHaveBeenCalled()
-    expect(mockSendWeeklyDeclarationAlertToOwnerAdmins).not.toHaveBeenCalled()
-    expect(mockSendWeeklyDeclarationChangedEmail).not.toHaveBeenCalled()
+    expect(mockSendDailyDeclarationAlertToOwnerAdmins).not.toHaveBeenCalled()
+    expect(mockSendDailyDeclarationChangedEmail).not.toHaveBeenCalled()
   })
 
   it("sends owner alert and changed notifications with deduplicated recipients/items", async () => {
     const declarationDate = new Date("2026-08-14T10:00:00.000Z")
 
-    // 1st product.findMany call: weekly products query returns one Low-confidence declaration.
+    // 1st product.findMany call: daily products query returns one Low-confidence declaration.
     // 2nd product.findMany call: previous declarations for the GTIN (citizen duplicated + two pros same org).
     mockFindManyProduct
       .mockResolvedValueOnce([
@@ -143,15 +143,15 @@ describe("runWeeklyDeclarationNotifications", () => {
       { organizationId: "org-previous", email: "prev.admin@org.com" },
     ])
 
-    const { runWeeklyDeclarationNotifications } = await loadModule()
-    const result = await runWeeklyDeclarationNotifications(new Date("2026-08-18T12:00:00.000Z"))
+    const { runDailyDeclarationNotifications } = await loadModule()
+    const result = await runDailyDeclarationNotifications(new Date("2026-08-18T12:00:00.000Z"))
 
-    expect(result.weeklyProducts).toBe(1)
+    expect(result.dailyProducts).toBe(1)
     expect(result.ownerAlerts).toBe(1)
     expect(result.changedNotifications).toBe(2)
 
-    expect(mockSendWeeklyDeclarationAlertToOwnerAdmins).toHaveBeenCalledTimes(1)
-    expect(mockSendWeeklyDeclarationAlertToOwnerAdmins).toHaveBeenCalledWith(
+    expect(mockSendDailyDeclarationAlertToOwnerAdmins).toHaveBeenCalledTimes(1)
+    expect(mockSendDailyDeclarationAlertToOwnerAdmins).toHaveBeenCalledWith(
       ["owner.admin@org.com"],
       [
         {
@@ -162,12 +162,12 @@ describe("runWeeklyDeclarationNotifications", () => {
           declaredAt: declarationDate,
         },
       ],
-      new Date("2026-08-11T00:00:00.000Z"),
+      new Date("2026-08-17T00:00:00.000Z"),
       new Date("2026-08-18T00:00:00.000Z"),
     )
 
-    expect(mockSendWeeklyDeclarationChangedEmail).toHaveBeenCalledTimes(2)
-    expect(mockSendWeeklyDeclarationChangedEmail).toHaveBeenNthCalledWith(
+    expect(mockSendDailyDeclarationChangedEmail).toHaveBeenCalledTimes(2)
+    expect(mockSendDailyDeclarationChangedEmail).toHaveBeenNthCalledWith(
       1,
       ["citizen@mail.com"],
       [
@@ -179,11 +179,11 @@ describe("runWeeklyDeclarationNotifications", () => {
           declaredAt: declarationDate,
         },
       ],
-      new Date("2026-08-11T00:00:00.000Z"),
+      new Date("2026-08-17T00:00:00.000Z"),
       new Date("2026-08-18T00:00:00.000Z"),
     )
 
-    expect(mockSendWeeklyDeclarationChangedEmail).toHaveBeenNthCalledWith(
+    expect(mockSendDailyDeclarationChangedEmail).toHaveBeenNthCalledWith(
       2,
       ["prev.admin@org.com"],
       [
@@ -195,13 +195,13 @@ describe("runWeeklyDeclarationNotifications", () => {
           declaredAt: declarationDate,
         },
       ],
-      new Date("2026-08-11T00:00:00.000Z"),
+      new Date("2026-08-17T00:00:00.000Z"),
       new Date("2026-08-18T00:00:00.000Z"),
     )
   })
 
-  it("does not query GTIN prefix or send owner alerts when all weekly products are high confidence", async () => {
-    // 1st product.findMany call: weekly products only contain High-confidence declarations.
+  it("does not query GTIN prefix or send owner alerts when all daily products are high confidence", async () => {
+    // 1st product.findMany call: daily products only contain High-confidence declarations.
     // 2nd product.findMany call: no previous declarants found for GTINs.
     mockFindManyProduct
       .mockResolvedValueOnce([
@@ -226,20 +226,20 @@ describe("runWeeklyDeclarationNotifications", () => {
 
     mockFindManyUser.mockResolvedValueOnce([])
 
-    const { runWeeklyDeclarationNotifications } = await loadModule()
-    const result = await runWeeklyDeclarationNotifications(new Date("2026-08-18T12:00:00.000Z"))
+    const { runDailyDeclarationNotifications } = await loadModule()
+    const result = await runDailyDeclarationNotifications(new Date("2026-08-18T12:00:00.000Z"))
 
-    expect(result.weeklyProducts).toBe(1)
+    expect(result.dailyProducts).toBe(1)
     expect(result.ownerAlerts).toBe(0)
     expect(result.changedNotifications).toBe(0)
     expect(mockFindManyPrefix).not.toHaveBeenCalled()
-    expect(mockSendWeeklyDeclarationAlertToOwnerAdmins).not.toHaveBeenCalled()
+    expect(mockSendDailyDeclarationAlertToOwnerAdmins).not.toHaveBeenCalled()
   })
 
   it("routes correct product info per GTIN when one product contains multiple GTINs", async () => {
     const declarationDate = new Date("2026-08-14T10:00:00.000Z")
 
-    // 1st product.findMany call: one weekly product with four GTINs.
+    // 1st product.findMany call: one daily product with four GTINs.
     // 2nd product.findMany call: previous declarants for both GTINs.
     mockFindManyProduct
       .mockResolvedValueOnce([
@@ -330,17 +330,17 @@ describe("runWeeklyDeclarationNotifications", () => {
       { organizationId: "org-prev-2", email: "prev2@org.com" },
     ])
 
-    const { runWeeklyDeclarationNotifications } = await loadModule()
-    const result = await runWeeklyDeclarationNotifications(new Date("2026-08-18T12:00:00.000Z"))
+    const { runDailyDeclarationNotifications } = await loadModule()
+    const result = await runDailyDeclarationNotifications(new Date("2026-08-18T12:00:00.000Z"))
 
-    expect(result.weeklyProducts).toBe(1)
+    expect(result.dailyProducts).toBe(1)
     expect(result.ownerAlerts).toBe(2)
     expect(result.changedNotifications).toBe(3)
 
     // One email per owner organization, even if multiple GTINs map to the same owner.
-    expect(mockSendWeeklyDeclarationAlertToOwnerAdmins).toHaveBeenCalledTimes(2)
+    expect(mockSendDailyDeclarationAlertToOwnerAdmins).toHaveBeenCalledTimes(2)
 
-    const ownerCalls = mockSendWeeklyDeclarationAlertToOwnerAdmins.mock.calls
+    const ownerCalls = mockSendDailyDeclarationAlertToOwnerAdmins.mock.calls
     const ownerCallForFirstGtin = ownerCalls.find((call) => call[0][0] === "owner1@org.com")
     const ownerCallForSecondGtin = ownerCalls.find((call) => call[0][0] === "owner2@org.com")
 
@@ -376,7 +376,7 @@ describe("runWeeklyDeclarationNotifications", () => {
     )
     expect(ownerCallForSecondGtin?.[1]).toHaveLength(2)
 
-    const changedCalls = mockSendWeeklyDeclarationChangedEmail.mock.calls
+    const changedCalls = mockSendDailyDeclarationChangedEmail.mock.calls
     const citizenCall = changedCalls.find((call) => call[0][0] === "citizen@foo.com")
     const prevOrg1Call = changedCalls.find((call) => call[0][0] === "prev1@org.com")
     const prevOrg2Call = changedCalls.find((call) => call[0][0] === "prev2@org.com")

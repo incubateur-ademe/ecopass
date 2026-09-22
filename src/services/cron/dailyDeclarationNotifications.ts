@@ -1,6 +1,6 @@
 import { ConfidenceLevel, OrganizationRole, Status, UserType } from "@prisma/enums"
 import { prismaClient } from "../../db/prismaClient"
-import { sendWeeklyDeclarationChangedEmail, sendWeeklyDeclarationAlertToOwnerAdmins } from "../emails/email"
+import { sendDailyDeclarationAlertToOwnerAdmins, sendDailyDeclarationChangedEmail } from "../emails/email"
 
 type DeclarationItem = {
   productId: string
@@ -17,12 +17,12 @@ type Declarant = {
   organizationId: string | null
 }
 
-const getWeekWindow = (now: Date) => {
+const getDayWindow = (now: Date) => {
   const end = new Date(now)
   end.setUTCHours(0, 0, 0, 0)
 
   const start = new Date(end)
-  start.setUTCDate(start.getUTCDate() - 7)
+  start.setUTCDate(start.getUTCDate() - 1)
 
   return { start, end }
 }
@@ -198,20 +198,20 @@ const getPreviousDeclarantsByGtin = async (gtins: string[], before: Date) => {
   return byGtin
 }
 
-export const runWeeklyDeclarationNotifications = async (date: Date) => {
-  const { start, end } = getWeekWindow(date)
+export const runDailyDeclarationNotifications = async (date: Date) => {
+  const { start, end } = getDayWindow(date)
 
-  const weeklyProducts = await getProductsDoneDuringPeriod(start, end)
-  if (weeklyProducts.length === 0) {
+  const dailyProducts = await getProductsDoneDuringPeriod(start, end)
+  if (dailyProducts.length === 0) {
     return {
       period: { start, end },
-      weeklyProducts: 0,
+      dailyProducts: 0,
       ownerAlerts: 0,
       changedNotifications: 0,
     }
   }
 
-  const allNotHighGtins = weeklyProducts
+  const allNotHighGtins = dailyProducts
     .filter((product) => product.confidenceLevel !== ConfidenceLevel.High)
     .flatMap((product) => product.gtins)
     .filter((gtin, index, gtins) => Boolean(gtin) && gtins.indexOf(gtin) === index)
@@ -224,7 +224,7 @@ export const runWeeklyDeclarationNotifications = async (date: Date) => {
 
   const relatedOrganizationIds = new Set<string>()
 
-  for (const product of weeklyProducts) {
+  for (const product of dailyProducts) {
     const previousByGtin = await getPreviousDeclarantsByGtin(product.gtins, product.createdAt)
 
     for (const gtin of product.gtins) {
@@ -271,7 +271,7 @@ export const runWeeklyDeclarationNotifications = async (date: Date) => {
       continue
     }
 
-    await sendWeeklyDeclarationAlertToOwnerAdmins(
+    await sendDailyDeclarationAlertToOwnerAdmins(
       emails,
       items.filter(
         (item, index, arr) =>
@@ -286,7 +286,7 @@ export const runWeeklyDeclarationNotifications = async (date: Date) => {
   let changedNotificationsCount = 0
 
   for (const [email, items] of changedForCitizen.entries()) {
-    await sendWeeklyDeclarationChangedEmail(
+    await sendDailyDeclarationChangedEmail(
       [email],
       items.filter(
         (item, index, arr) =>
@@ -304,7 +304,7 @@ export const runWeeklyDeclarationNotifications = async (date: Date) => {
       continue
     }
 
-    await sendWeeklyDeclarationChangedEmail(
+    await sendDailyDeclarationChangedEmail(
       emails,
       items.filter(
         (item, index, arr) =>
@@ -318,7 +318,7 @@ export const runWeeklyDeclarationNotifications = async (date: Date) => {
 
   return {
     period: { start, end },
-    weeklyProducts: weeklyProducts.length,
+    dailyProducts: dailyProducts.length,
     ownerAlerts: ownerAlertsCount,
     changedNotifications: changedNotificationsCount,
   }
