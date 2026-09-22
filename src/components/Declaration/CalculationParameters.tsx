@@ -146,7 +146,8 @@ const CalculationParameters = ({
       />
 
       <Input
-        label='Prix du produit (TTC, hors soldes ou promotions, en euros)'
+        label='Prix du produit'
+        hintText='TTC, hors soldes ou promotions, en euros'
         state={errors.price ? "error" : undefined}
         stateRelatedMessage={errors.price}
         nativeInputProps={{
