@@ -31,7 +31,7 @@ const CalculationParameters = ({
   data: {
     product: string
     audience: Audience
-    price: number
+    price?: number
     materials: { id: string; share: number }[]
     countryFabric?: string
     countryDyeing?: string
@@ -140,7 +140,7 @@ const CalculationParameters = ({
         nativeInputProps={{
           type: "number",
           min: "0",
-          value: data.price > 0 ? data.price : "",
+          value: data.price && data.price > 0 ? data.price : "",
           onChange: (e) => {
             const parsedPrice = e.target.value === "" ? 0 : Number.parseFloat(e.target.value)
             setData("price", Number.isNaN(parsedPrice) ? 0 : parsedPrice)

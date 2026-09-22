@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Identification from "./Identification"
 import CalculationParameters from "./CalculationParameters"
 import Validation from "./Validation"
@@ -17,6 +17,7 @@ const steps: Record<number, string> = {
 }
 
 const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string }[] }) => {
+  const ref = useRef<HTMLDivElement>(null)
   const [step, setStep] = useState(1)
   const [data, setData] = useState<SimplifiedDeclarationData>({
     brandName: "",
@@ -28,9 +29,9 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
     audience: Audience.Man,
     price: 0,
     materials: [{ id: "", share: 100 }],
-    countryFabric: "",
-    countryDyeing: "",
-    countryMaking: "",
+    countryFabric: "???",
+    countryDyeing: "???",
+    countryMaking: "???",
   })
   const [loading, setLoading] = useState(false)
   const [score, setScore] = useState({ score: 0, standardized: 0, durability: 0 })
@@ -47,9 +48,9 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
       const response = await createProductFromSimplifiedDeclaration({
         ...data,
         price: data.price === 0 ? undefined : data.price,
-        countryFabric: data.countryFabric === "" ? undefined : data.countryFabric,
-        countryDyeing: data.countryDyeing === "" ? undefined : data.countryDyeing,
-        countryMaking: data.countryMaking === "" ? undefined : data.countryMaking,
+        countryFabric: data.countryFabric === "" || data.countryFabric === "???" ? undefined : data.countryFabric,
+        countryDyeing: data.countryDyeing === "" || data.countryDyeing === "???" ? undefined : data.countryDyeing,
+        countryMaking: data.countryMaking === "" || data.countryMaking === "???" ? undefined : data.countryMaking,
         materials: data.materials
           .filter((material) => material.share > 0)
           .map((material) => ({ id: material.id, share: material.share / 100 })),
@@ -62,23 +63,35 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
       }
     } finally {
       setLoading(false)
+      ref.current?.scrollIntoView({ behavior: "smooth", block: "start" })
     }
   }
 
   return (
-    <div>
+    <div ref={ref}>
       <Stepper currentStep={step} stepCount={3} title={steps[step]} />
       <div className={styles.formContainer}>
         <div className={styles.form}>
           {step === 1 && (
-            <Identification data={data} brands={brands} setData={handleChange} goToNextStep={() => setStep(2)} />
+            <Identification
+              data={data}
+              brands={brands}
+              setData={handleChange}
+              goToNextStep={() => {
+                setStep(2)
+                ref.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }}
+            />
           )}
           {step === 2 && (
             <CalculationParameters
               data={data}
               setData={handleChange}
               goToNextStep={() => submitProduct()}
-              goToPreviousStep={() => setStep(1)}
+              goToPreviousStep={() => {
+                setStep(1)
+                ref.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }}
               loading={loading}
               error={error}
             />
@@ -102,9 +115,9 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
                   audience: Audience.Man,
                   price: 0,
                   materials: [{ id: "", share: 100 }],
-                  countryFabric: "",
-                  countryDyeing: "",
-                  countryMaking: "",
+                  countryFabric: "???",
+                  countryDyeing: "???",
+                  countryMaking: "???",
                 })
                 setError("")
                 setStep(1)
