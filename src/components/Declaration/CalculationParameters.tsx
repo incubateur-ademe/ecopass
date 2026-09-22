@@ -2,6 +2,7 @@
 
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import { Button } from "@codegouvfr/react-dsfr/Button"
+import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox"
 import { Input } from "@codegouvfr/react-dsfr/Input"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import CategoryDropdown from "../Dropdown/CategoryDropdown"
@@ -11,6 +12,7 @@ import { FormEvent, ReactNode, useRef, useState } from "react"
 import styles from "./CalculationParameters.module.css"
 import LoadingButton from "../Button/LoadingButton"
 import { Audience } from "@prisma/enums"
+import Link from "next/link"
 
 export const AUDIENCE_LABELS: Record<Audience, string> = {
   Man: "Homme",
@@ -43,15 +45,17 @@ const CalculationParameters = ({
   loading: boolean
   error: string
 }) => {
-  const [errors, setErrors] = useState<{ [key in keyof typeof data]?: ReactNode }>({})
+  const [errors, setErrors] = useState<{ [key in keyof typeof data | "cgu"]?: ReactNode }>({})
+  const [acceptedCGU, setAcceptedCGU] = useState(false)
   const productRef = useRef<HTMLInputElement>(null)
+  const cguRef = useRef<HTMLInputElement>(null)
   const materialTypeRefs = useRef<(HTMLInputElement | null)[]>([])
   const materialShareRefs = useRef<(HTMLInputElement | null)[]>([])
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
     let success = true
-    const newErrors: { [key in keyof typeof data]?: ReactNode } = {}
+    const newErrors: { [key in keyof typeof data | "cgu"]?: ReactNode } = {}
 
     if (!data.product) {
       newErrors.product = "La catégorie de produit est requise"
@@ -89,6 +93,14 @@ const CalculationParameters = ({
       newErrors.materials = "La somme des proportions doit être égale à 100%"
       if (success) {
         materialTypeRefs.current[0]?.focus()
+      }
+      success = false
+    }
+
+    if (!acceptedCGU) {
+      newErrors.cgu = "Vous devez accepter les CGU pour valider votre déclaration"
+      if (success) {
+        cguRef.current?.focus()
       }
       success = false
     }
@@ -134,7 +146,7 @@ const CalculationParameters = ({
       />
 
       <Input
-        label='Prix du produit (en euros)'
+        label='Prix du produit (TTC, hors soldes ou promotions, en euros)'
         state={errors.price ? "error" : undefined}
         stateRelatedMessage={errors.price}
         nativeInputProps={{
@@ -149,34 +161,40 @@ const CalculationParameters = ({
         }}
       />
 
-      <CountryDropdown
-        selectedCountry={data.countryFabric || ""}
-        setCountry={(value) => setData("countryFabric", value)}
-        label='Lieu de tissage / tricotage'
-        placeholder='Sélectionner un pays'
-        state={errors.countryFabric ? "error" : undefined}
-        stateRelatedMessage={errors.countryFabric}
-      />
+      <div>
+        <h3 className='fr-mt-4w fr-mb-1w'>Étapes de fabrication</h3>
+        <p className='fr-hint-text fr-mb-2w'>
+          Généralement ces informations se trouvent sur la fiche produit en ligne, ou sont accessibles via un QR code
+          sur l'étiquette du vêtement.
+        </p>
+        <CountryDropdown
+          selectedCountry={data.countryFabric || ""}
+          setCountry={(value) => setData("countryFabric", value)}
+          label='Lieu de tissage / tricotage'
+          placeholder='Sélectionner un pays'
+          state={errors.countryFabric ? "error" : undefined}
+          stateRelatedMessage={errors.countryFabric}
+        />
 
-      <CountryDropdown
-        selectedCountry={data.countryDyeing || ""}
-        setCountry={(value) => setData("countryDyeing", value)}
-        label="Lieu d'ennoblissement"
-        placeholder='Sélectionner un pays'
-        state={errors.countryDyeing ? "error" : undefined}
-        stateRelatedMessage={errors.countryDyeing}
-      />
+        <CountryDropdown
+          selectedCountry={data.countryDyeing || ""}
+          setCountry={(value) => setData("countryDyeing", value)}
+          label="Lieu d'ennoblissement"
+          placeholder='Sélectionner un pays'
+          state={errors.countryDyeing ? "error" : undefined}
+          stateRelatedMessage={errors.countryDyeing}
+        />
 
-      <CountryDropdown
-        selectedCountry={data.countryMaking || ""}
-        setCountry={(value) => setData("countryMaking", value)}
-        label='Lieu de confection'
-        placeholder='Sélectionner un pays'
-        state={errors.countryMaking ? "error" : undefined}
-        stateRelatedMessage={errors.countryMaking}
-      />
-
-      <h3>Matières premières *</h3>
+        <CountryDropdown
+          selectedCountry={data.countryMaking || ""}
+          setCountry={(value) => setData("countryMaking", value)}
+          label='Lieu de confection'
+          placeholder='Sélectionner un pays'
+          state={errors.countryMaking ? "error" : undefined}
+          stateRelatedMessage={errors.countryMaking}
+        />
+      </div>
+      <h3 className='fr-mt-4w'>Matières premières *</h3>
       {errors.materials && <Alert severity='error' small description={errors.materials} className='fr-mb-4w' />}
       {data.materials.map((material, index) => (
         <div key={index} className={styles.materialRow}>
@@ -242,6 +260,32 @@ const CalculationParameters = ({
       </Button>
 
       {error && <Alert severity='error' title={error} className='fr-mt-4w' />}
+
+      <Checkbox
+        className='fr-mt-4w'
+        state={errors.cgu ? "error" : undefined}
+        stateRelatedMessage={errors.cgu}
+        options={[
+          {
+            label: (
+              <span>
+                En validant ma déclaration, j'accepte les{" "}
+                <Link target='_blank' rel='noopener noreferrer' href='/conditions-generales-utilisation'>
+                  conditions générales d'utilisation (CGU)
+                </Link>{" "}
+                et je certifie que les informations déclarées sont correctes.
+              </span>
+            ),
+            nativeInputProps: {
+              ref: cguRef,
+              checked: acceptedCGU,
+              onChange: (e) => {
+                setAcceptedCGU(e.target.checked)
+              },
+            },
+          },
+        ]}
+      />
 
       <div className={styles.buttons}>
         <Button type='button' priority='secondary' onClick={goToPreviousStep} iconId='ri-arrow-left-line'>

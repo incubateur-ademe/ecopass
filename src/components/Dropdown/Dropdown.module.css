@@ -2,6 +2,14 @@
   position: relative;
   display: inline-block;
   width: 100%;
+
+  &:not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
+
+  :global(.fr-input-group) {
+    margin: 0;
+  }
 }
 
 .toggle {

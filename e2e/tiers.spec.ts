@@ -29,12 +29,16 @@ test("simplified declaration", async ({ page }) => {
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
 
   await expect(page.locator(".fr-message--error").nth(0)).toHaveText("La catégorie de produit est requise")
+  await expect(page.locator(".fr-message--error").nth(1)).toHaveText(
+    "Vous devez accepter les CGU pour valider votre déclaration",
+  )
   await expect(page.locator(".fr-alert--error").nth(0)).toHaveText("La matière première est requise")
 
   await page.getByRole("combobox", { name: "Matière 1" }).click()
   await page.getByText("Elasthane (Lycra)", { exact: true }).click()
-
   await page.getByRole("spinbutton", { name: "Proportion (%)" }).fill("75")
+
+  await page.locator("label").filter({ hasText: "En validant ma déclaration, j" }).click()
 
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
 
@@ -144,6 +148,7 @@ test("simplified declaration", async ({ page }) => {
   await page.getByText("Vietnam", { exact: true }).click()
   await page.getByRole("combobox", { name: "Matière 1" }).click()
   await page.getByText("Elasthane (Lycra)", { exact: true }).click()
+  await page.locator("label").filter({ hasText: "En validant ma déclaration, j" }).click()
 
   await page.getByRole("button", { name: "Valider ma déclaration" }).click()
 
