@@ -183,6 +183,7 @@ const BrandAutocomplete = ({
     <div className={styles.container}>
       <Input
         label='Nom de la marque *'
+        hintText='Veillez à correctement orthographier la marque du produit que vous déclarez afin que nous puissions l’interpeller'
         state={error ? "error" : undefined}
         stateRelatedMessage={error}
         iconId='fr-icon-search-line'

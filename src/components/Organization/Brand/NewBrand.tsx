@@ -19,7 +19,11 @@ const NewBrand = () => {
   }
   return (
     <form onSubmit={submit}>
-      <Input label='Ajouter une marque' nativeInputProps={{ required: true, name: "name" }} />
+      <Input
+        label='Ajouter une marque'
+        hintText='En déclarant que vous êtes titulaire d’une marque, vous engagez votre responsabilité. Toute fausse déclaration est punie de 2 ans d’emprisonnement et 30 000€ d’amende (article 441-6 du Code pénal)'
+        nativeInputProps={{ required: true, name: "name" }}
+      />
       <Button type='submit'>Ajouter</Button>
     </form>
   )

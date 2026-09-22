@@ -59,8 +59,8 @@ const BrandOrganization = ({
                   <>
                     <h2>Ajouter vos préfixes GTIN</h2>
                     <p>
-                      Pour associer votre marque aux produits déclarés par des tiers et vous notifier, vous devez
-                      renseigner les 6 premiers chiffres de vos codes GTIN.
+                      Le renseignement des préfixes GTIN vous permettra d’être notifié automatiquement en cas de
+                      déclaration par les tiers.
                     </p>
                     <GTINPrefixes prefixes={organization.gtinPrefixes} isAdmin={isAdmin} />
                   </>

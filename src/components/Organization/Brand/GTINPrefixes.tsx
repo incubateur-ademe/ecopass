@@ -69,6 +69,7 @@ const GTINPrefixes = ({ prefixes, isAdmin }: { prefixes: UserOrganization["gtinP
             <form onSubmit={submit}>
               <Input
                 label='Ajouter un préfixe'
+                hintText='Les 6 premiers chiffres de vos codes GTIN'
                 nativeInputProps={{ required: true, name: "prefix" }}
                 state={error ? "error" : undefined}
                 stateRelatedMessage={error}
