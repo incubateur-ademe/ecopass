@@ -20,6 +20,7 @@ import { ProductCheckResult } from "../services/validation/productCheckResult"
 import { gtinsValidation } from "../services/validation/gtins"
 import { createUpload } from "../db/upload"
 import { getMassByAudience } from "../utils/product/audienceMassMapping"
+import { ProductCategory } from "../types/Product"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -134,6 +135,16 @@ export type SimplifiedDeclarationData = {
   countryMaking?: string
 }
 
+const mappedCategories: Record<string, ProductCategory> = {
+  Jupe: ProductCategory.JupeRobe,
+  Robe: ProductCategory.JupeRobe,
+  Imperméable: ProductCategory.ManteauVeste,
+  Manteau: ProductCategory.ManteauVeste,
+  Veste: ProductCategory.ManteauVeste,
+  Pantalon: ProductCategory.PantalonShort,
+  Short: ProductCategory.PantalonShort,
+}
+
 export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDeclarationData) => {
   try {
     const session = await auth()
@@ -187,6 +198,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
 
     const validatedData = getUserProductSimplifiedDeclarationValidation([resolvedBrand.id]).safeParse({
       ...data,
+      product: mappedCategories[data.product] || data.product,
       mass: massInGrams / 1000,
       brandId: resolvedBrand.id,
     })

@@ -36,47 +36,75 @@ const productMassByAudience: Record<string, Record<Audience, number>> = {
     Baby: 158,
     Mixed: 633,
   },
-  jupe: {
-    Man: 0,
+  Jupe: {
+    Man: 294,
     Woman: 294,
     Kid: 158,
     Baby: 73,
-    Mixed: 0,
+    Mixed: 294,
   },
-  "maillot-de-bain": {
-    Man: 0,
+  Robe: {
+    Man: 354,
     Woman: 354,
     Kid: 199,
     Baby: 89,
-    Mixed: 0,
+    Mixed: 354,
   },
-  manteau: {
+  "maillot-de-bain": {
     Man: 178,
     Woman: 142,
     Kid: 104,
     Baby: 44,
     Mixed: 178,
   },
-  pantalon: {
+  Imperméable: {
     Man: 311,
-    Woman: 529,
+    Woman: 311,
     Kid: 246,
     Baby: 78,
     Mixed: 311,
   },
-  pull: {
+  Manteau: {
     Man: 1149,
     Woman: 1075,
     Kid: 776,
     Baby: 287,
     Mixed: 1149,
   },
-  tshirt: {
+  Veste: {
     Man: 766,
     Woman: 583,
     Kid: 484,
     Baby: 192,
     Mixed: 766,
+  },
+  Pantalon: {
+    Man: 553,
+    Woman: 430,
+    Kid: 298,
+    Baby: 138,
+    Mixed: 553,
+  },
+  Short: {
+    Man: 295,
+    Woman: 273,
+    Kid: 179,
+    Baby: 74,
+    Mixed: 295,
+  },
+  pull: {
+    Man: 558,
+    Woman: 392,
+    Kid: 296,
+    Baby: 139,
+    Mixed: 558,
+  },
+  tshirt: {
+    Man: 235,
+    Woman: 187,
+    Kid: 112,
+    Baby: 59,
+    Mixed: 235,
   },
 }
 
