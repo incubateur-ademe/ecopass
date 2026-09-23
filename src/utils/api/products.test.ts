@@ -118,6 +118,7 @@ describe("handleProductPOST", () => {
   }
 
   const validSingleBody = {
+    brandId: "brand-1",
     internalReference: "REF-1",
     product: "jean",
     mass: 1,
@@ -128,6 +129,7 @@ describe("handleProductPOST", () => {
   }
 
   const validBatchBody = {
+    brandId: "brand-1",
     internalReference: "REF-BATCH",
     products: [
       {
@@ -150,6 +152,7 @@ describe("handleProductPOST", () => {
   }
 
   const validMultiBody = {
+    brandId: "brand-1",
     internalReference: "REF-MULTI",
     product: "jean",
     components: [
@@ -200,10 +203,7 @@ describe("handleProductPOST", () => {
       ...validApi,
       user: {
         ...validApi.user,
-        organization: {
-          ...validApi.user.organization,
-          type: OrganizationType.Distributor,
-        },
+        organization: null,
       },
     })
 
@@ -213,7 +213,7 @@ describe("handleProductPOST", () => {
     await expect(response.json()).resolves.toEqual({
       error:
         "Votre organisation n'est pas autorisée à déclarer des produits. Si vous pensez que c'est une erreur, veuillez contacter le support.",
-      organizationType: "Distributeur",
+      organizationType: "Non défini",
     })
   })
 
@@ -248,7 +248,7 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(400)
     await expect(response.json()).resolves.toEqual({
-      error: "Votre organisation n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné.",
+      error: "La marque n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné.",
     })
     expect(mockedComputeEcobalyseScore).not.toHaveBeenCalled()
   })
@@ -407,6 +407,7 @@ describe("handleProductPOST", () => {
     const response = await handleProductPOST(
       makeRequest({
         internalReference: "REF-BATCH",
+        brandId: "brand-1",
         products: [
           {
             product: "jean",

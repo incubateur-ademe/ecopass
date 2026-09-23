@@ -160,7 +160,7 @@ describe("parseCSV", () => {
     expect(products[0].gtins).toEqual(["Test"])
     expect(products[0].internalReference).toBe("Test")
     expect(products[0].brandName).toBe("Test")
-    expect(products[0].brandId).toBe(null)
+    expect(products[0].brandId).toBe("Test")
     expect(products[0].declaredScore).toBe(-1)
 
     const fullProducts = informations.map((information) => {
@@ -318,14 +318,6 @@ describe("parseCSV", () => {
     const { products } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)
     expect(products[0].gtins).toEqual([""])
-  })
-
-  it("default brand to user brand", async () => {
-    const csv = Buffer.from(`${header}\n${defaultProducts.replace("781c0fcd-372e-4032-8088-d83e103726f2", "")}`)
-    const { products } = await parseCSV(csv, null, upload)
-    expect(products).toHaveLength(1)
-    expect(products[0].brandName).toEqual("7a96793c-6017-42df-812a-6e2422fc215a")
-    expect(products[0].brandId).toEqual("7a96793c-6017-42df-812a-6e2422fc215a")
   })
 
   const trueValues = ["yes", "oui", "true"]

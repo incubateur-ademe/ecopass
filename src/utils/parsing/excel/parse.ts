@@ -13,7 +13,6 @@ import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
 import { hashProduct, ProductInformationForHash } from "../../encryption/hash"
 import { checkHeaders, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
-import { getAuthorizedBrands } from "../../organization/brands"
 import { getProductConfidenceLevel } from "../../product/confidence"
 
 export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>) => {
@@ -56,11 +55,7 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
 
     const gtins = (row[headerMapping["gtinseans"]] || "").split(/[,;\n]/).map((gtin) => gtin.trim())
     const internalReference = row[headerMapping["referenceinterne"]] || ""
-    const brand = (
-      row[headerMapping["marqueid"]] ||
-      upload.createdBy.organization?.brands.find((brand) => brand.default)?.id ||
-      ""
-    ).trim()
+    const brand = (row[headerMapping["marqueid"]] || "").trim()
     const declaredScore = getNumberValue(row[headerMapping["score"]] || "", 1, -1) as number | undefined
 
     const gtin = gtins.sort((a, b) => a.localeCompare(b)).join(",")
@@ -138,10 +133,6 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
       })
     })
 
-    const authorizedBrands = upload.createdBy.organization
-      ? getAuthorizedBrands(upload.createdBy.organization)
-      : ([] as string[])
-
     const confidenceLevel = getProductConfidenceLevel(upload.createdBy, brand)
 
     const product = {
@@ -161,7 +152,6 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
           confidenceLevel,
         },
         [rawProduct],
-        authorizedBrands,
       ),
       createdAt: now,
       uploadId: upload ? upload.id : "",
@@ -170,7 +160,7 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
       gtins: gtins,
       internalReference: internalReference,
       brandName: brand,
-      brandId: authorizedBrands.includes(brand) ? brand : null,
+      brandId: brand,
       declaredScore: declaredScore || null,
       confidenceLevel,
     }
@@ -186,7 +176,6 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
           confidenceLevel,
         },
         existingProduct.raw,
-        authorizedBrands,
       )
 
       const errors = []

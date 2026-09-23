@@ -13,7 +13,6 @@ import { Readable } from "stream"
 import { FileUpload } from "../../../db/upload"
 import { encryptProductFields } from "../../encryption/encryption"
 import { checkHeaders, ColumnType, getBooleanValue, getNumberValue, getValue, trimsColumnValues } from "../parsing"
-import { getAuthorizedBrands } from "../../organization/brands"
 import { hashProduct, ProductInformationForHash } from "../../encryption/hash"
 import { getProductConfidenceLevel } from "../../product/confidence"
 
@@ -109,11 +108,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
     parser.on("data", (row: CSVRow) => {
       const gtins = (row.record["gtinseans"] || "").split(";").map((gtin) => gtin.trim())
       const internalReference = row.record["referenceinterne"] || ""
-      const brand = (
-        row.record["marqueid"] ||
-        upload.createdBy.organization?.brands.find((brand) => brand.default)?.id ||
-        ""
-      ).trim()
+      const brand = (row.record["marqueid"] || "").trim()
       const declaredScore = getNumberValue(row.record["score"], 1, -1) as number | undefined
 
       const gtin = gtins.sort((a, b) => a.localeCompare(b)).join(",")
@@ -196,10 +191,6 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         })
       })
 
-      const authorizedBrands = upload.createdBy.organization
-        ? getAuthorizedBrands(upload.createdBy.organization)
-        : ([] as string[])
-
       const confidenceLevel = getProductConfidenceLevel(upload.createdBy, brand)
       const product = {
         error: mainComponentError ? "Composant principal doit valoir 'Oui' ou 'Non'" : null,
@@ -218,7 +209,6 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
             confidenceLevel,
           },
           [rawProduct],
-          authorizedBrands,
         ),
         createdAt: now,
         uploadId: upload.id,
@@ -227,7 +217,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
         gtins: gtins,
         internalReference: internalReference,
         brandName: brand,
-        brandId: authorizedBrands.includes(brand) ? brand : null,
+        brandId: brand,
         declaredScore: declaredScore || null,
         confidenceLevel,
       }
@@ -243,7 +233,6 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
             confidenceLevel,
           },
           existingProduct.raw,
-          authorizedBrands,
         )
 
         const errors = []

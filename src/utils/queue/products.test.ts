@@ -338,8 +338,8 @@ describe("processProductsQueue", () => {
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
-  it("should handle products without brand", async () => {
-    mockedGetProductsToProcess.mockResolvedValue([mockProduct])
+  it("should not handle products without brand", async () => {
+    mockedGetProductsToProcess.mockResolvedValue([{ ...mockProduct, brandId: null }])
     mockedGetBrandsByIds.mockResolvedValue([])
 
     await processProductsQueue()
@@ -348,7 +348,7 @@ describe("processProductsQueue", () => {
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
         id: "product-1",
-        error: 'Marque invalide. Voici la liste de vos marques : "2c3be047-4388-459a-80e1-0ce2bbd0e9d4"',
+        error: "La marque est obligatoire",
       },
     ])
     expect(mockedPrismaUpdate).not.toHaveBeenCalled()
@@ -370,7 +370,7 @@ describe("processProductsQueue", () => {
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
         id: "product-1",
-        error: "Votre organisation n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
+        error: "La marque n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
       },
     ])
     expect(mockedPrismaUpdate).not.toHaveBeenCalled()

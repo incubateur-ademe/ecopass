@@ -92,6 +92,8 @@ const Identification = ({
       <form onSubmit={submit} noValidate>
         <p className='fr-hint-text fr-mb-4w'>Les champs marqués d'un * sont obligatoires</p>
         <BrandAutocomplete
+          required
+          hintText='Veillez à correctement orthographier la marque du produit que vous déclarez afin que nous puissions l’interpeller'
           brands={brands}
           brandName={data.brandName}
           brandId={data.brandId}

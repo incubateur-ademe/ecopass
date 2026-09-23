@@ -87,7 +87,7 @@ test("declare my products", async ({ page }) => {
         "À corriger",
       )
       await expect(page.getByTestId("uploads-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
-        "7/20",
+        "9/24",
       )
       await expect(
         page.getByTestId("uploads-table").locator("table tbody tr").nth(0).locator("td").nth(4).getByRole("button"),
@@ -114,20 +114,20 @@ test("declare my products", async ({ page }) => {
   const csvContent = fs.readFileSync(downloadPath!, "utf-8")
 
   expect(csvContent).toEqual(
-    `Référence interne,Score,Erreur\n2234567899991,,"Marque invalide. Voici la liste de vos marques : ""26ed7820-ebca-4235-b1d3-dbeab02b1768"", ""175570b3-59e4-40b4-89be-08a185685f78"", ""6abd8a2b-8fee-4c54-8d23-17e1f8c27b56"""\n2234567899984,,"Catégorie de produit invalide, Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide, Origine de filature invalide, Type d'impression invalide, Type de matière invalide, Type de matière invalide"\nREF-123,2318,\n3234567899976,,Origine de confection invalide\nREF-124,6739,\n4234567891009,,"Le score doit être un nombre positif, La part de transport aérien doit être un pourcentage, Le poids est obligatoire, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être un pourcentage, La part de la matière doit être un pourcentage, La quantité de l'accessoire doit être un nombre entier, Le nombre de références doit être un nombre, Le prix doit être un nombre"\n5234567891008,,"Remanufacturé doit valoir 'Oui' ou 'Non', Délavage doit valoir 'Oui' ou 'Non'"\n7234567891006,,"Origine de confection invalide, La somme des parts de matières doit être égale à 100%"\n6234567891007,,Origine de confection invalide\n8234567891005,,Le score déclaré (2221) ne correspond pas au score calculé (2318.326247789541)\nREF-125,1290,\n9234567891004,,"La masse doit être supérieure à 0,01 kg, Origine de confection invalide"\n1134567891005,,"La part de transport aérien doit être inférieure à 100%, Origine de confection invalide, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être inférieure à 100%, La somme des parts de matières doit être égale à 100%, Le nombre de références doit être inférieur à 999 999"\nREF-126,2793,\n3134567891003,,L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé\nREF-127,2762,\nREF-128,2760,\n4234567899944-1,,"La référence interne doit être identique pour toutes les composantes du produit, La marque doit être identique pour toutes les composantes du produit"\nREF-129,2760,\n1234567891125,,Un produit avec le même GTIN a été déclaré trop récemment\n`,
+    `Référence interne,Score,Erreur\n2234567899991,,La marque spécifiée n'existe pas\n2234567899984,,"Catégorie de produit invalide, Origine de l'ennoblissement/impression invalide, Origine de tissage/tricotage invalide, Origine de confection invalide, Origine de filature invalide, Type d'impression invalide, Type de matière invalide, Type de matière invalide"\nREF-123,2318,\n3234567899976,,Origine de confection invalide\nREF-124,6739,\n4234567891009,,"Le score doit être un nombre positif, La part de transport aérien doit être un pourcentage, Le poids est obligatoire, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être un pourcentage, La part de la matière doit être un pourcentage, La quantité de l'accessoire doit être un nombre entier, Le nombre de références doit être un nombre, Le prix doit être un nombre"\n5234567891008,,"Remanufacturé doit valoir 'Oui' ou 'Non', Délavage doit valoir 'Oui' ou 'Non'"\n7234567891006,,"Origine de confection invalide, La somme des parts de matières doit être égale à 100%"\n6234567891007,,Origine de confection invalide\n8234567891005,,Le score déclaré (2221) ne correspond pas au score calculé (2318.326247789541)\nREF-125,1290,\n9234567891004,,"La masse doit être supérieure à 0,01 kg, Origine de confection invalide"\n1134567891005,,"La part de transport aérien doit être inférieure à 100%, Origine de confection invalide, Le pourcentage d'impression doit valoir 1%, 5%, 20%, 50% ou 80%, La part de la matière doit être inférieure à 100%, La somme des parts de matières doit être égale à 100%, Le nombre de références doit être inférieur à 999 999"\nREF-126,2793,\n3134567891003,,L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé\nREF-127,2762,\nREF-128,2760,\n4234567899944-1,,"La référence interne doit être identique pour toutes les composantes du produit, La marque doit être identique pour toutes les composantes du produit"\nREF-129,2760,\n1234567891125,,Un produit avec le même GTIN a été déclaré trop récemment\nREF-130,2760,\n1111111111123,,La marque spécifiée n'existe pas\n1111111111133,,"La marque n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné"\nREF-131,2760,\n`,
   )
 
   await page.getByRole("link", { name: "Produits déclarés" }).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(8)
-  await expect(page.locator("#contenu")).toContainText("Vous avez déclaré des produits sur 2 marques différentes.")
-  await expect(page.locator("#contenu")).toContainText("Vous avez 8 références produit déclarées.")
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(10)
+  await expect(page.locator("#contenu")).toContainText("Vous avez déclaré des produits sur 4 marques différentes.")
+  await expect(page.locator("#contenu")).toContainText("Vous avez 10 références produit déclarées.")
 
   await page.getByLabel("Choisir une marque").selectOption({ value: "26ed7820-ebca-4235-b1d3-dbeab02b1768" })
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)
-  await expect(page.locator("#contenu")).toContainText("Vous avez déclaré des produits sur 2 marques différentes.")
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(7)
+  await expect(page.locator("#contenu")).toContainText("Vous avez déclaré des produits sur 4 marques différentes.")
   await expect(page.locator("#contenu")).toContainText(
-    "Vous avez 2 références produit déclarées pour la marque Emmaus Solidarité.",
+    "Vous avez 7 références produit déclarées pour la marque Emmaus Solidarité.",
   )
 })

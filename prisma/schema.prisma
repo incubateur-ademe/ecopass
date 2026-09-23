@@ -329,9 +329,10 @@ model Organization {
   authorizedBy            AuthorizedOrganization[] @relation("ToOrg")
   authorizedOrganizations AuthorizedOrganization[] @relation("FromOrg")
 
-  brands Brand[]
-  users  User[]
-  upload Upload[]
+  brands         Brand[]
+  users          User[]
+  upload         Upload[]
+  followedBrands FollowedBrand[]
 
   @@map("organizations")
 }
@@ -371,9 +372,10 @@ model Brand {
   default Boolean @default(false)
   active  Boolean @default(true)
 
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId String?       @map("organization_id")
+  organization   Organization?   @relation(fields: [organizationId], references: [id])
+  organizationId String?         @map("organization_id")
   product        Product[]
+  followedBrands FollowedBrand[]
 
   @@map("brands")
 }
@@ -513,4 +515,15 @@ model AnonymizedAccessory {
 
   @@index([productId], map: "idx_anonymized_accessory_product_id")
   @@map("anonymized_accessories")
+}
+
+model FollowedBrand {
+  id             String       @id @default(uuid())
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
+  brand          Brand        @relation(fields: [brandId], references: [id])
+  brandId        String       @map("brand_id")
+
+  @@unique([organizationId, brandId])
+  @@map("followed_brands")
 }

@@ -307,3 +307,73 @@ export const deleteGTINPrefix = async (id: string) => {
     where: { id, organizationId: user.organization.id },
   })
 }
+
+export const followBrand = async (brand: { brandName: string; brandId: string }) => {
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+  const user = await prismaClient.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      organization: {
+        select: {
+          id: true,
+          followedBrands: true,
+        },
+      },
+    },
+  })
+
+  if (!user || !user.organization) {
+    return "Aucune organisation trouvée pour l'utilisateur"
+  }
+
+  let brandId = brand.brandId
+  if (brandId) {
+    if (user.organization.followedBrands.some((brand) => brand.brandId === brandId)) {
+      return "La marque est déjà suivie"
+    }
+  } else {
+    const createdBrand = await prismaClient.brand.create({
+      data: {
+        name: brand.brandName,
+        active: true,
+        default: false,
+      },
+    })
+    brandId = createdBrand.id
+  }
+
+  await prismaClient.followedBrand.create({
+    data: {
+      brandId,
+      organizationId: user.organization.id,
+    },
+  })
+}
+
+export const unfollowBrand = async (brandId: string) => {
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+  const user = await prismaClient.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      organization: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  })
+
+  if (!user || !user.organization) {
+    return "Aucune organisation trouvée pour l'utilisateur"
+  }
+
+  await prismaClient.followedBrand.deleteMany({
+    where: { brandId, organizationId: user.organization.id },
+  })
+}

@@ -3,7 +3,7 @@
 import Fuse from "fuse.js"
 import { Input } from "@codegouvfr/react-dsfr/Input"
 import { Fragment } from "react"
-import { useId, useMemo, useState } from "react"
+import { useEffect, useId, useMemo, useRef, useState } from "react"
 import styles from "./BrandAutocomplete.module.css"
 import { ReactNode } from "react"
 import classNames from "classnames"
@@ -34,6 +34,8 @@ const BrandAutocomplete = ({
   onChange,
   inputRef,
   error,
+  hintText,
+  required,
 }: {
   brands: BrandOption[]
   brandName: string
@@ -41,13 +43,23 @@ const BrandAutocomplete = ({
   onChange: (value: { brandName: string; brandId: string }) => void
   inputRef?: React.RefObject<HTMLInputElement | null>
   error?: ReactNode
+  hintText?: string
+  required?: boolean
 }) => {
   const instanceId = useId()
   const inputId = `brand-autocomplete-input-${instanceId}`
   const listboxId = `brand-autocomplete-listbox-${instanceId}`
+  const optionRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
+
+  useEffect(() => {
+    const activeElement = optionRefs.current.get(activeIndex)
+    if (activeElement) {
+      activeElement.scrollIntoView({ block: "nearest" })
+    }
+  }, [activeIndex])
 
   const fuse = useMemo(
     () =>
@@ -182,15 +194,15 @@ const BrandAutocomplete = ({
   return (
     <div className={styles.container}>
       <Input
-        label='Nom de la marque *'
-        hintText='Veillez à correctement orthographier la marque du produit que vous déclarez afin que nous puissions l’interpeller'
+        label={required ? "Nom de la marque *" : "Nom de la marque"}
+        hintText={hintText}
         state={error ? "error" : undefined}
         stateRelatedMessage={error}
         iconId='fr-icon-search-line'
         nativeInputProps={{
           id: inputId,
           ref: inputRef,
-          required: true,
+          required,
           role: "combobox",
           "aria-autocomplete": "list",
           "aria-expanded": isOpen && suggestions.length > 0,
@@ -232,12 +244,20 @@ const BrandAutocomplete = ({
                 {isCreate && <p className={styles.createLabel}>Marque non disponible</p>}
                 <div
                   id={optionId(index)}
+                  ref={(el) => {
+                    if (el) {
+                      optionRefs.current.set(index, el)
+                    } else {
+                      optionRefs.current.delete(index)
+                    }
+                  }}
                   role='option'
                   aria-selected={checked}
                   className={`${styles.option} ${active ? styles.optionActive : ""}`}
-                  onMouseDown={(event) => event.preventDefault()}
-                  onMouseEnter={() => setActiveIndex(index)}
-                  onClick={() => selectSuggestion(suggestion)}>
+                  onMouseDown={(event) => {
+                    event.preventDefault()
+                    selectSuggestion(suggestion)
+                  }}>
                   <span className={styles.radio} data-selected={checked} aria-hidden='true' />
                   <span className={styles.optionText}>
                     {isCreate ? `Ajouter la marque "${suggestion.name}"` : suggestion.name}

@@ -38,7 +38,6 @@ export type ProductInformationForHash = {
 export const hashProduct = (
   product: Omit<Prisma.ProductCreateInput, "hash" | "upload" | "brand"> & { brandId: string },
   informations: ProductInformationForHash[],
-  brands: string[],
 ) =>
   hash(
     {
@@ -75,7 +74,6 @@ export const hashProduct = (
         mainComponent: informations.mainComponent,
       })),
       ecobalyseVersion,
-      brandIncluded: brands.includes(product.brandId),
     },
     { unorderedArrays: true },
   )

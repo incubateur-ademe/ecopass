@@ -11,7 +11,6 @@ import Matomo from "../components/Matomo/Matomo"
 import { ReactNode } from "react"
 import TestBanner from "../components/Test/TestBanner"
 import { isTestEnvironment } from "../utils/test"
-import { getUserOrganizationType } from "../serverFunctions/user"
 import { getUser } from "../db/user"
 
 export const metadata: Metadata = {
@@ -24,7 +23,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const lang = "fr"
 
   const session = await auth()
-  const organizationType = await getUserOrganizationType(session?.user.id)
 
   const user = session ? await getUser(session.user.id) : null
   const displayName = user && user.nom && user.prenom ? `${user.prenom} ${user.nom}` : user?.email
@@ -38,12 +36,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <Matomo />
         <DsfrProvider lang={lang}>
           <AuthProvider session={session}>
-            <Header
-              session={session}
-              organizationType={organizationType}
-              userType={session?.user.type}
-              displayName={displayName}
-            />
+            <Header session={session} userType={user?.type} displayName={displayName} />
             <main id='contenu' role='main' tabIndex={-1}>
               {isTestEnvironment() && <TestBanner />}
               {children}

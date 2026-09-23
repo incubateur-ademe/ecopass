@@ -4,14 +4,12 @@ import KeyResults from "../components/Home/KeyResults"
 import SearchBanner from "../components/Home/SearchBanner"
 import { isTestEnvironment } from "../utils/test"
 import { OrganizationType, UserType } from "@prisma/enums"
-import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
 import InformationBanner from "../components/Home/InformationBanner"
 import InformationProBanner from "../components/Home/InformationProBanner"
 import ContributionBanner from "../components/Home/ContributionBanner"
 
 const Home = ({
   connected,
-  organizationType,
   userType,
   isPro,
 }: {
@@ -20,10 +18,9 @@ const Home = ({
   userType?: UserType
   isPro?: boolean
 }) => {
-  const isAllowedToDeclare = !!(organizationType && organizationTypesAllowedToDeclare.includes(organizationType))
   return (
     <>
-      <HomeBanner connected={connected} isPro={isPro} isAllowedToDeclare={isAllowedToDeclare} userType={userType} />
+      <HomeBanner connected={connected} isPro={isPro} userType={userType} />
       {(connected || !isTestEnvironment()) && (
         <>
           {isPro && (
@@ -39,7 +36,7 @@ const Home = ({
               <ContributionBanner />
             </Block>
           )}
-          {isPro || isAllowedToDeclare ? (
+          {isPro ? (
             <Block large type='grey'>
               <InformationProBanner />
             </Block>
