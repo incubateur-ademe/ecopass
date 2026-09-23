@@ -9,6 +9,7 @@ import { BATCH_CATEGORY, getProductCategory } from "../utils/product/category"
 import { computeBatchScore } from "../utils/ecobalyse/batches"
 import { ProductCheckResult } from "../services/validation/productCheckResult"
 import { simplifyValue } from "../utils/parsing/parsing"
+import { getBrandById } from "./brands"
 
 export const createProducts = async (
   {
@@ -30,6 +31,19 @@ export const createProducts = async (
       const ids = new Set<string>()
 
       for (const product of products) {
+        const brand = product.brandId ? await getBrandById(product.brandId) : null
+        if (!brand) {
+          await transaction.product.create({
+            data: {
+              ...product,
+              brandId: null,
+              status: Status.Error,
+              error: "La marque spécifiée n'existe pas",
+            },
+          })
+          continue
+        }
+
         const oldProductCheck = await checkOldProduct(product.gtins, product.hash, product.confidenceLevel, currentUser)
 
         if (oldProductCheck.result === ProductCheckResult.Unchanged && oldProductCheck.lastProduct) {

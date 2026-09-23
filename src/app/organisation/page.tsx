@@ -6,6 +6,7 @@ import { tryAndGetSession } from "../../services/auth/redirect"
 import { redirect } from "next/navigation"
 import { getOrganizationMembers } from "../../db/organization"
 import { OrganizationRole } from "@prisma/enums"
+import { getAllAvailableBrands } from "../../db/brands"
 
 export const metadata: Metadata = {
   title: "Mon organisation - Affichage environnemental",
@@ -20,12 +21,13 @@ const OrganizationPage = async () => {
   }
 
   const members = await getOrganizationMembers(organization.id)
+  const brands = await getAllAvailableBrands()
   const isAdmin = members.find((user) => user.id === session.user.id)?.organizationRole === OrganizationRole.ADMIN
 
   return (
     <>
       <StartDsfrOnHydration />
-      <Organization organization={organization} isAdmin={isAdmin} members={members} />
+      <Organization organization={organization} isAdmin={isAdmin} members={members} brands={brands} />
     </>
   )
 }

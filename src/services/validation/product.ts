@@ -66,52 +66,46 @@ const informationValidation = z.object({
 })
 export type ParsedProductInformationValidation = z.infer<typeof informationValidation>
 
-const productValidation = z.object({
-  id: z.string(),
-  uploadId: z.string(),
-  status: z.enum(Status, { message: "Statut invalide" }),
-  createdAt: z.date(),
-  error: z.string().nullable(),
-  emptyTrims: z.boolean().optional(),
-  internalReference: z.string({ message: "La référence interne est obligatoire" }),
-  declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
-  informations: z.array(informationValidation),
-})
+export const productValidation = z
+  .object({
+    id: z.string(),
+    uploadId: z.string(),
+    status: z.enum(Status, { message: "Statut invalide" }),
+    createdAt: z.date(),
+    error: z.string().nullable(),
+    emptyTrims: z.boolean().optional(),
+    internalReference: z.string({ message: "La référence interne est obligatoire" }),
+    declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
+    informations: z.array(informationValidation),
+    brandId: z.string({ message: "La marque est obligatoire" }).trim().min(1, { message: "La marque est obligatoire" }),
+  })
+  .refine((product) => {
+    return product.informations.every((information) => {
+      const hasImpression = information.impression !== undefined
+      const hasImpressionPercentage = information.impressionPercentage !== undefined
 
-export const getUserProductValidation = (brands: [string, ...string[]]) =>
-  productValidation
-    .extend({
-      brandId: z.enum(brands, {
-        message: `Marque invalide. Voici la liste de vos marques : ${brands.map((brand) => `"${brand}"`).join(", ")}`,
-      }),
+      if ((hasImpression && !hasImpressionPercentage) || (hasImpressionPercentage && !hasImpression)) {
+        return false
+      }
+
+      return true
     })
-    .refine((product) => {
-      return product.informations.every((information) => {
-        const hasImpression = information.impression !== undefined
-        const hasImpressionPercentage = information.impressionPercentage !== undefined
+  }, "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié")
+  .refine((data) => {
+    return data.informations.every((information) => {
+      if (!information.upcycled) {
+        return information.countryDyeing !== undefined && information.countryFabric !== undefined
+      }
+      return true
+    })
+  }, "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé")
+  .refine((data) => {
+    const price = data.informations[0].price
+    return data.informations.every((information) => information.price === price)
+  }, "Le prix doit être identique pour toutes les composantes du produit")
+  .refine((data) => {
+    const numberOfReferences = data.informations[0].numberOfReferences
+    return data.informations.every((information) => information.numberOfReferences === numberOfReferences)
+  }, "Le nombre de références doit être identique pour toutes les composantes du produit")
 
-        if ((hasImpression && !hasImpressionPercentage) || (hasImpressionPercentage && !hasImpression)) {
-          return false
-        }
-
-        return true
-      })
-    }, "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié")
-    .refine((data) => {
-      return data.informations.every((information) => {
-        if (!information.upcycled) {
-          return information.countryDyeing !== undefined && information.countryFabric !== undefined
-        }
-        return true
-      })
-    }, "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé")
-    .refine((data) => {
-      const price = data.informations[0].price
-      return data.informations.every((information) => information.price === price)
-    }, "Le prix doit être identique pour toutes les composantes du produit")
-    .refine((data) => {
-      const numberOfReferences = data.informations[0].numberOfReferences
-      return data.informations.every((information) => information.numberOfReferences === numberOfReferences)
-    }, "Le nombre de références doit être identique pour toutes les composantes du produit")
-
-export type ParsedProductValidation = z.infer<ReturnType<typeof getUserProductValidation>>
+export type ParsedProductValidation = z.infer<typeof productValidation>

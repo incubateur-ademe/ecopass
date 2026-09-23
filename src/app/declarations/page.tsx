@@ -2,7 +2,6 @@ import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import Declarations from "../../views/Declarations"
 import { Metadata } from "next"
 import { tryAndGetSession } from "../../services/auth/redirect"
-import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
 import { PageProps } from "../../types/Next"
 import { getUser } from "../../db/user"
 import { OrganizationRole } from "@prisma/client"
@@ -13,8 +12,7 @@ export const metadata: Metadata = {
 }
 
 const DeclarationsPage = async ({ searchParams }: PageProps) => {
-  const session = await tryAndGetSession(true, true, "", organizationTypesAllowedToDeclare)
-
+  const session = await tryAndGetSession(true, true, "")
   const user = await getUser(session.user.id)
   if (!user) {
     redirect("/")

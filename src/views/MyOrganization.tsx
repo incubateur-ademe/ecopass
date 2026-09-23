@@ -6,12 +6,14 @@ const Organization = ({
   organization,
   isAdmin,
   members,
+  brands,
 }: {
   organization: UserOrganization
   isAdmin: boolean
   members: OrganizationMember[]
+  brands: { id: string; name: string }[]
 }) => {
-  return <MyOrganization organization={organization} isAdmin={isAdmin} members={members} />
+  return <MyOrganization organization={organization} isAdmin={isAdmin} members={members} brands={brands} />
 }
 
 export default Organization

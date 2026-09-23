@@ -3,7 +3,6 @@ import { UserOrganization } from "../../db/user"
 import styles from "./Informations.module.css"
 import { organizationTypeByNaf } from "../../utils/admin/nafs"
 import Link from "next/link"
-import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
 import { organizationTypes } from "../../utils/organization/types"
 import OrganizationName from "./OrganizationName"
 
@@ -16,16 +15,14 @@ const Informations = ({ organization, isAdmin }: { organization: UserOrganizatio
         <Badge className={styles.badge} severity='success'>
           En activité
         </Badge>
-        {organization.type &&
-          organizationTypesAllowedToDeclare.includes(organization.type) &&
-          (isAdmin ? (
-            <OrganizationName organization={organization} />
-          ) : (
-            <div className='fr-mt-2w'>
-              <b>Nom d'usage</b>
-              <p>{organization.displayName}</p>
-            </div>
-          ))}
+        {isAdmin ? (
+          <OrganizationName organization={organization} />
+        ) : (
+          <div className='fr-mt-2w'>
+            <b>Nom d'usage</b>
+            <p>{organization.displayName}</p>
+          </div>
+        )}
       </div>
       {organization.type && (
         <div>

@@ -7,9 +7,8 @@ import { auth } from "../services/auth/auth"
 import { uploadFileToS3 } from "../utils/s3/bucket"
 import { encryptAndZipFile } from "../utils/encryption/encryption"
 import path from "path"
-import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
-import { getUser, getUserOrganizationType } from "../db/user"
-import { getUserProductSimplifiedDeclarationValidation } from "../services/validation/api"
+import { getUser } from "../db/user"
+import { productSimplifiedDeclarationValidation } from "../services/validation/api"
 import { computeEcobalyseScore } from "../utils/ecobalyse/api"
 import { createScore } from "../db/score"
 import { hashProduct } from "../utils/encryption/hash"
@@ -77,11 +76,6 @@ export const uploadFile = async (file: File) => {
 
   if (user.organizationRole !== OrganizationRole.ADMIN) {
     return "Vous n'avez pas les droits pour uploader des fichiers"
-  }
-
-  const organizationType = await getUserOrganizationType(session.user.id)
-  if (!organizationTypesAllowedToDeclare.includes(organizationType!)) {
-    return "Vous n'êtes pas autorisé à uploader des fichiers"
   }
 
   try {
@@ -196,7 +190,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
       throw new Error(`Validation error: Audience mass could not be determined`)
     }
 
-    const validatedData = getUserProductSimplifiedDeclarationValidation([resolvedBrand.id]).safeParse({
+    const validatedData = productSimplifiedDeclarationValidation.safeParse({
       ...data,
       product: mappedCategories[data.product] || data.product,
       mass: massInGrams / 1000,
@@ -224,7 +218,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
       informations: [{ ...validatedData.data, airTransportRatio: 1, audience: data.audience }],
     }
 
-    const hash = await hashProduct(product, informations, [resolvedBrand.id])
+    const hash = await hashProduct(product, informations)
     const oldProductCheck = await checkOldProduct([data.gtin], hash, confidenceLevel, {
       userId: user.id,
       userType: user.type,

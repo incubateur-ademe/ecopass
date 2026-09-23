@@ -8,15 +8,18 @@ import GTINPrefixes from "./GTINPrefixes"
 import { OrganizationMember } from "../../../db/organization"
 import OrganizationMembers from "../OrganizationMembers"
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
+import FollowedBrands from "./FollowedBrands"
 
 const BrandOrganization = ({
   organization,
   isAdmin,
   members,
+  brands,
 }: {
   organization: UserOrganization
   isAdmin: boolean
   members: OrganizationMember[]
+  brands: { id: string; name: string }[]
 }) => {
   return (
     <div data-testid='brand-organization'>
@@ -28,6 +31,8 @@ const BrandOrganization = ({
               <>
                 <h2>Marques déclarées</h2>
                 <MyBrands organization={organization} isAdmin={isAdmin} />
+                <h2>Marques suivies</h2>
+                <FollowedBrands organization={organization} brands={brands} />
               </>
             ),
           },

@@ -20,13 +20,14 @@ const clean = async () => {
   await prismaClient.productInformation.deleteMany()
   await prismaClient.product.deleteMany()
   await prismaClient.upload.deleteMany()
-  await prismaClient.brand.deleteMany({})
-  await prismaClient.authorizedOrganization.deleteMany({})
-  await prismaClient.gTINPrefix.deleteMany({})
-  await prismaClient.organization.deleteMany({})
-  await prismaClient.aPIKey.deleteMany({})
-  await prismaClient.export.deleteMany({})
-  await prismaClient.user.deleteMany({})
+  await prismaClient.followedBrand.deleteMany()
+  await prismaClient.brand.deleteMany()
+  await prismaClient.authorizedOrganization.deleteMany()
+  await prismaClient.gTINPrefix.deleteMany()
+  await prismaClient.organization.deleteMany()
+  await prismaClient.aPIKey.deleteMany()
+  await prismaClient.export.deleteMany()
+  await prismaClient.user.deleteMany()
 }
 
 const users = async () => {

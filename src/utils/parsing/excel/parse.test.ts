@@ -185,7 +185,7 @@ describe("parseExcel", () => {
     expect(products[0].gtins).toEqual(["Test"])
     expect(products[0].internalReference).toBe("Test")
     expect(products[0].brandName).toBe("Test")
-    expect(products[0].brandId).toBe(null)
+    expect(products[0].brandId).toBe("Test")
     expect(products[0].declaredScore).toBe(-1)
 
     const fullProducts = informations.map((information) => {

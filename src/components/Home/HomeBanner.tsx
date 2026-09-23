@@ -11,18 +11,8 @@ import { Tile } from "@codegouvfr/react-dsfr/Tile"
 import { UserType } from "@prisma/client"
 import { Badge } from "@codegouvfr/react-dsfr/Badge"
 
-const HomeBanner = ({
-  connected,
-  isAllowedToDeclare,
-  isPro,
-  userType,
-}: {
-  connected?: boolean
-  isAllowedToDeclare: boolean
-  isPro?: boolean
-  userType?: UserType
-}) => {
-  const proView = isPro || isAllowedToDeclare
+const HomeBanner = ({ connected, isPro, userType }: { connected?: boolean; isPro?: boolean; userType?: UserType }) => {
+  const proView = isPro
   return (
     <Block
       large
@@ -121,76 +111,76 @@ const HomeBanner = ({
                 </div>
               </>
             ))}
-          {connected && isAllowedToDeclare && (
-            <div className={styles.tiles}>
-              <Tile
-                orientation='horizontal'
-                title='Gérer votre entreprise'
-                imageUrl='/images/catalog.svg'
-                imageAlt=''
-                titleAs='h2'
-                desc='Listez vos marques et organisez vos délégations'
-                linkProps={{ href: "/organisation" }}
-                start={<Badge>ORGANISATION</Badge>}
-              />
-              <Tile
-                orientation='horizontal'
-                title='Déclarer vos produits'
-                imageUrl='/images/contract.svg'
-                imageAlt=''
-                titleAs='h2'
-                desc='Déclarez officiellement vos produits et suivez leur statut'
-                linkProps={{ href: "/declarations" }}
-                start={<Badge>DÉPÔT OFFICIEL</Badge>}
-              />
-              <Tile
-                orientation='horizontal'
-                title='Consulter vos produits'
-                imageUrl='/images/search.svg'
-                imageAlt=''
-                titleAs='h2'
-                desc='Retrouvez ici tous vos produits déclarés'
-                linkProps={{ href: "/produits" }}
-                start={<Badge>PRODUITS</Badge>}
-              />
-            </div>
-          )}
-          {connected && userType === UserType.CITOYEN && (
-            <>
+          {connected &&
+            (userType === UserType.PROFESSIONNEL ? (
               <div className={styles.tiles}>
                 <Tile
                   orientation='horizontal'
-                  title='Déclarer des produits un par un via un formulaire simplifié'
-                  imageUrl='/images/conclusion.svg'
+                  title='Gérer votre entreprise'
+                  imageUrl='/images/catalog.svg'
                   imageAlt=''
                   titleAs='h2'
-                  desc='L’essentiel pour une déclaration'
-                  linkProps={{ href: "/declaration-simplifiee" }}
-                  start={<Badge>DÉCLARATION SIMPLIFIÉE</Badge>}
+                  desc='Listez vos marques et organisez vos délégations'
+                  linkProps={{ href: "/organisation" }}
+                  start={<Badge>ORGANISATION</Badge>}
                 />
                 <Tile
                   orientation='horizontal'
-                  title='Comment trouver les informations nécessaires à la déclaration de données'
-                  imageUrl='/images/document-search.svg'
+                  title='Déclarer vos produits'
+                  imageUrl='/images/contract.svg'
                   imageAlt=''
                   titleAs='h2'
-                  desc='Consultez le centre d’aide - Docs'
-                  linkProps={{
-                    href: "https://docs.numerique.gouv.fr/docs/4c19480c-746e-49d9-aa1c-8b94f8790720/",
-                    target: "_blank",
-                    rel: "noopener noreferrer",
-                  }}
-                  start={<Badge>AIDE</Badge>}
+                  desc='Déclarez officiellement vos produits et suivez leur statut'
+                  linkProps={{ href: "/declarations" }}
+                  start={<Badge>DÉPÔT OFFICIEL</Badge>}
+                />
+                <Tile
+                  orientation='horizontal'
+                  title='Consulter vos produits'
+                  imageUrl='/images/search.svg'
+                  imageAlt=''
+                  titleAs='h2'
+                  desc='Retrouvez ici tous vos produits déclarés'
+                  linkProps={{ href: "/produits" }}
+                  start={<Badge>PRODUITS</Badge>}
                 />
               </div>
-              <Alert
-                severity='info'
-                small
-                description='Vous ne pouvez pas encore déclarer de produits des catégories : linge de maison, accessoires, chaussures, produits rembourrés (doudoune, peluche...), lots de vêtements.'
-                className='fr-mt-4w'
-              />
-            </>
-          )}
+            ) : (
+              <>
+                <div className={styles.tiles}>
+                  <Tile
+                    orientation='horizontal'
+                    title='Déclarer des produits un par un via un formulaire simplifié'
+                    imageUrl='/images/conclusion.svg'
+                    imageAlt=''
+                    titleAs='h2'
+                    desc='L’essentiel pour une déclaration'
+                    linkProps={{ href: "/declaration-simplifiee" }}
+                    start={<Badge>DÉCLARATION SIMPLIFIÉE</Badge>}
+                  />
+                  <Tile
+                    orientation='horizontal'
+                    title='Comment trouver les informations nécessaires à la déclaration de données'
+                    imageUrl='/images/document-search.svg'
+                    imageAlt=''
+                    titleAs='h2'
+                    desc='Consultez le centre d’aide - Docs'
+                    linkProps={{
+                      href: "https://docs.numerique.gouv.fr/docs/4c19480c-746e-49d9-aa1c-8b94f8790720/",
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                    }}
+                    start={<Badge>AIDE</Badge>}
+                  />
+                </div>
+                <Alert
+                  severity='info'
+                  small
+                  description='Vous ne pouvez pas encore déclarer de produits des catégories : linge de maison, accessoires, chaussures, produits rembourrés (doudoune, peluche...), lots de vêtements.'
+                  className='fr-mt-4w'
+                />
+              </>
+            ))}
         </div>
       </div>
     </Block>

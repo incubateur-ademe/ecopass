@@ -43,7 +43,7 @@ test("manage brands", async ({ page }) => {
   await expect(page.getByTestId("brand-row-action").nth(2).getByRole("button")).toHaveText("Modifier")
 
   await page.getByRole("textbox", { name: "Ajouter une marque" }).fill("Ma nouvelle marque")
-  await page.getByRole("button", { name: "Ajouter" }).click()
+  await page.getByRole("button", { name: "Ajouter" }).first().click()
 
   await expect(page.getByTestId("brand-row-name")).toHaveCount(4)
   await expect(page.getByTestId("brand-row-name").last()).toHaveText("Ma nouvelle marque")
@@ -78,7 +78,22 @@ test("manage siret delegation", async ({ page }) => {
       Authorization: `Bearer ${apiKey}`,
     },
   })
-  expect(response.status()).toBe(400)
+  expect(response.status()).toBe(201)
+
+  await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
+  await expect(page).toHaveURL(/.*\/produits/)
+
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
+    "REF-099",
+  )
+  await page
+    .getByTestId("products-table")
+    .locator("table tbody tr")
+    .nth(0)
+    .getByRole("link", { name: "Voir le détail" })
+    .click()
+  await expect(page.getByTestId("confidence-level-badge")).toContainText("Indice de confiance :MOYEN?")
 
   await logout(page)
   await login(page)
@@ -107,15 +122,22 @@ test("manage siret delegation", async ({ page }) => {
   )
   await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(0)
 
-  await retry(async () => {
-    response = await page.request.post("http://localhost:3000/api/produits", {
-      data: { ...product, internalReference: "REF-098" },
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    })
-    expect(response.status()).toBe(201)
-  }, 3)
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, internalReference: "REF-098" },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(400)
+  expect(await response.text()).toEqual('{"message":"Un produit avec le même GTIN a été déclaré trop récemment."}')
+
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, gtins: ["1234567891125"], internalReference: "REF-098" },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(201)
 
   await retry(async () => {
     response = await page.request.get("http://localhost:3000/api/organisation", {
@@ -193,12 +215,13 @@ test("manage siret delegation", async ({ page }) => {
   await expect(page.getByTestId("to-delegations-table").locator("table tbody tr")).toHaveCount(0)
 
   response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, internalReference: "REF-097" },
+    data: { ...product, gtins: ["4234567899944"], internalReference: "REF-097" },
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
   })
-  expect(response.status()).toBe(400)
+
+  expect(response.status()).toBe(201)
 
   await retry(async () => {
     response = await page.request.get("http://localhost:3000/api/organisation", {
@@ -219,10 +242,31 @@ test("manage siret delegation", async ({ page }) => {
   await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(3)
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
+    "REF-097",
+  )
+  await page
+    .getByTestId("products-table")
+    .locator("table tbody tr")
+    .nth(0)
+    .getByRole("link", { name: "Voir le détail" })
+    .click()
+  await expect(page.getByTestId("confidence-level-badge")).toContainText("Indice de confiance :MOYEN?")
+
+  await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
+  await expect(page).toHaveURL(/.*\/produits/)
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(3)
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
     "REF-098",
   )
+  await page
+    .getByTestId("products-table")
+    .locator("table tbody tr")
+    .nth(1)
+    .getByRole("link", { name: "Voir le détail" })
+    .click()
+  await expect(page.getByTestId("confidence-level-badge")).toContainText("Indice de confiance :FORT?")
 
   await logout(page)
   await login(page, "ecopass-consultancy@yopmail.com")
@@ -230,7 +274,7 @@ test("manage siret delegation", async ({ page }) => {
   await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(0)
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(3)
 })
 
 test("manage unique id delegation", async ({ page }) => {
@@ -249,7 +293,22 @@ test("manage unique id delegation", async ({ page }) => {
       Authorization: `Bearer ${apiKey}`,
     },
   })
-  expect(response.status()).toBe(400)
+  expect(response.status()).toBe(201)
+
+  await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
+  await expect(page).toHaveURL(/.*\/produits/)
+
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
+    "REF-099",
+  )
+  await page
+    .getByTestId("products-table")
+    .locator("table tbody tr")
+    .nth(0)
+    .getByRole("link", { name: "Voir le détail" })
+    .click()
+  await expect(page.getByTestId("confidence-level-badge")).toContainText("Indice de confiance :MOYEN?")
 
   await logout(page)
   await login(page)
@@ -278,60 +337,63 @@ test("manage unique id delegation", async ({ page }) => {
   )
   await expect(page.getByTestId("from-delegations-table").locator("table tbody tr")).toHaveCount(0)
 
-  await retry(async () => {
-    response = await page.request.post("http://localhost:3000/api/produits", {
-      data: { ...product, internalReference: "REF-098" },
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    })
-    expect(response.status()).toBe(201)
-  }, 3)
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, internalReference: "REF-098" },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(400)
+  expect(await response.text()).toEqual('{"message":"Un produit avec le même GTIN a été déclaré trop récemment."}')
 
-  await retry(async () => {
-    response = await page.request.get("http://localhost:3000/api/organisation", {
-      headers: {
-        Authorization: "nimps",
-      },
-    })
-    expect(response.status()).toBe(401)
-  }, 3)
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, gtins: ["1234567891125"], internalReference: "REF-098" },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(201)
 
-  await retry(async () => {
-    response = await page.request.get("http://localhost:3000/api/organisation", {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
+  response = await page.request.get("http://localhost:3000/api/organisation", {
+    headers: {
+      Authorization: "nimps",
+    },
+  })
+  expect(response.status()).toBe(401)
+
+  response = await page.request.get("http://localhost:3000/api/organisation", {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(200)
+  expect(await response.json()).toEqual({
+    name: "Textile Premium",
+    displayName: "Textile Premium",
+    brands: [{ name: "Premium Wear", id: expect.any(String), active: true, default: true }],
+    authorizedBy: [
+      {
+        createdAt: expect.any(String),
+        name: "EMMAUS",
+        siret: "31723624800017",
+        brands: [
+          {
+            id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
+            name: "Emmaus",
+          },
+          {
+            id: "175570b3-59e4-40b4-89be-08a185685f78",
+            name: "Emmaus Connect",
+          },
+          {
+            id: "26ed7820-ebca-4235-b1d3-dbeab02b1768",
+            name: "Emmaus Solidarité",
+          },
+        ],
       },
-    })
-    expect(response.status()).toBe(200)
-    expect(await response.json()).toEqual({
-      name: "Textile Premium",
-      displayName: "Textile Premium",
-      brands: [{ name: "Premium Wear", id: expect.any(String), active: true, default: true }],
-      authorizedBy: [
-        {
-          createdAt: expect.any(String),
-          name: "EMMAUS",
-          siret: "31723624800017",
-          brands: [
-            {
-              id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56",
-              name: "Emmaus",
-            },
-            {
-              id: "175570b3-59e4-40b4-89be-08a185685f78",
-              name: "Emmaus Connect",
-            },
-            {
-              id: "26ed7820-ebca-4235-b1d3-dbeab02b1768",
-              name: "Emmaus Solidarité",
-            },
-          ],
-        },
-      ],
-      authorizeOrganization: [],
-    })
-  }, 3)
+    ],
+    authorizeOrganization: [],
+  })
 
   await logout(page)
   await loginWithPassword(page, "textile@yopmail.com")
@@ -361,7 +423,7 @@ test("manage unique id delegation", async ({ page }) => {
   ).toHaveText("Actif")
   await expect(
     page.getByTestId("consultancies-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(4),
-  ).toHaveText("1")
+  ).toHaveText("2")
   await expect(page.getByTestId("brands-list").locator("table tbody tr")).toHaveCount(3)
   await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
     "Emmaus Connect",
@@ -369,7 +431,7 @@ test("manage unique id delegation", async ({ page }) => {
   await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
     "Active",
   )
-  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("1")
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("2")
 
   await page
     .getByTestId("consultancies-organizations-list")
@@ -389,7 +451,7 @@ test("manage unique id delegation", async ({ page }) => {
   ).toHaveText("Active")
   await expect(
     page.getByTestId("brands-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(4),
-  ).toHaveText("1")
+  ).toHaveText("2")
   await expect(page.getByTestId("brands-list").locator("table tbody tr")).toHaveCount(4)
   await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
     "Emmaus Connect",
@@ -397,7 +459,7 @@ test("manage unique id delegation", async ({ page }) => {
   await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
     "Active",
   )
-  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("1")
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("2")
 
   await login(page)
 
@@ -442,30 +504,57 @@ test("manage unique id delegation", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(400)
+  expect(await response.text()).toEqual('{"message":"Un produit avec le même GTIN a été déclaré trop récemment."}')
 
-  await retry(async () => {
-    response = await page.request.get("http://localhost:3000/api/organisation", {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    })
-    expect(response.status()).toBe(200)
-    expect(await response.json()).toEqual({
-      name: "Textile Premium",
-      displayName: "Textile Premium",
-      brands: [{ name: "Premium Wear", id: expect.any(String), active: true, default: true }],
-      authorizedBy: [],
-      authorizeOrganization: [],
-    })
-  }, 3)
+  response = await page.request.post("http://localhost:3000/api/produits", {
+    data: { ...product, gtins: ["4234567899944"], internalReference: "REF-097" },
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(201)
+
+  response = await page.request.get("http://localhost:3000/api/organisation", {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  })
+  expect(response.status()).toBe(200)
+  expect(await response.json()).toEqual({
+    name: "Textile Premium",
+    displayName: "Textile Premium",
+    brands: [{ name: "Premium Wear", id: expect.any(String), active: true, default: true }],
+    authorizedBy: [],
+    authorizeOrganization: [],
+  })
 
   await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(3)
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
+    "REF-097",
+  )
+  await page
+    .getByTestId("products-table")
+    .locator("table tbody tr")
+    .nth(0)
+    .getByRole("link", { name: "Voir le détail" })
+    .click()
+  await expect(page.getByTestId("confidence-level-badge")).toContainText("Indice de confiance :MOYEN?")
+
+  await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
+  await expect(page).toHaveURL(/.*\/produits/)
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
     "REF-098",
   )
+  await page
+    .getByTestId("products-table")
+    .locator("table tbody tr")
+    .nth(1)
+    .getByRole("link", { name: "Voir le détail" })
+    .click()
+  await expect(page.getByTestId("confidence-level-badge")).toContainText("Indice de confiance :FORT?")
 
   await logout(page)
 
@@ -481,7 +570,7 @@ test("manage unique id delegation", async ({ page }) => {
   ).toHaveText("Inactif")
   await expect(
     page.getByTestId("consultancies-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(4),
-  ).toHaveText("1")
+  ).toHaveText("3")
   await expect(page.getByTestId("brands-list").locator("table tbody tr")).toHaveCount(3)
   await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
     "Emmaus Connect",
@@ -489,7 +578,7 @@ test("manage unique id delegation", async ({ page }) => {
   await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
     "Inactive",
   )
-  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("1")
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("3")
 
   await page
     .getByTestId("consultancies-organizations-list")
@@ -509,7 +598,7 @@ test("manage unique id delegation", async ({ page }) => {
   ).toHaveText("Inactive")
   await expect(
     page.getByTestId("brands-organizations-list").locator("table tbody tr").nth(0).locator("td").nth(4),
-  ).toHaveText("1")
+  ).toHaveText("3")
   await expect(page.getByTestId("brands-list").locator("table tbody tr")).toHaveCount(4)
   await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
     "Emmaus Connect",
@@ -517,14 +606,14 @@ test("manage unique id delegation", async ({ page }) => {
   await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
     "Inactive",
   )
-  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("1")
+  await expect(page.getByTestId("brands-list").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText("3")
 
   await loginWithPassword(page, "textile@yopmail.com")
 
   await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
   await expect(page).toHaveURL(/.*\/produits/)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(4)
 })
 
 test("manage GTIN prefixes", async ({ page }) => {
@@ -563,4 +652,40 @@ test("manage GTIN prefixes", async ({ page }) => {
     .click()
 
   await expect(page.getByTestId("gtin-prefixes-table").locator("table tbody tr")).toHaveCount(0)
+})
+
+test("manage followed brands", async ({ page }) => {
+  await login(page)
+
+  await page.getByRole("link", { name: "Organisation" }).first().click()
+  await expect(page).toHaveURL(/.*\/organisation/)
+
+  await expect(page.getByTestId("followed-brands-table")).not.toBeVisible()
+
+  await page.getByRole("combobox", { name: "Nom de la marque Ajoutez une" }).click()
+  await page.getByRole("option", { name: "Emmaus", exact: true }).click()
+  await page.getByTestId("add-followed-brand-button").click()
+  await expect(page.getByTestId("followed-brands-table").locator("table tbody tr")).toHaveCount(1)
+  await expect(
+    page.getByTestId("followed-brands-table").locator("table tbody tr").nth(0).locator("td").nth(0),
+  ).toHaveText("Emmaus")
+  await page.getByRole("combobox", { name: "Nom de la marque Ajoutez une" }).click()
+  await page.getByRole("combobox", { name: "Nom de la marque Ajoutez une" }).fill("Test")
+  await page.getByRole("option", { name: 'Ajouter la marque "Test"' }).click()
+  await page.getByTestId("add-followed-brand-button").click()
+  await expect(page.getByTestId("followed-brands-table").locator("table tbody tr")).toHaveCount(2)
+  await expect(
+    page.getByTestId("followed-brands-table").locator("table tbody tr").nth(1).locator("td").nth(0),
+  ).toHaveText("Test")
+
+  await page
+    .getByTestId("followed-brands-table")
+    .locator("table tbody tr")
+    .nth(0)
+    .getByRole("button", { name: "Supprimer" })
+    .click()
+  await expect(page.getByTestId("followed-brands-table").locator("table tbody tr")).toHaveCount(1)
+  await expect(
+    page.getByTestId("followed-brands-table").locator("table tbody tr").nth(0).locator("td").nth(0),
+  ).toHaveText("Test")
 })

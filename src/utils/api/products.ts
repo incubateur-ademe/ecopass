@@ -5,15 +5,13 @@ import { computeBatchInformations, computeEcobalyseScore } from "../ecobalyse/ap
 import { createScore } from "../../db/score"
 import { updateAPIUse } from "../../db/user"
 import {
-  getUserMultiComponentProductAPIValidation,
-  getUserProductAPIValidation,
-  getUserProductsAPIValidation,
+  multiComponentProductAPIValidation,
+  productAPIValidation,
   ProductInformationAPI,
   ProductMetadataAPI,
+  productsAPIValidation,
 } from "../../services/validation/api"
-import { getAuthorizedBrands } from "../organization/brands"
 import { scoreIsValid } from "../validation/score"
-import { organizationTypesAllowedToDeclare } from "../organization/canDeclare"
 import { organizationTypes } from "../organization/types"
 import { checkOldProduct } from "../../services/validation/oldProduct"
 import { hashProduct } from "../encryption/hash"
@@ -33,13 +31,12 @@ type GtinsResult = { success: true; data: string[] } | { success: false; error: 
 
 const parseMultiComponentProduct = (
   body: Record<string, unknown>,
-  brands: ReturnType<typeof getAuthorizedBrands>,
-  brandId: string,
+  brand: NonNullable<Awaited<ReturnType<typeof getBrandById>>>,
   gtins: GtinsResult,
 ) => {
-  const productValidation = getUserMultiComponentProductAPIValidation(brands).safeParse({
+  const productValidation = multiComponentProductAPIValidation.safeParse({
     ...body,
-    brandId,
+    brandId: brand.id,
   })
 
   if (!productValidation.success || !gtins.success) {
@@ -77,13 +74,12 @@ const parseMultiComponentProduct = (
 
 const parseBatchProduct = (
   body: Record<string, unknown>,
-  brands: ReturnType<typeof getAuthorizedBrands>,
-  brandId: string,
+  brand: NonNullable<Awaited<ReturnType<typeof getBrandById>>>,
   gtins: GtinsResult,
 ) => {
-  const productValidation = getUserProductsAPIValidation(brands).safeParse({
+  const productValidation = productsAPIValidation.safeParse({
     ...body,
-    brandId,
+    brandId: brand.id,
   })
 
   if (!productValidation.success || !gtins.success) {
@@ -113,13 +109,12 @@ const parseBatchProduct = (
 
 const parseSingleProduct = (
   body: Record<string, unknown>,
-  brands: ReturnType<typeof getAuthorizedBrands>,
-  brandId: string,
+  brand: NonNullable<Awaited<ReturnType<typeof getBrandById>>>,
   gtins: GtinsResult,
 ) => {
-  const productValidation = getUserProductAPIValidation(brands).safeParse({
+  const productValidation = productAPIValidation.safeParse({
     ...body,
-    brandId,
+    brandId: brand.id,
   })
 
   if (!productValidation.success || !gtins.success) {
@@ -159,11 +154,7 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
       )
     }
 
-    if (
-      !api.user.organization ||
-      !api.user.organization.type ||
-      !organizationTypesAllowedToDeclare.includes(api.user.organization.type)
-    ) {
+    if (!api.user.organization || !api.user.organization.type) {
       return NextResponse.json(
         {
           error:
@@ -183,7 +174,6 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
 
     await updateAPIUse(api.key)
 
-    const brands = getAuthorizedBrands(api.user.organization)
     const body = await req.json()
 
     if (body.test) {
@@ -207,19 +197,14 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
       )
     }
 
-    const brandId = (body.brandId || api.user.organization.brands.find((b) => b.default)?.id || "").trim()
-    const brand = await getBrandById(brandId)
-
+    const brand = body.brandId ? await getBrandById(body.brandId) : null
     if (!brand) {
-      return NextResponse.json(
-        { error: "La marque spécifiée n'existe pas ou n'est pas autorisée pour votre organisation." },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: "La marque spécifiée n'existe pas." }, { status: 400 })
     }
 
     if (brand.organization && brand.organization.noGTIN && body.gtins) {
       return NextResponse.json(
-        { error: "Votre organisation n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné." },
+        { error: "La marque n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné." },
         { status: 400 },
       )
     }
@@ -238,13 +223,13 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
     let parseResult: NextResponse | ProductAndInformations
     switch (type) {
       case "batch":
-        parseResult = parseBatchProduct(body, brands, brandId, gtins)
+        parseResult = parseBatchProduct(body, brand, gtins)
         break
       case "single":
-        parseResult = parseSingleProduct(body, brands, brandId, gtins)
+        parseResult = parseSingleProduct(body, brand, gtins)
         break
       case "multicomponents":
-        parseResult = parseMultiComponentProduct(body, brands, brandId, gtins)
+        parseResult = parseMultiComponentProduct(body, brand, gtins)
         break
     }
 
@@ -255,7 +240,7 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
     const { product, informations } = parseResult
 
     const confidenceLevel = getProductConfidenceLevel(api.user, product.brandId)
-    const hash = hashProduct({ ...product, confidenceLevel }, informations, brands)
+    const hash = hashProduct({ ...product, confidenceLevel }, informations)
     const oldProductCheck = await checkOldProduct(product.gtins, hash, confidenceLevel, {
       userId: api.user.id,
       userType: api.user.type,

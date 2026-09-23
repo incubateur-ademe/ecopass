@@ -77,7 +77,7 @@ const GTINPrefixes = ({ prefixes, isAdmin }: { prefixes: UserOrganization["gtinP
               <Button type='submit'>Ajouter</Button>
             </form>
           </div>
-          <Image src='/images/gtin_prefixes.png' alt='' width={259} height={182} />
+          <Image src='/images/gtin_prefixes.svg' alt='' width={259} height={182} />
         </div>
       )}
       {prefixes.length > 0 ? (
