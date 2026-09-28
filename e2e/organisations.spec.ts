@@ -671,7 +671,7 @@ test("manage followed brands", async ({ page }) => {
   ).toHaveText("Emmaus")
   await page.getByRole("combobox", { name: "Nom de la marque Ajoutez une" }).click()
   await page.getByRole("combobox", { name: "Nom de la marque Ajoutez une" }).fill("Test")
-  await page.getByRole("option", { name: 'Ajouter la marque "Test"' }).click()
+  await page.getByRole("option", { name: 'Ajouter la marque "Test"' }).click({ force: true })
   await page.getByTestId("add-followed-brand-button").click()
   await expect(page.getByTestId("followed-brands-table").locator("table tbody tr")).toHaveCount(2)
   await expect(

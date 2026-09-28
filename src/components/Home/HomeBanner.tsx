@@ -8,21 +8,32 @@ import Link from "next/link"
 import Block from "../Block/Block"
 import LastBrands from "./LastBrands"
 import { Tile } from "@codegouvfr/react-dsfr/Tile"
-import { UserType } from "@prisma/client"
+import { OrganizationType, UserType } from "@prisma/client"
 import { Badge } from "@codegouvfr/react-dsfr/Badge"
 
-const HomeBanner = ({ connected, isPro, userType }: { connected?: boolean; isPro?: boolean; userType?: UserType }) => {
-  const proView = isPro
+const HomeBanner = ({
+  connected,
+  isPro,
+  userType,
+  organizationType,
+}: {
+  connected?: boolean
+  isPro?: boolean
+  userType?: UserType
+  organizationType?: OrganizationType | null
+}) => {
+  const isOtherOrganization =
+    organizationType === OrganizationType.Other || organizationType === OrganizationType.Distributor
   return (
     <Block
       large
       type='yellow'
-      className={proView || connected ? "" : styles.background}
-      containerClassName={proView && !connected ? styles.proBackground : ""}>
+      className={isPro || connected ? "" : styles.background}
+      containerClassName={isPro && !connected ? styles.proBackground : ""}>
       <div
         className={classNames(styles.banner, {
           [styles.bannerTest]: isTestEnvironment(),
-          [styles.bannerPro]: proView && !connected,
+          [styles.bannerPro]: isPro && !connected,
           [styles.bannerConnected]: connected,
         })}>
         {isTestEnvironment() ? (
@@ -56,19 +67,19 @@ const HomeBanner = ({ connected, isPro, userType }: { connected?: boolean; isPro
             }
           />
         ) : (
-          !proView &&
+          !isPro &&
           !connected && <Image className={styles.image} src='/images/etiquette.svg' alt='' width={378} height={188} />
         )}
         <div>
           <h1>
             {isTestEnvironment()
               ? "Serveur de test pour la déclaration du coût environnemental de produits textiles"
-              : proView
+              : isPro
                 ? "Déclarer le coût environnemental de vos produits textiles"
                 : "Affichage environnemental"}
           </h1>
           {!isTestEnvironment() &&
-            (proView ? (
+            (isPro ? (
               !connected && (
                 <>
                   <p className={styles.description}>
@@ -81,13 +92,15 @@ const HomeBanner = ({ connected, isPro, userType }: { connected?: boolean; isPro
                     severity='info'
                     description={
                       <>
-                        Vous n’avez pas de SIRET ? Nous vous invitons à remplir{" "}
+                        Vous n’avez pas de SIRET ou/et pas de compte France connect,{" "}
                         <Link
                           className='fr-link'
+                          target='_blank'
+                          rel='noopener noreferrer'
                           href='https://demarche.numerique.gouv.fr/commencer/registration-of-companies-without-a-siret-number-o'>
-                          ce questionnaire
+                          remplissez ce formulaire
                         </Link>{" "}
-                        pour valider votre inscription.
+                        pour fournir les pièces nécessaires à la création de votre espace.
                       </>
                     }
                   />
@@ -114,31 +127,43 @@ const HomeBanner = ({ connected, isPro, userType }: { connected?: boolean; isPro
               <div className={styles.tiles}>
                 <Tile
                   orientation='horizontal'
-                  title='Gérer votre entreprise'
+                  title='Gérez votre entreprise'
                   imageUrl='/images/catalog.svg'
                   imageAlt=''
                   titleAs='h2'
-                  desc='Listez vos marques et organisez vos délégations'
+                  desc={
+                    isOtherOrganization
+                      ? "Listez les marques que vous souhaitez suivre"
+                      : "Gérez les informations de votre entreprise"
+                  }
                   linkProps={{ href: "/organisation" }}
                   start={<Badge>ORGANISATION</Badge>}
                 />
                 <Tile
                   orientation='horizontal'
-                  title='Déclarer vos produits'
+                  title='Déclarez vos produits'
                   imageUrl='/images/contract.svg'
                   imageAlt=''
                   titleAs='h2'
-                  desc='Déclarez officiellement vos produits et suivez leur statut'
+                  desc={
+                    isOtherOrganization
+                      ? "Déclarez des produits pour des marques non engagées dans l’affichage"
+                      : "Déclarez officiellement vos produits et suivez leur statut"
+                  }
                   linkProps={{ href: "/declarations" }}
                   start={<Badge>DÉPÔT OFFICIEL</Badge>}
                 />
                 <Tile
                   orientation='horizontal'
-                  title='Consulter vos produits'
+                  title='Consultez vos produits'
                   imageUrl='/images/search.svg'
                   imageAlt=''
                   titleAs='h2'
-                  desc='Retrouvez ici tous vos produits déclarés'
+                  desc={
+                    isOtherOrganization
+                      ? "Retrouvez ici tous les produits que vous avez déclarés"
+                      : "Retrouvez ici tous vos produits déclarés"
+                  }
                   linkProps={{ href: "/produits" }}
                   start={<Badge>PRODUITS</Badge>}
                 />

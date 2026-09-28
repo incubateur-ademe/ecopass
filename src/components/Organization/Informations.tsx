@@ -39,6 +39,7 @@ const Informations = ({ organization, isAdmin }: { organization: UserOrganizatio
                 rel='noopener noreferrer'>
                 nous contacter
               </Link>
+              .
             </p>
           )}
         </div>
