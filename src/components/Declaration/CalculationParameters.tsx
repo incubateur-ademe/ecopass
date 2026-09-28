@@ -136,6 +136,7 @@ const CalculationParameters = ({
 
       <RadioButtons
         legend='Audience *'
+        orientation='horizontal'
         options={Object.entries(AUDIENCE_LABELS).map(([key, label]) => ({
           label: label,
           nativeInputProps: {

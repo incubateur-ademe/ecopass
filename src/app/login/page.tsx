@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation"
-import Login from "../../views/Login"
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import { auth } from "../../services/auth/auth"
 import { getSafeCallbackUrl } from "../../utils/login"
+import PublicLogin from "../../views/PublicLogin"
 
 type LoginPageProps = {
   searchParams: Promise<{ next?: string | string[] }>
@@ -19,7 +19,7 @@ const LoginPage = async ({ searchParams }: LoginPageProps) => {
   return (
     <>
       <StartDsfrOnHydration />
-      <Login callbackUrl={callbackUrl} />
+      <PublicLogin callbackUrl={callbackUrl} />
     </>
   )
 }

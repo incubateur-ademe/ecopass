@@ -25,7 +25,7 @@ const ForgetPassword = () => {
         <Alert
           severity='success'
           title='Un lien de réinitialisation vous a été envoyé.'
-          description="Si vous n'avez rien reçu, pensez à regarger vos spams"
+          description="Si vous n'avez rien reçu, pensez à regarder vos spams"
         />
       ) : (
         <div className='fr-col-12 fr-col-md-8 fr-col-lg-6'>

@@ -20,6 +20,7 @@ import { gtinsValidation } from "../services/validation/gtins"
 import { createUpload } from "../db/upload"
 import { getMassByAudience } from "../utils/product/audienceMassMapping"
 import { ProductCategory } from "../types/Product"
+import { productMapping } from "../utils/ecobalyse/mappings"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -192,7 +193,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
 
     const validatedData = productSimplifiedDeclarationValidation.safeParse({
       ...data,
-      product: mappedCategories[data.product] || data.product,
+      product: productMapping[mappedCategories[data.product]] || data.product,
       mass: massInGrams / 1000,
       brandId: resolvedBrand.id,
     })

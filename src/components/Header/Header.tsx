@@ -133,7 +133,7 @@ const Header = ({
             }
           : {
               linkProps: {
-                href: pathname === "/" ? "/login/public" : "/login",
+                href: "/login",
               },
               iconId: "ri-account-circle-line",
               text: "Se connecter",

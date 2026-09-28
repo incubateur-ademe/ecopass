@@ -11,7 +11,7 @@ const Declarations = ({ page, canDeclare }: { page: number; canDeclare?: boolean
         <Upload canDeclare={canDeclare} />
       </Block>
       <Block>
-        <h2>Mes fichiers</h2>
+        <h2>Mes fichiers de résultats</h2>
         <Uploads page={page} />
       </Block>
       <Block type='yellow'>

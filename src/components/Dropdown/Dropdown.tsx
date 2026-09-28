@@ -134,6 +134,7 @@ const Dropdown = (
           },
           onFocus: () => {
             setOpen(true)
+            setSearch("")
           },
           onBlur: () => {
             setOpen(false)

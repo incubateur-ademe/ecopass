@@ -37,7 +37,7 @@ const Informations = ({ organization, isAdmin }: { organization: UserOrganizatio
                 prefetch={false}
                 target='_blank'
                 rel='noopener noreferrer'>
-                nous contacter.
+                nous contacter
               </Link>
             </p>
           )}
