@@ -5,7 +5,7 @@ export const loginWithFranceConnectCredentials = async (
   email = "ecopass-citoyen@yopmail.com",
   password = "ecopasscestsupercool",
 ) => {
-  await page.goto("http://localhost:3000/login/public", { waitUntil: "networkidle" })
+  await page.goto("http://localhost:3000/login", { waitUntil: "networkidle" })
   await page.getByRole("tab", { name: "Connexion", exact: true }).first().click()
 
   await page.getByRole("textbox", { name: "Email" }).fill(email)
@@ -53,7 +53,7 @@ export const loginWithPassword = async (
   await page.goto("http://localhost:3000/login")
   await expect(page.locator("#contenu").getByRole("button", { name: "S’identifier avec ProConnect" })).toBeVisible()
 
-  await page.getByRole("tab", { name: "Connexion", exact: true }).click()
+  await page.getByRole("tab", { name: "Connexion", exact: true }).nth(1).click()
 
   await page.getByRole("textbox", { name: "Email" }).fill(email)
   await page.getByRole("textbox", { name: "Mot de passe" }).fill(password)

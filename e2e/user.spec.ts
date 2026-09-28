@@ -23,7 +23,7 @@ test("Connection with a brand user", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarer vos produits", exact: true })).toBeVisible()
-  await expect(page.getByRole("link", { name: "API" })).toHaveCount(1)
+  await expect(page.getByRole("link", { name: "API" })).toHaveCount(2)
 
   await page.goto("http://localhost:3000/declaration-simplifiee")
   await expect(page).toHaveURL(/.*\//)
@@ -56,7 +56,7 @@ test("Connection with a consultancy user", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarer vos produits", exact: true })).toBeVisible()
-  await expect(page.getByRole("link", { name: "API" })).toHaveCount(1)
+  await expect(page.getByRole("link", { name: "API" })).toHaveCount(2)
 
   await page.goto("http://localhost:3000/declaration-simplifiee")
   await expect(page).toHaveURL(/.*\//)
@@ -89,7 +89,7 @@ test("Connection with a distributor user", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarer vos produits", exact: true })).toBeVisible()
-  await expect(page.getByRole("link", { name: "API" })).toHaveCount(1)
+  await expect(page.getByRole("link", { name: "API" })).toHaveCount(2)
 
   await page.goto("http://localhost:3000/declaration-simplifiee")
   await expect(page).toHaveURL(/.*\//)
@@ -125,7 +125,7 @@ test("Connection with an other user", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarer vos produits", exact: true })).toBeVisible()
-  await expect(page.getByRole("link", { name: "API" })).toHaveCount(1)
+  await expect(page.getByRole("link", { name: "API" })).toHaveCount(2)
 
   await page.goto("http://localhost:3000/declaration-simplifiee")
   await expect(page).toHaveURL(/.*\//)
@@ -166,7 +166,7 @@ test("Connection with an unknown user", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Consulter vos produits", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarations", exact: true })).toBeVisible()
   await expect(page.getByRole("link", { name: "Déclarer vos produits", exact: true })).toBeVisible()
-  await expect(page.getByRole("link", { name: "API" })).toHaveCount(1)
+  await expect(page.getByRole("link", { name: "API" })).toHaveCount(2)
 
   await page.goto("http://localhost:3000/declaration-simplifiee")
   await expect(page).toHaveURL(/.*\//)

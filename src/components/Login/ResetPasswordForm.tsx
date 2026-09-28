@@ -5,7 +5,7 @@ import Block from "../../components/Block/Block"
 import { Input } from "@codegouvfr/react-dsfr/Input"
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup"
 import { FormEvent, useCallback, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { changePassword } from "../../serverFunctions/user"
 import { validatePassword } from "../../services/auth/password"
 
@@ -15,7 +15,6 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
   const [passwordDoesNotMatch, setPasswordDoesNotMatch] = useState(false)
 
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   const submit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -43,16 +42,11 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
         if (result) {
           setError(result)
         } else {
-          const citoyen = searchParams.get("citoyen")
-          if (citoyen === "true") {
-            router.push("/login/public")
-          } else {
-            router.push("/login")
-          }
+          router.push("/login")
         }
       }
     },
-    [router, token, searchParams],
+    [router, token],
   )
 
   return (

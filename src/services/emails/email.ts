@@ -35,7 +35,7 @@ export const sendWelcomeEmail = async (toEmail: string, token: string, citoyen?:
     [toEmail],
     "Bienvenue sur le portail de déclaration de l'Affichage environnemental",
     await getHtml(citoyen ? "welcome-citoyen" : "welcome", {
-      resetLink: `${process.env.NEXTAUTH_URL}/reset-password/${token}?citoyen=${citoyen ? "true" : "false"}`,
+      resetLink: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
     }),
   )
 }

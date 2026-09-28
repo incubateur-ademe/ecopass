@@ -136,7 +136,7 @@ const Identification = ({
             <>
               Comment trouver une référence interne ?{" "}
               <Link
-                href='https://docs.numerique.gouv.fr/docs/00cbad93-a2b7-4d7d-8e25-1948b4254daf/ '
+                href='https://docs.numerique.gouv.fr/docs/bf5c785e-c7bc-4178-9a3d-fbe8a261de94/'
                 target='_blank'
                 rel='noopener noreferrer'>
                 Consulter la notice

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 const SimplifiedDeclarationPage = async () => {
-  const session = await tryAndGetSession(true, false, "/login/public?next=/declaration-simplifiee")
+  const session = await tryAndGetSession(true, false, "/login?next=/declaration-simplifiee")
 
   if (session.user.type !== UserType.CITOYEN) {
     redirect("/declarations")

@@ -72,9 +72,8 @@ const HomeBanner = ({ connected, isPro, userType }: { connected?: boolean; isPro
               !connected && (
                 <>
                   <p className={styles.description}>
-                    Vous êtes une marque ou un bureau d'études ?
-                    <br />
-                    Connectez-vous avec ProConnect pour déclarer le coût environnemental de vos produits.
+                    Vous êtes un professionnel, connectez-vous avec ProConnect ou faites une demande de création de
+                    compte pour déclarer le coût environnemental de produits
                   </p>
                   <Alert
                     small
@@ -102,9 +101,8 @@ const HomeBanner = ({ connected, isPro, userType }: { connected?: boolean; isPro
             ) : (
               <>
                 <p className={styles.description}>
-                  Réglettes, équivalences, valeurs médianes.. porté par le Gouvernement, l’affichage environnemental
-                  développe pour les entreprises, des outils qui s’ajoutent à vos sites et applications en quelques
-                  clics. 100% gratuit.
+                  Une mesure d'impact portée par le gouvernement, simple et comparable pour comprendre l'impact
+                  environnemental de vos vêtements.
                 </p>
                 <div className={styles.brands}>
                   <LastBrands />
@@ -166,7 +164,7 @@ const HomeBanner = ({ connected, isPro, userType }: { connected?: boolean; isPro
                     titleAs='h2'
                     desc='Consultez le centre d’aide - Docs'
                     linkProps={{
-                      href: "https://docs.numerique.gouv.fr/docs/4c19480c-746e-49d9-aa1c-8b94f8790720/",
+                      href: "https://docs.numerique.gouv.fr/docs/25bec383-0f3a-4fea-8e99-c6f80d86103c/",
                       target: "_blank",
                       rel: "noopener noreferrer",
                     }}
