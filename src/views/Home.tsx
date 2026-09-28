@@ -12,6 +12,7 @@ const Home = ({
   connected,
   userType,
   isPro,
+  organizationType,
 }: {
   connected?: boolean
   organizationType?: OrganizationType | null
@@ -20,7 +21,7 @@ const Home = ({
 }) => {
   return (
     <>
-      <HomeBanner connected={connected} isPro={isPro} userType={userType} />
+      <HomeBanner connected={connected} isPro={isPro} userType={userType} organizationType={organizationType} />
       {(connected || !isTestEnvironment()) && (
         <>
           {isPro && (

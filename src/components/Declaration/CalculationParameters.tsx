@@ -135,7 +135,7 @@ const CalculationParameters = ({
       />
 
       <RadioButtons
-        legend='Audience *'
+        legend='Gamme *'
         orientation='horizontal'
         options={Object.entries(AUDIENCE_LABELS).map(([key, label]) => ({
           label: label,

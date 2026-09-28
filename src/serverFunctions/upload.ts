@@ -188,7 +188,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
 
     const massInGrams = getMassByAudience(data.product, data.audience)
     if (massInGrams === null || massInGrams === undefined) {
-      throw new Error(`Validation error: Audience mass could not be determined`)
+      throw new Error(`Validation error: Gamme mass could not be determined`)
     }
 
     const validatedData = productSimplifiedDeclarationValidation.safeParse({
