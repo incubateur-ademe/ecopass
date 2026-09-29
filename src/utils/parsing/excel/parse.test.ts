@@ -316,6 +316,27 @@ describe("parseExcel", () => {
     expect(initialProducts[0].hash).not.toBe(products[0].hash)
   })
 
+  it("should regroup products with same internal ref if no gtins", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const row = [...defaultProducts]
+    row[gtinsIndex] = ""
+
+    const initialExcelBuffer = createExcelBuffer([defaultHeaders, row])
+    const { products: initialProducts } = await parseExcel(initialExcelBuffer, upload)
+    expect(initialProducts).toHaveLength(1)
+
+    const excelBuffer = createExcelBuffer([defaultHeaders, row, row])
+
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(informations[0].productId).toBe(products[0].id)
+    expect(informations[1].productId).toBe(products[0].id)
+
+    expect(initialProducts[0].hash).not.toBe(products[0].hash)
+  })
+
   it("should fail product with same gtins but different internal reference", async () => {
     const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
     const internalReferenceIndex = defaultHeaders.indexOf("Référence interne")

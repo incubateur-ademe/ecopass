@@ -111,7 +111,7 @@ export const parseCSV = async (buffer: Buffer, encoding: string | null, upload: 
       const brand = (row.record["marqueid"] || "").trim()
       const declaredScore = getNumberValue(row.record["score"], 1, -1) as number | undefined
 
-      const gtin = gtins.sort((a, b) => a.localeCompare(b)).join(",")
+      const gtin = gtins.sort((a, b) => a.localeCompare(b)).join(",") || internalReference
       const existingProduct = productsByGtins[gtin]
 
       const id = uuid()
