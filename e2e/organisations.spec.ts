@@ -87,6 +87,15 @@ test("manage siret delegation", async ({ page }) => {
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
     "REF-099",
   )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(1)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
+    "WARO",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(5)).toHaveText(
+    "MOYEN",
+  )
   await page
     .getByTestId("products-table")
     .locator("table tbody tr")
@@ -246,6 +255,15 @@ test("manage siret delegation", async ({ page }) => {
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
     "REF-097",
   )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(1)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
+    "WARO",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(5)).toHaveText(
+    "MOYEN",
+  )
   await page
     .getByTestId("products-table")
     .locator("table tbody tr")
@@ -259,6 +277,15 @@ test("manage siret delegation", async ({ page }) => {
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(3)
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
     "REF-098",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText(
+    "WARO",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(5)).toHaveText(
+    "FORT",
   )
   await page
     .getByTestId("products-table")
@@ -301,6 +328,15 @@ test("manage unique id delegation", async ({ page }) => {
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
     "REF-099",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(1)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
+    "Textile Premium",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(5)).toHaveText(
+    "MOYEN",
   )
   await page
     .getByTestId("products-table")
@@ -535,6 +571,15 @@ test("manage unique id delegation", async ({ page }) => {
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
     "REF-097",
   )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(1)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
+    "Textile Premium",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(5)).toHaveText(
+    "MOYEN",
+  )
   await page
     .getByTestId("products-table")
     .locator("table tbody tr")
@@ -547,6 +592,15 @@ test("manage unique id delegation", async ({ page }) => {
   await expect(page).toHaveURL(/.*\/produits/)
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
     "REF-098",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
+    "Emmaus Connect",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText(
+    "Textile Premium",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(5)).toHaveText(
+    "FORT",
   )
   await page
     .getByTestId("products-table")
@@ -671,7 +725,8 @@ test("manage followed brands", async ({ page }) => {
   ).toHaveText("Emmaus")
   await page.getByRole("combobox", { name: "Nom de la marque Ajoutez une" }).click()
   await page.getByRole("combobox", { name: "Nom de la marque Ajoutez une" }).fill("Test")
-  await page.getByRole("option", { name: 'Ajouter la marque "Test"' }).click({ force: true })
+  await page.getByRole("combobox", { name: "Nom de la marque Ajoutez une" }).press("ArrowDown")
+  await page.getByRole("combobox", { name: "Nom de la marque Ajoutez une" }).press("Enter")
   await page.getByTestId("add-followed-brand-button").click()
   await expect(page.getByTestId("followed-brands-table").locator("table tbody tr")).toHaveCount(2)
   await expect(

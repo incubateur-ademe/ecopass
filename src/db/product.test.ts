@@ -2016,7 +2016,7 @@ describe("Product DB integration", () => {
           },
         ],
         brand: null,
-        upload: { version: "test", createdBy: { type: UserType.CITOYEN, organization: null } },
+        upload: { version: "test", createdBy: { id: "user-1", type: UserType.CITOYEN, organization: null } },
       } satisfies ProductWithScoreBase
 
       const result = await getMeanScores(product)
@@ -2081,7 +2081,7 @@ describe("Product DB integration", () => {
           },
         ],
         brand: null,
-        upload: { version: "test", createdBy: { type: UserType.CITOYEN, organization: null } },
+        upload: { version: "test", createdBy: { id: "user-1", type: UserType.CITOYEN, organization: null } },
       }
 
       await mockPrismaTest.product.create({

@@ -244,6 +244,7 @@ const productWithScoreSelect = {
       version: true,
       createdBy: {
         select: {
+          id: true,
           type: true,
           organization: { select: { displayName: true, id: true } },
         },

@@ -1,15 +1,20 @@
+"use client"
+
+import { Badge } from "@codegouvfr/react-dsfr/Badge"
+import { confidencesLevel } from "../../../utils/product/confidence"
 import Alert from "@codegouvfr/react-dsfr/Alert"
+import { useSession } from "next-auth/react"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import classNames from "classnames"
 import { Products } from "../../../db/product"
 import styles from "./SearchResults.module.css"
-import Badge from "@codegouvfr/react-dsfr/Badge"
 import Image from "next/image"
 import { formatNumber } from "../../../services/format"
 import Table from "../../Table/Table"
 import ProductLink from "../ProductLink"
 import { getProductCategory, getProductIcon } from "../../../utils/product/category"
 import ProductNotFound from "../../Home/ProductNotFound"
+import { getDeclarant } from "../../../utils/product/declarant"
 
 const SearchResults = ({
   products,
@@ -26,6 +31,7 @@ const SearchResults = ({
   onPageChange: (page: number) => void
   hasCriteria: boolean
 }) => {
+  const session = useSession()
   if (total === 0) {
     return (
       <>
@@ -46,7 +52,16 @@ const SearchResults = ({
       </p>
       <div data-testid='search-results-table'>
         <Table
-          headers={["Code-barres", "Référence interne", "Marque", "Catégorie", "Score", "Détails"]}
+          headers={[
+            "Code-barres",
+            "Référence interne",
+            "Marque",
+            "Déclarant",
+            "Catégorie",
+            "Score",
+            "Confiance",
+            "Détails",
+          ]}
           data={products.map((product) => {
             const categorySlug = getProductCategory(product.informations)
             const icon = getProductIcon(categorySlug)
@@ -54,12 +69,16 @@ const SearchResults = ({
               product.gtins.join(", "),
               product.internalReference,
               product.brand?.name || "-",
+              getDeclarant(product, session.data?.user.id || ""),
               <div className={styles.category} key={product.id}>
                 {icon && <Image src={`/icons/${icon}.svg`} alt='' width={32} height={32} />}
                 {categorySlug || "Non renseignée"}
               </div>,
               <Badge severity='info' noIcon key={product.id}>
                 {product.score ? formatNumber(product.score) : "-"}
+              </Badge>,
+              <Badge severity='info' noIcon key={product.id}>
+                {confidencesLevel[product.confidenceLevel]}
               </Badge>,
               <ProductLink product={product} key={product.id} />,
             ]

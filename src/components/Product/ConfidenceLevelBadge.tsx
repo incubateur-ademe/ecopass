@@ -5,12 +5,7 @@ import { ConfidenceLevel } from "@prisma/enums"
 import styles from "./DurabilityBadge.module.css"
 import { createModal } from "@codegouvfr/react-dsfr/Modal"
 import Table from "../Table/Table"
-
-const confidencesLevel = {
-  [ConfidenceLevel.High]: "FORT",
-  [ConfidenceLevel.Medium]: "MOYEN",
-  [ConfidenceLevel.Low]: "FAIBLE",
-}
+import { confidencesLevel } from "../../utils/product/confidence"
 
 const modal = createModal({
   id: "confidence-level-modal",
