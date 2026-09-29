@@ -137,6 +137,7 @@ describe("processExportsQueue", () => {
     upload: {
       version: "1.0",
       createdBy: {
+        id: "user-1",
         type: UserType.PROFESSIONNEL,
         organization: {
           displayName: "Test Organization",

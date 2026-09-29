@@ -1,4 +1,4 @@
-import { ConfidenceLevel, UserType } from "@prisma/client"
+import { ConfidenceLevel, UserType } from "@prisma/enums"
 
 export const getProductConfidenceLevel = (
   user: {
@@ -21,4 +21,10 @@ export const getProductConfidenceLevel = (
     .filter((brand) => brand.active)
     .map((brand) => brand.id)
   return allBrands.includes(brandId) ? ConfidenceLevel.High : ConfidenceLevel.Medium
+}
+
+export const confidencesLevel = {
+  [ConfidenceLevel.High]: "FORT",
+  [ConfidenceLevel.Medium]: "MOYEN",
+  [ConfidenceLevel.Low]: "FAIBLE",
 }

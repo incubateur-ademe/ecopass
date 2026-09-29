@@ -307,13 +307,13 @@ test("declare my products by API", async ({ page }) => {
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(1)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
     "Lot de produits",
   )
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
     "BATCH-100",
   )
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(4)).toHaveText(
     "4 594",
   )
   await page.getByTestId("products-table").locator("table tbody tr").nth(0).getByRole("link").click()
@@ -338,13 +338,13 @@ test("declare my products by API", async ({ page }) => {
   )
 
   await page.getByRole("link", { name: "Produits" }).click()
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(3)).toHaveText(
     "T-shirt / Polo",
   )
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
     "REF-100",
   )
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(4)).toHaveText(
     "1 755",
   )
   await page.getByTestId("products-table").locator("table tbody tr").nth(1).getByRole("link").click()

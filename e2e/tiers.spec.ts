@@ -129,7 +129,23 @@ test("simplified declaration", async ({ page }) => {
   await logout(page)
   await loginWithFranceConnectCredentials(page, "ecopass-citoyen-2@yopmail.com")
 
-  await page.getByRole("link", { name: "Déclarer des produits un par" }).click()
+  await page.goto("http://localhost:3000/recherche")
+
+  await expect(page.getByTestId("search-results-table").locator("table tbody tr")).toHaveCount(2)
+  await expect(
+    page.getByTestId("search-results-table").locator("table tbody tr").nth(0).locator("td").nth(1),
+  ).toHaveText("Test")
+  await expect(
+    page.getByTestId("search-results-table").locator("table tbody tr").nth(0).locator("td").nth(2),
+  ).toHaveText("Emmaus Solidarité")
+  await expect(
+    page.getByTestId("search-results-table").locator("table tbody tr").nth(0).locator("td").nth(3),
+  ).toHaveText("Citoyen")
+  await expect(
+    page.getByTestId("search-results-table").locator("table tbody tr").nth(0).locator("td").nth(6),
+  ).toHaveText("FAIBLE")
+
+  await page.getByRole("link", { name: "Déclaration simplifiée" }).click()
   await page.getByRole("combobox", { name: "Nom de la marque *" }).fill("New brand")
   await page.getByRole("option", { name: "New brand" }).click()
   await page.getByRole("textbox", { name: "Code barre (GTIN) *" }).fill("6234567891007")
@@ -198,4 +214,21 @@ test("simplified declaration", async ({ page }) => {
     score: 1362.1332508499784,
     standardized: 693.0021531030901,
   })
+
+  await page.getByRole("link", { name: "Produits déclarés" }).nth(0).click()
+  await expect(page).toHaveURL(/.*\/produits/)
+
+  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(1)
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
+    "Test",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(1)).toHaveText(
+    "New brand",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
+    "Moi",
+  )
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(5)).toHaveText(
+    "FAIBLE",
+  )
 })
