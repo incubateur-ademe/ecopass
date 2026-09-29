@@ -373,6 +373,24 @@ describe("parseCSV", () => {
     expect(initialProducts[0].hash).not.toBe(products[0].hash)
   })
 
+  it("should regroup products with same internal ref if no gtins", async () => {
+    const initialCSV = Buffer.from(`${header}\n${defaultProducts}`)
+    const { products: initialProducts } = await parseCSV(initialCSV, null, upload)
+    expect(initialProducts).toHaveLength(1)
+
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts.replace("2234567891001;3234567891000", "")}\n${defaultProducts.replace("2234567891001;3234567891000", "")}`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(informations[0].productId).toBe(products[0].id)
+    expect(informations[1].productId).toBe(products[0].id)
+
+    expect(initialProducts[0].hash).not.toBe(products[0].hash)
+  })
+
   it("should fail product with same gtins but different internal reference", async () => {
     const csv = Buffer.from(
       `${header}\n${defaultProducts}\n${defaultProducts

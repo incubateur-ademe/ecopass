@@ -58,7 +58,7 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
     const brand = (row[headerMapping["marqueid"]] || "").trim()
     const declaredScore = getNumberValue(row[headerMapping["score"]] || "", 1, -1) as number | undefined
 
-    const gtin = gtins.sort((a, b) => a.localeCompare(b)).join(",")
+    const gtin = gtins.sort((a, b) => a.localeCompare(b)).join(",") || internalReference
     const existingProduct = productsByGtins[gtin]
 
     const id = uuid()
