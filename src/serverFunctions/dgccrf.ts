@@ -81,6 +81,9 @@ const headers = [
 ]
 
 export const exportDgccrfBrandProducts = async (brandId?: string, category?: string, organization?: string) => {
+  console.log(
+    `[exportDgccrfBrandProducts] Starting - brandId: ${brandId}, category: ${category}, organization: ${organization}`,
+  )
   const session = await auth()
   if (!session || !session.user) {
     return { error: "Utilisateur non authentifié" }
@@ -94,7 +97,7 @@ export const exportDgccrfBrandProducts = async (brandId?: string, category?: str
     return { error: "Marque invalide" }
   }
 
-  const csvChunks: string[] = []
+  let csv = ""
   let hasRows = false
 
   const processedProducts = await forEachLatestProductsByBrandIdForExport(
@@ -195,7 +198,7 @@ export const exportDgccrfBrandProducts = async (brandId?: string, category?: str
         return
       }
 
-      csvChunks.push(
+      csv = csv.concat(
         stringify(rows, {
           header: !hasRows,
           columns: headers,
@@ -209,13 +212,16 @@ export const exportDgccrfBrandProducts = async (brandId?: string, category?: str
   )
 
   if (processedProducts === 0 || !hasRows) {
+    console.error(`[exportDgccrfBrandProducts] Error - No products found for brandId: ${brandId}`)
     return { error: "Aucun produit trouvé pour cette marque" }
   }
 
-  return csvChunks.join("")
+  console.log(`[exportDgccrfBrandProducts] Completed - processedProducts: ${processedProducts}`)
+  return csv
 }
 
 export const searchOrganizationsAndBrands = async (query: string) => {
+  console.log(`[searchOrganizationsAndBrands] Starting - query: ${query}`)
   if (!query || query.trim().length === 0) {
     return { organizations: [], brands: [] }
   }

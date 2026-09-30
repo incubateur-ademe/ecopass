@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error("Erreur lors de la génération du SVG:", error)
+    console.error(`[GET] /api/image - Error:`, error)
     return NextResponse.json({ error: "Erreur interne du serveur" }, { status: 500 })
   }
 }

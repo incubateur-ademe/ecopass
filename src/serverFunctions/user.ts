@@ -7,14 +7,17 @@ import jwt from "jsonwebtoken"
 import { generateResetToken, signPassword } from "../services/auth/user"
 
 export const resetPassword = async (email: string) => {
+  console.log(`[resetPassword] Starting - email: ${email}`)
   try {
     await generateResetToken(email)
+    console.log(`[resetPassword] Completed - email: ${email}`)
   } catch (error) {
-    console.error("Error generating reset token:", error)
+    console.error(`[resetPassword] Error - email: ${email}:`, error)
   }
 }
 
 export const changePassword = async (token: string, password: string) => {
+  console.log(`[changePassword] Starting`)
   let decoded: jwt.JwtPayload
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET || "") as jwt.JwtPayload
@@ -49,9 +52,11 @@ export const changePassword = async (token: string, password: string) => {
       resetPasswordToken: null,
     },
   })
+  console.log(`[changePassword] Completed`)
 }
 
 export const generateAPIKey = async (name: string) => {
+  console.log(`[generateAPIKey] Starting - name: ${name}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -67,14 +72,18 @@ export const generateAPIKey = async (name: string) => {
       name,
     },
   })
-
+  console.log(`[generateAPIKey] Completed - key: ${key}`)
   return key
 }
 
-export const deleteAPIKey = async (id: string) =>
-  prismaClient.aPIKey.delete({
+export const deleteAPIKey = async (id: string) => {
+  console.log(`[deleteAPIKey] Starting - id: ${id}`)
+  const result = await prismaClient.aPIKey.delete({
     where: { id },
   })
+  console.log(`[deleteAPIKey] Completed - id: ${id}`)
+  return result
+}
 
 export const getUserOrganizationType = async (id?: string) => {
   if (!id) {

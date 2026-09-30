@@ -36,7 +36,7 @@ const Validation = ({
           <div>
             <p className={styles.name}>
               <b>
-                {Object.entries(productMapping).find(([key, value]) => value === data.product)?.[0] ?? data.product} -{" "}
+                {Object.entries(productMapping).find(([, value]) => value === data.product)?.[0] ?? data.product} -{" "}
                 {data.brandName}
               </b>
             </p>

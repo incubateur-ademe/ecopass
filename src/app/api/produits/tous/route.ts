@@ -4,6 +4,7 @@ import { computeBatchScore } from "../../../../utils/ecobalyse/batches"
 import { getProductCategory } from "../../../../utils/product/category"
 
 export async function GET(req: Request) {
+  console.log(`[GET] /api/produits/tous - Starting`)
   const { searchParams } = new URL(req.url)
   const page = parseInt(searchParams.get("page") || "0", 10)
   const size = Math.min(parseInt(searchParams.get("size") || "100", 10), 500)
@@ -50,6 +51,7 @@ export async function GET(req: Request) {
     })
   }
 
+  console.log(`[GET] /api/produits/tous - page: ${page}, size: ${size}, total: ${total}`)
   const products = await prismaClient.product.findMany({
     where: {
       status: "Done",

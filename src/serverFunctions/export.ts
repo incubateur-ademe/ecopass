@@ -8,6 +8,7 @@ import { auth } from "../services/auth/auth"
 import { createExport } from "../db/export"
 
 export const exportUpload = async (uploadId: string) => {
+  console.log(`[exportUpload] Starting - uploadId: ${uploadId}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
@@ -60,6 +61,7 @@ export const exportUpload = async (uploadId: string) => {
 }
 
 export const exportProducts = async (brand: string | undefined, type: ExportType) => {
+  console.log(`[exportProducts] Starting - brand: ${brand}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"

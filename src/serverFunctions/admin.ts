@@ -40,6 +40,9 @@ export const createUserAndOrganization = async (
   organizationType: OrganizationType,
 ) => {
   try {
+    console.log(
+      `[createUserAndOrganization] Starting - email: ${email}, organization: ${organizationName}, type: ${organizationType}`,
+    )
     const session = await auth()
     if (!session || !session.user || !canAccessAdminSpace(session.user.role)) {
       return { error: "Unauthorized" }
@@ -170,12 +173,13 @@ export const createUser = async (email: string) => {
     }
     await sendPassword(email.toLowerCase(), user.accounts[0].id, true)
 
+    console.log(`[createUserAndOrganization] Completed - user: ${user.id}`)
     return {
       success: true,
       message: "Utilisateur créé avec succès et email de bienvenue envoyé",
     }
   } catch (error) {
-    console.error("Error creating user:", error)
+    console.error(`[createUserAndOrganization] Error:`, error)
     return {
       error: error instanceof Error ? error.message : "Erreur lors de la création de l'utilisateur",
     }
@@ -186,12 +190,13 @@ export const changeOrganizationSettings = async (
   organizationId: string,
   settings: { type?: OrganizationType; noGTIN?: boolean },
 ) => {
+  console.log(`[changeOrganizationSettings] Starting - organizationId: ${organizationId}, settings:`, settings)
   const session = await auth()
   if (!session || !session.user || !canAccessAdminSpace(session.user.role)) {
     return { error: "Unauthorized" }
   }
 
-  return prismaClient.organization.update({
+  const result = await prismaClient.organization.update({
     where: { id: organizationId },
     data: {
       type: settings.type,
@@ -201,6 +206,8 @@ export const changeOrganizationSettings = async (
           : false,
     },
   })
+  console.log(`[changeOrganizationSettings] Completed - organizationId: ${organizationId}`)
+  return result
 }
 
 export const changeOrganizationMemberRole = async (
