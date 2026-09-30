@@ -6,18 +6,12 @@ import * as XLSX from "xlsx"
 import { getUploadById } from "../db/upload"
 import { auth } from "../services/auth/auth"
 import { createExport } from "../db/export"
-import { organizationTypesAllowedToDeclare } from "../utils/organization/canDeclare"
-import { getUserOrganizationType } from "../db/user"
 
 export const exportUpload = async (uploadId: string) => {
   console.log(`[exportUpload] Starting - uploadId: ${uploadId}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
-  }
-  const organizationType = await getUserOrganizationType(session.user.id)
-  if (!organizationTypesAllowedToDeclare.includes(organizationType!)) {
-    return "Vous n'êtes pas autorisé à uploader des fichiers"
   }
 
   const upload = await getUploadById(uploadId)
@@ -71,11 +65,6 @@ export const exportProducts = async (brand: string | undefined, type: ExportType
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
-  }
-
-  const organizationType = await getUserOrganizationType(session.user.id)
-  if (!organizationTypesAllowedToDeclare.includes(organizationType!)) {
-    return "Vous n'êtes pas autorisé à exporter ces produits"
   }
 
   return createExport(session.user.id, brand, type)

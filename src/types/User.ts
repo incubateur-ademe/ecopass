@@ -1,11 +1,12 @@
 import "next-auth"
-import { UserRole } from "@prisma/enums"
+import { UserRole, UserType } from "@prisma/enums"
 
 declare module "next-auth" {
   interface User {
     id: string
     email: string
     role?: UserRole
+    type?: UserType
     agentconnect_info?: {
       siret: string
     }

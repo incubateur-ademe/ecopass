@@ -2,6 +2,7 @@ import ejs, { Data } from "ejs"
 import nodemailer from "nodemailer"
 import SMTPTransport from "nodemailer/lib/smtp-transport"
 import { isTestEnvironment } from "../../utils/test"
+import { ConfidenceLevel } from "@prisma/enums"
 
 const mailTransport = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
@@ -29,11 +30,11 @@ const send = (toEmail: string[], subject: string, html: string) => {
   }
 }
 
-export const sendWelcomeEmail = async (toEmail: string, token: string) => {
+export const sendWelcomeEmail = async (toEmail: string, token: string, citoyen?: boolean) => {
   return send(
     [toEmail],
     "Bienvenue sur le portail de déclaration de l'Affichage environnemental",
-    await getHtml("welcome", {
+    await getHtml(citoyen ? "welcome-citoyen" : "welcome", {
       resetLink: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
     }),
   )
@@ -83,6 +84,52 @@ export const sendUploadErrorEmail = async (
       error: total - success,
       link: `${process.env.NEXTAUTH_URL}/declarations`,
       support: process.env.NEXT_PUBLIC_SUPPORT_MAIL,
+    }),
+  )
+}
+
+export const sendDailyDeclarationAlertToOwnerAdmins = async (
+  toEmails: string[],
+  declarations: {
+    gtin: string
+    internalReference: string
+    confidenceLevel: ConfidenceLevel
+    declaredAt: Date
+  }[],
+  periodStart: Date,
+  periodEnd: Date,
+) => {
+  return send(
+    toEmails,
+    "Déclarations journalières",
+    await getHtml("daily-owner-low-medium-alert", {
+      declarations,
+      periodStart: periodStart.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+      periodEnd: periodEnd.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+      link: `${process.env.NEXTAUTH_URL}/declarations`,
+    }),
+  )
+}
+
+export const sendDailyDeclarationChangedEmail = async (
+  toEmails: string[],
+  declarations: {
+    gtin: string
+    internalReference: string
+    confidenceLevel: ConfidenceLevel
+    declaredAt: Date
+  }[],
+  periodStart: Date,
+  periodEnd: Date,
+) => {
+  return send(
+    toEmails,
+    "Mise à jour de déclaration",
+    await getHtml("daily-declaration-changed", {
+      declarations,
+      periodStart: periodStart.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+      periodEnd: periodEnd.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+      link: `${process.env.NEXTAUTH_URL}/produits`,
     }),
   )
 }

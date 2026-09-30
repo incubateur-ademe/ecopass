@@ -7,6 +7,7 @@ import DGCCRFHome from "../views/DGCCRFHome"
 import { PageProps } from "../types/Next"
 import { searchOrganizationsAndBrands } from "../serverFunctions/dgccrf"
 import { canAccessAdminSpace, canViewAsDgccrf } from "../utils/authorization/authorizations"
+import { UserType } from "@prisma/enums"
 
 export const metadata: Metadata = {
   title: "Accueil - Affichage environnemental",
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 export default async function HomePage({ searchParams }: PageProps) {
   const session = await tryAndGetSession(false, true)
   const role = session?.user?.role
-  const type = session && session.user ? await getUserOrganizationType(session.user.id) : null
+  const organizationType = session && session.user ? await getUserOrganizationType(session.user.id) : null
   const params = await searchParams
   const organizationsAndBrands =
     canViewAsDgccrf(role) && typeof params.search === "string" && params.search
@@ -27,7 +28,12 @@ export default async function HomePage({ searchParams }: PageProps) {
       {session && canViewAsDgccrf(role) ? (
         <DGCCRFHome organizationsAndBrands={organizationsAndBrands} isAdmin={canAccessAdminSpace(role)} />
       ) : (
-        <Home connected={!!session} type={type} />
+        <Home
+          connected={!!session}
+          organizationType={organizationType}
+          userType={session?.user?.type}
+          isPro={session?.user?.type === UserType.PROFESSIONNEL}
+        />
       )}
     </>
   )

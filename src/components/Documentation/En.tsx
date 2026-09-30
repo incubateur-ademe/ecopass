@@ -35,10 +35,9 @@ const En = () => {
         </li>
         <li>
           <p>
-            <b>Marque ID</b> (optional): product brand id, you can find it on your{" "}
+            <b>Marque ID</b>: product brand id, you can find it on your{" "}
             <Link href='/organisation'>organization page</Link>.
           </p>
-          <p className='fr-hint-text'>If the value is not defined, the default brand will be used.</p>
         </li>
         <li>
           <p>
@@ -182,8 +181,8 @@ const En = () => {
       <h3>Declare a batch</h3>
       <p>To declare a batch of products, indicate one line per product in the batch.</p>
       <p>
-        Make sure to provide the same common information (GTINs/EANs, Internal Reference, Brand ID, Score, Price, and
-        Number of References) on each line.
+        Make sure to provide the same common information (GTINs/EANs, Internal Reference, Brand ID, Score, Batch price,
+        and Number of References) on each line.
       </p>
       <p>To redeclare a batch, you must redeclare all products in the batch.</p>
       <br />

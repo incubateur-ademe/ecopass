@@ -1,5 +1,6 @@
 "use server"
 
+import { OrganizationRole } from "@prisma/client"
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
 
@@ -13,12 +14,17 @@ export const addNewBrand = async (brand: string) => {
   const user = await prismaClient.user.findUnique({
     where: { id: session.user.id },
     select: {
+      organizationRole: true,
       organization: { select: { id: true, brands: { select: { name: true } } } },
     },
   })
 
   if (!user || !user.organization) {
     return "Vous n'êtes pas membre d'une organisation"
+  }
+
+  if (user.organizationRole !== OrganizationRole.ADMIN) {
+    return "Vous n'avez pas les droits pour ajouter une marque"
   }
 
   const trimmedBrand = brand.trim()
@@ -50,12 +56,17 @@ export const updateBrand = async (id: string, data: { name: string; active: bool
   const user = await prismaClient.user.findUnique({
     where: { id: session.user.id },
     select: {
+      organizationRole: true,
       organization: { select: { id: true, brands: { select: { id: true, name: true } } } },
     },
   })
 
   if (!user || !user.organization) {
     return "Vous n'êtes pas membre d'une organisation"
+  }
+
+  if (user.organizationRole !== OrganizationRole.ADMIN) {
+    return "Vous n'avez pas les droits pour modifier une marque"
   }
 
   const trimmedBrand = data.name.trim()

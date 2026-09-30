@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/enums"
+import { UserRole, UserType } from "@prisma/enums"
 
 export const canAccessAdminSpace = (role?: UserRole | null) => role === UserRole.ADMIN
 
@@ -23,13 +23,13 @@ export const canViewAsDgccrf = (role?: UserRole | null) => {
   }
 }
 
-export const canAccessProInformationSpace = (role?: UserRole | null) => {
+export const canAccessProInformationSpace = (role?: UserRole | null, userType?: UserType) => {
   switch (role) {
     case UserRole.DGCCRF:
     case UserRole.BERCY:
       return false
     default:
-      return true
+      return userType !== UserType.CITOYEN
   }
 }
 

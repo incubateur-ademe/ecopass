@@ -1,7 +1,6 @@
 import { ProductWithScore } from "../../db/product"
 import { formatDate } from "../../services/format"
 import Block from "../Block/Block"
-import { computeBatchScore } from "../../utils/ecobalyse/batches"
 import styles from "./Product.module.css"
 import Image from "next/image"
 import Label from "../Label/Label"
@@ -14,6 +13,7 @@ import DurabilityBadge from "./DurabilityBadge"
 import { BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
 import Link from "next/link"
 import { getProductCategory, getProductIcon } from "../../utils/product/category"
+import ConfidenceLevelBadge from "./ConfidenceLevelBadge"
 
 const Product = ({
   product,
@@ -30,13 +30,18 @@ const Product = ({
   brandId?: string
   breadCrumbs?: BreadcrumbProps
 }) => {
-  const totalScore = computeBatchScore(product)
+  const totalScore = {
+    ...product.meanScores,
+    score: product.meanScores.score ?? 0,
+    standardized: product.meanScores.standardized ?? 0,
+    durability: product.meanScores.durability ?? 0,
+  }
 
   const categorySlug = getProductCategory(product.informations)
   const icon = getProductIcon(categorySlug)
   return (
     <>
-      <Block home breadCrumbs={breadCrumbs}>
+      <Block type='yellow' breadCrumbs={breadCrumbs}>
         {isPro && (
           <Badge severity={isOld ? "warning" : "success"} className='fr-mb-4w'>
             {isOld ? "Déclaration obsolète" : "Déclaration validée"}
@@ -77,25 +82,28 @@ const Product = ({
           <p>
             Déposé le : <b>{formatDate(product.createdAt)}</b>
           </p>
-          {product.upload.createdBy.organization && (
-            <p>
-              Par :{" "}
-              <Link href={`/organisations/${product.upload.createdBy.organization.id}`}>
-                <b>{product.upload.createdBy.organization.displayName}</b>
-              </Link>
-            </p>
-          )}
           <p>
             Version Ecobalyse : <b>{product.upload.version}</b>
           </p>
+          <p>
+            Par :{" "}
+            {product.upload.createdBy.organization ? (
+              <Link href={`/organisations/${product.upload.createdBy.organization.id}`}>
+                <b>{product.upload.createdBy.organization.displayName}</b>
+              </Link>
+            ) : (
+              <b>Un citoyen</b>
+            )}
+          </p>
         </div>
+        <ConfidenceLevelBadge confidenceLevel={product.confidenceLevel} />
       </Block>
       <Block>
         <ProductScoreImpacts score={totalScore} isPro={isPro} />
         <ProductHistory gtin={gtin} brandId={brandId} />
       </Block>
       {!isPro && (
-        <Block secondary>
+        <Block type='yellow'>
           <InformationBanner />
         </Block>
       )}

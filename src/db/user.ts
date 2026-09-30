@@ -1,4 +1,43 @@
+import { UserSelect } from "@prisma/models"
 import { prismaClient } from "./prismaClient"
+
+const userSelect = {
+  id: true,
+  email: true,
+  nom: true,
+  prenom: true,
+  type: true,
+  organizationRole: true,
+  organization: {
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      authorizedBy: {
+        select: {
+          from: {
+            select: {
+              id: true,
+              name: true,
+              siret: true,
+              brands: { select: { active: true, id: true, name: true }, where: { active: true } },
+            },
+          },
+        },
+        where: { active: true },
+      },
+      brands: { select: { active: true, id: true, name: true, default: true }, where: { active: true } },
+    },
+  },
+} satisfies UserSelect
+
+export const getUser = async (userId: string) =>
+  prismaClient.user.findUnique({
+    where: { id: userId },
+    select: userSelect,
+  })
+
+export type FullUser = NonNullable<Awaited<ReturnType<typeof getUser>>>
 
 export const getUserByApiKey = async (apiKey: string) =>
   prismaClient.aPIKey.findUnique({
@@ -6,31 +45,7 @@ export const getUserByApiKey = async (apiKey: string) =>
     select: {
       key: true,
       user: {
-        select: {
-          id: true,
-          email: true,
-          organization: {
-            select: {
-              id: true,
-              name: true,
-              type: true,
-              authorizedBy: {
-                select: {
-                  from: {
-                    select: {
-                      id: true,
-                      name: true,
-                      siret: true,
-                      brands: { select: { active: true, id: true, name: true }, where: { active: true } },
-                    },
-                  },
-                },
-                where: { active: true },
-              },
-              brands: { select: { active: true, id: true, name: true, default: true }, where: { active: true } },
-            },
-          },
-        },
+        select: userSelect,
       },
     },
   })
@@ -69,7 +84,11 @@ export const getUserOrganizationType = async (userId: string) => {
       },
     },
   })
-  return user?.organization?.type || null
+  if (!user) {
+    return undefined
+  }
+
+  return user.organization?.type
 }
 
 export const getUserOrganization = async (userId: string) => {
@@ -88,6 +107,7 @@ export const getUserOrganization = async (userId: string) => {
           noGTIN: true,
           gtinPrefixes: { select: { id: true, prefix: true } },
           brands: { select: { id: true, name: true, default: true, active: true } },
+          followedBrands: { select: { id: true, brand: { select: { id: true, name: true, active: true } } } },
           authorizedOrganizations: {
             select: {
               id: true,

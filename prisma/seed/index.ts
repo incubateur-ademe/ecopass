@@ -1,4 +1,12 @@
-import { OrganizationType, Status, UploadType, UserRole } from "@prisma/enums"
+import {
+  ConfidenceLevel,
+  OrganizationRole,
+  OrganizationType,
+  Status,
+  UploadType,
+  UserRole,
+  UserType,
+} from "@prisma/enums"
 import { prismaClient } from "../../src/db/prismaClient"
 import { signPassword } from "../../src/services/auth/user"
 import { encryptProductFields } from "../../src/utils/encryption/encryption"
@@ -9,15 +17,17 @@ const clean = async () => {
   await prismaClient.material.deleteMany()
   await prismaClient.accessory.deleteMany()
   await prismaClient.uploadProduct.deleteMany()
+  await prismaClient.productInformation.deleteMany()
   await prismaClient.product.deleteMany()
   await prismaClient.upload.deleteMany()
-  await prismaClient.brand.deleteMany({})
-  await prismaClient.authorizedOrganization.deleteMany({})
-  await prismaClient.gTINPrefix.deleteMany({})
-  await prismaClient.organization.deleteMany({})
-  await prismaClient.aPIKey.deleteMany({})
-  await prismaClient.export.deleteMany({})
-  await prismaClient.user.deleteMany({})
+  await prismaClient.followedBrand.deleteMany()
+  await prismaClient.brand.deleteMany()
+  await prismaClient.authorizedOrganization.deleteMany()
+  await prismaClient.gTINPrefix.deleteMany()
+  await prismaClient.organization.deleteMany()
+  await prismaClient.aPIKey.deleteMany()
+  await prismaClient.export.deleteMany()
+  await prismaClient.user.deleteMany()
 }
 
 const users = async () => {
@@ -97,6 +107,8 @@ const users = async () => {
         email: "ecopass-password@yopmail.com",
         nom: "Ecopass",
         prenom: "Password",
+        type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
         organization: {
           connect: { siret: "31723624800017" },
         },
@@ -115,6 +127,8 @@ const users = async () => {
         email: "ecopass-dgccrf@yopmail.com",
         nom: "Ecopass",
         prenom: "DGCCRF",
+        type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
         organization: {
           connect: { uniqueId: "5310fbe6-5975-458b-a5d2-53fd5ddb5ce0" },
         },
@@ -135,6 +149,8 @@ const users = async () => {
         role: UserRole.ADMIN,
         nom: "Ecopass",
         prenom: "Admin",
+        type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
         organization: {
           connect: { siret: "31723624800017" },
         },
@@ -148,10 +164,24 @@ const users = async () => {
     }),
     prismaClient.user.create({
       data: {
+        email: "ecopass-e2e@yopmail.com",
+        nom: "Ecopass",
+        prenom: "E2E",
+        type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
+        organization: {
+          connect: { siret: "31723624800017" },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
         id: "0eb6fb02-edcd-4efe-9b8e-49a6fc61307a",
         email: "textile@yopmail.com",
         nom: "Textile",
         prenom: "Admin",
+        type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
         organization: {
           connect: { id: "74b49447-2a89-4056-a112-24ba4597ffc8" },
         },
@@ -167,9 +197,37 @@ const users = async () => {
     }),
     prismaClient.user.create({
       data: {
+        email: "textile-reader@yopmail.com",
+        nom: "Textile",
+        prenom: "Reader",
+        type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.READER,
+        organization: {
+          connect: { id: "74b49447-2a89-4056-a112-24ba4597ffc8" },
+        },
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "textile-reader@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+        apiKeys: {
+          create: {
+            key: "3eea089a-dc26-44c7-a54c-6f6db9fa9f4c",
+            name: "API Key for development",
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
         email: "nogtin@yopmail.com",
         nom: "No",
         prenom: "GTIN",
+        type: UserType.PROFESSIONNEL,
+        organizationRole: OrganizationRole.ADMIN,
         organization: {
           connect: { id: "676fc42f-97a8-427d-a133-536b6592bd67" },
         },
@@ -184,6 +242,44 @@ const users = async () => {
         apiKeys: {
           create: {
             key: "7e729ca5-2c60-4755-8ca2-6d3c818ca8e8",
+            name: "API Key for development",
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "ecopass-citoyen@yopmail.com",
+        type: UserType.CITOYEN,
+        nom: "Jane",
+        prenom: "Dane",
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "ecopass-citoyen@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+      },
+    }),
+    prismaClient.user.create({
+      data: {
+        email: "ecopass-citoyen-2@yopmail.com",
+        type: UserType.CITOYEN,
+        nom: "John",
+        prenom: "Doe",
+        accounts: {
+          create: {
+            provider: "credentials",
+            providerAccountId: "ecopass-citoyen-2@yopmail.com",
+            type: "credentials",
+            password: await signPassword("ecopasscestsupercool"),
+          },
+        },
+        apiKeys: {
+          create: {
+            key: "60b084be-197c-46c1-8be2-eed838318f8c",
             name: "API Key for development",
           },
         },
@@ -232,6 +328,7 @@ const defaultProduct = async () => {
       brand: {
         connect: { id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d" },
       },
+      confidenceLevel: ConfidenceLevel.High,
       status: Status.Done,
       upload: {
         create: {

@@ -12,7 +12,7 @@ const Informations = () => {
         <h1>Coût environnemental des vêtements : un guide pour tout comprendre</h1>
         <Image className={styles.mainImage} src='/images/information.png' alt='' width={400} height={300} />
       </Block>
-      <Block secondary>
+      <Block type='yellow'>
         <h2>Comment lire et interpréter le logo ?</h2>
         <div className={styles.section}>
           <div className={styles.logoExample}>
@@ -130,7 +130,7 @@ const Informations = () => {
           </div>
         </div>
       </Block>
-      <Block secondary>
+      <Block type='yellow'>
         <h2>Qu&apos;est-ce qui est pris en compte dans le calcul ?</h2>
         <p>
           Il s’agit d’une mesure d’impact qui évalue le coût environnemental de chaque produit. Allant de 0 à l’infini,
