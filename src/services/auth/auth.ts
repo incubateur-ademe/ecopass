@@ -22,5 +22,3 @@ export const getApiUser = async (headers: Headers) => {
 
   return getUserByApiKey(token)
 }
-
-export type APIUser = Awaited<ReturnType<typeof getApiUser>>

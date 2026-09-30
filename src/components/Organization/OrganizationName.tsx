@@ -26,6 +26,7 @@ const OrganizationName = ({ organization }: { organization: UserOrganization }) 
       className={styles.input}
       label="Nom d'usage"
       hintText='Le nom qui apparaîtra comme dépositaire sur vos déclarations'
+
       nativeInputProps={{
         value: text,
         onChange: (event) => {

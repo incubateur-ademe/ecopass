@@ -112,6 +112,14 @@ Terminal 2 - Queue worker (optionnel si pas d'upload de fichier) :
 pnpm queue:watch
 ```
 
+Cron hebdomadaire (notifications declarations) :
+
+```sh
+tsx ./src/scripts/weeklyDeclarationNotifications.ts
+```
+
+Cette commande analyse les produits `Done` de la semaine precedente, puis envoie les emails de notification associes.
+
 ## Tests
 
 Le projet contient 2 types de tests :

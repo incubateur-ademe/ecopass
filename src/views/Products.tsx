@@ -2,8 +2,9 @@ import { Suspense } from "react"
 import Block from "../components/Block/Block"
 import Products from "../components/Product/Products"
 import BrandSelection from "../components/Product/BrandSelection"
-import Alert from "@codegouvfr/react-dsfr/Alert"
 import ExportProducts from "../components/Product/Export/ExportProducts"
+import { Alert } from "@codegouvfr/react-dsfr/Alert"
+import Link from "next/link"
 
 const ProductsPage = ({
   page,
@@ -21,9 +22,7 @@ const ProductsPage = ({
       <Block>
         <h1>Mes produits</h1>
         {brands.length > 1 && <BrandSelection brands={brands} brand={brand} />}
-        {productsCount === 0 ? (
-          <Alert severity='info' small description="Vous n'avez pas encore déclaré de produits." />
-        ) : (
+        {productsCount > 0 ? (
           <p>
             Vous avez <b>{productsCount}</b>{" "}
             {productsCount > 1 ? <span>références produit déclarées</span> : <span>référence produit déclarée</span>}
@@ -35,6 +34,20 @@ const ProductsPage = ({
             )}
             .
           </p>
+        ) : (
+          <Alert
+            severity='info'
+            small
+            description={
+              <>
+                Rendez-vous sur la page{" "}
+                <Link className='fr-link' href='/declarations'>
+                  Mes déclarations
+                </Link>{" "}
+                pour enregistrer un produit.
+              </>
+            }
+          />
         )}
       </Block>
       {productsCount > 0 && (
@@ -42,12 +55,16 @@ const ProductsPage = ({
           <ExportProducts brand={brand} />
         </Block>
       )}
-      <Block>
-        <h2>Mes produits déclarés</h2>
-        <Suspense>
-          <Products page={page} productsCount={productsCount} brand={brand} />
-        </Suspense>
-      </Block>
+      {productsCount > 0 && (
+        <Block>
+          <>
+            <h2>Mes produits déclarés</h2>
+            <Suspense>
+              <Products page={page} productsCount={productsCount} brand={brand} />
+            </Suspense>
+          </>
+        </Block>
+      )}
     </>
   )
 }

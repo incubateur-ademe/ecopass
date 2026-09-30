@@ -35,10 +35,9 @@ const Fr = () => {
         </li>
         <li>
           <p>
-            <b>Marque ID</b> (optionnel) : id de la marque du produit, à retrouver dans votre page{" "}
+            <b>Marque ID</b> : id de la marque du produit, à retrouver dans votre page{" "}
             <Link href='/organisation'>organisation</Link>.
           </p>
-          <p className='fr-hint-text'>Si la valeur n'est pas définie, on utilise la marque par défaut.</p>
         </li>
         <li>
           <p>
@@ -186,7 +185,7 @@ const Fr = () => {
       <p>Pour déclarer un lot de produits, indiquez une ligne par produit du lot.</p>
       <p>
         Attention à bien indiquer les mêmes informations communes (GTINs/EANs, Référence interne, Marque ID, Score, Prix
-        et Nombre de références) sur chaque ligne.
+        du lot et Nombre de références) sur chaque ligne.
       </p>
       <p>Pour redéclarer un lot, il faut redéclarer tous les produits du lot.</p>
       <br />

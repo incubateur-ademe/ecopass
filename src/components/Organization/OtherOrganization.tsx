@@ -1,43 +1,44 @@
-import Image from "next/image"
-import styles from "./OtherOrganization.module.css"
-import Search from "../Product/Search"
-import Contact from "./Contact"
+import { UserOrganization } from "../../db/user"
+import { OrganizationMember } from "../../db/organization"
+import OrganizationMembers from "./OrganizationMembers"
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
+import FollowedBrands from "./Brand/FollowedBrands"
 
-const OtherOrganization = () => {
+const OtherOrganization = ({
+  organization,
+  isAdmin,
+  members,
+  brands,
+}: {
+  organization: UserOrganization
+  isAdmin: boolean
+  members: OrganizationMember[]
+  brands: { id: string; name: string }[]
+}) => {
   return (
     <div data-testid='other-organization'>
-      <h1>
-        L’accès connecté au portail est actuellement restreint.
-        <br />
-        Nous vous remercions de votre compréhension.
-      </h1>
-      <p>
-        Pour le moment, la partie connectée du portail n’est accessible qu’aux marques textiles, aux distributeurs ou
-        aux bureaux d’études accompagnant les professionnels du secteur.
-      </p>
-      <div className={styles.box}>
-        <Image src='/images/other.png' alt='' width={325} height={304} />
-        <div className={styles.content}>
-          <h2>Vous êtes... ?</h2>
-          <ul>
-            <li>Un consommateur, </li>
-            <li>un acteur ou une association de l’environnement, </li>
-            <li>un acheteur, </li>
-            <li>un responsable RSE, </li>
-            <li>un élu, </li>
-            <li>un journaliste, </li>
-            <li>un chargé de communication, </li>
-            <li>une personne du milieu éducatif, </li>
-            <li>... ? </li>
-          </ul>
-          <Contact />
-        </div>
-      </div>
-      <p>
-        Vous pouvez également rechercher un produit par son code-barres pour avoir plus d'informations sur son coût
-        environnemental.
-      </p>
-      <Search />
+      <Tabs
+        tabs={[
+          {
+            label: "Marques",
+            content: (
+              <>
+                <h2>Marques suivies</h2>
+                <FollowedBrands organization={organization} brands={brands} />
+              </>
+            ),
+          },
+          {
+            label: "Membres",
+            content: (
+              <>
+                <h2>Membres de l'organisation</h2>
+                <OrganizationMembers organizationId={organization.id} members={members} isAdmin={isAdmin} />
+              </>
+            ),
+          },
+        ].filter((tab) => tab !== undefined)}
+      />
     </div>
   )
 }

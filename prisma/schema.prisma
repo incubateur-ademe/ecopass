@@ -53,6 +53,16 @@ enum UserRole {
   BERCY
 }
 
+enum UserType {
+  CITOYEN
+  PROFESSIONNEL
+}
+
+enum OrganizationRole {
+  ADMIN
+  READER
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -60,9 +70,12 @@ model User {
 
   nom               String?
   prenom            String?
+  birthdate         String?
   agentconnect_info Json?
   role              UserRole?
+  organizationRole  OrganizationRole? @map("organization_role")
 
+  type     UserType
   accounts Account[]
   sessions Session[]
 
@@ -89,6 +102,7 @@ model VerificationToken {
 enum UploadType {
   API
   FILE
+  SIMPLIFIED
 }
 
 model Upload {
@@ -104,8 +118,8 @@ model Upload {
   status Status  @default(Pending)
   error  String?
 
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String       @map("organization_id")
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @map("organization_id")
 
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String @map("created_by_id")
@@ -166,6 +180,12 @@ model Score {
   @@map("scores")
 }
 
+enum ConfidenceLevel {
+  Low
+  Medium
+  High
+}
+
 model Product {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now()) @map("created_at")
@@ -173,11 +193,17 @@ model Product {
   error     String?
   hash      String
 
+  confidenceLevel ConfidenceLevel @map("confidence_level")
+
   score        Float?
   standardized Float?
 
+  meanScore        Float?
+  meanStandardized Float?
+
   gtins             String[] @map("gtins")
   internalReference String   @map("internal_reference")
+  url               String?
   declaredScore     Float?   @map("declared_score")
 
   brandName String? @map("brand_name")
@@ -198,12 +224,21 @@ model Product {
   @@map("products")
 }
 
+enum Audience {
+  Man
+  Woman
+  Mixed
+  Kid
+  Baby
+}
+
 model ProductInformation {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   category      String
-  categorySlug  String?  @map("category_slug")
-  emptyTrims    Boolean? @map("empty_trims")
-  mainComponent Boolean? @map("main_component")
+  categorySlug  String?   @map("category_slug")
+  audience      Audience?
+  emptyTrims    Boolean?  @map("empty_trims")
+  mainComponent Boolean?  @map("main_component")
 
   // Encrypted string
   business        String
@@ -294,9 +329,10 @@ model Organization {
   authorizedBy            AuthorizedOrganization[] @relation("ToOrg")
   authorizedOrganizations AuthorizedOrganization[] @relation("FromOrg")
 
-  brands Brand[]
-  users  User[]
-  upload Upload[]
+  brands         Brand[]
+  users          User[]
+  upload         Upload[]
+  followedBrands FollowedBrand[]
 
   @@map("organizations")
 }
@@ -336,9 +372,10 @@ model Brand {
   default Boolean @default(false)
   active  Boolean @default(true)
 
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String       @map("organization_id")
+  organization   Organization?   @relation(fields: [organizationId], references: [id])
+  organizationId String?         @map("organization_id")
   product        Product[]
+  followedBrands FollowedBrand[]
 
   @@map("brands")
 }
@@ -478,4 +515,15 @@ model AnonymizedAccessory {
 
   @@index([productId], map: "idx_anonymized_accessory_product_id")
   @@map("anonymized_accessories")
+}
+
+model FollowedBrand {
+  id             String       @id @default(uuid())
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
+  brand          Brand        @relation(fields: [brandId], references: [id])
+  brandId        String       @map("brand_id")
+
+  @@unique([organizationId, brandId])
+  @@map("followed_brands")
 }

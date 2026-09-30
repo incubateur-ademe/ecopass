@@ -1,7 +1,7 @@
 import { FileUpload } from "../../../db/upload"
 import { v4 as uuid } from "uuid"
 import { parseExcel } from "./parse"
-import { Status } from "@prisma/enums"
+import { Status, UserType } from "@prisma/enums"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../../types/Product"
 import { decryptProductFields } from "../../encryption/encryption"
 import * as XLSX from "xlsx"
@@ -17,8 +17,11 @@ describe("parseExcel", () => {
     createdAt: new Date(),
     products: [],
     createdBy: {
+      id: "user-1",
       email: "test@test.fr",
+      type: UserType.PROFESSIONNEL,
       organization: {
+        id: "orga-1",
         name: "TestOrg",
         authorizedBy: [
           {
@@ -182,7 +185,7 @@ describe("parseExcel", () => {
     expect(products[0].gtins).toEqual(["Test"])
     expect(products[0].internalReference).toBe("Test")
     expect(products[0].brandName).toBe("Test")
-    expect(products[0].brandId).toBe(null)
+    expect(products[0].brandId).toBe("Test")
     expect(products[0].declaredScore).toBe(-1)
 
     const fullProducts = informations.map((information) => {
@@ -302,6 +305,27 @@ describe("parseExcel", () => {
     const secondRow = [...defaultProducts]
     secondRow[gtinsIndex] = "3234567891000;2234567891001"
     const excelBuffer = createExcelBuffer([defaultHeaders, defaultProducts, secondRow])
+
+    const { products, informations } = await parseExcel(excelBuffer, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(informations[0].productId).toBe(products[0].id)
+    expect(informations[1].productId).toBe(products[0].id)
+
+    expect(initialProducts[0].hash).not.toBe(products[0].hash)
+  })
+
+  it("should regroup products with same internal ref if no gtins", async () => {
+    const gtinsIndex = defaultHeaders.indexOf("GTINs/EANs")
+    const row = [...defaultProducts]
+    row[gtinsIndex] = ""
+
+    const initialExcelBuffer = createExcelBuffer([defaultHeaders, row])
+    const { products: initialProducts } = await parseExcel(initialExcelBuffer, upload)
+    expect(initialProducts).toHaveLength(1)
+
+    const excelBuffer = createExcelBuffer([defaultHeaders, row, row])
 
     const { products, informations } = await parseExcel(excelBuffer, upload)
     expect(products).toHaveLength(1)

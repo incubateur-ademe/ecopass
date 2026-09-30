@@ -4,7 +4,7 @@ import { getBrandsByIds } from "../../db/brands"
 import { checkUploadsStatus } from "../../db/upload"
 import { saveEcobalyseResults } from "../ecobalyse/api"
 import { prismaClient } from "../../db/prismaClient"
-import { Status, UploadType } from "@prisma/enums"
+import { ConfidenceLevel, Status, UploadType, UserType } from "@prisma/enums"
 import { Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
 
 jest.mock("../../db/product")
@@ -33,6 +33,7 @@ describe("processProductsQueue", () => {
 
   const mockProduct = {
     error: null,
+    url: null,
     hash: "test-hash",
     status: Status.Pending,
     createdAt: new Date(),
@@ -55,6 +56,9 @@ describe("processProductsQueue", () => {
         nom: "Jane",
         prenom: "Dane",
         agentconnect_info: null,
+        birthdate: null,
+        organizationRole: null,
+        type: UserType.PROFESSIONNEL,
         role: null,
         organizationId: "org-1",
         organization: {
@@ -70,8 +74,11 @@ describe("processProductsQueue", () => {
     brandId: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
     brandName: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
     declaredScore: 123,
+    confidenceLevel: ConfidenceLevel.High,
     score: null,
     standardized: null,
+    meanScore: null,
+    meanStandardized: null,
     informations: [
       {
         id: "info-1",
@@ -103,6 +110,7 @@ describe("processProductsQueue", () => {
         ],
         accessories: [],
         emptyTrims: false,
+        audience: null,
       },
     ],
   }
@@ -330,8 +338,8 @@ describe("processProductsQueue", () => {
     expect(mockedCheckUploadsStatus).toHaveBeenCalledWith(["test-upload-id"])
   })
 
-  it("should handle products without brand", async () => {
-    mockedGetProductsToProcess.mockResolvedValue([mockProduct])
+  it("should not handle products without brand", async () => {
+    mockedGetProductsToProcess.mockResolvedValue([{ ...mockProduct, brandId: null }])
     mockedGetBrandsByIds.mockResolvedValue([])
 
     await processProductsQueue()
@@ -340,7 +348,7 @@ describe("processProductsQueue", () => {
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
         id: "product-1",
-        error: 'Marque invalide. Voici la liste de vos marques : "2c3be047-4388-459a-80e1-0ce2bbd0e9d4"',
+        error: "La marque est obligatoire",
       },
     ])
     expect(mockedPrismaUpdate).not.toHaveBeenCalled()
@@ -362,7 +370,7 @@ describe("processProductsQueue", () => {
     expect(mockedFailProducts).toHaveBeenCalledWith([
       {
         id: "product-1",
-        error: "Votre organisation n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
+        error: "La marque n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
       },
     ])
     expect(mockedPrismaUpdate).not.toHaveBeenCalled()

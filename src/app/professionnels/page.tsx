@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 
 export default async function Professionnels() {
   const session = await tryAndGetSession(false, true)
-  const type = session && session.user ? await getUserOrganizationType(session.user.id) : null
+  const organizationType = session && session.user ? await getUserOrganizationType(session.user.id) : null
   return (
     <>
       <StartDsfrOnHydration />
-      <Home connected={!!session} type={type} isPro />
+      <Home connected={!!session} organizationType={organizationType} isPro />
     </>
   )
 }

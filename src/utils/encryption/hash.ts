@@ -12,7 +12,7 @@ export type ProductInformationForHash = {
   price?: string | number | undefined
   countryDyeing?: string
   countryFabric?: string
-  countryMaking: string
+  countryMaking?: string
   countrySpinning?: string
   upcycled?: string | boolean | undefined
   printing?:
@@ -38,12 +38,12 @@ export type ProductInformationForHash = {
 export const hashProduct = (
   product: Omit<Prisma.ProductCreateInput, "hash" | "upload" | "brand"> & { brandId: string },
   informations: ProductInformationForHash[],
-  brands: string[],
 ) =>
   hash(
     {
       gtins: product.gtins,
       internalReference: product.internalReference,
+      url: product.url,
       declaredScore: product.declaredScore,
       brand: product.brandId,
       informations: informations?.map((informations) => ({
@@ -74,7 +74,6 @@ export const hashProduct = (
         mainComponent: informations.mainComponent,
       })),
       ecobalyseVersion,
-      brandIncluded: brands.includes(product.brandId),
     },
     { unorderedArrays: true },
   )

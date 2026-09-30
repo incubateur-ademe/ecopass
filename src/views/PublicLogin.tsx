@@ -1,9 +1,9 @@
 import Block from "../components/Block/Block"
 import Link from "next/link"
-import LoginForm from "../components/Login/LoginForm"
 import { isTestEnvironment } from "../utils/test"
+import PublicLoginForm from "../components/Login/PublicLoginForm"
 
-const Login = () => {
+const PublicLogin = ({ callbackUrl }: { callbackUrl: string }) => {
   const test = isTestEnvironment()
   return (
     <Block className='fr-grid-row fr-grid-row--center'>
@@ -11,13 +11,10 @@ const Login = () => {
         <div className='fr-grid-row fr-grid-row-gutters fr-grid-row--center'>
           <div className='fr-col-12 fr-col-md-9 fr-col-lg-8'>
             <h1>Connexion</h1>
-            {!test && (
-              <p>
-                La connexion au portail de déclaration de l’affichage environnemental est actuellement réservée aux
-                professionnels.
-              </p>
-            )}
-
+            <p className='fr-mb-2w'>
+              Pour déclarer le coût environnemental de références textiles, vous devez créer un compte pour centraliser
+              vos déclarations dans un espace dédié.
+            </p>
             <p className='fr-mb-2w'>
               Si vous rencontrez des difficultés à vous connecter,{" "}
               <Link
@@ -37,7 +34,7 @@ const Login = () => {
               </Link>
               .
             </p>
-            <LoginForm test={test} />
+            <PublicLoginForm callbackUrl={callbackUrl} test={test} />
           </div>
         </div>
       </div>
@@ -45,4 +42,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default PublicLogin

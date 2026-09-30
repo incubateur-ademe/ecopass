@@ -68,7 +68,7 @@ const BrandsList = ({
   return (
     <>
       <Block
-        home
+        type='yellow'
         breadCrumbs={{
           currentPageLabel: "Marques",
           segments: [{ linkProps: { href: "/" }, label: "Accueil" }],

@@ -1,4 +1,4 @@
-import { ProductWithScore } from "../../db/product"
+import { BatchScore } from "../../db/product"
 import styles from "./ProductScoreImpacts.module.css"
 import Table from "../Table/Table"
 import Badge from "@codegouvfr/react-dsfr/Badge"
@@ -10,17 +10,15 @@ import InfoTriScript from "./InfoTriScript"
 import ImpactCo2Script from "./ImpactCo2Script"
 import classNames from "classnames"
 
-type ScoreKey = keyof Omit<NonNullable<ProductWithScore["informations"][number]["score"]>, "id" | "productId">
-
 const ProductScoreImpacts = ({
   score,
   isPro,
 }: {
-  score: Omit<NonNullable<ProductWithScore["informations"][number]["score"]>, "id" | "productId">
+  score: Omit<BatchScore, "scoreWithoutDurability">
   isPro?: boolean
 }) => {
   const calculateImpactValue = (key: string, base: number, ponderation: number) => {
-    const baseValue = score[key as ScoreKey] || 0
+    const baseValue = score[key as keyof typeof score] || 0
     return (baseValue / base) * ponderation * 1_000_000
   }
 
@@ -77,7 +75,7 @@ const ProductScoreImpacts = ({
                 base: impactData.base,
                 ponderation: impactData.ponderation,
                 value: calculateImpactValue(impact.key, impactData.base, impactData.ponderation),
-                baseValue: score[impact.key as ScoreKey] || 0,
+                baseValue: score[impact.key as keyof typeof score] || 0,
               }
             })
             .filter((impact) => impact.baseValue > 0)
@@ -106,7 +104,7 @@ const ProductScoreImpacts = ({
                       {Math.round(impact.value)} pts
                     </Badge>,
                     <Badge key={impact.label} severity='info' noIcon>
-                      {((impact.value / score.score) * 100).toFixed(2)}%
+                      {((impact.value / (score.score || 1)) * 100).toFixed(2)}%
                     </Badge>,
                     impact.definition,
                   ]),
@@ -120,7 +118,7 @@ const ProductScoreImpacts = ({
                       subTitle='Aider les consommateurs à visualiser l’impact carbone de ce produit en CO₂e.'
                       buttonLabel='Intégrer'
                       buttonLink={`https://impactco2.fr/outils/comparateur?value=${score.cch}&comparisons=voiturethermique,random,random&mtm_campaign=Ecobalyse#etiquette-animee`}>
-                      <ImpactCo2Script value={score.cch} />
+                      <ImpactCo2Script value={score.cch || 0} />
                     </OtherTool>
                   ) : (
                     <OtherTool
@@ -132,8 +130,8 @@ const ProductScoreImpacts = ({
                           d'impact sur le climat ça représente quoi en impact carbone ?
                         </>
                       }
-                      subTitle={`Ça représente ${(Math.round(score.cch * 100) / 100).toLocaleString("fr-FR")} kg de CO₂e.`}>
-                      <ImpactCo2Script value={score.cch} />
+                      subTitle={`Ça représente ${(Math.round((score.cch || 0) * 100) / 100).toLocaleString("fr-FR")} kg de CO₂e.`}>
+                      <ImpactCo2Script value={score.cch || 0} />
                     </OtherTool>
                   )}
                 </div>

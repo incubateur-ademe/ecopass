@@ -1,7 +1,7 @@
 import { FileUpload } from "../../../db/upload"
 import { v4 as uuid } from "uuid"
 import { parseCSV } from "./parse"
-import { Status } from "@prisma/enums"
+import { Status, UserType } from "@prisma/enums"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../../types/Product"
 import { decryptBoolean, decryptNumber, decryptProductFields } from "../../encryption/encryption"
 import { defaultHeaders, defaultProductRow } from "../parsingTest"
@@ -16,8 +16,11 @@ describe("parseCSV", () => {
     createdAt: new Date(),
     products: [],
     createdBy: {
+      id: "user-1",
       email: "test@test.fr",
+      type: UserType.PROFESSIONNEL,
       organization: {
+        id: "orga-1",
         name: "TestOrg",
         authorizedBy: [
           {
@@ -157,7 +160,7 @@ describe("parseCSV", () => {
     expect(products[0].gtins).toEqual(["Test"])
     expect(products[0].internalReference).toBe("Test")
     expect(products[0].brandName).toBe("Test")
-    expect(products[0].brandId).toBe(null)
+    expect(products[0].brandId).toBe("Test")
     expect(products[0].declaredScore).toBe(-1)
 
     const fullProducts = informations.map((information) => {
@@ -317,14 +320,6 @@ describe("parseCSV", () => {
     expect(products[0].gtins).toEqual([""])
   })
 
-  it("default brand to user brand", async () => {
-    const csv = Buffer.from(`${header}\n${defaultProducts.replace("781c0fcd-372e-4032-8088-d83e103726f2", "")}`)
-    const { products } = await parseCSV(csv, null, upload)
-    expect(products).toHaveLength(1)
-    expect(products[0].brandName).toEqual("7a96793c-6017-42df-812a-6e2422fc215a")
-    expect(products[0].brandId).toEqual("7a96793c-6017-42df-812a-6e2422fc215a")
-  })
-
   const trueValues = ["yes", "oui", "true"]
   trueValues.forEach((value) => {
     it(`undersands ${value} as boolean value`, async () => {
@@ -367,6 +362,24 @@ describe("parseCSV", () => {
 
     const csv = Buffer.from(
       `${header}\n${defaultProducts}\n${defaultProducts.replace("2234567891001;3234567891000", "3234567891000;2234567891001")}`,
+    )
+    const { products, informations } = await parseCSV(csv, null, upload)
+    expect(products).toHaveLength(1)
+    expect(informations).toHaveLength(2)
+
+    expect(informations[0].productId).toBe(products[0].id)
+    expect(informations[1].productId).toBe(products[0].id)
+
+    expect(initialProducts[0].hash).not.toBe(products[0].hash)
+  })
+
+  it("should regroup products with same internal ref if no gtins", async () => {
+    const initialCSV = Buffer.from(`${header}\n${defaultProducts}`)
+    const { products: initialProducts } = await parseCSV(initialCSV, null, upload)
+    expect(initialProducts).toHaveLength(1)
+
+    const csv = Buffer.from(
+      `${header}\n${defaultProducts.replace("2234567891001;3234567891000", "")}\n${defaultProducts.replace("2234567891001;3234567891000", "")}`,
     )
     const { products, informations } = await parseCSV(csv, null, upload)
     expect(products).toHaveLength(1)

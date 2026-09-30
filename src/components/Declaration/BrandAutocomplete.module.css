@@ -1,0 +1,68 @@
+.container {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 1px);
+  background: var(--background-default-grey);
+  border: 1px solid var(--border-default-grey);
+  z-index: 20;
+}
+
+.dropDownError {
+  top: calc(4.5rem + 1px);
+}
+
+.option {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border-default-grey);
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.option:first-child {
+  border-top: none;
+}
+
+.option:hover {
+  background: var(--background-contrast-grey);
+}
+
+.optionActive {
+  background: var(--background-contrast-grey);
+  outline: 2px solid var(--blue-france-sun-113-625);
+  outline-offset: -2px;
+}
+
+.radio {
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid var(--blue-france-sun-113-625);
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.radio[data-selected="true"] {
+  background: radial-gradient(circle at 50% 50%, var(--blue-france-sun-113-625) 45%, transparent 47%);
+}
+
+.optionText {
+  overflow-wrap: anywhere;
+}
+
+.createLabel {
+  margin: 0.5rem 0.75rem 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-mention-grey);
+}

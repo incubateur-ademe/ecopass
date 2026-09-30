@@ -5,8 +5,22 @@ import Delegations from "../Delegation/Delegations"
 import NewDelegationModal from "../Delegation/NewDelegationModal"
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
 import GTINPrefixes from "./GTINPrefixes"
+import { OrganizationMember } from "../../../db/organization"
+import OrganizationMembers from "../OrganizationMembers"
+import { Alert } from "@codegouvfr/react-dsfr/Alert"
+import FollowedBrands from "./FollowedBrands"
 
-const BrandOrganization = ({ organization }: { organization: UserOrganization }) => {
+const BrandOrganization = ({
+  organization,
+  isAdmin,
+  members,
+  brands,
+}: {
+  organization: UserOrganization
+  isAdmin: boolean
+  members: OrganizationMember[]
+  brands: { id: string; name: string }[]
+}) => {
   return (
     <div data-testid='brand-organization'>
       <Tabs
@@ -16,7 +30,9 @@ const BrandOrganization = ({ organization }: { organization: UserOrganization })
             content: (
               <>
                 <h2>Marques déclarées</h2>
-                <MyBrands organization={organization} />
+                <MyBrands organization={organization} isAdmin={isAdmin} />
+                <h2>Marques suivies</h2>
+                <FollowedBrands organization={organization} brands={brands} />
               </>
             ),
           },
@@ -25,12 +41,16 @@ const BrandOrganization = ({ organization }: { organization: UserOrganization })
             content: (
               <>
                 {organization.authorizedOrganizations.length === 0 ? (
-                  <NewDelegation />
+                  isAdmin ? (
+                    <NewDelegation />
+                  ) : (
+                    <Alert small severity='info' description="Vous n'avez pas encore de délégations." />
+                  )
                 ) : (
                   <>
                     <h2>Délégations</h2>
                     <Delegations organizations={organization.authorizedOrganizations} type='to' />
-                    <NewDelegationModal />
+                    {isAdmin && <NewDelegationModal />}
                   </>
                 )}
               </>
@@ -44,13 +64,22 @@ const BrandOrganization = ({ organization }: { organization: UserOrganization })
                   <>
                     <h2>Ajouter vos préfixes GTIN</h2>
                     <p>
-                      Pour associer votre marque aux produits déclarés par des tiers et vous notifier, vous devez
-                      renseigner les 6 premiers chiffres de vos codes GTIN.
+                      Le renseignement des préfixes GTIN vous permettra d’être notifié automatiquement en cas de
+                      déclaration par les tiers.
                     </p>
-                    <GTINPrefixes prefixes={organization.gtinPrefixes} />
+                    <GTINPrefixes prefixes={organization.gtinPrefixes} isAdmin={isAdmin} />
                   </>
                 ),
               },
+          {
+            label: "Membres",
+            content: (
+              <>
+                <h2>Membres de l'organisation</h2>
+                <OrganizationMembers organizationId={organization.id} members={members} isAdmin={isAdmin} />
+              </>
+            ),
+          },
         ].filter((tab) => tab !== undefined)}
       />
     </div>
