@@ -6,22 +6,26 @@ import { Breadcrumb, BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
 const Block = ({
   children,
   className,
-  containerClassName,
-  type,
+  secondary,
   noMargin,
   large,
+  home,
   breadCrumbs,
 }: {
   children: ReactNode
   className?: string
-  containerClassName?: string
-  type?: "yellow" | "blue" | "grey"
+  secondary?: boolean
   noMargin?: boolean
   large?: boolean
+  home?: boolean
   breadCrumbs?: BreadcrumbProps
 }) => {
   return (
-    <div className={classNames(containerClassName, type ? styles[type] : "")}>
+    <div
+      className={classNames({
+        [styles.secondary]: secondary,
+        [styles.home]: home,
+      })}>
       <div
         className={classNames("fr-container", styles.container, className, {
           [styles.noMargin]: noMargin,

@@ -37,10 +37,7 @@ const informationValidation = z.object({
   upcycled: z.boolean({ message: "Remanufacturé doit valoir 'Oui' ou 'Non'" }).optional(),
   business: z.enum(Business, { message: "Taille de l'entreprise invalide" }).optional(),
   fading: z.boolean({ message: "Délavage doit valoir 'Oui' ou 'Non'" }).optional(),
-  mass: z
-    .number({ message: "Le poids est obligatoire" })
-    .min(0.01, "La masse doit être supérieure à 0,01 kg")
-    .max(10, "La masse doit être inférieure ou égale à 10 kg"),
+  mass: z.number({ message: "Le poids est obligatoire" }).min(0.01, "La masse doit être supérieure à 0,01 kg"),
   countryDyeing: z.enum(Country, { message: "Origine de l'ennoblissement/impression invalide" }).optional(),
   countryFabric: z.enum(Country, { message: "Origine de tissage/tricotage invalide" }).optional(),
   countryMaking: z.enum(Country, { message: "Origine de confection invalide" }),
@@ -66,46 +63,52 @@ const informationValidation = z.object({
 })
 export type ParsedProductInformationValidation = z.infer<typeof informationValidation>
 
-export const productValidation = z
-  .object({
-    id: z.string(),
-    uploadId: z.string(),
-    status: z.enum(Status, { message: "Statut invalide" }),
-    createdAt: z.date(),
-    error: z.string().nullable(),
-    emptyTrims: z.boolean().optional(),
-    internalReference: z.string({ message: "La référence interne est obligatoire" }),
-    declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
-    informations: z.array(informationValidation),
-    brandId: z.string({ message: "La marque est obligatoire" }).trim().min(1, { message: "La marque est obligatoire" }),
-  })
-  .refine((product) => {
-    return product.informations.every((information) => {
-      const hasImpression = information.impression !== undefined
-      const hasImpressionPercentage = information.impressionPercentage !== undefined
+const productValidation = z.object({
+  id: z.string(),
+  uploadId: z.string(),
+  status: z.enum(Status, { message: "Statut invalide" }),
+  createdAt: z.date(),
+  error: z.string().nullable(),
+  emptyTrims: z.boolean().optional(),
+  internalReference: z.string({ message: "La référence interne est obligatoire" }),
+  declaredScore: z.number().min(1, "Le score doit être un nombre positif").nullable(),
+  informations: z.array(informationValidation),
+})
 
-      if ((hasImpression && !hasImpressionPercentage) || (hasImpressionPercentage && !hasImpression)) {
-        return false
-      }
-
-      return true
+export const getUserProductValidation = (brands: [string, ...string[]]) =>
+  productValidation
+    .extend({
+      brandId: z.enum(brands, {
+        message: `Marque invalide. Voici la liste de vos marques : ${brands.map((brand) => `"${brand}"`).join(", ")}`,
+      }),
     })
-  }, "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié")
-  .refine((data) => {
-    return data.informations.every((information) => {
-      if (!information.upcycled) {
-        return information.countryDyeing !== undefined && information.countryFabric !== undefined
-      }
-      return true
-    })
-  }, "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé")
-  .refine((data) => {
-    const price = data.informations[0].price
-    return data.informations.every((information) => information.price === price)
-  }, "Le prix doit être identique pour toutes les composantes du produit")
-  .refine((data) => {
-    const numberOfReferences = data.informations[0].numberOfReferences
-    return data.informations.every((information) => information.numberOfReferences === numberOfReferences)
-  }, "Le nombre de références doit être identique pour toutes les composantes du produit")
+    .refine((product) => {
+      return product.informations.every((information) => {
+        const hasImpression = information.impression !== undefined
+        const hasImpressionPercentage = information.impressionPercentage !== undefined
 
-export type ParsedProductValidation = z.infer<typeof productValidation>
+        if ((hasImpression && !hasImpressionPercentage) || (hasImpressionPercentage && !hasImpression)) {
+          return false
+        }
+
+        return true
+      })
+    }, "Si le type d'impression est spécifié, le pourcentage d'impression doit également être spécifié")
+    .refine((data) => {
+      return data.informations.every((information) => {
+        if (!information.upcycled) {
+          return information.countryDyeing !== undefined && information.countryFabric !== undefined
+        }
+        return true
+      })
+    }, "L'origine de l'ennoblissement/impression et l'origine de tissage/tricotage sont requis quand le produit n'est pas remanufacturé")
+    .refine((data) => {
+      const price = data.informations[0].price
+      return data.informations.every((information) => information.price === price)
+    }, "Le prix doit être identique pour toutes les composantes du produit")
+    .refine((data) => {
+      const numberOfReferences = data.informations[0].numberOfReferences
+      return data.informations.every((information) => information.numberOfReferences === numberOfReferences)
+    }, "Le nombre de références doit être identique pour toutes les composantes du produit")
+
+export type ParsedProductValidation = z.infer<ReturnType<typeof getUserProductValidation>>

@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
-import { UserType } from "@prisma/enums"
+
 jest.mock("./prismaClient", () => ({
   prismaClient: mockPrismaTest,
 }))
@@ -45,7 +45,6 @@ describe("User DB integration", () => {
       data: {
         email: "test@example.com",
         organizationId: testOrganization.id,
-        type: UserType.PROFESSIONNEL,
       },
       select: { id: true, email: true },
     })
@@ -215,7 +214,6 @@ describe("User DB integration", () => {
         data: {
           email: "nokeys@example.com",
           organizationId: testOrganization.id,
-          type: UserType.PROFESSIONNEL,
         },
       })
 
@@ -322,7 +320,6 @@ describe("User DB integration", () => {
         data: {
           email: "noorg@example.com",
           organizationId: null,
-          type: UserType.PROFESSIONNEL,
         },
       })
 

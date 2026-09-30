@@ -70,28 +70,6 @@ const batch = {
   ],
 }
 
-test("citoyen cannot declare by API", async ({ page }) => {
-  let response = await page.request.post("http://localhost:3000/api/produits", {
-    data: product,
-    headers: {
-      Authorization: "Bearer 60b084be-197c-46c1-8be2-eed838318f8c",
-    },
-  })
-  expect(response.status()).toBe(403)
-  expect((await response.json()).error).toBe("Seul les professionnels peuvent déclarer des produits via l'API")
-})
-
-test("reader cannot declare by API", async ({ page }) => {
-  let response = await page.request.post("http://localhost:3000/api/produits", {
-    data: product,
-    headers: {
-      Authorization: "Bearer 3eea089a-dc26-44c7-a54c-6f6db9fa9f4c",
-    },
-  })
-  expect(response.status()).toBe(403)
-  expect((await response.json()).error).toBe("Seuls les admins de l'organisation peuvent déclarer des produits")
-})
-
 test("declare my products by API", async ({ page }) => {
   await login(page)
 
@@ -307,18 +285,18 @@ test("declare my products by API", async ({ page }) => {
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(2)
 
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(3)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(1)).toHaveText(
     "Lot de produits",
   )
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(0)).toHaveText(
     "BATCH-100",
   )
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(4)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(0).locator("td").nth(2)).toHaveText(
     "4 594",
   )
   await page.getByTestId("products-table").locator("table tbody tr").nth(0).getByRole("link").click()
   await expect(page.getByTestId("product-details")).toHaveText(
-    `Code-barres : 1234567891125Déposé le : ${formatDate(new Date())}Version Ecobalyse : ${ecobalyseVersion}Par : Emmaus`,
+    `Code-barres : 1234567891125Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
     `Coût environnemental : 4594 points d'impact, 510 pour 100g510 pts/100g4 594Télécharger le SVGcoût pour 100g : 510 pointscoefficient de durabilité : 1.12 points?`,
@@ -338,18 +316,18 @@ test("declare my products by API", async ({ page }) => {
   )
 
   await page.getByRole("link", { name: "Produits" }).click()
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(3)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(1)).toHaveText(
     "T-shirt / Polo",
   )
   await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(0)).toHaveText(
     "REF-100",
   )
-  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(4)).toHaveText(
+  await expect(page.getByTestId("products-table").locator("table tbody tr").nth(1).locator("td").nth(2)).toHaveText(
     "1 755",
   )
   await page.getByTestId("products-table").locator("table tbody tr").nth(1).getByRole("link").click()
   await expect(page.getByTestId("product-details")).toHaveText(
-    `Code-barres : 1234567890128Déposé le : ${formatDate(new Date())}Version Ecobalyse : ${ecobalyseVersion}Par : Emmaus`,
+    `Code-barres : 1234567890128Déposé le : ${formatDate(new Date())}Par : EmmausVersion Ecobalyse : ${ecobalyseVersion}`,
   )
   await expect(page.getByTestId("product-score")).toHaveText(
     "Coût environnemental : 1755 points d'impact, 1032 pour 100g1 032 pts/100g1 755Télécharger le SVGcoût pour 100g : 1 032 pointscoefficient de durabilité : 0.67 points?",
@@ -415,9 +393,7 @@ test("declare my products by API", async ({ page }) => {
 
 test("declare my products without gtin by API", async ({ page }) => {
   const apiKeysWithoutGTIN = "7e729ca5-2c60-4755-8ca2-6d3c818ca8e8"
-  const brandWithoutGTIN = "56c27d6a-a879-406a-9ab3-17c439772e57"
   const apiKeysWithGTIN = "ce4a461a-ae00-49a9-8fbc-d342dc635da6"
-  const brandWithGTIN = "26ed7820-ebca-4235-b1d3-dbeab02b1768"
 
   let response = await page.request.post("http://localhost:3000/api/produits", {
     data: { ...product, brandId: undefined },
@@ -426,21 +402,12 @@ test("declare my products without gtin by API", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(400)
-  expect(await response.text()).toEqual('{"error":"La marque spécifiée n\'existe pas."}')
-
-  response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, brandId: brandWithoutGTIN },
-    headers: {
-      Authorization: `Bearer ${apiKeysWithoutGTIN}`,
-    },
-  })
-  expect(response.status()).toBe(400)
   expect(await response.text()).toEqual(
-    '{"error":"La marque n\'utilise pas de GTIN, le champ \'gtins\' ne doit pas être renseigné."}',
+    '{"error":"Votre organisation n\'utilise pas de GTIN, le champ \'gtins\' ne doit pas être renseigné."}',
   )
 
   response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, brandId: brandWithoutGTIN, gtins: undefined },
+    data: { ...product, brandId: undefined, gtins: undefined },
     headers: {
       Authorization: `Bearer ${apiKeysWithoutGTIN}`,
     },
@@ -454,32 +421,23 @@ test("declare my products without gtin by API", async ({ page }) => {
     },
   })
   expect(response.status()).toBe(400)
-  expect(await response.text()).toEqual('{"error":"La marque spécifiée n\'existe pas."}')
-
-  response = await page.request.post("http://localhost:3000/api/produits", {
-    data: { ...product, brandId: brandWithGTIN, gtins: undefined },
-    headers: {
-      Authorization: `Bearer ${apiKeysWithGTIN}`,
-    },
-  })
-  expect(response.status()).toBe(400)
   expect(await response.text()).toEqual(
     '[{"expected":"array","code":"invalid_type","path":[],"message":"Il doit y avoir au moins un GTIN"}]',
   )
 
   response = await page.request.post("http://localhost:3000/api/produits/lot", {
-    data: { ...batch, brandId: brandWithoutGTIN },
+    data: { ...batch, brandId: undefined },
     headers: {
       Authorization: `Bearer ${apiKeysWithoutGTIN}`,
     },
   })
   expect(response.status()).toBe(400)
   expect(await response.text()).toEqual(
-    '{"error":"La marque n\'utilise pas de GTIN, le champ \'gtins\' ne doit pas être renseigné."}',
+    '{"error":"Votre organisation n\'utilise pas de GTIN, le champ \'gtins\' ne doit pas être renseigné."}',
   )
 
   response = await page.request.post("http://localhost:3000/api/produits/lot", {
-    data: { ...batch, brandId: brandWithoutGTIN, gtins: undefined },
+    data: { ...batch, brandId: undefined, gtins: undefined },
     headers: {
       Authorization: `Bearer ${apiKeysWithoutGTIN}`,
     },
@@ -487,7 +445,7 @@ test("declare my products without gtin by API", async ({ page }) => {
   expect(response.status()).toBe(201)
 
   response = await page.request.post("http://localhost:3000/api/produits/lot", {
-    data: { ...batch, brandId: brandWithGTIN, gtins: undefined },
+    data: { ...batch, brandId: undefined, gtins: undefined },
     headers: {
       Authorization: `Bearer ${apiKeysWithGTIN}`,
     },

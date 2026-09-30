@@ -1,20 +1,5 @@
 import { expect, Page } from "@playwright/test"
 
-export const loginWithFranceConnectCredentials = async (
-  page: Page,
-  email = "ecopass-citoyen@yopmail.com",
-  password = "ecopasscestsupercool",
-) => {
-  await page.goto("http://localhost:3000/login", { waitUntil: "networkidle" })
-  await page.getByRole("tab", { name: "Connexion", exact: true }).first().click()
-
-  await page.getByRole("textbox", { name: "Email" }).fill(email)
-  await page.getByRole("textbox", { name: "Mot de passe" }).fill(password)
-  await page.getByRole("button", { name: "Se connecter" }).click()
-
-  await expect(page.getByRole("link", { name: "Se déconnecter", exact: true }).first()).toBeVisible()
-}
-
 export const login = async (page: Page, email = "ecopass-e2e@yopmail.com", password = "ecopasscestsupercool") => {
   await page.goto("http://localhost:3000/login")
   await expect(page.locator("#contenu").getByRole("button", { name: "S’identifier avec ProConnect" })).toBeVisible()
@@ -53,7 +38,7 @@ export const loginWithPassword = async (
   await page.goto("http://localhost:3000/login")
   await expect(page.locator("#contenu").getByRole("button", { name: "S’identifier avec ProConnect" })).toBeVisible()
 
-  await page.getByRole("tab", { name: "Connexion", exact: true }).nth(1).click()
+  await page.getByRole("tab", { name: "Connexion", exact: true }).click()
 
   await page.getByRole("textbox", { name: "Email" }).fill(email)
   await page.getByRole("textbox", { name: "Mot de passe" }).fill(password)
@@ -65,6 +50,6 @@ export const loginWithPassword = async (
 export const logout = async (page: Page) => {
   await page.getByRole("link", { name: "Se déconnecter" }).first().click()
 
-  await expect(page.getByRole("link", { name: "Se connecter", exact: true }).first()).toBeVisible({ timeout: 30000 })
+  await expect(page.getByRole("link", { name: "Se connecter", exact: true }).first()).toBeVisible()
   await expect(page.locator("#contenu").getByRole("heading", { name: "Affichage environnemental" })).toBeVisible()
 }

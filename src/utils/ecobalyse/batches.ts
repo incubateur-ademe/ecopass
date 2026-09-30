@@ -31,8 +31,6 @@ export const computeBatchScore = (product: Pick<ProductWithScore, "informations"
           endOfLife: acc.endOfLife + (value.score.endOfLife || 0),
           transport: acc.transport + (value.score.transport || 0),
           trims: acc.trims + (value.score.trims || 0),
-          htc: acc.htc + (value.score.htc || 0),
-          htn: acc.htn + (value.score.htn || 0),
         }
       }
       return acc
@@ -64,11 +62,8 @@ export const computeBatchScore = (product: Pick<ProductWithScore, "informations"
       endOfLife: 0,
       transport: 0,
       trims: 0,
-      htc: 0,
-      htn: 0,
     },
   )
-
   return {
     ...scores,
     durability: product.score ? scores.scoreWithoutDurability / product.score : 0,

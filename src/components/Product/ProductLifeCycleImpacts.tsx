@@ -1,11 +1,15 @@
-import { BatchScore } from "../../db/product"
+import { ProductWithScore } from "../../db/product"
 import Table from "../Table/Table"
 import styles from "./ProductScore.module.css"
 import { lifeCycleStages, ponderations } from "../../utils/product/impacts"
 
 type ScoreKey = keyof typeof ponderations
 
-const ProductLifeCycleImpacts = ({ score }: { score: Omit<BatchScore, "scoreWithoutDurability"> }) => (
+type ProductLifeCycleImpactsProps = {
+  score: Omit<NonNullable<ProductWithScore["informations"][number]["score"]>, "id" | "productId">
+}
+
+const ProductLifeCycleImpacts = ({ score }: ProductLifeCycleImpactsProps) => (
   <Table
     noCaption
     className='fr-mt-4w'

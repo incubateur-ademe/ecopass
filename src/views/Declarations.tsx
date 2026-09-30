@@ -3,18 +3,18 @@ import Contact from "../components/Organization/Contact"
 import Upload from "../components/Upload/Upload"
 import Uploads from "../components/Upload/Uploads"
 
-const Declarations = ({ page, canDeclare }: { page: number; canDeclare?: boolean }) => {
+const Declarations = ({ page }: { page: number }) => {
   return (
     <>
       <Block>
         <h1>Mes déclarations</h1>
-        <Upload canDeclare={canDeclare} />
+        <Upload />
       </Block>
       <Block>
-        <h2>Mes fichiers de résultats</h2>
+        <h2>Mes fichiers</h2>
         <Uploads page={page} />
       </Block>
-      <Block type='yellow'>
+      <Block home>
         <Contact />
       </Block>
     </>

@@ -8,7 +8,6 @@ import LoadingButton from "../Button/LoadingButton"
 import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import ProductLink from "./ProductLink"
-import { UserType } from "@prisma/enums"
 
 const ProductHistory = ({ brandId, gtin }: { brandId?: string; gtin: string }) => {
   const [history, setHistory] = useState<ProductWithScore[] | null>(null)
@@ -48,12 +47,10 @@ const ProductHistory = ({ brandId, gtin }: { brandId?: string; gtin: string }) =
         headers={["Déposé le", "Par", "Version Ecobalyse", "Score", ""]}
         data={history.map((version) => [
           formatDate(version.createdAt),
-          version.upload.createdBy.type === UserType.CITOYEN
-            ? "Citoyen"
-            : version.upload.createdBy.organization?.displayName,
+          version.upload.createdBy.organization?.displayName,
           version.upload.version,
           <Badge severity='info' noIcon key={version.id}>
-            {version.meanScore ? formatNumber(version.meanScore) : "-"}
+            {version.score ? formatNumber(version.score) : "-"}
           </Badge>,
           <ProductLink product={version} brandId={brandId} key={version.id} />,
         ])}

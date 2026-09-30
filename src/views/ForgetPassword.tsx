@@ -25,7 +25,7 @@ const ForgetPassword = () => {
         <Alert
           severity='success'
           title='Un lien de réinitialisation vous a été envoyé.'
-          description="Si vous n'avez rien reçu, pensez à regarder vos spams"
+          description="Si vous n'avez rien reçu, pensez à regarger vos spams"
         />
       ) : (
         <div className='fr-col-12 fr-col-md-8 fr-col-lg-6'>
@@ -37,11 +37,6 @@ const ForgetPassword = () => {
               <p>
                 Veuillez renseigner votre adresse email. Un lien de réinitialisation de mot de passe vous sera envoyé
                 par email.
-              </p>
-              <br />
-              <p>
-                Ce mot de passe concerne uniquement votre compte local. Il sera utilisé lors de vos connexions avec
-                votre adresse e-mail, et non via FranceConnect ou ProConnect.
               </p>
               <div className='fr-fieldset__element fr-mt-4w'>
                 <fieldset className='fr-fieldset'>

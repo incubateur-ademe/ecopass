@@ -1,9 +1,13 @@
 import { Status } from "@prisma/enums"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
+import { getUserProductValidation } from "./product"
 import { expectZodValidationToFail } from "./zodValidationTest"
-import { productValidation } from "./product"
 
 describe("productValidation", () => {
+  const productValidation = getUserProductValidation([
+    "58ca7f37-0c8d-4463-ba40-c244c130192b",
+    "cb7fc710-408e-47d1-9655-7c7b57a85118",
+  ])
   const validProduct = {
     id: "12345",
     productId: "54321",
@@ -102,17 +106,35 @@ describe("productValidation", () => {
     expect(result.success).toEqual(true)
   })
 
+  it("does not allow valid product with invalid brand", () => {
+    expectZodValidationToFail(
+      productValidation,
+      validProduct,
+      {
+        brandId: "Nop",
+      },
+      [
+        {
+          path: ["brandId"],
+          message:
+            'Marque invalide. Voici la liste de vos marques : "58ca7f37-0c8d-4463-ba40-c244c130192b", "cb7fc710-408e-47d1-9655-7c7b57a85118"',
+        },
+      ],
+    )
+  })
+
   it("does not allow valid product with empty brand", () => {
     expectZodValidationToFail(
       productValidation,
       validProduct,
       {
-        brandId: undefined,
+        brandId: "",
       },
       [
         {
           path: ["brandId"],
-          message: "La marque est obligatoire",
+          message:
+            'Marque invalide. Voici la liste de vos marques : "58ca7f37-0c8d-4463-ba40-c244c130192b", "cb7fc710-408e-47d1-9655-7c7b57a85118"',
         },
       ],
     )
@@ -184,22 +206,6 @@ describe("productValidation", () => {
         ],
       },
       [{ path: ["informations", "0", "mass"], message: "La masse doit être supérieure à 0,01 kg" }],
-    )
-  })
-
-  it("does not allow product with mass > 10", () => {
-    expectZodValidationToFail(
-      productValidation,
-      validProduct,
-      {
-        informations: [
-          {
-            ...validProduct.informations[0],
-            mass: 10.01,
-          },
-        ],
-      },
-      [{ path: ["informations", "0", "mass"], message: "La masse doit être inférieure ou égale à 10 kg" }],
     )
   })
 

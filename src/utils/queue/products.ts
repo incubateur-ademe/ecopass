@@ -3,8 +3,9 @@ import { prismaClient } from "../../db/prismaClient"
 import { failProducts, getProductsToProcess } from "../../db/product"
 import { checkUploadsStatus } from "../../db/upload"
 import { gtinsValidation } from "../../services/validation/gtins"
-import { productValidation } from "../../services/validation/product"
+import { getUserProductValidation } from "../../services/validation/product"
 import { saveEcobalyseResults } from "../ecobalyse/api"
+import { getAuthorizedBrands } from "../organization/brands"
 import { getDefaultGTINs } from "../validation/gtin"
 
 const batchSize = parseInt(process.env.BATCH_SIZE || "10", 10)
@@ -33,30 +34,47 @@ export const processProductsQueue = async () => {
           gtins: { success: true as const, data: [], error: undefined },
         }
       }
-
+      const authorizedBrands = getAuthorizedBrands(organization)
+      const userProductValidation = getUserProductValidation(authorizedBrands)
       const brand = product.brandId ? brandsMap.get(product.brandId) : null
+      if (!brand) {
+        return {
+          id: product.id,
+          product: {
+            success: false as const,
+            error: {
+              issues: [
+                {
+                  message: `Marque invalide. Voici la liste de vos marques : ${authorizedBrands.map((brand) => `"${brand}"`).join(", ")}`,
+                },
+              ],
+            },
+          },
+          gtins: { success: true as const, data: [], error: undefined },
+        }
+      }
 
       const result = {
-        product: productValidation.safeParse(product),
-        gtins:
-          brand && brand.organization && brand.organization.noGTIN
-            ? product.gtins.filter((gtin) => gtin).length > 0
-              ? {
-                  success: false as const,
-                  error: {
-                    issues: [
-                      {
-                        message: "La marque n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
-                      },
-                    ],
-                  },
-                }
-              : { success: true as const, data: getDefaultGTINs(brand.organization, product.internalReference) }
-            : gtinsValidation.safeParse(product.gtins),
+        product: userProductValidation.safeParse(product),
+        gtins: brand.organization.noGTIN
+          ? product.gtins.filter((gtin) => gtin).length > 0
+            ? {
+                success: false as const,
+                error: {
+                  issues: [
+                    {
+                      message:
+                        "Votre organisation n'utilise pas de GTIN, le champ 'GTINs/EANs' ne doit pas être renseigné",
+                    },
+                  ],
+                },
+              }
+            : { success: true as const, data: getDefaultGTINs(brand.organization, product.internalReference) }
+          : gtinsValidation.safeParse(product.gtins),
         id: product.id,
       }
 
-      if (brand && brand.organization && brand.organization.noGTIN && result.gtins.success) {
+      if (brand.organization.noGTIN && result.gtins.success) {
         await prismaClient.product.update({
           where: { id: product.id },
           data: {

@@ -1,5 +1,5 @@
 "use server"
-import { OrganizationRole, OrganizationType } from "@prisma/client"
+import { OrganizationType } from "@prisma/client"
 import { createOrganization } from "../db/organization"
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
@@ -20,7 +20,6 @@ export const authorizeOrganization = async (siret: string) => {
     prismaClient.user.findUnique({
       where: { id: session.user.id },
       select: {
-        organizationRole: true,
         organization: {
           select: {
             id: true,
@@ -45,10 +44,6 @@ export const authorizeOrganization = async (siret: string) => {
 
   if (!userOrganization || !userOrganization.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
-  }
-
-  if (userOrganization.organizationRole !== OrganizationRole.ADMIN) {
-    return "Vous n'avez pas les droits pour autoriser une organisation"
   }
 
   if (userOrganization.organization.siret === siret) {
@@ -101,7 +96,6 @@ export const authorizeOrganizationById = async (id: string) => {
     prismaClient.user.findUnique({
       where: { id: session.user.id },
       select: {
-        organizationRole: true,
         organization: {
           select: {
             id: true,
@@ -130,10 +124,6 @@ export const authorizeOrganizationById = async (id: string) => {
 
   if (!userOrganization || !userOrganization.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
-  }
-
-  if (userOrganization.organizationRole !== OrganizationRole.ADMIN) {
-    return "Vous n'avez pas les droits pour autoriser une organisation"
   }
 
   if (userOrganization.organization.id === id) {
@@ -218,18 +208,12 @@ export const updateDisplayName = async (displayName: string) => {
     where: { id: session.user.id },
     select: {
       organization: true,
-      organizationRole: true,
     },
   })
 
   if (!user || !user.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
   }
-
-  if (user.organizationRole !== OrganizationRole.ADMIN) {
-    return "Vous n'avez pas les droits pour modifier le nom d'usage de l'organisation"
-  }
-
   await prismaClient.organization.update({
     where: { id: user.organization.id },
     data: { displayName },
@@ -262,17 +246,12 @@ export const addNewGTINPrefix = async (prefix: string) => {
   const user = await prismaClient.user.findUnique({
     where: { id: session.user.id },
     select: {
-      organizationRole: true,
       organization: true,
     },
   })
 
   if (!user || !user.organization) {
     return "Aucune organisation trouvée pour l'utilisateur"
-  }
-
-  if (user.organizationRole !== OrganizationRole.ADMIN) {
-    return "Vous n'avez pas les droits pour ajouter un préfixe GTIN"
   }
 
   const existingPrefix = await prismaClient.gTINPrefix.findUnique({
@@ -299,7 +278,6 @@ export const deleteGTINPrefix = async (id: string) => {
   const user = await prismaClient.user.findUnique({
     where: { id: session.user.id },
     select: {
-      organizationRole: true,
       organization: true,
     },
   })
@@ -308,81 +286,7 @@ export const deleteGTINPrefix = async (id: string) => {
     return "Aucune organisation trouvée pour l'utilisateur"
   }
 
-  if (user.organizationRole !== OrganizationRole.ADMIN) {
-    return "Vous n'avez pas les droits pour ajouter un préfixe GTIN"
-  }
-
   await prismaClient.gTINPrefix.deleteMany({
     where: { id, organizationId: user.organization.id },
-  })
-}
-
-export const followBrand = async (brand: { brandName: string; brandId: string }) => {
-  const session = await auth()
-  if (!session || !session.user) {
-    return "Utilisateur non authentifié"
-  }
-  const user = await prismaClient.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      organization: {
-        select: {
-          id: true,
-          followedBrands: true,
-        },
-      },
-    },
-  })
-
-  if (!user || !user.organization) {
-    return "Aucune organisation trouvée pour l'utilisateur"
-  }
-
-  let brandId = brand.brandId
-  if (brandId) {
-    if (user.organization.followedBrands.some((brand) => brand.brandId === brandId)) {
-      return "La marque est déjà suivie"
-    }
-  } else {
-    const createdBrand = await prismaClient.brand.create({
-      data: {
-        name: brand.brandName,
-        active: true,
-        default: false,
-      },
-    })
-    brandId = createdBrand.id
-  }
-
-  await prismaClient.followedBrand.create({
-    data: {
-      brandId,
-      organizationId: user.organization.id,
-    },
-  })
-}
-
-export const unfollowBrand = async (brandId: string) => {
-  const session = await auth()
-  if (!session || !session.user) {
-    return "Utilisateur non authentifié"
-  }
-  const user = await prismaClient.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      organization: {
-        select: {
-          id: true,
-        },
-      },
-    },
-  })
-
-  if (!user || !user.organization) {
-    return "Aucune organisation trouvée pour l'utilisateur"
-  }
-
-  await prismaClient.followedBrand.deleteMany({
-    where: { brandId, organizationId: user.organization.id },
   })
 }

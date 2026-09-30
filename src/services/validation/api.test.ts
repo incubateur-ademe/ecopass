@@ -1,7 +1,12 @@
-import { multiComponentProductAPIValidation, productAPIValidation, productsAPIValidation } from "./api"
+import {
+  getUserMultiComponentProductAPIValidation,
+  getUserProductAPIValidation,
+  getUserProductsAPIValidation,
+} from "./api"
 import { expectZodValidationToFail } from "./zodValidationTest"
 
 describe("productAPIValidation", () => {
+  const productAPIValidation = getUserProductAPIValidation(["Test Brand", "Test Brand 2"])
   const validProduct = {
     internalReference: "TestRef",
     brandId: "Test Brand",
@@ -52,17 +57,33 @@ describe("productAPIValidation", () => {
     expect(result.success).toEqual(true)
   })
 
+  it("does not allow valid product with invalid brand", () => {
+    expectZodValidationToFail(
+      productAPIValidation,
+      validProduct,
+      {
+        brandId: "Nop",
+      },
+      [
+        {
+          path: ["brandId"],
+          message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
+        },
+      ],
+    )
+  })
+
   it("does not allow valid product with empty brand", () => {
     expectZodValidationToFail(
       productAPIValidation,
       validProduct,
       {
-        brandId: undefined,
+        brandId: "",
       },
       [
         {
           path: ["brandId"],
-          message: "Invalid input: expected string, received undefined",
+          message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
         },
       ],
     )
@@ -76,7 +97,7 @@ describe("productAPIValidation", () => {
 
   it("does not allow product without brand", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { brandId: undefined }, [
-      { path: ["brandId"], message: "Invalid input: expected string, received undefined" },
+      { path: ["brandId"], message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"' },
     ])
   })
 
@@ -127,12 +148,6 @@ describe("productAPIValidation", () => {
   it("does not allow product with mass < 0.01", () => {
     expectZodValidationToFail(productAPIValidation, validProduct, { mass: 0 }, [
       { path: ["mass"], message: "Too small: expected number to be >=0.01" },
-    ])
-  })
-
-  it("does not allow product with mass > 10", () => {
-    expectZodValidationToFail(productAPIValidation, validProduct, { mass: 10.01 }, [
-      { path: ["mass"], message: "Too big: expected number to be <=10" },
     ])
   })
 
@@ -424,6 +439,7 @@ describe("productAPIValidation", () => {
 })
 
 describe("productsAPIValidation", () => {
+  const productsAPIValidation = getUserProductsAPIValidation(["Test Brand", "Test Brand 2"])
   const validProductBase = {
     product: "jean",
     mass: 1.23,
@@ -484,17 +500,33 @@ describe("productsAPIValidation", () => {
     expect(result.success).toEqual(true)
   })
 
+  it("does not allow valid products with invalid brand", () => {
+    expectZodValidationToFail(
+      productsAPIValidation,
+      validProducts,
+      {
+        brandId: "Nop",
+      },
+      [
+        {
+          path: ["brandId"],
+          message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
+        },
+      ],
+    )
+  })
+
   it("does not allow valid products with empty brand", () => {
     expectZodValidationToFail(
       productsAPIValidation,
       validProducts,
       {
-        brandId: undefined,
+        brandId: "",
       },
       [
         {
           path: ["brandId"],
-          message: "Invalid input: expected string, received undefined",
+          message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
         },
       ],
     )
@@ -508,7 +540,7 @@ describe("productsAPIValidation", () => {
 
   it("does not allow products without brand", () => {
     expectZodValidationToFail(productsAPIValidation, validProducts, { brandId: undefined }, [
-      { path: ["brandId"], message: "Invalid input: expected string, received undefined" },
+      { path: ["brandId"], message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"' },
     ])
   })
 
@@ -581,15 +613,6 @@ describe("productsAPIValidation", () => {
       validProducts,
       { products: [validProductBase, { ...validProductBase, mass: 0.001 }] },
       [{ path: ["products", "1", "mass"], message: "Too small: expected number to be >=0.01" }],
-    )
-  })
-
-  it("does not allow products with mass > 10", () => {
-    expectZodValidationToFail(
-      productsAPIValidation,
-      validProducts,
-      { products: [validProductBase, { ...validProductBase, mass: 10.01 }] },
-      [{ path: ["products", "1", "mass"], message: "Too big: expected number to be <=10" }],
     )
   })
 
@@ -752,6 +775,8 @@ describe("productsAPIValidation", () => {
 })
 
 describe("multiComponentProductAPIValidation", () => {
+  const multiComponentProductAPIValidation = getUserMultiComponentProductAPIValidation(["Test Brand", "Test Brand 2"])
+
   const validComponent = {
     mass: 1.23,
     materials: [
@@ -843,20 +868,6 @@ describe("multiComponentProductAPIValidation", () => {
     )
   })
 
-  it("does not allow multi-component product with component mass > 10", () => {
-    expectZodValidationToFail(
-      multiComponentProductAPIValidation,
-      validMultiComponentProduct,
-      {
-        components: [
-          { ...validComponent, mainComponent: false },
-          { ...validComponent, mass: 10.01, mainComponent: true },
-        ],
-      },
-      [{ path: ["components", "1", "mass"], message: "Too big: expected number to be <=10" }],
-    )
-  })
-
   it("does not allow non-upcycled component without countryDyeing", () => {
     expectZodValidationToFail(
       multiComponentProductAPIValidation,
@@ -900,11 +911,11 @@ describe("multiComponentProductAPIValidation", () => {
     expect(result.success).toEqual(true)
   })
 
-  it("does not allow multi-component product with empty brand", () => {
-    expectZodValidationToFail(multiComponentProductAPIValidation, validMultiComponentProduct, { brandId: undefined }, [
+  it("does not allow multi-component product with invalid brand", () => {
+    expectZodValidationToFail(multiComponentProductAPIValidation, validMultiComponentProduct, { brandId: "Nop" }, [
       {
         path: ["brandId"],
-        message: "Invalid input: expected string, received undefined",
+        message: 'Invalid option: expected one of "Test Brand"|"Test Brand 2"',
       },
     ])
   })

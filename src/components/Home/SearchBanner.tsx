@@ -1,13 +1,19 @@
+import LastBrands from "./LastBrands"
 import Search from "../Product/Search"
 import styles from "./SearchBanner.module.css"
 
-const SearchBanner = () => {
+const SearchBanner = ({ withLastBrands }: { withLastBrands: boolean }) => {
   return (
     <div className={styles.container}>
       <div className={styles.box}>
-        <h2>Cherchez le coût environnemental d'un produit</h2>
+        <h2>Recherchez le coût environnemental d'un vêtement</h2>
         <Search />
       </div>
+      {withLastBrands && (
+        <div className={styles.tile}>
+          <LastBrands />
+        </div>
+      )}
     </div>
   )
 }

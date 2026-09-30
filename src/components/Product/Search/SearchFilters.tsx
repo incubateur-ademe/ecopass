@@ -3,7 +3,6 @@ import Select from "@codegouvfr/react-dsfr/Select"
 import Input from "@codegouvfr/react-dsfr/Input"
 import classNames from "classnames"
 import { productMapping } from "../../../utils/ecobalyse/mappings"
-import { BATCH_CATEGORY } from "../../../utils/product/category"
 
 const SearchFilters = ({
   brandId,
@@ -64,7 +63,6 @@ const SearchFilters = ({
             onChange: (e) => onCategoryChange(e.target.value),
           }}>
           <option value=''>Toutes les catégories</option>
-          <option value={BATCH_CATEGORY}>Lot de produits</option>
           {Object.entries(productMapping)
             .sort((a, b) => a[0].localeCompare(b[0]))
             .map((category) => (

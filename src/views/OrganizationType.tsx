@@ -5,7 +5,7 @@ import { UserOrganization } from "../db/user"
 const OrganizationType = ({ organization }: { organization: UserOrganization }) => {
   return (
     <>
-      <Block large type='yellow'>
+      <Block large secondary>
         <OrganizationTypeBanner organization={organization} />
       </Block>
     </>

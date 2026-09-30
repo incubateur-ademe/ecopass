@@ -5,19 +5,14 @@
 
 .noMargin {
   padding-top: 0;
-  padding-bottom: 0;
 }
 
-.yellow {
-  background: var(--background-alt-brown-cafe-creme);
-}
-
-.blue {
-  background-color: #e1edfb;
-}
-
-.grey {
+.secondary {
   background-color: var(--background-default-grey-hover);
+}
+
+.home {
+  background: var(--background-alt-brown-cafe-creme);
 }
 
 .large {

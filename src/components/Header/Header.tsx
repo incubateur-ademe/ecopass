@@ -3,21 +3,20 @@ import { Header as HeaderDSFR } from "@codegouvfr/react-dsfr/Header"
 import { Session } from "next-auth"
 import { usePathname } from "next/navigation"
 import { isTestEnvironment } from "../../utils/test"
-import { UserType } from "@prisma/enums"
-import { canAccessAdminSpace, canAccessFullData } from "../../utils/authorization/authorizations"
+import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
+import { OrganizationType } from "@prisma/enums"
+import {
+  canAccessAdminSpace,
+  canAccessFullData,
+  canAccessProInformationSpace,
+} from "../../utils/authorization/authorizations"
 
-const Header = ({
-  session,
-  userType,
-  displayName,
-}: {
-  session: Session | null
-  userType?: UserType
-  displayName?: string
-}) => {
+const Header = ({ session, type }: { session: Session | null; type: OrganizationType | null }) => {
+  const canDeclare = type ? organizationTypesAllowedToDeclare.includes(type) : false
   const role = session?.user?.role
   const canAccessAdmin = canAccessAdminSpace(role)
   const canAccessData = canAccessFullData(role)
+  const canAccessProInfo = canAccessProInformationSpace(role)
   const pathname = usePathname()
 
   const adminNavigationItem = canAccessAdmin
@@ -38,35 +37,50 @@ const Header = ({
       ? { linkProps: { href: "/admin/donnees" }, text: "Données", isActive: pathname === "/admin/donnees" }
       : null
 
-  const connectedNavigation = [
-    { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
-    userType === UserType.PROFESSIONNEL
-      ? {
+  const connectedNavigation = canDeclare
+    ? [
+        { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
+        {
           linkProps: { href: "/declarations" },
           text: "Déclarations",
           isActive: pathname.startsWith("/declarations"),
-        }
-      : {
-          linkProps: { href: "/declaration-simplifiee" },
-          text: "Déclaration simplifiée",
-          isActive: pathname.startsWith("/declaration-simplifiee"),
         },
-    { linkProps: { href: "/produits" }, text: "Produits déclarés", isActive: pathname.startsWith("/produits") },
-    userType === UserType.PROFESSIONNEL
-      ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") }
-      : null,
-    userType === UserType.PROFESSIONNEL
-      ? {
+        { linkProps: { href: "/produits" }, text: "Produits déclarés", isActive: pathname.startsWith("/produits") },
+        { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") },
+        {
           linkProps: { href: "/organisation" },
           text: "Organisation",
           isActive: pathname.startsWith("/organisation"),
-        }
-      : null,
-    userType === UserType.CITOYEN
-      ? { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" }
-      : null,
-    adminNavigationItem,
-  ]
+        },
+        adminNavigationItem,
+      ]
+    : [
+        { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
+        canAccessProInfo
+          ? {
+              linkProps: { href: "/organisation" },
+              text: "Organisation",
+              isActive: pathname.startsWith("/organisation"),
+            }
+          : null,
+        canAccessProInfo
+          ? { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" }
+          : null,
+        {
+          linkProps: { href: "/marques" },
+          text: "Les marques",
+          isActive: pathname.startsWith("/marques"),
+        },
+        {
+          linkProps: { href: "/recherche" },
+          text: "Recherchez un produit",
+          isActive: pathname === "/recherche" || pathname.startsWith("/produits/"),
+        },
+        type === OrganizationType.Distributor
+          ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") }
+          : null,
+        adminNavigationItem,
+      ]
 
   const visitorNavigation = [
     { linkProps: { href: "/" }, text: "Vous êtes consommateurs", isActive: pathname === "/" },
@@ -83,7 +97,7 @@ const Header = ({
     },
     {
       linkProps: { href: "/recherche" },
-      text: "Rechercher un produit",
+      text: "Recherchez un produit",
       isActive: pathname === "/recherche" || pathname.startsWith("/produits/"),
     },
   ]
@@ -107,11 +121,6 @@ const Header = ({
       serviceTagline={isTestEnvironment() ? "Serveur de test" : undefined}
       navigation={(connected ? connectedNavigation : visitorNavigation).filter((item) => item !== null)}
       quickAccessItems={[
-        connected ? (
-          <div className='fr-btn'>
-            <p>{displayName}</p>
-          </div>
-        ) : null,
         {
           linkProps: {
             href: isTestEnvironment()

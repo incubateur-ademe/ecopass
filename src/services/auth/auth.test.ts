@@ -12,7 +12,6 @@ jest.mock("../../db/user", () => ({
 
 import { getApiUser } from "./auth"
 import { getUserByApiKey } from "../../db/user"
-import { OrganizationRole, OrganizationType, UserType } from "@prisma/enums"
 
 const mockGetUserByApiKey = getUserByApiKey as jest.MockedFunction<typeof getUserByApiKey>
 
@@ -27,16 +26,11 @@ describe("getApiUser", () => {
         key: "valid-api-key",
         user: {
           id: "user-123",
-          nom: "test",
-          prenom: "john",
           email: "test@example.com",
-          type: UserType.PROFESSIONNEL,
-          organizationRole: OrganizationRole.ADMIN,
           organization: {
             id: "org-123",
             name: "Test Organization",
-            type: OrganizationType.Brand,
-            brands: [{ name: "Test Brand", active: true, default: false, id: "brand-1" }],
+            brands: [{ name: "Test Brand" }],
             authorizedBy: [],
           },
         },
@@ -145,26 +139,18 @@ describe("getApiUser", () => {
         key: "test-key",
         user: {
           id: "user-id",
-          nom: "user",
-          prenom: "john",
           email: "user@test.com",
-          type: UserType.PROFESSIONNEL,
-          organizationRole: OrganizationRole.ADMIN,
           organization: {
             id: "org-id",
             name: "Organization Name",
-            type: OrganizationType.Brand,
-            brands: [
-              { name: "Brand 1", active: true, default: false, id: "brand-1" },
-              { name: "Brand 2", active: true, default: false, id: "brand-2" },
-            ],
+            brands: [{ name: "Brand 1" }, { name: "Brand 2" }],
             authorizedBy: [
               {
                 from: {
                   id: "auth-org-id",
                   name: "Auth Org",
                   siret: "1234567890128",
-                  brands: [{ id: "brand-id", name: "Auth Brand", active: true, default: false }],
+                  brands: [{ id: "brand-id", name: "Auth Brand" }],
                 },
               },
             ],

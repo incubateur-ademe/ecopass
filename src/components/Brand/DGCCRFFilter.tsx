@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Select from "@codegouvfr/react-dsfr/Select"
@@ -7,7 +6,6 @@ import styles from "./DGCCRFFilter.module.css"
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup"
 import { productMapping } from "../../utils/ecobalyse/mappings"
 import Input from "@codegouvfr/react-dsfr/Input"
-import { BATCH_CATEGORY } from "../../utils/product/category"
 
 const DGCCRFFilter = ({
   filter,
@@ -66,7 +64,6 @@ const DGCCRFFilter = ({
             onChange: (e) => setCategory(e.target.value),
           }}>
           <option value=''>Toutes les catégories</option>
-          <option value={BATCH_CATEGORY}>Lot de produits</option>
           {Object.entries(productMapping)
             .sort((a, b) => a[0].localeCompare(b[0]))
             .map((category) => (

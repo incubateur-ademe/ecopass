@@ -1,22 +1,9 @@
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
-import FollowedBrands from "./Brand/FollowedBrands"
 import { UserOrganization } from "../../db/user"
 import OtherBrands from "./Brand/OtherBrands"
 import OtherDelegations from "./Delegation/OtherDelegations"
-import { OrganizationMember } from "../../db/organization"
-import OrganizationMembers from "./OrganizationMembers"
 
-const ConsultancyOrganization = ({
-  organization,
-  isAdmin,
-  members,
-  brands,
-}: {
-  organization: UserOrganization
-  isAdmin: boolean
-  members: OrganizationMember[]
-  brands: { id: string; name: string }[]
-}) => {
+const ConsultancyOrganization = ({ organization }: { organization: UserOrganization }) => {
   return (
     <div data-testid='consultancy-organization'>
       <Tabs
@@ -27,8 +14,6 @@ const ConsultancyOrganization = ({
               <>
                 <h2>Marques déléguées</h2>
                 <OtherBrands organization={organization} />
-                <h2>Marques suivies</h2>
-                <FollowedBrands organization={organization} brands={brands} />
               </>
             ),
           },
@@ -38,15 +23,6 @@ const ConsultancyOrganization = ({
               <>
                 <h2>Délégations</h2>
                 <OtherDelegations organization={organization} />
-              </>
-            ),
-          },
-          {
-            label: "Membres",
-            content: (
-              <>
-                <h2>Membres de l'organisation</h2>
-                <OrganizationMembers organizationId={organization.id} members={members} isAdmin={isAdmin} />
               </>
             ),
           },

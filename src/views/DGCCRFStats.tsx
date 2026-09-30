@@ -5,11 +5,11 @@ import Metabase from "../components/Stats/Metabase"
 const DGCCRFStats = ({ token }: { token: string }) => {
   return (
     <>
-      <Block type='yellow'>
+      <Block home>
         <h1>Les ordres de grandeur</h1>
         <Metabase token={token} />
       </Block>
-      <Block type='yellow'>
+      <Block home>
         <Informations />
       </Block>
     </>

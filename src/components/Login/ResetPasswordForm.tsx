@@ -57,11 +57,7 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
             <legend className='fr-fieldset__legend' id='legend'>
               <h1>Nouveau mot de passe</h1>
             </legend>
-            <p>
-              Ce mot de passe concerne uniquement votre compte local. Il sera utilisé lors de vos connexions avec votre
-              adresse e-mail, et non via FranceConnect ou ProConnect.
-            </p>
-            <div className='fr-fieldset__element fr-mt-2w'>
+            <div className='fr-fieldset__element'>
               <fieldset className='fr-fieldset'>
                 <div className='fr-fieldset__element'>
                   <span className='fr-hint-text'>Sauf mention contraire, tous les champs sont obligatoires.</span>

@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
-import { ConfidenceLevel, Status, UserType } from "@prisma/enums"
+import { Status } from "@prisma/enums"
 
 jest.mock("./prismaClient", () => ({
   prismaClient: mockPrismaTest,
@@ -47,7 +47,7 @@ describe("Brands DB", () => {
     brandB = brands[1]
 
     const user = await mockPrismaTest.user.create({
-      data: { email: "brands-test@example.com", organizationId: orgId, type: UserType.PROFESSIONNEL },
+      data: { email: "brands-test@example.com", organizationId: orgId },
     })
     testUserId = user.id
 
@@ -102,7 +102,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: now,
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
         },
         {
           id: uuid(),
@@ -113,7 +112,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: earlier,
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
         },
         {
           id: uuid(),
@@ -124,7 +122,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: muchEarlier,
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
         },
         {
           id: uuid(),
@@ -135,7 +132,6 @@ describe("Brands DB", () => {
           brandId: brandB.id,
           createdAt: earlier,
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
         },
         {
           id: uuid(),
@@ -146,7 +142,6 @@ describe("Brands DB", () => {
           brandId: brandB.id,
           createdAt: now,
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
         },
       ],
     })
@@ -157,10 +152,10 @@ describe("Brands DB", () => {
     const b = stats.find((s) => s.id === brandB.id)
 
     expect(a?.productCount).toBe(2)
-    expect(a?.lastDeclarationDate?.getTime()).toBe(now.getTime())
+    expect(a?.lastDeclarationDate.getTime()).toBe(now.getTime())
 
     expect(b?.productCount).toBe(1)
-    expect(b?.lastDeclarationDate?.getTime()).toBe(earlier.getTime())
+    expect(b?.lastDeclarationDate.getTime()).toBe(earlier.getTime())
 
     expect(stats[0].id).toBe(brandA.id)
     expect(stats[1].id).toBe(brandB.id)
@@ -242,7 +237,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -262,7 +256,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -282,7 +275,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -302,7 +294,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -322,7 +313,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -342,7 +332,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -362,7 +351,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {
@@ -386,7 +374,6 @@ describe("Brands DB", () => {
           brandId: brandA.id,
           createdAt: new Date(),
           uploadId: testUploadId,
-          confidenceLevel: ConfidenceLevel.High,
           informations: {
             create: [
               {

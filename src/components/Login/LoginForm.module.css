@@ -20,7 +20,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;
 }
 
 .button {
@@ -37,10 +36,4 @@
   width: fit-content;
   margin: auto;
   display: block;
-}
-
-.or {
-  text-align: center;
-  margin: 2rem 0;
-  font-weight: bold;
 }

@@ -4,40 +4,29 @@ import bcrypt from "bcrypt"
 import { AuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prismaClient } from "../../db/prismaClient"
-import { OrganizationRole, UserRole, UserType } from "@prisma/enums"
+import { UserRole } from "@prisma/enums"
 import { createOrganization } from "../../db/organization"
 
 export const authOptions = {
   adapter: PrismaAdapter(prismaClient),
-  pages: {
-    error: "/auth/error",
-    signIn: "/auth/error",
-  },
   events: {
     createUser: async ({ user }) => {
       try {
-        if (user.type === UserType.PROFESSIONNEL) {
-          const siret = user.agentconnect_info?.siret || ""
-          if (siret) {
-            let organization = await prismaClient.organization.findUnique({
-              where: { siret },
-            })
+        const siret = user.agentconnect_info?.siret || ""
+        if (siret) {
+          let organization = await prismaClient.organization.findUnique({
+            where: { siret },
+          })
 
-            if (!organization) {
-              organization = await createOrganization(siret)
-            }
-
-            const usersCount = await prismaClient.user.count({
-              where: { organizationId: organization.id },
-            })
-            await prismaClient.user.update({
-              where: { id: user.id },
-              data: {
-                organizationId: organization.id,
-                organizationRole: usersCount === 0 ? OrganizationRole.ADMIN : OrganizationRole.READER,
-              },
-            })
+          if (!organization) {
+            organization = await createOrganization(siret)
           }
+          await prismaClient.user.update({
+            where: { id: user.id },
+            data: {
+              organizationId: organization.id,
+            },
+          })
         }
       } catch (error) {
         console.error("Error in createUser event:", error)
@@ -73,10 +62,6 @@ export const authOptions = {
           if (user.accounts.find((account) => account.provider === "proconnect")) {
             throw new Error("proconnect")
           }
-
-          if (user.accounts.find((account) => account.provider === "franceconnect")) {
-            throw new Error("franceconnect")
-          }
           throw new Error("Invalid credentials")
         }
 
@@ -89,7 +74,7 @@ export const authOptions = {
           throw new Error("Invalid credentials")
         }
 
-        return { email: user.email || "", id: user.id, role: user.role || undefined, type: user.type }
+        return { email: user.email || "", id: user.id, role: user.role || undefined }
       },
     }),
     {
@@ -138,58 +123,6 @@ export const authOptions = {
           nom: profile.usual_name,
           email: profile.email,
           agentconnect_info: profile,
-          type: UserType.PROFESSIONNEL,
-        }
-      },
-    },
-    {
-      id: "franceconnect",
-      name: "FranceConnect",
-      type: "oauth",
-      idToken: true,
-      clientId: process.env.FRANCECONNECT_CLIENT_ID,
-      clientSecret: process.env.FRANCECONNECT_CLIENT_SECRET,
-      wellKnown: `${process.env.NEXT_PUBLIC_FRANCECONNECT_DOMAIN}/api/v2/.well-known/openid-configuration`,
-      allowDangerousEmailAccountLinking: true,
-      checks: ["nonce", "state"],
-      authorization: {
-        params: {
-          scope: "openid uid email given_name family_name birthdate",
-          acr_values: "eidas1",
-          redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/franceconnect`,
-          nonce: uuid(),
-          state: uuid(),
-        },
-      },
-      client: {
-        authorization_signed_response_alg: "RS256",
-        id_token_signed_response_alg: "RS256",
-        userinfo_encrypted_response_alg: "RS256",
-        userinfo_signed_response_alg: "RS256",
-        userinfo_encrypted_response_enc: "RS256",
-      },
-      userinfo: {
-        async request(context) {
-          const userInfo = await fetch(`${process.env.NEXT_PUBLIC_FRANCECONNECT_DOMAIN}/api/v2/userinfo`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${context.tokens.access_token}`,
-            },
-          }).then((res) => {
-            return res.text()
-          })
-          return JSON.parse(Buffer.from(userInfo.split(".")[1], "base64").toString())
-        },
-      },
-      profile: async (profile) => {
-        return {
-          id: profile.email,
-          email: profile.email,
-          nom: profile.family_name,
-          prenom: profile.given_name,
-          birthdate: profile.birthdate,
-          agentconnect_info: profile,
-          type: UserType.CITOYEN,
         }
       },
     },
@@ -198,43 +131,9 @@ export const authOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider === "franceconnect" && user.email) {
-        const existingUser = await prismaClient.user.findFirst({
-          include: { accounts: true },
-          // @ts-expect-error: Nom et prenom available
-          where: { OR: [{ email: user.email.toLowerCase() }, { nom: user.nom, prenom: user.prenom }] },
-        })
-
-        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "credentials")) {
-          throw new Error(`credentials_conflict|franceconnect|${account.id_token}`)
-        }
-        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "proconnect")) {
-          throw new Error(`proconnect_conflict|franceconnect|${account.id_token}`)
-        }
-      }
-
-      if (account?.provider === "proconnect" && user.email) {
-        const existingUser = await prismaClient.user.findFirst({
-          include: { accounts: true },
-          // @ts-expect-error: Nom et prenom available
-          where: { OR: [{ email: user.email.toLowerCase() }, { nom: user.nom, prenom: user.prenom }] },
-        })
-
-        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "credentials")) {
-          throw new Error(`credentials_conflict|proconnect|${account.id_token}`)
-        }
-        if (existingUser && existingUser.accounts.some((acc) => acc.provider === "franceconnect")) {
-          throw new Error(`franceconnect_conflict|proconnect|${account.id_token}`)
-        }
-      }
-
-      return true
-    },
     async jwt({ token, account, user }) {
       if (user) {
         token.id = user.id
-        token.type = user.type
         token.role = user.role
       }
 
@@ -248,7 +147,6 @@ export const authOptions = {
       if (token && session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as UserRole
-        session.user.type = token.type as UserType
         session.provider = token.provider as string
         session.idToken = token.idToken as string
       }

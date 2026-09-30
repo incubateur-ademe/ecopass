@@ -3,7 +3,7 @@ import { UserOrganization } from "../../../db/user"
 import Brands from "./Brands"
 import NewBrand from "./NewBrand"
 
-const MyBrands = ({ organization, isAdmin }: { organization: UserOrganization; isAdmin: boolean }) => {
+const MyBrands = ({ organization }: { organization: UserOrganization }) => {
   return (
     <>
       {organization.brands.length === 0 ? (
@@ -19,11 +19,9 @@ const MyBrands = ({ organization, isAdmin }: { organization: UserOrganization; i
           description={`Vos produits pourront être déclarés soit sous le nom de votre organisation (${organization.name}), soit sous un des noms ci dessous.`}
         />
       )}
-      {isAdmin && (
-        <div className='fr-mt-4w'>
-          <NewBrand />
-        </div>
-      )}
+      <div className='fr-mt-4w'>
+        <NewBrand />
+      </div>
       <div className='fr-mt-4w'>
         <Brands brands={organization.brands} />
       </div>

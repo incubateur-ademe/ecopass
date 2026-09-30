@@ -10,11 +10,10 @@ import Table from "../../Table/Table"
 import { addNewGTINPrefix, deleteGTINPrefix } from "../../../serverFunctions/organization"
 import { FormEvent, ReactNode, useState } from "react"
 import Link from "next/link"
-import { Alert } from "@codegouvfr/react-dsfr/Alert"
 
 const prefixRegex = /^[0-9]{6}$/
 
-const GTINPrefixes = ({ prefixes, isAdmin }: { prefixes: UserOrganization["gtinPrefixes"]; isAdmin: boolean }) => {
+const GTINPrefixes = ({ prefixes }: { prefixes: UserOrganization["gtinPrefixes"] }) => {
   const router = useRouter()
   const [error, setError] = useState<ReactNode>()
 
@@ -63,24 +62,21 @@ const GTINPrefixes = ({ prefixes, isAdmin }: { prefixes: UserOrganization["gtinP
   }
   return (
     <>
-      {isAdmin && (
-        <div className={styles.container}>
-          <div className={styles.form}>
-            <form onSubmit={submit}>
-              <Input
-                label='Ajouter un préfixe'
-                hintText='Les 6 premiers chiffres de vos codes GTIN'
-                nativeInputProps={{ required: true, name: "prefix" }}
-                state={error ? "error" : undefined}
-                stateRelatedMessage={error}
-              />
-              <Button type='submit'>Ajouter</Button>
-            </form>
-          </div>
-          <Image src='/images/gtin_prefixes.svg' alt='' width={259} height={182} />
+      <div className={styles.container}>
+        <div className={styles.form}>
+          <form onSubmit={submit}>
+            <Input
+              label='Ajouter un préfixe'
+              nativeInputProps={{ required: true, name: "prefix" }}
+              state={error ? "error" : undefined}
+              stateRelatedMessage={error}
+            />
+            <Button type='submit'>Ajouter</Button>
+          </form>
         </div>
-      )}
-      {prefixes.length > 0 ? (
+        <Image src='/images/gtin_prefixes.png' alt='' width={259} height={182} />
+      </div>
+      {prefixes.length > 0 && (
         <div data-testid='gtin-prefixes-table'>
           <Table
             headers={["Préfixe", "Actions"]}
@@ -99,8 +95,6 @@ const GTINPrefixes = ({ prefixes, isAdmin }: { prefixes: UserOrganization["gtinP
             ])}
           />
         </div>
-      ) : (
-        <Alert small severity='info' description="Vous n'avez pas encore déclarer vos préfixes." className='fr-mt-2w' />
       )}
     </>
   )

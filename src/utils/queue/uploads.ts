@@ -49,11 +49,7 @@ export const processUploadsToQueue = async () => {
     const buffer = await getFile(upload.id)
     await updateUploadToPending(upload.id)
     const parsedData = await parseFile(buffer, upload)
-    const numberOfCreatedProduct = await createProducts(parsedData, {
-      userId: upload.createdBy.id,
-      userType: upload.createdBy.type,
-      organizationId: upload.createdBy.organization?.id ?? null,
-    })
+    const numberOfCreatedProduct = await createProducts(parsedData)
     await checkUploadsStatus([upload.id])
     console.log(`Upload processed, ${parsedData.products.length} products, ${numberOfCreatedProduct} created`)
   } catch (error) {

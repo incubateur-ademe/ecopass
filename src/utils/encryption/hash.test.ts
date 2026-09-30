@@ -1,5 +1,4 @@
-import { ConfidenceLevel } from "@prisma/enums"
-import { ProductInformationAPI } from "../../services/validation/api"
+import { ProductInformationAPI, ProductMetadataAPI } from "../../services/validation/api"
 import { Business, Country, ParsedProduct, ProductCategory } from "../../types/Product"
 import { hashProduct } from "./hash"
 
@@ -8,12 +7,11 @@ jest.mock("../ecobalyse/config", () => ({
 }))
 
 describe("hashProduct", () => {
-  const baseProduct = {
+  const baseProduct: ProductMetadataAPI = {
     gtins: ["1234567890123"],
     internalReference: "REF-TEST",
     brandId: "f05259c6-1599-431a-91ae-e7943405e4d6",
     declaredScore: 1500,
-    confidenceLevel: ConfidenceLevel.High,
   }
 
   const baseParsedInformations: ParsedProduct = {
@@ -77,32 +75,36 @@ describe("hashProduct", () => {
   ]
 
   it("should generate consistent hash for the same input", () => {
-    const hash1 = hashProduct(baseProduct, [baseParsedInformations])
-    const hash2 = hashProduct(baseProduct, baseAPIInformations)
+    const hash1 = hashProduct(baseProduct, [baseParsedInformations], [])
+    const hash2 = hashProduct(baseProduct, baseAPIInformations, [])
 
     expect(hash1).toBe(hash2)
   })
 
   describe("hashParsedProduct", () => {
     it("should generate different hashes when materials change", () => {
-      const hash1 = hashProduct(baseProduct, [baseParsedInformations])
-      const hash2 = hashProduct(baseProduct, [
-        {
-          ...baseParsedInformations,
-          materials: [
-            {
-              id: "ei-coton",
-              share: 0.6,
-              country: Country.France,
-            },
-            {
-              id: "ei-pet",
-              share: 0.4,
-              country: Country.Chine,
-            },
-          ],
-        },
-      ])
+      const hash1 = hashProduct(baseProduct, [baseParsedInformations], [])
+      const hash2 = hashProduct(
+        baseProduct,
+        [
+          {
+            ...baseParsedInformations,
+            materials: [
+              {
+                id: "ei-coton",
+                share: 0.6,
+                country: Country.France,
+              },
+              {
+                id: "ei-pet",
+                share: 0.4,
+                country: Country.Chine,
+              },
+            ],
+          },
+        ],
+        [],
+      )
 
       expect(hash1).not.toBe(hash2)
     })
@@ -113,14 +115,14 @@ describe("hashProduct", () => {
         materials: [baseParsedInformations.materials[1], baseParsedInformations.materials[0]],
       }
 
-      const hash1 = hashProduct(baseProduct, [baseParsedInformations])
-      const hash2 = hashProduct(baseProduct, [productWithReorderedMaterials])
+      const hash1 = hashProduct(baseProduct, [baseParsedInformations], [])
+      const hash2 = hashProduct(baseProduct, [productWithReorderedMaterials], [])
 
       expect(hash1).toBe(hash2)
     })
 
     it("should include ecobalyse version in hash calculation", () => {
-      const hash1 = hashProduct(baseProduct, [baseParsedInformations])
+      const hash1 = hashProduct(baseProduct, [baseParsedInformations], [])
 
       jest.doMock("../ecobalyse/config", () => ({
         ecobalyseVersion: "test-version-2.0.0",
@@ -129,51 +131,68 @@ describe("hashProduct", () => {
       jest.resetModules()
       const { hashProduct: hashProductWithNewVersion } = require("./hash")
 
-      const hash2 = hashProductWithNewVersion(baseProduct, [baseParsedInformations])
+      const hash2 = hashProductWithNewVersion(baseProduct, [baseParsedInformations], [])
 
       expect(hash1).not.toBe(hash2)
     })
 
     it("should generate different hashes when information properties change", () => {
-      const hash1 = hashProduct(baseProduct, [baseParsedInformations])
-      const hash2 = hashProduct(baseProduct, [
-        {
-          ...baseParsedInformations,
-          mass: 0.25,
-        },
-      ])
+      const hash1 = hashProduct(baseProduct, [baseParsedInformations], [])
+      const hash2 = hashProduct(
+        baseProduct,
+        [
+          {
+            ...baseParsedInformations,
+            mass: 0.25,
+          },
+        ],
+        [],
+      )
 
       expect(hash1).not.toBe(hash2)
     })
 
     it("should generate different hashes when product properties change", () => {
-      const hash1 = hashProduct(baseProduct, [baseParsedInformations])
-      const hash2 = hashProduct({ ...baseProduct, declaredScore: 1600 }, [baseParsedInformations])
+      const hash1 = hashProduct(baseProduct, [baseParsedInformations], [])
+      const hash2 = hashProduct({ ...baseProduct, declaredScore: 1600 }, [baseParsedInformations], [])
 
       expect(hash1).not.toBe(hash2)
+    })
+
+    it("should include authorized brand information in hash", () => {
+      const hash1 = hashProduct(baseProduct, [baseParsedInformations], [])
+      const hash2 = hashProduct(baseProduct, [baseParsedInformations], ["39c78b8a-8e97-4464-96c5-e420820e1c20"])
+      const hash3 = hashProduct(baseProduct, [baseParsedInformations], ["f05259c6-1599-431a-91ae-e7943405e4d6"])
+
+      expect(hash1).toBe(hash2)
+      expect(hash1).not.toBe(hash3)
     })
   })
 
   describe("hashProductAPI", () => {
     it("should generate different hashes when materials change", () => {
-      const hash1 = hashProduct(baseProduct, baseAPIInformations)
-      const hash2 = hashProduct(baseProduct, [
-        {
-          ...baseAPIInformations[0],
-          materials: [
-            {
-              id: "ei-coton",
-              share: 0.6,
-              country: "France",
-            },
-            {
-              id: "ei-pet",
-              share: 0.4,
-              country: "Chine",
-            },
-          ],
-        },
-      ])
+      const hash1 = hashProduct(baseProduct, baseAPIInformations, [])
+      const hash2 = hashProduct(
+        baseProduct,
+        [
+          {
+            ...baseAPIInformations[0],
+            materials: [
+              {
+                id: "ei-coton",
+                share: 0.6,
+                country: "France",
+              },
+              {
+                id: "ei-pet",
+                share: 0.4,
+                country: "Chine",
+              },
+            ],
+          },
+        ],
+        [],
+      )
 
       expect(hash1).not.toBe(hash2)
     })
@@ -186,14 +205,14 @@ describe("hashProduct", () => {
         },
       ]
 
-      const hash1 = hashProduct(baseProduct, baseAPIInformations)
-      const hash2 = hashProduct(baseProduct, informationsWithReorderedMaterials)
+      const hash1 = hashProduct(baseProduct, baseAPIInformations, [])
+      const hash2 = hashProduct(baseProduct, informationsWithReorderedMaterials, [])
 
       expect(hash1).toBe(hash2)
     })
 
     it("should include ecobalyse version in hash calculation", () => {
-      const hash1 = hashProduct(baseProduct, baseAPIInformations)
+      const hash1 = hashProduct(baseProduct, baseAPIInformations, [])
 
       jest.doMock("../ecobalyse/config", () => ({
         ecobalyseVersion: "test-version-2.0.0",
@@ -202,28 +221,41 @@ describe("hashProduct", () => {
       jest.resetModules()
       const { hashProduct: hashProductWithNewVersion } = require("./hash")
 
-      const hash2 = hashProductWithNewVersion(baseProduct, baseAPIInformations)
+      const hash2 = hashProductWithNewVersion(baseProduct, baseAPIInformations, [])
 
       expect(hash1).not.toBe(hash2)
     })
 
     it("should generate different hashes when information properties change", () => {
-      const hash1 = hashProduct(baseProduct, baseAPIInformations)
-      const hash2 = hashProduct(baseProduct, [
-        {
-          ...baseAPIInformations[0],
-          mass: 0.25,
-        },
-      ])
+      const hash1 = hashProduct(baseProduct, baseAPIInformations, [])
+      const hash2 = hashProduct(
+        baseProduct,
+        [
+          {
+            ...baseAPIInformations[0],
+            mass: 0.25,
+          },
+        ],
+        [],
+      )
 
       expect(hash1).not.toBe(hash2)
     })
 
     it("should generate different hashes when product properties change", () => {
-      const hash1 = hashProduct(baseProduct, baseAPIInformations)
-      const hash2 = hashProduct({ ...baseProduct, declaredScore: 1600 }, baseAPIInformations)
+      const hash1 = hashProduct(baseProduct, baseAPIInformations, [])
+      const hash2 = hashProduct({ ...baseProduct, declaredScore: 1600 }, baseAPIInformations, [])
 
       expect(hash1).not.toBe(hash2)
+    })
+
+    it("should include authorized brand information in hash", () => {
+      const hash1 = hashProduct(baseProduct, baseAPIInformations, [])
+      const hash2 = hashProduct(baseProduct, baseAPIInformations, ["39c78b8a-8e97-4464-96c5-e420820e1c20"])
+      const hash3 = hashProduct(baseProduct, baseAPIInformations, ["f05259c6-1599-431a-91ae-e7943405e4d6"])
+
+      expect(hash1).toBe(hash2)
+      expect(hash1).not.toBe(hash3)
     })
   })
 })

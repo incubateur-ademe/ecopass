@@ -1,6 +1,6 @@
 .container {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
 }

@@ -7,7 +7,7 @@ jest.mock("./prismaClient", () => ({
 import { createOrganization, getUserOrganizationType, getOrganizationById } from "./organization"
 import { getSiretInfo } from "../serverFunctions/siret"
 import { prismaClient } from "./prismaClient"
-import { ConfidenceLevel, OrganizationType, Status, UploadType, UserType } from "@prisma/enums"
+import { OrganizationType, Status, UploadType } from "@prisma/enums"
 import { cleanDB } from "./testUtils"
 
 jest.mock("../serverFunctions/siret")
@@ -159,7 +159,6 @@ describe("organization", () => {
       const user = await prismaClient.user.create({
         data: {
           email: "test-user@example.com",
-          type: UserType.PROFESSIONNEL,
         },
       })
 
@@ -230,7 +229,6 @@ describe("organization", () => {
             internalReference: "REF001",
             status: Status.Done,
             createdAt: new Date("2035-01-01T00:00:00Z"),
-            confidenceLevel: ConfidenceLevel.High,
           },
           {
             brandId: "brand1-id",
@@ -238,7 +236,6 @@ describe("organization", () => {
             uploadId: "upload1-id",
             internalReference: "REF002",
             status: Status.Done,
-            confidenceLevel: ConfidenceLevel.High,
           },
           {
             brandId: "brand1-id",
@@ -246,7 +243,6 @@ describe("organization", () => {
             uploadId: "upload1-id",
             internalReference: "REF003",
             status: Status.Error,
-            confidenceLevel: ConfidenceLevel.High,
           },
           {
             brandId: "brand2-id",
@@ -255,7 +251,6 @@ describe("organization", () => {
             internalReference: "REF001",
             status: Status.Done,
             createdAt: new Date("2045-01-01T00:00:00Z"),
-            confidenceLevel: ConfidenceLevel.High,
           },
           {
             brandId: "brand2-id",
@@ -263,7 +258,6 @@ describe("organization", () => {
             uploadId: "upload2-id",
             internalReference: "REF002",
             status: Status.Done,
-            confidenceLevel: ConfidenceLevel.High,
           },
           {
             brandId: "brand2-id",
@@ -271,7 +265,6 @@ describe("organization", () => {
             uploadId: "upload2-id",
             internalReference: "REF003",
             status: Status.Error,
-            confidenceLevel: ConfidenceLevel.High,
           },
         ],
       })

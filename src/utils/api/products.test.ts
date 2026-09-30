@@ -1,16 +1,15 @@
 import { handleProductPOST } from "./products"
-import { OrganizationRole, OrganizationType, UserType } from "@prisma/enums"
+import { OrganizationType } from "@prisma/enums"
 import { getApiUser } from "../../services/auth/auth"
 import { computeBatchInformations, computeEcobalyseScore } from "../ecobalyse/api"
 import { createScore } from "../../db/score"
 import { updateAPIUse } from "../../db/user"
 import { getAuthorizedBrands } from "../organization/brands"
 import { scoreIsValid } from "../validation/score"
-import { checkOldProduct } from "../../services/validation/oldProduct"
+import { checkOldProduct, ProductCheckResult } from "../../services/validation/oldProduct"
 import { hashProduct } from "../encryption/hash"
 import { getBrandById } from "../../db/brands"
 import { getDefaultGTINs } from "../validation/gtin"
-import { ProductCheckResult } from "../../services/validation/productCheckResult"
 
 jest.mock("../../services/auth/auth", () => ({
   getApiUser: jest.fn(),
@@ -64,9 +63,7 @@ jest.mock("../validation/gtin", () => {
 
 describe("handleProductPOST", () => {
   const mockedGetApiUser = getApiUser as jest.MockedFunction<typeof getApiUser>
-  const mockedComputeBatchInformations = computeBatchInformations as jest.MockedFunction<
-    typeof computeBatchInformations
-  >
+  const mockedComputeBatchInformations = computeBatchInformations as jest.MockedFunction<typeof computeBatchInformations>
   const mockedComputeEcobalyseScore = computeEcobalyseScore as jest.MockedFunction<typeof computeEcobalyseScore>
   const mockedCreateScore = createScore as jest.MockedFunction<typeof createScore>
   const mockedUpdateAPIUse = updateAPIUse as jest.MockedFunction<typeof updateAPIUse>
@@ -88,11 +85,7 @@ describe("handleProductPOST", () => {
     key: "api-key",
     user: {
       id: "user-1",
-      nom: "user",
-      prenom: "john",
       email: "user-1@example.com",
-      type: UserType.PROFESSIONNEL,
-      organizationRole: OrganizationRole.ADMIN,
       organization: {
         id: "org-1",
         name: "Org 1",
@@ -118,7 +111,6 @@ describe("handleProductPOST", () => {
   }
 
   const validSingleBody = {
-    brandId: "brand-1",
     internalReference: "REF-1",
     product: "jean",
     mass: 1,
@@ -129,7 +121,6 @@ describe("handleProductPOST", () => {
   }
 
   const validBatchBody = {
-    brandId: "brand-1",
     internalReference: "REF-BATCH",
     products: [
       {
@@ -152,7 +143,6 @@ describe("handleProductPOST", () => {
   }
 
   const validMultiBody = {
-    brandId: "brand-1",
     internalReference: "REF-MULTI",
     product: "jean",
     components: [
@@ -186,7 +176,7 @@ describe("handleProductPOST", () => {
     mockedComputeEcobalyseScore.mockResolvedValue({ score: 42 } as any)
     mockedScoreIsValid.mockReturnValue(true)
     mockedUpdateAPIUse.mockResolvedValue()
-    mockedCreateScore.mockResolvedValue(null)
+    mockedCreateScore.mockResolvedValue(undefined)
   })
 
   it("returns 401 when api user is missing", async () => {
@@ -203,7 +193,10 @@ describe("handleProductPOST", () => {
       ...validApi,
       user: {
         ...validApi.user,
-        organization: null,
+        organization: {
+          ...validApi.user.organization,
+          type: OrganizationType.Distributor,
+        },
       },
     })
 
@@ -213,24 +206,7 @@ describe("handleProductPOST", () => {
     await expect(response.json()).resolves.toEqual({
       error:
         "Votre organisation n'est pas autorisée à déclarer des produits. Si vous pensez que c'est une erreur, veuillez contacter le support.",
-      organizationType: "Non défini",
-    })
-  })
-
-  it("returns 403 when user is not an organization admin", async () => {
-    mockedGetApiUser.mockResolvedValue({
-      ...validApi,
-      user: {
-        ...validApi.user,
-        organizationRole: OrganizationRole.READER,
-      },
-    })
-
-    const response = await handleProductPOST(makeRequest(validSingleBody), "single")
-
-    expect(response.status).toBe(403)
-    await expect(response.json()).resolves.toEqual({
-      error: "Seuls les admins de l'organisation peuvent déclarer des produits",
+      organizationType: "Distributeur",
     })
   })
 
@@ -248,7 +224,7 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(400)
     await expect(response.json()).resolves.toEqual({
-      error: "La marque n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné.",
+      error: "Votre organisation n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné.",
     })
     expect(mockedComputeEcobalyseScore).not.toHaveBeenCalled()
   })
@@ -288,11 +264,7 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(201)
     expect(mockedGetDefaultGTINs).not.toHaveBeenCalled()
-    expect(mockedCheckOldProduct).toHaveBeenCalledWith(["1234567890128"], "hash-1", "High", {
-      organizationId: "org-1",
-      userId: "user-1",
-      userType: "PROFESSIONNEL",
-    })
+    expect(mockedCheckOldProduct).toHaveBeenCalledWith(["1234567890128"], "hash-1")
   })
 
   it("creates score and returns success on valid single product", async () => {
@@ -323,16 +295,17 @@ describe("handleProductPOST", () => {
   })
 
   it("returns 400 when single body is invalid", async () => {
-    const response = await handleProductPOST(makeRequest({ ...validSingleBody, countryMaking: undefined }), "single")
+    const response = await handleProductPOST(
+      makeRequest({ ...validSingleBody, countryMaking: undefined }),
+      "single",
+    )
 
     expect(response.status).toBe(400)
     const body = await response.json()
-    expect(
-      body.map((issue: { path: (string | number)[]; message: string }) => ({
-        path: issue.path,
-        message: issue.message,
-      })),
-    ).toEqual([
+    expect(body.map((issue: { path: (string | number)[]; message: string }) => ({
+      path: issue.path,
+      message: issue.message,
+    }))).toEqual([
       {
         path: ["countryMaking"],
         message:
@@ -386,12 +359,10 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(400)
     const body = await response.json()
-    expect(
-      body.map((issue: { path: (string | number)[]; message: string }) => ({
-        path: issue.path,
-        message: issue.message,
-      })),
-    ).toEqual([{ path: ["components"], message: "Il doit y avoir exactement un composant principal." }])
+    expect(body.map((issue: { path: (string | number)[]; message: string }) => ({
+      path: issue.path,
+      message: issue.message,
+    }))).toEqual([{ path: ["components"], message: "Il doit y avoir exactement un composant principal." }])
   })
 
   it("creates score and returns success on valid batch product", async () => {
@@ -407,7 +378,6 @@ describe("handleProductPOST", () => {
     const response = await handleProductPOST(
       makeRequest({
         internalReference: "REF-BATCH",
-        brandId: "brand-1",
         products: [
           {
             product: "jean",
@@ -423,12 +393,10 @@ describe("handleProductPOST", () => {
 
     expect(response.status).toBe(400)
     const body = await response.json()
-    expect(
-      body.map((issue: { path: (string | number)[]; message: string }) => ({
-        path: issue.path,
-        message: issue.message,
-      })),
-    ).toEqual([
+    expect(body.map((issue: { path: (string | number)[]; message: string }) => ({
+      path: issue.path,
+      message: issue.message,
+    }))).toEqual([
       {
         path: ["products"],
         message: "countryDyeing et countryFabric sont requis pour chaque produit quand upcycled n'est pas true",

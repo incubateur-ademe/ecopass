@@ -3,10 +3,11 @@ import { UserOrganization } from "../../db/user"
 import styles from "./Informations.module.css"
 import { organizationTypeByNaf } from "../../utils/admin/nafs"
 import Link from "next/link"
-import { organizationTypes } from "../../utils/organization/types"
+import { organizationTypesAllowedToDeclare } from "../../utils/organization/canDeclare"
 import OrganizationName from "./OrganizationName"
+import { organizationTypes } from "../../utils/organization/types"
 
-const Informations = ({ organization, isAdmin }: { organization: UserOrganization; isAdmin: boolean }) => {
+const Informations = ({ organization }: { organization: UserOrganization }) => {
   return (
     <div className={styles.container}>
       <h2>Organisation</h2>
@@ -15,13 +16,8 @@ const Informations = ({ organization, isAdmin }: { organization: UserOrganizatio
         <Badge className={styles.badge} severity='success'>
           En activité
         </Badge>
-        {isAdmin ? (
+        {organization.type && organizationTypesAllowedToDeclare.includes(organization.type) && (
           <OrganizationName organization={organization} />
-        ) : (
-          <div className='fr-mt-2w'>
-            <b>Nom d'usage</b>
-            <p>{organization.displayName}</p>
-          </div>
         )}
       </div>
       {organization.type && (
@@ -37,9 +33,8 @@ const Informations = ({ organization, isAdmin }: { organization: UserOrganizatio
                 prefetch={false}
                 target='_blank'
                 rel='noopener noreferrer'>
-                nous contacter
+                nous contacter.
               </Link>
-              .
             </p>
           )}
         </div>

@@ -11,7 +11,7 @@ import Matomo from "../components/Matomo/Matomo"
 import { ReactNode } from "react"
 import TestBanner from "../components/Test/TestBanner"
 import { isTestEnvironment } from "../utils/test"
-import { getUser } from "../db/user"
+import { getUserOrganizationType } from "../serverFunctions/user"
 
 export const metadata: Metadata = {
   title: "Affichage environnemental",
@@ -23,10 +23,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const lang = "fr"
 
   const session = await auth()
-
-  const user = session ? await getUser(session.user.id) : null
-  const displayName = user && user.nom && user.prenom ? `${user.prenom} ${user.nom}` : user?.email
-
+  const type = await getUserOrganizationType(session?.user.id)
   return (
     <html lang={lang} {...getHtmlAttributes({ lang })}>
       <head>
@@ -36,7 +33,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <Matomo />
         <DsfrProvider lang={lang}>
           <AuthProvider session={session}>
-            <Header session={session} userType={user?.type} displayName={displayName} />
+            <Header session={session} type={type} />
             <main id='contenu' role='main' tabIndex={-1}>
               {isTestEnvironment() && <TestBanner />}
               {children}

@@ -31,7 +31,7 @@ const BrandDetail = ({
   const totalProducts = brand.productsByCategory.reduce((acc, current) => acc + current.count, 0)
   return (
     <>
-      <Block type='yellow' breadCrumbs={breadCrumbs}>
+      <Block home breadCrumbs={breadCrumbs}>
         <BrandHeader brand={brand} productCount={totalProducts} />
       </Block>
 
@@ -39,20 +39,16 @@ const BrandDetail = ({
         <Block>
           {isDGCCRF ? (
             <DGCCRFBrandProductsTable
-              organizations={
-                brand.organization
-                  ? [
-                      {
-                        key: brand.organization.id,
-                        value: brand.organization.displayName,
-                      },
-                      ...brand.organization.authorizedOrganizations.map((authOrg) => ({
-                        key: authOrg.to.id,
-                        value: authOrg.to.displayName,
-                      })),
-                    ]
-                  : []
-              }
+              organizations={[
+                {
+                  key: brand.organization.id,
+                  value: brand.organization.displayName,
+                },
+                ...brand.organization.authorizedOrganizations.map((authOrg) => ({
+                  key: authOrg.to.id,
+                  value: authOrg.to.displayName,
+                })),
+              ]}
               products={products}
               currentPage={currentPage}
               brandId={brand.id}

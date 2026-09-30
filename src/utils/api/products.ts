@@ -1,26 +1,24 @@
 import { NextResponse } from "next/server"
-import { OrganizationRole, UserType } from "@prisma/client"
 import { getApiUser } from "../../services/auth/auth"
 import { computeBatchInformations, computeEcobalyseScore } from "../ecobalyse/api"
 import { createScore } from "../../db/score"
 import { updateAPIUse } from "../../db/user"
 import {
-  multiComponentProductAPIValidation,
-  productAPIValidation,
+  getUserMultiComponentProductAPIValidation,
+  getUserProductAPIValidation,
+  getUserProductsAPIValidation,
   ProductInformationAPI,
   ProductMetadataAPI,
-  productsAPIValidation,
 } from "../../services/validation/api"
+import { getAuthorizedBrands } from "../organization/brands"
 import { scoreIsValid } from "../validation/score"
+import { organizationTypesAllowedToDeclare } from "../organization/canDeclare"
 import { organizationTypes } from "../organization/types"
-import { checkOldProduct } from "../../services/validation/oldProduct"
+import { checkOldProduct, ProductCheckResult } from "../../services/validation/oldProduct"
 import { hashProduct } from "../encryption/hash"
 import { getBrandById } from "../../db/brands"
 import { getDefaultGTINs } from "../validation/gtin"
 import { gtinsValidation } from "../../services/validation/gtins"
-import { UploadType } from "@prisma/client"
-import { getProductConfidenceLevel } from "../product/confidence"
-import { ProductCheckResult } from "../../services/validation/productCheckResult"
 
 type ProductAndInformations = {
   product: ProductMetadataAPI & { gtins: string[] }
@@ -31,12 +29,13 @@ type GtinsResult = { success: true; data: string[] } | { success: false; error: 
 
 const parseMultiComponentProduct = (
   body: Record<string, unknown>,
-  brand: NonNullable<Awaited<ReturnType<typeof getBrandById>>>,
+  brands: ReturnType<typeof getAuthorizedBrands>,
+  brandId: string,
   gtins: GtinsResult,
 ) => {
-  const productValidation = multiComponentProductAPIValidation.safeParse({
+  const productValidation = getUserMultiComponentProductAPIValidation(brands).safeParse({
     ...body,
-    brandId: brand.id,
+    brandId,
   })
 
   if (!productValidation.success || !gtins.success) {
@@ -74,12 +73,13 @@ const parseMultiComponentProduct = (
 
 const parseBatchProduct = (
   body: Record<string, unknown>,
-  brand: NonNullable<Awaited<ReturnType<typeof getBrandById>>>,
+  brands: ReturnType<typeof getAuthorizedBrands>,
+  brandId: string,
   gtins: GtinsResult,
 ) => {
-  const productValidation = productsAPIValidation.safeParse({
+  const productValidation = getUserProductsAPIValidation(brands).safeParse({
     ...body,
-    brandId: brand.id,
+    brandId,
   })
 
   if (!productValidation.success || !gtins.success) {
@@ -109,12 +109,13 @@ const parseBatchProduct = (
 
 const parseSingleProduct = (
   body: Record<string, unknown>,
-  brand: NonNullable<Awaited<ReturnType<typeof getBrandById>>>,
+  brands: ReturnType<typeof getAuthorizedBrands>,
+  brandId: string,
   gtins: GtinsResult,
 ) => {
-  const productValidation = productAPIValidation.safeParse({
+  const productValidation = getUserProductAPIValidation(brands).safeParse({
     ...body,
-    brandId: brand.id,
+    brandId,
   })
 
   if (!productValidation.success || !gtins.success) {
@@ -141,39 +142,24 @@ const parseSingleProduct = (
 export async function handleProductPOST(req: Request, type: "single" | "batch" | "multicomponents") {
   try {
     const api = await getApiUser(req.headers)
-    if (!api || !api.user) {
+    if (!api || !api.user || !api.user.organization) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    if (api.user.type !== UserType.PROFESSIONNEL) {
-      return NextResponse.json(
-        {
-          error: "Seul les professionnels peuvent déclarer des produits via l'API",
-        },
-        { status: 403 },
-      )
-    }
-
-    if (!api.user.organization || !api.user.organization.type) {
+    if (!api.user.organization.type || !organizationTypesAllowedToDeclare.includes(api.user.organization.type)) {
       return NextResponse.json(
         {
           error:
             "Votre organisation n'est pas autorisée à déclarer des produits. Si vous pensez que c'est une erreur, veuillez contacter le support.",
-          organizationType: api.user.organization?.type ? organizationTypes[api.user.organization.type] : "Non défini",
+          organizationType: api.user.organization.type ? organizationTypes[api.user.organization.type] : "Non défini",
         },
-        { status: 403 },
-      )
-    }
-
-    if (api.user.organizationRole !== OrganizationRole.ADMIN) {
-      return NextResponse.json(
-        { error: "Seuls les admins de l'organisation peuvent déclarer des produits" },
         { status: 403 },
       )
     }
 
     await updateAPIUse(api.key)
 
+    const brands = getAuthorizedBrands(api.user.organization)
     const body = await req.json()
 
     if (body.test) {
@@ -197,39 +183,43 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
       )
     }
 
-    const brand = body.brandId ? await getBrandById(body.brandId) : null
-    if (!brand) {
-      return NextResponse.json({ error: "La marque spécifiée n'existe pas." }, { status: 400 })
-    }
+    const brandId = (body.brandId || api.user.organization.brands.find((b) => b.default)?.id || "").trim()
+    const brand = await getBrandById(brandId)
 
-    if (brand.organization && brand.organization.noGTIN && body.gtins) {
+    if (!brand) {
       return NextResponse.json(
-        { error: "La marque n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné." },
+        { error: "La marque spécifiée n'existe pas ou n'est pas autorisée pour votre organisation." },
         { status: 400 },
       )
     }
 
-    const gtins =
-      brand.organization && brand.organization.noGTIN
-        ? {
-            success: true,
-            error: {
-              issues: [],
-            },
-            data: getDefaultGTINs(brand.organization, body.internalReference),
-          }
-        : gtinsValidation.safeParse(body.gtins)
+    if (brand.organization.noGTIN && body.gtins) {
+      return NextResponse.json(
+        { error: "Votre organisation n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné." },
+        { status: 400 },
+      )
+    }
+
+    const gtins = brand.organization.noGTIN
+      ? {
+          success: true,
+          error: {
+            issues: [],
+          },
+          data: getDefaultGTINs(brand.organization, body.internalReference),
+        }
+      : gtinsValidation.safeParse(body.gtins)
 
     let parseResult: NextResponse | ProductAndInformations
     switch (type) {
       case "batch":
-        parseResult = parseBatchProduct(body, brand, gtins)
+        parseResult = parseBatchProduct(body, brands, brandId, gtins)
         break
       case "single":
-        parseResult = parseSingleProduct(body, brand, gtins)
+        parseResult = parseSingleProduct(body, brands, brandId, gtins)
         break
       case "multicomponents":
-        parseResult = parseMultiComponentProduct(body, brand, gtins)
+        parseResult = parseMultiComponentProduct(body, brands, brandId, gtins)
         break
     }
 
@@ -239,13 +229,8 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
 
     const { product, informations } = parseResult
 
-    const confidenceLevel = getProductConfidenceLevel(api.user, product.brandId)
-    const hash = hashProduct({ ...product, confidenceLevel }, informations)
-    const oldProductCheck = await checkOldProduct(product.gtins, hash, confidenceLevel, {
-      userId: api.user.id,
-      userType: api.user.type,
-      organizationId: api.user.organization?.id ?? null,
-    })
+    const hash = hashProduct(product, informations, brands)
+    const oldProductCheck = await checkOldProduct(product.gtins, hash)
 
     if (oldProductCheck.result === ProductCheckResult.Unchanged) {
       return NextResponse.json({ message: "Le produit existe déjà." }, { status: 208 })
@@ -254,13 +239,6 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
     if (oldProductCheck.result === ProductCheckResult.TooRecent) {
       return NextResponse.json(
         { message: "Un produit avec le même GTIN a été déclaré trop récemment." },
-        { status: 400 },
-      )
-    }
-
-    if (oldProductCheck.result === ProductCheckResult.HigherConfidence) {
-      return NextResponse.json(
-        { message: "Un produit avec le même GTIN a été déclaré avec une confiance plus élevée." },
         { status: 400 },
       )
     }
@@ -282,7 +260,7 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
       )
     }
 
-    await createScore(api.user, product, informations, scores, hash, UploadType.API, confidenceLevel)
+    await createScore(api.user, product, informations, scores, hash)
     return NextResponse.json({ result: "success" }, { status: 201 })
   } catch (error) {
     console.error("Erreur lors de la création du produit :", error)
