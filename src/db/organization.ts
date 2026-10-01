@@ -28,14 +28,6 @@ export const createOrganization = async (siret: string) => {
   })
 }
 
-export const getUserOrganizationType = async (organizationId: string) =>
-  prismaClient.organization
-    .findUnique({
-      where: { id: organizationId },
-      select: { type: true },
-    })
-    .then((org) => org?.type || null)
-
 export const getOrganizationById = async (organizationId: string) => {
   const organization = await prismaClient.organization.findUnique({
     select: {

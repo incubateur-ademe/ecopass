@@ -22,11 +22,13 @@ const materialSubtitles: Record<MaterialType, string | undefined> = {
   [MaterialType.CotonRecycléDéchetsDeProduction]: undefined,
 }
 
-const materials: DropdownItem[] = Object.entries(MaterialType).map(([, label]) => ({
-  value: materialMapping[label],
-  title: label,
-  subtitle: materialSubtitles[label],
-}))
+const materials: DropdownItem[] = Object.entries(MaterialType)
+  .map(([, label]) => ({
+    value: materialMapping[label],
+    title: label,
+    subtitle: materialSubtitles[label],
+  }))
+  .sort((a, b) => a.title.localeCompare(b.title))
 
 const MaterialDropdown = (
   {
