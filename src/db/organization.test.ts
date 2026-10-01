@@ -4,7 +4,7 @@ jest.mock("./prismaClient", () => ({
   prismaClient: mockPrismaTest,
 }))
 
-import { createOrganization, getUserOrganizationType, getOrganizationById } from "./organization"
+import { createOrganization, getOrganizationById } from "./organization"
 import { getSiretInfo } from "../serverFunctions/siret"
 import { prismaClient } from "./prismaClient"
 import { ConfidenceLevel, OrganizationType, Status, UploadType, UserType } from "@prisma/enums"
@@ -115,36 +115,6 @@ describe("organization", () => {
         include: { brands: true },
       })
       expect(dbOrganization?.type).toBeNull()
-    })
-  })
-
-  describe("getUserOrganizationType", () => {
-    it("should return organization type for valid organization ID", async () => {
-      const result = await getUserOrganizationType(testOrganizationId)
-
-      expect(result).toBe(OrganizationType.Brand)
-    })
-
-    it("should return null when organization not found", async () => {
-      const nonExistentId = "non-existent-org-id"
-
-      const result = await getUserOrganizationType(nonExistentId)
-
-      expect(result).toBeNull()
-    })
-
-    it("should return null when organization has null type", async () => {
-      const orgWithNullType = await prismaClient.organization.create({
-        data: {
-          siret: "22222222222222",
-          name: "Org with Null Type",
-          displayName: "Org with Null Type",
-          type: null,
-        },
-      })
-
-      const result = await getUserOrganizationType(orgWithNullType.id)
-      expect(result).toBeNull()
     })
   })
 
