@@ -82,7 +82,7 @@ describe("User DB integration", () => {
       expect(result?.user.organization).toBeDefined()
       expect(result?.user.organization?.id).toBe(testOrganization.id)
       expect(result?.user.organization?.name).toBe(testOrganization.name)
-      expect(result?.user.organization?.brands).toHaveLength(1)
+      expect(result?.user.organization?.brands).toHaveLength(2)
       expect(result?.user.organization?.brands[0].name).toBe(testBrand.name)
     })
 
@@ -154,7 +154,7 @@ describe("User DB integration", () => {
 
       const result = await getUserByApiKey(testAPIKey.key)
 
-      expect(result?.user.organization?.brands).toHaveLength(1)
+      expect(result?.user.organization?.brands).toHaveLength(2)
       expect(result?.user.organization?.authorizedBy).toHaveLength(2)
       expect(result?.user.organization?.authorizedBy[0].from.name).toBe("AuthorizedOrg1")
       expect(result?.user.organization?.authorizedBy[0].from.siret).toBe("98765432109876")
@@ -162,7 +162,7 @@ describe("User DB integration", () => {
       expect(result?.user.organization?.authorizedBy[0].from.brands[0].name).toBe("AuthorizedBrand1")
       expect(result?.user.organization?.authorizedBy[1].from.name).toBe("AuthorizedOrg2")
       expect(result?.user.organization?.authorizedBy[1].from.siret).toBe("98765432109877")
-      expect(result?.user.organization?.authorizedBy[1].from.brands).toHaveLength(1)
+      expect(result?.user.organization?.authorizedBy[1].from.brands).toHaveLength(2)
       expect(result?.user.organization?.authorizedBy[1].from.brands[0].name).toBe("AuthorizedBrand2")
     })
   })

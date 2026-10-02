@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { getApiUser } from "../../../services/auth/auth"
 import { productsListValidation } from "../../../services/validation/api"
-import { getOrganizationProductsByUserIdAndBrandId } from "../../../db/product"
+import { getOrganizationProductsByUserIdAndFilters } from "../../../db/product"
 import { handleProductPOST } from "../../../utils/api/products"
 
 export async function GET(req: Request) {
@@ -23,11 +23,11 @@ export async function GET(req: Request) {
     return NextResponse.json(validationResult.error.issues, { status: 400 })
   }
 
-  const products = await getOrganizationProductsByUserIdAndBrandId(
+  const products = await getOrganizationProductsByUserIdAndFilters(
     api.user.id,
     validationResult.data.page,
     validationResult.data.size,
-    validationResult.data.brandId,
+    { brandId: validationResult.data.brandId },
   )
 
   console.log(`[GET] /api/produits - Completed`)

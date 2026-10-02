@@ -1,7 +1,6 @@
 import { Status } from "@prisma/enums"
 import { prismaClient } from "./prismaClient"
-import { ProductCategory } from "../types/Product"
-import { getProductCategory } from "../utils/product/category"
+import { countProductsByCategory } from "../utils/product/category"
 
 export const getAllBrandsWithStats = async () => {
   const brands = await prismaClient.brand.findMany({
@@ -149,35 +148,7 @@ export const getBrandWithProducts = async (id: string) => {
   })
   return {
     ...brand,
-    productsByCategory: Object.values(
-      products
-        .filter((product) => product !== null)
-        .reduce(
-          (acc, product) => {
-            const slug = getProductCategory(product.informations) as ProductCategory | null
-            if (slug === null) {
-              return acc
-            }
-
-            if (!acc[slug]) {
-              acc[slug] = {
-                slug,
-                count: 0,
-              }
-            }
-
-            acc[slug].count += 1
-            return acc
-          },
-          {} as Record<
-            ProductCategory,
-            {
-              slug: ProductCategory
-              count: number
-            }
-          >,
-        ),
-    ).sort((a, b) => b.count - a.count || a.slug.localeCompare(b.slug)),
+    productsByCategory: countProductsByCategory(products),
   }
 }
 

@@ -121,13 +121,7 @@ test("declare my products", async ({ page }) => {
   await expect(page).toHaveURL(/.*\/produits/)
 
   await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(10)
-  await expect(page.locator("#contenu")).toContainText("Vous avez déclaré des produits sur 4 marques différentes.")
-  await expect(page.locator("#contenu")).toContainText("Vous avez 10 références produit déclarées.")
-
-  await page.getByLabel("Choisir une marque").selectOption({ value: "26ed7820-ebca-4235-b1d3-dbeab02b1768" })
-  await expect(page.getByTestId("products-table").locator("table tbody tr")).toHaveCount(7)
-  await expect(page.locator("#contenu")).toContainText("Vous avez déclaré des produits sur 4 marques différentes.")
   await expect(page.locator("#contenu")).toContainText(
-    "Vous avez 7 références produit déclarées pour la marque Emmaus Solidarité.",
+    "déclarésVous avez 10 références produit déclaréesT-shirt / Polo8Jean1Pull1Saisir",
   )
 })

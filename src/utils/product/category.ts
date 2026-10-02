@@ -26,3 +26,36 @@ export const getProductIcon = (categorySlug: string | null) => {
 
   return productMapping[categorySlug as ProductCategory]
 }
+
+export const countProductsByCategory = (
+  products: { informations: { categorySlug: string | null; mainComponent: boolean | null }[] }[],
+) =>
+  Object.values(
+    products
+      .filter((product) => product !== null)
+      .reduce(
+        (acc, product) => {
+          const slug = getProductCategory(product.informations) as ProductCategory | null
+          if (slug === null) {
+            return acc
+          }
+
+          if (!acc[slug]) {
+            acc[slug] = {
+              slug,
+              count: 0,
+            }
+          }
+
+          acc[slug].count += 1
+          return acc
+        },
+        {} as Record<
+          ProductCategory,
+          {
+            slug: ProductCategory
+            count: number
+          }
+        >,
+      ),
+  ).sort((a, b) => b.count - a.count || a.slug.localeCompare(b.slug))

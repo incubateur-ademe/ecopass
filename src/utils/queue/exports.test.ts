@@ -4,7 +4,8 @@ import { getSVG } from "../label/simple"
 import { uploadFileToS3 } from "../s3/bucket"
 import { ConfidenceLevel, ExportType, Status, UserType } from "@prisma/enums"
 import JSZip from "jszip"
-import { getOrganizationAuthorizedBrands, getProducts } from "../../db/product"
+import { getProducts, getProductsBaseWhere } from "../../db/product"
+import { FullUser } from "../../db/user"
 
 jest.mock("../../db/export")
 jest.mock("../../db/product")
@@ -18,9 +19,7 @@ jest.mock("jszip")
 const mockedCompleteExport = completeExport as jest.MockedFunction<typeof completeExport>
 const mockedFailExport = failExport as jest.MockedFunction<typeof failExport>
 const mockedGetFirstExport = getFirstExport as jest.MockedFunction<typeof getFirstExport>
-const mockedGetOrganizationAuthorizedBrands = getOrganizationAuthorizedBrands as jest.MockedFunction<
-  typeof getOrganizationAuthorizedBrands
->
+const mockedGetProductsBaseWhere = getProductsBaseWhere as jest.MockedFunction<typeof getProductsBaseWhere>
 const mockedGetProducts = getProducts as jest.MockedFunction<typeof getProducts>
 const mockedGetSVG = getSVG as jest.MockedFunction<typeof getSVG>
 const mockedUploadFileToS3 = uploadFileToS3 as jest.MockedFunction<typeof uploadFileToS3>
@@ -31,6 +30,8 @@ describe("processExportsQueue", () => {
     jest.clearAllMocks()
   })
 
+  const baseWhere = { brandId: "Test Brand" }
+
   const mockExport = {
     id: "export-1",
     name: "test-export",
@@ -38,12 +39,19 @@ describe("processExportsQueue", () => {
     createdAt: new Date("2023-01-01T00:00:00Z"),
     status: Status.Pending,
     brand: "Test Brand" as string | null,
+    category: null,
+    declarant: null,
+    dateFrom: null,
+    dateTo: null,
+    search: null,
     count: 1,
     type: ExportType.SVG,
     user: {
-      organizationId: "org-1" as string | null,
-    },
-  }
+      id: "user-1",
+      type: UserType.PROFESSIONNEL,
+      organization: { id: "org-1" },
+    } as FullUser,
+  } satisfies Awaited<ReturnType<typeof getFirstExport>>
 
   const mockProduct = {
     id: "product-1",
@@ -153,37 +161,41 @@ describe("processExportsQueue", () => {
     await processExportsQueue()
 
     expect(mockedGetFirstExport).toHaveBeenCalledTimes(1)
-    expect(mockedGetOrganizationAuthorizedBrands).not.toHaveBeenCalled()
     expect(mockedGetProducts).not.toHaveBeenCalled()
     expect(mockedCompleteExport).not.toHaveBeenCalled()
   })
 
   it("should fail export immediately when user has no organization", async () => {
-    mockedGetFirstExport.mockResolvedValue({ ...mockExport, user: { organizationId: null } })
+    mockedGetFirstExport.mockResolvedValue({
+      ...mockExport,
+      user: { id: "user-1", type: UserType.PROFESSIONNEL, organization: null } as FullUser,
+    })
 
     await processExportsQueue()
 
     expect(mockedGetFirstExport).toHaveBeenCalledTimes(1)
     expect(mockedFailExport).toHaveBeenCalledWith("export-1")
-    expect(mockedGetOrganizationAuthorizedBrands).not.toHaveBeenCalled()
     expect(mockedGetProducts).not.toHaveBeenCalled()
     expect(mockedGetSVG).not.toHaveBeenCalled()
   })
 
   it("should return early when no products found", async () => {
+    mockedGetProductsBaseWhere.mockResolvedValue(baseWhere)
     mockedGetFirstExport.mockResolvedValue(mockExport)
     mockedGetProducts.mockResolvedValue([])
-    mockedGetOrganizationAuthorizedBrands.mockResolvedValue(new Set(["Test Brand"]))
 
     await processExportsQueue()
 
     expect(mockedGetFirstExport).toHaveBeenCalledTimes(1)
-    expect(mockedGetProducts).toHaveBeenNthCalledWith(
-      1,
-      { brandId: "Test Brand", createdAt: { lt: mockExport.createdAt }, status: "Done" },
-      0,
-      1000,
-    )
+    expect(mockedGetProductsBaseWhere).toHaveBeenNthCalledWith(1, mockExport.user, {
+      brandId: "Test Brand",
+      category: undefined,
+      dateFrom: undefined,
+      dateTo: new Date("2023-01-01T00:00:00.000Z"),
+      declarant: undefined,
+      search: undefined,
+    })
+    expect(mockedGetProducts).toHaveBeenNthCalledWith(1, baseWhere, 0, 1000)
     expect(mockedFailExport).toHaveBeenCalledWith("export-1")
     expect(mockedGetSVG).not.toHaveBeenCalled()
   })
@@ -198,26 +210,25 @@ describe("processExportsQueue", () => {
     }
     mockedJSZip.mockImplementation(() => mockZipInstance as any)
 
+    mockedGetProductsBaseWhere.mockResolvedValue(baseWhere)
     mockedGetFirstExport.mockResolvedValue(mockExport)
     mockedGetProducts.mockResolvedValueOnce([mockProduct]).mockResolvedValueOnce([])
-    mockedGetOrganizationAuthorizedBrands.mockResolvedValue(new Set(["Test Brand"]))
     mockedGetSVG.mockReturnValue(mockSvgContent)
 
     await processExportsQueue()
 
     expect(mockedGetFirstExport).toHaveBeenCalledTimes(1)
-    expect(mockedGetProducts).toHaveBeenNthCalledWith(
-      1,
-      { brandId: "Test Brand", createdAt: { lt: mockExport.createdAt }, status: "Done" },
-      0,
-      1000,
-    )
-    expect(mockedGetProducts).toHaveBeenNthCalledWith(
-      2,
-      { brandId: "Test Brand", createdAt: { lt: mockExport.createdAt }, status: "Done" },
-      1000,
-      1000,
-    )
+    expect(mockedGetProducts).toHaveBeenNthCalledWith(1, baseWhere, 0, 1000)
+    expect(mockedGetProductsBaseWhere).toHaveBeenCalledTimes(1)
+    expect(mockedGetProductsBaseWhere).toHaveBeenNthCalledWith(1, mockExport.user, {
+      brandId: "Test Brand",
+      category: undefined,
+      dateFrom: undefined,
+      dateTo: new Date("2023-01-01T00:00:00.000Z"),
+      declarant: undefined,
+      search: undefined,
+    })
+    expect(mockedGetProducts).toHaveBeenNthCalledWith(2, baseWhere, 1000, 1000)
     expect(mockedGetSVG).toHaveBeenCalledWith(85.5, 8.5)
     expect(mockZipFile).toHaveBeenCalledWith("REF001.svg", mockSvgContent)
     expect(mockZipGenerateAsync).toHaveBeenCalledWith({ type: "nodebuffer" })
@@ -235,7 +246,6 @@ describe("processExportsQueue", () => {
     mockedJSZip.mockImplementation(() => mockZipInstance as any)
 
     mockedGetFirstExport.mockResolvedValue(mockExport)
-    mockedGetOrganizationAuthorizedBrands.mockResolvedValue(new Set(["Test Brand"]))
     mockedGetProducts
       .mockResolvedValueOnce([
         {
