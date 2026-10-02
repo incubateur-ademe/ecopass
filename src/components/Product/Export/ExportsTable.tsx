@@ -1,7 +1,7 @@
 "use client"
 import Table from "../../Table/Table"
 import { Export } from "@prisma/client"
-import { Status } from "@prisma/enums"
+import { ExportType, Status } from "@prisma/enums"
 import DownloadExport from "../DownloadExport"
 import { formatDateTime } from "../../../services/format"
 import { useState } from "react"
@@ -20,18 +20,25 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
           className='fr-mt-2w'
         />
       )}
+      <p>
+        <b>Les Étiquettes .svg</b> : redirigent vers le détail du calcul du coût du produit, à intégrer à vos fiches
+        produits en ligne et à imprimer sur vos étiquettes en magasin.
+      </p>
+      <p>
+        <b>Les Scores .csv</b> : détaillent des données de calcul .csv et coefficient de durabilité
+      </p>
       <Table
         fixed
         caption='Mes produits'
         noCaption
-        headers={["Date", "Status", "Fichier", "Nom", ""]}
+        headers={["Type d’export", "Statut", "Fichier", "Date", ""]}
         data={exports.flatMap((item) =>
           item.count && item.count > 1
             ? Array.from({ length: item.count }).map((_, index) => [
-                formatDateTime(item.createdAt),
+                item.type === ExportType.CSV ? "Fichier de données csv" : "Étiquettes svg",
                 <StatusBadge status={item.status} key={`${item.id}-${index}`} />,
                 `${index + 1} / ${item.count}`,
-                `${item.name} - Partie ${index + 1}`,
+                formatDateTime(item.createdAt),
                 item.status == Status.Done ? (
                   <DownloadExport
                     name={item.name}
@@ -46,10 +53,10 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
               ])
             : [
                 [
-                  formatDateTime(item.createdAt),
+                  item.type === ExportType.CSV ? "Fichier de données csv" : "Étiquettes svg",
                   <StatusBadge status={item.status} key={item.id} />,
                   item.status == Status.Done ? "1 / 1" : "",
-                  item.name,
+                  formatDateTime(item.createdAt),
                   item.status == Status.Done ? (
                     <DownloadExport name={item.name} key={item.id} setError={setError} exportType={item.type} />
                   ) : (

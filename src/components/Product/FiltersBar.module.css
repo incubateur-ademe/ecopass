@@ -1,0 +1,41 @@
+.container {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background-color: var(--background-alt-grey);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1rem;
+  align-items: flex-end;
+
+  :global(.fr-select-group),
+  :global(.fr-input-group) {
+    margin-bottom: 1rem;
+  }
+}
+
+.dateInputs {
+  display: flex;
+  align-items: center;
+  gap: 0 1rem;
+
+  @media screen and (max-width: 28rem) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.dateSeparator {
+  font-weight: 600;
+  color: var(--text-mention-grey);
+
+  @media screen and (max-width: 28rem) {
+    display: none;
+  }
+}
+
+.buttons {
+  margin-top: 1.5rem;
+}

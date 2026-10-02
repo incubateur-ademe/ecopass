@@ -1,51 +1,89 @@
-import { Suspense } from "react"
-import Exports from "./Exports"
-import NewExport from "../NewExport"
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
+"use client"
+import styles from "./ExportProducts.module.css"
+import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup"
+import { ProductFilters } from "../../../db/product"
+import { Export } from "@prisma/client"
 import { ExportType } from "@prisma/enums"
+import { Alert } from "@codegouvfr/react-dsfr/Alert"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useCallback, useState } from "react"
+import { exportProducts } from "../../../serverFunctions/export"
 
-const ExportProducts = ({ brand }: { brand?: string }) => {
+const ExportProducts = ({ filters, exports }: { filters: ProductFilters; exports: Export[] }) => {
+  const router = useRouter()
+  const [success, setSuccess] = useState(false)
+  const onClick = useCallback(
+    (type: ExportType) => {
+      setSuccess(false)
+      exportProducts(filters, type).then(() => {
+        setSuccess(true)
+        router.refresh()
+      })
+    },
+    [router, filters],
+  )
+
+  const handleExportsScroll = () => {
+    const element = document.getElementById("exports")
+    element?.scrollIntoView({ behavior: "smooth" })
+  }
+
   return (
     <>
-      <h2>Coût environnemental</h2>
-      <Tabs
-        tabs={[
-          {
-            label: "Étiquettes (.svg)",
-            content: (
+      <div className={styles.container}>
+        <p>
+          <b>Faire un export de données</b> (vous pouvez y appliquer les filtres) :
+        </p>
+        <ButtonsGroup
+          buttons={[
+            {
+              priority: "secondary",
+              iconId: "fr-icon-file-download-fill",
+              children: "Exporter les données .csv",
+              onClick: () => onClick(ExportType.CSV),
+            },
+            {
+              priority: "secondary",
+              iconId: "fr-icon-file-download-fill",
+              children: "Exporter les étiquettes .svg",
+              onClick: () => onClick(ExportType.SVG),
+            },
+          ]}
+          inlineLayoutWhen='always'
+        />
+      </div>
+      {success ? (
+        <Alert
+          severity='success'
+          title='Votre fichier d’export de données est en cours de création'
+          description={
+            <>
+              Lorsque ce dernier sera prêt, vous pourrez le télécharger depuis{" "}
+              <Link href='#exports' onClick={handleExportsScroll}>
+                le tableau ci-dessous
+              </Link>
+              .
+            </>
+          }
+        />
+      ) : (
+        exports.length > 0 && (
+          <Alert
+            severity='info'
+            small
+            description={
               <>
-                <p>
-                  Pour télécharger l'ensemble des étiquettes coût environnemental de vos produits en format SVG,
-                  veuillez cliquer sur le bouton ci dessous.
-                </p>
-                <p>Note : Vos fichiers restent disponibles 30 jours.</p>
-                <br />
-                <NewExport brand={brand} type={ExportType.SVG} />
-                <Suspense>
-                  <Exports brand={brand} type={ExportType.SVG} />
-                </Suspense>
+                Vous avez des fichiers d'exports prêts à télécharger,{" "}
+                <Link href='#exports' onClick={handleExportsScroll}>
+                  en bas de page
+                </Link>
+                .
               </>
-            ),
-          },
-          {
-            label: "Scores (.csv)",
-            content: (
-              <>
-                <p>
-                  Pour télécharger le CSV contenant les scores coût environnemental de vos produits, veuillez cliquer
-                  sur le bouton ci dessous.
-                </p>
-                <p>Note : Vos fichiers restent disponibles 30 jours.</p>
-                <br />
-                <NewExport brand={brand} type={ExportType.CSV} />
-                <Suspense>
-                  <Exports brand={brand} type={ExportType.CSV} />
-                </Suspense>
-              </>
-            ),
-          },
-        ]}
-      />
+            }
+          />
+        )
+      )}
     </>
   )
 }

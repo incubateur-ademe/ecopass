@@ -1,9 +1,9 @@
 import { completeExport, failExport, getFirstExport } from "../../db/export"
-import { getOrganizationAuthorizedBrands, getProducts, ProductWithScore } from "../../db/product"
+import { getProducts, getProductsBaseWhere, ProductWithScore } from "../../db/product"
 import JSZip from "jszip"
 import { getSVG } from "../label/simple"
 import { uploadFileToS3 } from "../s3/bucket"
-import { ExportType, Status } from "@prisma/enums"
+import { ExportType } from "@prisma/enums"
 import { stringify } from "csv-stringify/sync"
 
 const renderLabelSVG = (product: ProductWithScore) => {
@@ -18,7 +18,6 @@ const size = 1000
 
 const processExportWithStrategy = async (
   exportToProcess: NonNullable<Awaited<ReturnType<typeof getFirstExport>>>,
-  authorizedBrands: Set<string>,
   strategy: {
     getPage(pageNumber: number): number
     onBatch(products: ProductWithScore[], pageNumber: number): Promise<void>
@@ -28,16 +27,16 @@ const processExportWithStrategy = async (
   let products: ProductWithScore[] = []
   let page = 0
 
+  const baseWhere = await getProductsBaseWhere(exportToProcess.user, {
+    brandId: exportToProcess.brand || undefined,
+    category: exportToProcess.category || undefined,
+    declarant: exportToProcess.declarant || undefined,
+    dateFrom: exportToProcess.dateFrom || undefined,
+    dateTo: exportToProcess.dateTo || exportToProcess.createdAt,
+    search: exportToProcess.search || undefined,
+  })
   while (page === 0 || products.length > 0) {
-    products = await getProducts(
-      {
-        brandId: exportToProcess.brand ? exportToProcess.brand : { in: Array.from(authorizedBrands) },
-        status: Status.Done,
-        createdAt: { lt: exportToProcess.createdAt },
-      },
-      size * page,
-      size,
-    )
+    products = await getProducts(baseWhere, size * page, size)
 
     if (!products.length) {
       if (page === 0) {
@@ -106,20 +105,14 @@ const createCSVExportStrategy = (exportName: string) => {
   }
 }
 
-const exportSVGs = async (
-  exportToProcess: NonNullable<Awaited<ReturnType<typeof getFirstExport>>>,
-  authorizedBrands: Set<string>,
-) => {
+const exportSVGs = async (exportToProcess: NonNullable<Awaited<ReturnType<typeof getFirstExport>>>) => {
   const strategy = createSVGExportStrategy(exportToProcess.name)
-  await processExportWithStrategy(exportToProcess, authorizedBrands, strategy)
+  await processExportWithStrategy(exportToProcess, strategy)
 }
 
-const exportCSVs = async (
-  exportToProcess: NonNullable<Awaited<ReturnType<typeof getFirstExport>>>,
-  authorizedBrands: Set<string>,
-) => {
+const exportCSVs = async (exportToProcess: NonNullable<Awaited<ReturnType<typeof getFirstExport>>>) => {
   const strategy = createCSVExportStrategy(exportToProcess.name)
-  await processExportWithStrategy(exportToProcess, authorizedBrands, strategy)
+  await processExportWithStrategy(exportToProcess, strategy)
 }
 
 export const processExportsQueue = async () => {
@@ -128,22 +121,16 @@ export const processExportsQueue = async () => {
     return
   }
 
-  if (!exportToProcess.user.organizationId) {
+  if (!exportToProcess.user.organization?.id) {
     await failExport(exportToProcess.id)
     return
   }
 
   console.log(`Processing export ${exportToProcess.name}`)
-  const authorizedBrands = await getOrganizationAuthorizedBrands(exportToProcess.user.organizationId)
-
-  if (exportToProcess.brand && !authorizedBrands.has(exportToProcess.brand)) {
-    await failExport(exportToProcess.id)
-    return
-  }
 
   if (exportToProcess.type === ExportType.SVG) {
-    await exportSVGs(exportToProcess, authorizedBrands)
+    await exportSVGs(exportToProcess)
   } else {
-    await exportCSVs(exportToProcess, authorizedBrands)
+    await exportCSVs(exportToProcess)
   }
 }
