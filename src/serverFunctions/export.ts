@@ -1,6 +1,6 @@
 "use server"
 import { ExportType, Status } from "@prisma/client"
-import { getProductsByUploadId } from "../db/product"
+import { getProductsByUploadId, ProductFilters } from "../db/product"
 import { stringify } from "csv-stringify/sync"
 import * as XLSX from "xlsx"
 import { getUploadById } from "../db/upload"
@@ -60,12 +60,12 @@ export const exportUpload = async (uploadId: string) => {
   })
 }
 
-export const exportProducts = async (brand: string | undefined, type: ExportType) => {
-  console.log(`[exportProducts] Starting - brand: ${brand}`)
+export const exportProducts = async (filter: ProductFilters, type: ExportType) => {
+  console.log(`[exportProducts] Starting - filter: ${JSON.stringify(filter)}`)
   const session = await auth()
   if (!session || !session.user) {
     return "Utilisateur non authentifié"
   }
 
-  return createExport(session.user.id, brand, type)
+  return createExport(session.user.id, filter, type)
 }

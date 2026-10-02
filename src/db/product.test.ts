@@ -9,7 +9,6 @@ jest.mock("./prismaClient", () => ({
 import {
   createProducts,
   failProducts,
-  getOrganizationProductsCountByUserIdAndBrand,
   getProductsByUploadId,
   getProductWithScoreHistory,
   getProductWithScoreHistoryCount,
@@ -19,11 +18,13 @@ import {
   forEachLatestProductsByBrandIdForExport,
   getMeanScores,
   ProductWithScoreBase,
+  getOrganizationProductsCountByUserIdAndFilters,
 } from "./product"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { ProductInformationAPI } from "../services/validation/api"
 import { cleanDB } from "./testUtils"
 import { encryptProductFields } from "../utils/encryption/encryption"
+import { FullUser, getUser } from "./user"
 
 describe("Product DB integration", () => {
   const DEFAULT_BRAND_ID = "69147ca8-09c6-4ae6-b731-d5344f080491"
@@ -274,7 +275,7 @@ describe("Product DB integration", () => {
     expect(updated?.error).toBe("Test error")
   })
 
-  it("getOrganizationProductsCountByUserIdAndBrand returns correct count", async () => {
+  it("getOrganizationProductsPageData returns correct count", async () => {
     await Promise.all([
       mockPrismaTest.product.create({
         data: baseProduct,
@@ -310,11 +311,16 @@ describe("Product DB integration", () => {
         },
       }),
     ])
-    const countBrand2 = await getOrganizationProductsCountByUserIdAndBrand(testUserId, BRAND_ID_2)
-    expect(countBrand2).toBe(1)
+    const user = (await getUser(testUserId)) as FullUser
+    let productsCount = await getOrganizationProductsCountByUserIdAndFilters(user, { brandId: BRAND_ID_2 })
+    expect(productsCount).toHaveLength(1)
+    expect(productsCount[0].slug).toBe(ProductCategory.Pull)
+    expect(productsCount[0].count).toBe(1)
 
-    const countAll = await getOrganizationProductsCountByUserIdAndBrand(testUserId)
-    expect(countAll).toBe(2)
+    productsCount = await getOrganizationProductsCountByUserIdAndFilters(user)
+    expect(productsCount).toHaveLength(1)
+    expect(productsCount[0].slug).toBe(ProductCategory.Pull)
+    expect(productsCount[0].count).toBe(2)
   })
 
   it("getProductWithScoreHistoryCount returns correct count", async () => {

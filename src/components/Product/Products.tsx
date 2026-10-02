@@ -1,9 +1,11 @@
 "use server"
 
-import { getOrganizationProductsByUserIdAndBrandId } from "../../db/product"
+import {
+  getOrganizationProductsByUserIdAndFilters,
+  getOrganizationProductsCountByUserIdAndFilters,
+  type ProductFilters,
+} from "../../db/product"
 import { auth } from "../../services/auth/auth"
-import Search from "./Search"
-import { Pagination } from "@codegouvfr/react-dsfr/Pagination"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import Image from "next/image"
@@ -14,18 +16,25 @@ import ProductLink from "./ProductLink"
 import { getProductCategory, getProductIcon } from "../../utils/product/category"
 import { getDeclarant } from "../../utils/product/declarant"
 import { confidencesLevel } from "../../utils/product/confidence"
+import { ProductsPagination } from "./ProductsPagination"
+import { getUser } from "../../db/user"
 
-const Products = async ({ page, productsCount, brand }: { page: number; productsCount: number; brand?: string }) => {
+const Products = async ({ page, filters }: { page: number; filters: ProductFilters }) => {
   const session = await auth()
   if (!session || !session.user) {
     return null
   }
+  const user = await getUser(session.user.id)
+  if (!user) {
+    return null
+  }
 
-  const products = await getOrganizationProductsByUserIdAndBrandId(session.user.id, page - 1, 10, brand)
+  const products = await getOrganizationProductsByUserIdAndFilters(session.user.id, page - 1, 10, filters)
+  const productCount = await getOrganizationProductsCountByUserIdAndFilters(user, filters)
 
+  const total = productCount.reduce((acc, { count }) => acc + count, 0)
   return (
     <>
-      <Search withoutHint />
       {products.length === 0 ? (
         <Alert severity='info' small description={<>Aucun résultat.</>} />
       ) : (
@@ -42,6 +51,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
               "Détails",
             ]}
             fixed
+            caption={total > 1 ? `${total} produits` : total === 1 ? "1 produit" : "Aucun produit"}
             data={products.map((product) => {
               const categorySlug = getProductCategory(product.informations)
               const icon = getProductIcon(categorySlug)
@@ -64,16 +74,7 @@ const Products = async ({ page, productsCount, brand }: { page: number; products
               ]
             })}
           />
-          {productsCount > 10 && (
-            <Pagination
-              count={Math.ceil(productsCount / 10)}
-              defaultPage={page}
-              getPageLinkProps={(page) => ({
-                href: `/produits?page=${page}${brand ? `&brand=${brand}` : ""}`,
-              })}
-              showFirstLast
-            />
-          )}
+          {total > 10 && <ProductsPagination count={Math.ceil(total / 10)} defaultPage={page} />}
         </div>
       )}
     </>

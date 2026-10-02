@@ -30,7 +30,7 @@ test("Connection with a brand user", async ({ page }) => {
 
   await page.getByRole("link", { name: "Produits déclarés", exact: true }).click()
   await expect(page).toHaveURL(/.*\/produits/)
-  await expect(page.getByRole("heading", { name: "Mes produits", exact: true })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Mes produits déclarés", exact: true })).toBeVisible()
 
   await page.getByRole("link", { name: "Déclarations", exact: true }).click()
   await expect(page).toHaveURL(/.*\/declarations/)
@@ -63,7 +63,7 @@ test("Connection with a consultancy user", async ({ page }) => {
 
   await page.getByRole("link", { name: "Produits déclarés", exact: true }).click()
   await expect(page).toHaveURL(/.*\/produits/)
-  await expect(page.getByRole("heading", { name: "Mes produits", exact: true })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Mes produits déclarés", exact: true })).toBeVisible()
 
   await page.getByRole("link", { name: "Déclarations", exact: true }).click()
   await expect(page).toHaveURL(/.*\/declarations/)
@@ -96,7 +96,7 @@ test("Connection with a distributor user", async ({ page }) => {
 
   await page.getByRole("link", { name: "Produits déclarés", exact: true }).click()
   await expect(page).toHaveURL(/.*\/produits/)
-  await expect(page.getByRole("heading", { name: "Mes produits", exact: true })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Mes produits déclarés", exact: true })).toBeVisible()
 
   await page.getByRole("link", { name: "Déclarations", exact: true }).click()
   await expect(page).toHaveURL(/.*\/declarations/)
@@ -132,7 +132,7 @@ test("Connection with an other user", async ({ page }) => {
 
   await page.getByRole("link", { name: "Produits déclarés", exact: true }).click()
   await expect(page).toHaveURL(/.*\/produits/)
-  await expect(page.getByRole("heading", { name: "Mes produits", exact: true })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Mes produits déclarés", exact: true })).toBeVisible()
 
   await page.getByRole("link", { name: "Déclarations", exact: true }).click()
   await expect(page).toHaveURL(/.*\/declarations/)
@@ -173,7 +173,7 @@ test("Connection with an unknown user", async ({ page }) => {
 
   await page.getByRole("link", { name: "Produits déclarés", exact: true }).click()
   await expect(page).toHaveURL(/.*\/produits/)
-  await expect(page.getByRole("heading", { name: "Mes produits", exact: true })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Mes produits déclarés", exact: true })).toBeVisible()
 
   await page.getByRole("link", { name: "Déclarations", exact: true }).click()
   await expect(page).toHaveURL(/.*\/declarations/)
@@ -212,7 +212,7 @@ test("Connection with a citoyen user", async ({ page }) => {
 
   await page.getByRole("link", { name: "Produits déclarés", exact: true }).click()
   await expect(page).toHaveURL(/.*\/produits/)
-  await expect(page.getByRole("heading", { name: "Mes produits", exact: true })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Mes produits déclarés", exact: true })).toBeVisible()
 
   await page.goto("http://localhost:3000/declarations")
   await expect(page).toHaveURL(/.*\//)
