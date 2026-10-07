@@ -1,9 +1,10 @@
 "use server"
 import axios from "axios"
 import { getProductCountByCategory, getDistinctBrandCount, getBrandsInformations } from "../../db/product"
-import { getDoneAPIUploadCount, getDoneFileUploadCount } from "../../db/upload"
+import { getDoneTypeUploadCount } from "../../db/upload"
 import { auth } from "../auth/auth"
 import { canAccessAdminSpace } from "../../utils/authorization/authorizations"
+import { UploadType } from "@prisma/enums"
 
 const getVisits = async () => {
   const token = process.env.MATOMO_API_TOKEN as string
@@ -28,12 +29,13 @@ const getVisits = async () => {
 }
 
 export const computeStats = async () => {
-  const [visits, products, fileUploads, apiUploads, distinctBrands] = await Promise.all([
+  const [visits, products, fileUploads, apiUploads, distinctBrands, simplifiedUploads] = await Promise.all([
     getVisits(),
     getProductCountByCategory(),
-    getDoneFileUploadCount(),
-    getDoneAPIUploadCount(),
+    getDoneTypeUploadCount(UploadType.FILE),
+    getDoneTypeUploadCount(UploadType.API),
     getDistinctBrandCount(),
+    getDoneTypeUploadCount(UploadType.SIMPLIFIED),
   ])
 
   return {
@@ -42,6 +44,7 @@ export const computeStats = async () => {
     fileUploads,
     apiUploads,
     distinctBrands,
+    simplifiedUploads,
   }
 }
 
