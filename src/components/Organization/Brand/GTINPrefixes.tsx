@@ -88,7 +88,9 @@ const GTINPrefixes = ({ prefixes, isAdmin }: { prefixes: UserOrganization["gtinP
             fixed
             caption='Mes préfixes'
             data={prefixes.map((prefix) => [
-              prefix.prefix,
+              <span className={styles.prefix} key={prefix.id}>
+                {prefix.prefix}
+              </span>,
               <Button
                 priority='secondary'
                 iconId='fr-icon-delete-bin-fill'

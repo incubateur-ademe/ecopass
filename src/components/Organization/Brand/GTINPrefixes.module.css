@@ -15,3 +15,7 @@
 .form {
   flex: 1;
 }
+
+.prefix {
+  font-size: 1.125rem;
+}

@@ -195,8 +195,5 @@ export const getFirstFileUpload = async () =>
 
 export type FileUpload = Awaited<ReturnType<typeof getFirstFileUpload>>
 
-export const getDoneFileUploadCount = async () =>
-  prismaClient.upload.count({ where: { status: Status.Done, type: UploadType.FILE } })
-
-export const getDoneAPIUploadCount = async () =>
-  prismaClient.upload.count({ where: { status: Status.Done, type: UploadType.API } })
+export const getDoneTypeUploadCount = async (type: UploadType) =>
+  prismaClient.upload.count({ where: { status: Status.Done, type } })
