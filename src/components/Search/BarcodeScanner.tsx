@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from "react"
 import { createModal } from "@codegouvfr/react-dsfr/Modal"
 import Button from "@codegouvfr/react-dsfr/Button"
-import Quagga from "@ericblade/quagga2"
+import { BarcodeFormat, BrowserMultiFormatOneDReader } from "@zxing/browser"
 import styles from "./BarcodeScanner.module.css"
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen"
 
@@ -35,7 +35,6 @@ const BarcodeScanner = ({
 
   const onClose = useCallback(() => {
     setIsScanning(false)
-    Quagga.stop()
   }, [])
 
   useIsModalOpen(modal, {
@@ -51,51 +50,47 @@ const BarcodeScanner = ({
     if (!isScanning || !videoContainerRef.current) {
       return
     }
-    const initializeQuagga = () => {
+
+    const initializeZXing = async () => {
       try {
-        Quagga.init(
+        const codeReader = new BrowserMultiFormatOneDReader()
+        codeReader.possibleFormats = [BarcodeFormat.EAN_13, BarcodeFormat.EAN_8]
+
+        const videoElement = document.createElement("video")
+        videoElement.style.width = "100%"
+        videoElement.style.height = "100%"
+        videoContainerRef.current?.appendChild(videoElement)
+
+        await codeReader.decodeFromConstraints(
           {
-            locate: false,
-            inputStream: {
-              type: "LiveStream",
-              constraints: {
-                facingMode: "environment",
-                aspectRatio: { ideal: 16 / 9 },
-              },
-              target: videoContainerRef.current as HTMLElement,
-            },
-            decoder: {
-              readers: ["ean_reader", "ean_8_reader"],
-            },
+            video: {
+              facingMode: "environment",
+              focusMode: "continuous",
+              frameRate: { ideal: 10, max: 15 },
+              width: { min: 640, ideal: 2048, max: 4048 },
+            } as MediaTrackConstraints,
+            audio: false,
           },
-          (err) => {
-            if (err) {
-              console.error("Erreur initialisation Quagga:", err)
-              setError("Impossible d'accéder à la caméra. Vérifiez les permissions.")
+          videoElement,
+          (decodedText) => {
+            if (decodedText && isScanning) {
+              alert(`Code detected: ${decodedText.getText()}`)
+              onScan(decodedText.getText())
               stopScanning()
-              return
             }
-
-            Quagga.start()
-
-            Quagga.onDetected((result) => {
-              if (result.codeResult?.code) {
-                alert(`Code detected: ${result.codeResult?.code}`)
-                const code = result.codeResult.code
-                onScan(code)
-                stopScanning()
-              }
-            })
           },
         )
       } catch (error) {
-        console.error("Erreur démarrage scanner:", error)
-        setError("Erreur lors du démarrage du scanner.")
-        stopScanning()
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        if (!errorMessage.includes("Cancelled") && !errorMessage.includes("abort")) {
+          console.error("Erreur initialisation ZXing:", error)
+          setError("Impossible d'accéder à la caméra. Vérifiez les permissions.")
+          stopScanning()
+        }
       }
     }
 
-    initializeQuagga()
+    initializeZXing()
   }, [isScanning, onScan, setError, stopScanning])
 
   const startScanning = async () => {
