@@ -46,6 +46,9 @@ const Statistics = ({ stats }: { stats: Stats }) => {
             <b>{stats.apiUploads.toLocaleString("fr-FR")}</b> déclarations via l'API
           </li>
           <li>
+            <b>{stats.simplifiedUploads.toLocaleString("fr-FR")}</b> déclarations par des citoyens
+          </li>
+          <li>
             <b>
               {Object.values(stats.products)
                 .reduce((acc, count) => acc + count, 0)
