@@ -195,5 +195,9 @@ export const getFirstFileUpload = async () =>
 
 export type FileUpload = Awaited<ReturnType<typeof getFirstFileUpload>>
 
-export const getDoneTypeUploadCount = async (type: UploadType) =>
-  prismaClient.upload.count({ where: { status: Status.Done, type } })
+export const getDoneUploadCount = async () =>
+  prismaClient.upload.groupBy({
+    by: ["type"],
+    where: { status: Status.Done },
+    _count: { id: true },
+  })
