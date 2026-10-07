@@ -195,6 +195,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
 
     const validatedData = productSimplifiedDeclarationValidation.safeParse({
       ...data,
+      internalReference: data.internalReference.trim() || data.gtin,
       product: productMapping[mappedCategories[data.product]] || data.product,
       mass: massInGrams / 1000,
       brandId: resolvedBrand.id,
