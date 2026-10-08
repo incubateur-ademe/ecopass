@@ -131,6 +131,7 @@ const BarcodeScanner = ({
   return (
     <>
       <Button
+        type='button'
         priority='secondary'
         iconId='ri-camera-line'
         onClick={startScanning}
