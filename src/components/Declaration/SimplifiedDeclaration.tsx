@@ -16,13 +16,13 @@ const steps: Record<number, string> = {
   3: "Validation",
 }
 
-const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string }[] }) => {
+const SimplifiedDeclaration = ({ brands, gtin }: { brands: { id: string; name: string }[]; gtin?: string }) => {
   const ref = useRef<HTMLDivElement>(null)
   const [step, setStep] = useState(1)
   const [data, setData] = useState<SimplifiedDeclarationData>({
     brandName: "",
     brandId: "",
-    gtin: "",
+    gtin: gtin || "",
     internalReference: "",
     url: "",
     product: "",

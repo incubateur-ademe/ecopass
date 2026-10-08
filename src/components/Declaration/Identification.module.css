@@ -1,3 +1,23 @@
 .button {
   float: right;
 }
+
+.gtinErrored,
+.gtin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  :global(.fr-input-group) {
+    flex: 1;
+    margin-bottom: 0;
+    min-width: min(100%, 15rem);
+  }
+}
+
+.gtinErrored {
+  align-items: center;
+}

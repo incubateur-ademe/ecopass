@@ -8,6 +8,7 @@ import { isValidGtin } from "../../utils/validation/gtin"
 import BrandAutocomplete from "./BrandAutocomplete"
 import { isGTINAlreadyDeclared } from "../../serverFunctions/product"
 import { ProductCheckResult } from "../../services/validation/productCheckResult"
+import BarcodeScanner from "../Search/BarcodeScanner"
 
 const Identification = ({
   data,
@@ -27,6 +28,7 @@ const Identification = ({
   goToNextStep: () => void
 }) => {
   const [errors, setErrors] = useState<{ [key in keyof typeof data]?: ReactNode }>({})
+  const [scanError, setScannError] = useState("")
   const brandNameRef = useRef<HTMLInputElement>(null)
   const gtinRef = useRef<HTMLInputElement>(null)
 
@@ -104,17 +106,21 @@ const Identification = ({
             setData("brandId", brandId)
           }}
         />
-        <Input
-          label='Code barre (GTIN) *'
-          state={errors.gtin ? "error" : undefined}
-          stateRelatedMessage={errors.gtin}
-          nativeInputProps={{
-            required: true,
-            value: data.gtin,
-            ref: gtinRef,
-            onChange: (e) => setData("gtin", e.target.value),
-          }}
-        />
+        <div className={errors.gtin ? styles.gtinErrored : styles.gtin}>
+          <Input
+            label='Code barre (GTIN) *'
+            state={errors.gtin ? "error" : undefined}
+            stateRelatedMessage={errors.gtin}
+            nativeInputProps={{
+              required: true,
+              value: data.gtin,
+              ref: gtinRef,
+              onChange: (e) => setData("gtin", e.target.value),
+            }}
+          />
+          <BarcodeScanner onScan={(code) => setData("gtin", code)} setError={setScannError} />
+        </div>
+        {scanError && <Alert small description={scanError} severity='error' className='fr-mb-3w' />}
         <Input
           label='Référence interne (code ou dénomination)'
           nativeInputProps={{
