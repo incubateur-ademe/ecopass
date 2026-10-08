@@ -1,5 +1,5 @@
 import Tile from "@codegouvfr/react-dsfr/Tile"
-import Contact from "../Organization/Contact"
+import Contact from "../Help/Contact"
 
 const Informations = () => {
   return (
