@@ -20,7 +20,7 @@ const SearchInput = ({
   placeholder?: string
   value: string
   onChange: (value: string) => void
-  onSearch?: () => void
+  onSearch?: (value?: string) => void
   buttonLabel?: string
   stateRelatedMessage?: string
   searchButtonHref?: string
@@ -56,12 +56,7 @@ const SearchInput = ({
             }}
           />
         </div>
-        <BarcodeScanner
-          onScan={(code) => {
-            onChange(code)
-          }}
-          setError={setError}
-        />
+        {onSearch && <BarcodeScanner onScan={onSearch} setError={setError} />}
       </div>
 
       {error && <Alert severity='error' small description={error} className='fr-mt-2w' />}

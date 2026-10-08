@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from "react"
 import { createModal } from "@codegouvfr/react-dsfr/Modal"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { BarcodeFormat, BrowserMultiFormatOneDReader } from "@zxing/browser"
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode"
 import styles from "./BarcodeScanner.module.css"
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen"
 
@@ -21,7 +21,9 @@ const BarcodeScanner = ({
 }) => {
   const [isScanning, setIsScanning] = useState(false)
   const [hasCameraAccess, setHasCameraAccess] = useState(false)
+  const [selectedCameraId, setSelectedCameraId] = useState<string>("")
   const videoContainerRef = useRef<HTMLDivElement>(null)
+  const scannerRef = useRef<Html5Qrcode | null>(null)
 
   useEffect(() => {
     const hasAccess =
@@ -35,6 +37,9 @@ const BarcodeScanner = ({
 
   const onClose = useCallback(() => {
     setIsScanning(false)
+    if (scannerRef.current) {
+      scannerRef.current.stop().catch(() => {})
+    }
   }, [])
 
   useIsModalOpen(modal, {
@@ -51,74 +56,70 @@ const BarcodeScanner = ({
       return
     }
 
-    const initializeZXing = async () => {
+    const initializeScanner = async () => {
       try {
-        const codeReader = new BrowserMultiFormatOneDReader()
-        codeReader.possibleFormats = [BarcodeFormat.EAN_13, BarcodeFormat.EAN_8]
+        const scanner = new Html5Qrcode("barcode-scanner-video", {
+          verbose: false,
+          formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8],
+        })
 
-        const videoElement = document.createElement("video")
-        videoElement.style.width = "100%"
-        videoElement.style.height = "100%"
-        videoContainerRef.current?.appendChild(videoElement)
+        scannerRef.current = scanner
 
-        await codeReader.decodeFromConstraints(
+        await scanner.start(
+          selectedCameraId
+            ? {
+                deviceId: { exact: selectedCameraId },
+              }
+            : {
+                facingMode: "environment",
+              },
           {
-            video: {
-              facingMode: "environment",
-              focusMode: "continuous",
-              frameRate: { ideal: 10, max: 15 },
-              width: { min: 640, ideal: 2048, max: 4048 },
-            } as MediaTrackConstraints,
-            audio: false,
+            fps: 10,
+            qrbox: { width: 320, height: 180 },
+            aspectRatio: 16 / 9,
           },
-          videoElement,
           (decodedText) => {
-            if (decodedText && isScanning) {
-              alert(`Code detected: ${decodedText.getText()}`)
-              onScan(decodedText.getText())
+            if (isScanning) {
+              onScan(decodedText)
               stopScanning()
             }
           },
+          () => {},
         )
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        if (!errorMessage.includes("Cancelled") && !errorMessage.includes("abort")) {
-          console.error("Erreur initialisation ZXing:", error)
-          setError("Impossible d'accéder à la caméra. Vérifiez les permissions.")
-          stopScanning()
-        }
+        console.error("Erreur initialisation scanner:", error)
+        setError("Impossible d'accéder à la caméra. Vérifiez les permissions.")
+        stopScanning()
       }
     }
 
-    initializeZXing()
-  }, [isScanning, onScan, setError, stopScanning])
+    initializeScanner()
+  }, [isScanning, onScan, setError, stopScanning, selectedCameraId])
 
   const startScanning = async () => {
     try {
       setError("")
+      const mediaDevices = await navigator.mediaDevices.enumerateDevices()
+      const videoDevices = mediaDevices.filter((device) => device.kind === "videoinput")
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "environment",
-        },
-        audio: false,
-      })
+      if (videoDevices.length === 0) {
+        setError("Aucune caméra détectée sur votre appareil.")
+        return
+      }
 
-      stream.getTracks().forEach((track) => {
-        track.stop()
-        const capabilities = track.getCapabilities()
-        if ("focusDistance" in capabilities && capabilities.focusDistance) {
-          track.applyConstraints({
-            advanced: [{ focusMode: "continuous" }],
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          } as any)
-        }
-      })
+      const video = videoDevices.find(
+        (device) => device.label.toLowerCase().includes("back") && device.label.toLowerCase().includes("0"),
+      )
+
+      if (video) {
+        setSelectedCameraId(video.deviceId)
+      }
 
       setIsScanning(true)
       modal.open()
     } catch (error) {
       console.error("Erreur démarrage scanner:", error)
+      alert(`Erreur démarrage scanner: ${error}`)
       setError("Impossible d'accéder à la caméra. Vérifiez les permissions.")
     }
   }
@@ -148,7 +149,7 @@ const BarcodeScanner = ({
             onClick: stopScanning,
           },
         ]}>
-        <div ref={videoContainerRef} className={styles.videoContainer} />
+        <div id='barcode-scanner-video' ref={videoContainerRef} className={styles.videoContainer} />
         <p className={styles.instruction}>Pointez le code-barres vers la caméra</p>
       </modal.Component>
     </>
