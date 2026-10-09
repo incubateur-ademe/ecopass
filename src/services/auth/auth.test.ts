@@ -30,6 +30,7 @@ describe("getApiUser", () => {
           nom: "test",
           prenom: "john",
           email: "test@example.com",
+          role: null,
           type: UserType.PROFESSIONNEL,
           organizationRole: OrganizationRole.ADMIN,
           organization: {
@@ -148,6 +149,7 @@ describe("getApiUser", () => {
           nom: "user",
           prenom: "john",
           email: "user@test.com",
+          role: null,
           type: UserType.PROFESSIONNEL,
           organizationRole: OrganizationRole.ADMIN,
           organization: {

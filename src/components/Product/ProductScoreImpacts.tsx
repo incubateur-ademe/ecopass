@@ -1,4 +1,3 @@
-import { BatchScore } from "../../db/product"
 import styles from "./ProductScoreImpacts.module.css"
 import Table from "../Table/Table"
 import Badge from "@codegouvfr/react-dsfr/Badge"
@@ -9,14 +8,9 @@ import OtherTool from "./OtherTool"
 import InfoTriScript from "./InfoTriScript"
 import ImpactCo2Script from "./ImpactCo2Script"
 import classNames from "classnames"
+import { MeanScores } from "../../db/score"
 
-const ProductScoreImpacts = ({
-  score,
-  isPro,
-}: {
-  score: Omit<BatchScore, "scoreWithoutDurability">
-  isPro?: boolean
-}) => {
+const ProductScoreImpacts = ({ score, isPro }: { score: MeanScores; isPro?: boolean }) => {
   const calculateImpactValue = (key: string, base: number, ponderation: number) => {
     const baseValue = score[key as keyof typeof score] || 0
     return (baseValue / base) * ponderation * 1_000_000

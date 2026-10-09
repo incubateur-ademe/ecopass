@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { prismaClient } from "../../../../db/prismaClient"
-import { computeBatchScore } from "../../../../utils/ecobalyse/batches"
 import { getProductCategory } from "../../../../utils/product/category"
+import { getMeanScores } from "../../../../db/score"
 
 export async function GET(req: Request) {
   console.log(`[GET] /api/produits/tous - Starting`)
@@ -96,27 +96,29 @@ export async function GET(req: Request) {
       }
     }
   }
-  const data = Array.from(gtinToProduct.entries()).map(([gtin, product]) => {
-    const totalScore = computeBatchScore(product)
-    return {
-      gtin,
-      internalReference: product.internalReference,
-      brand: product.brand,
-      createdAt: product.createdAt,
-      category: getProductCategory(product.informations),
-      score: totalScore,
-      upload: {
-        version: product.upload.version,
-        createdBy: {
-          organization: product.upload.organization
-            ? {
-                name: product.upload.organization.name,
-              }
-            : undefined,
+  const data = await Promise.all(
+    Array.from(gtinToProduct.entries()).map(async ([gtin, product]) => {
+      const totalScore = await getMeanScores(product)
+      return {
+        gtin,
+        internalReference: product.internalReference,
+        brand: product.brand,
+        createdAt: product.createdAt,
+        category: getProductCategory(product.informations),
+        score: totalScore,
+        upload: {
+          version: product.upload.version,
+          createdBy: {
+            organization: product.upload.organization
+              ? {
+                  name: product.upload.organization.name,
+                }
+              : undefined,
+          },
         },
-      },
-    }
-  })
+      }
+    }),
+  )
 
   return NextResponse.json({
     data,

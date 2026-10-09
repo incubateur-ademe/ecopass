@@ -1,20 +1,27 @@
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
-import { notFound } from "next/navigation"
-import { getBrandWithProducts, getBrandById } from "../../../db/brands"
-import BrandDetail from "../../../views/BrandDetail"
+import { getBrandById, getBrandWithProducts } from "../../../db/brands"
 import { Metadata } from "next"
-import { countPublicProductsByBrandId, getPublicProductsByBrandId } from "../../../db/product"
 import { tryAndGetSession } from "../../../services/auth/redirect"
 import { canViewAsDgccrf } from "../../../utils/authorization/authorizations"
+import { PageProps } from "../../../types/Next"
+import { notFound } from "next/navigation"
+import Block from "../../../components/Block/Block"
+import BrandHeader from "../../../components/Brand/BrandHeader"
+import BrandProductsTable from "../../../components/Brand/BrandProductsTable"
+import DGCCRFBrandProductsTable from "../../../components/Brand/DGCCRFBrandProductsTable"
+import {
+  getOrganizationProductsByUserIdAndFilters,
+  getOrganizationProductsCountByUserIdAndFilters,
+  getOrganizationProductsPageData,
+  getPublicProductsByBrandId,
+} from "../../../db/product"
+import { getExportsByUserId } from "../../../db/export"
+import { getUser } from "../../../db/user"
+import ExportsTable from "../../../components/Product/Export/ExportsTable"
 
-type Props = {
-  params: Promise<{ brandId: string }>
-  searchParams: Promise<{ page?: string; category?: string; organization?: string; from?: string; to?: string }>
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { brandId } = await params
-  const brandData = await getBrandById(brandId)
+  const brandData = await getBrandById(brandId || "")
 
   if (!brandData) {
     return {
@@ -27,53 +34,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-const BrandPage = async ({ params, searchParams }: Props) => {
+const BrandPage = async ({ params, searchParams }: PageProps) => {
   const session = await tryAndGetSession(false, false)
   const role = session?.user?.role
   const { brandId } = await params
-  const { page, category, organization, from, to } = await searchParams
-  const currentPage = parseInt(page || "1", 10)
 
-  const validCategory = category ? (category as string) : undefined
-  const validOrganization = organization ? (organization as string) : undefined
-  let validFrom = from ? new Date(from as string) : undefined
-  validFrom = Number.isNaN(validFrom?.getTime()) ? undefined : validFrom
-  let validTo = to ? new Date(to as string) : undefined
-  validTo = Number.isNaN(validTo?.getTime()) ? undefined : validTo
+  const searchParamsData = await searchParams
+  const page = searchParamsData.page ? parseInt(searchParamsData.page as string, 10) : 1
+  const search = searchParamsData.search ? (searchParamsData.search as string) : undefined
+  const category = searchParamsData.category ? (searchParamsData.category as string) : undefined
+  const declarant = searchParamsData.declarant ? (searchParamsData.declarant as string) : undefined
+  const dateFrom = searchParamsData.dateFrom ? new Date(searchParamsData.dateFrom as string) : undefined
+  const dateTo = searchParamsData.dateTo ? new Date(searchParamsData.dateTo as string) : undefined
 
-  const brandData = await getBrandWithProducts(brandId)
+  const filters = {
+    brandId,
+    category,
+    declarant,
+    dateFrom,
+    dateTo,
+    search,
+  }
+
+  const brandData = await getBrandWithProducts(brandId || "")
   if (!brandData) {
     return notFound()
   }
-
-  const products = await getPublicProductsByBrandId(
-    brandId,
-    validCategory,
-    validOrganization,
-    validFrom,
-    validTo,
-    currentPage,
-  )
-  const filterCount =
-    category || organization || from || to
-      ? await countPublicProductsByBrandId(brandId, validCategory, validOrganization, validFrom, validTo)
-      : brandData.productsByCategory.reduce((acc, current) => acc + current.count, 0)
   const isDGCCRF = canViewAsDgccrf(role)
-  return (
+  const Layout = (
     <>
       <StartDsfrOnHydration />
-      <BrandDetail
-        filter={{
-          category: validCategory,
-          organization: validOrganization,
-          from: validFrom ? from : undefined,
-          to: validTo ? to : undefined,
-        }}
-        brand={brandData}
-        filterCount={filterCount}
-        products={products}
-        currentPage={currentPage}
-        isDGCCRF={isDGCCRF}
+      <Block
+        type='yellow'
         breadCrumbs={{
           currentPageLabel: brandData.name,
           segments:
@@ -89,8 +81,57 @@ const BrandPage = async ({ params, searchParams }: Props) => {
                   { linkProps: { href: "/" }, label: "Accueil" },
                   { linkProps: { href: "/marques" }, label: "Marques" },
                 ],
-        }}
-      />
+        }}>
+        <BrandHeader brand={brandData} />
+      </Block>
+    </>
+  )
+  if (session && isDGCCRF) {
+    const user = await getUser(session.user.id)
+    const [{ brands, categories, declarants }, exports, products, productCount] = await Promise.all([
+      getOrganizationProductsPageData(session.user.id, { brandId }),
+      getExportsByUserId(session.user.id, true),
+      getOrganizationProductsByUserIdAndFilters(user, page - 1, 10, filters),
+      getOrganizationProductsCountByUserIdAndFilters(user, filters),
+    ])
+    return (
+      <>
+        {Layout}
+        <Block>
+          <DGCCRFBrandProductsTable
+            products={products}
+            currentPage={page}
+            brandId={brandData.id}
+            productCount={productCount.reduce((acc, { count }) => acc + count, 0)}
+            brands={brands}
+            categories={categories}
+            declarants={declarants}
+            exports={exports}
+            filters={filters}
+          />
+        </Block>
+        {exports.length > 0 && (
+          <Block>
+            <h2 id='exports'>Vos exports de données</h2>
+            <ExportsTable exports={exports} admin />
+          </Block>
+        )}
+      </>
+    )
+  }
+
+  const products = await getPublicProductsByBrandId(brandData.id, page)
+  return (
+    <>
+      {Layout}
+      <Block>
+        <BrandProductsTable
+          products={products}
+          currentPage={page}
+          brandId={brandData.id}
+          productCount={brandData.productsByCategory.reduce((acc, { count }) => acc + count, 0)}
+        />
+      </Block>
     </>
   )
 }

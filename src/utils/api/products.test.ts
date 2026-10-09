@@ -91,6 +91,7 @@ describe("handleProductPOST", () => {
       nom: "user",
       prenom: "john",
       email: "user-1@example.com",
+      role: null,
       type: UserType.PROFESSIONNEL,
       organizationRole: OrganizationRole.ADMIN,
       organization: {

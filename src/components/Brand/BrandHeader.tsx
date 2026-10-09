@@ -3,7 +3,8 @@ import Link from "next/link"
 import { BrandInformation } from "../../db/brands"
 import ProductsList from "../Product/ProductsList"
 
-const BrandHeader = ({ productCount, brand }: { brand: BrandInformation; productCount: number }) => {
+const BrandHeader = ({ brand }: { brand: BrandInformation }) => {
+  const productCount = brand.productsByCategory.reduce((acc, category) => acc + category.count, 0)
   return (
     <div className={styles.hero}>
       <div className={styles.header}>

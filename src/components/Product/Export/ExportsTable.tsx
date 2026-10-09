@@ -8,7 +8,7 @@ import { useState } from "react"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import StatusBadge from "../StatusBadge"
 
-const ExportsTable = ({ exports }: { exports: Export[] }) => {
+const ExportsTable = ({ exports, admin }: { exports: Export[]; admin?: boolean }) => {
   const [error, setError] = useState<boolean>(false)
   return (
     <>
@@ -20,13 +20,17 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
           className='fr-mt-2w'
         />
       )}
-      <p>
-        <b>Les Étiquettes .svg</b> : redirigent vers le détail du calcul du coût du produit, à intégrer à vos fiches
-        produits en ligne et à imprimer sur vos étiquettes en magasin.
-      </p>
-      <p>
-        <b>Les Scores .csv</b> : détaillent des données de calcul .csv et coefficient de durabilité
-      </p>
+      {!admin && (
+        <>
+          <p>
+            <b>Les Étiquettes .svg</b> : redirigent vers le détail du calcul du coût du produit, à intégrer à vos fiches
+            produits en ligne et à imprimer sur vos étiquettes en magasin.
+          </p>
+          <p>
+            <b>Les Scores .csv</b> : détaillent des données de calcul .csv et coefficient de durabilité
+          </p>
+        </>
+      )}
       <Table
         fixed
         caption='Mes produits'
@@ -35,7 +39,9 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
         data={exports.flatMap((item) =>
           item.count && item.count > 1
             ? Array.from({ length: item.count }).map((_, index) => [
-                item.type === ExportType.CSV ? "Fichier de données csv" : "Étiquettes svg",
+                item.type === ExportType.CSV || item.type === ExportType.ADMIN
+                  ? "Fichier de données csv"
+                  : "Étiquettes svg",
                 <StatusBadge status={item.status} key={`${item.id}-${index}`} />,
                 `${index + 1} / ${item.count}`,
                 formatDateTime(item.createdAt),
@@ -53,7 +59,9 @@ const ExportsTable = ({ exports }: { exports: Export[] }) => {
               ])
             : [
                 [
-                  item.type === ExportType.CSV ? "Fichier de données csv" : "Étiquettes svg",
+                  item.type === ExportType.CSV || item.type === ExportType.ADMIN
+                    ? "Fichier de données csv"
+                    : "Étiquettes svg",
                   <StatusBadge status={item.status} key={item.id} />,
                   item.status == Status.Done ? "1 / 1" : "",
                   formatDateTime(item.createdAt),

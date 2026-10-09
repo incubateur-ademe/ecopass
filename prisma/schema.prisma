@@ -396,6 +396,7 @@ model APIKey {
 enum ExportType {
   CSV
   SVG
+  ADMIN
 }
 
 model Export {
