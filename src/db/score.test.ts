@@ -1,20 +1,36 @@
-import { v4 as uuid } from "uuid"
-import { ConfidenceLevel, Prisma, UserType } from "@prisma/client"
+import { ConfidenceLevel, UserType } from "@prisma/client"
 import { Status, UploadType } from "@prisma/enums"
 import { prismaTest as mockPrismaTest } from "../../jest.setup"
+
 jest.mock("./prismaClient", () => ({
   prismaClient: mockPrismaTest,
 }))
 
-import { createScore } from "./score"
+import { createScore, getMeanScores } from "./score"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
 import { cleanDB } from "./testUtils"
 import { FullUser } from "./user"
+import { encryptProductFields } from "../utils/encryption/encryption"
+import { ProductWithScoreBase } from "./product"
+import { ProductInformationAPI } from "../services/validation/api"
 
 describe("Score DB integration", () => {
   let user: FullUser
   let testOrganizationId: string
-  let baseProduct: Prisma.ProductCreateInput
+  let testUploadId: string
+
+  const BASE_PRODUCT = {
+    product: ProductCategory.Pull,
+    business: Business.Small,
+    numberOfReferences: 1000,
+    mass: 1,
+    price: 50,
+    materials: [],
+    trims: [],
+    countryDyeing: "FR",
+    countryFabric: "FR",
+    countryMaking: "FR",
+  } satisfies ProductInformationAPI
 
   beforeAll(async () => {
     await cleanDB()
@@ -43,6 +59,7 @@ describe("Score DB integration", () => {
         prenom: true,
         email: true,
         type: true,
+        role: true,
         organizationRole: true,
         organization: {
           select: {
@@ -70,37 +87,7 @@ describe("Score DB integration", () => {
         createdAt: new Date(),
       },
     })
-
-    baseProduct = {
-      id: uuid(),
-      hash: "test-hash",
-      gtins: ["3234567891000"],
-      internalReference: "REF-124",
-      brand: { connect: { id: "abf5acc4-fabc-4082-b49a-61b00b5cfcad" } },
-      declaredScore: 3000.5,
-      upload: { connect: { id: upload.id } },
-      status: Status.Done,
-      confidenceLevel: ConfidenceLevel.High,
-      informations: {
-        create: {
-          id: "info-1",
-          category: "pull",
-          business: "business",
-          mass: "0.5",
-          numberOfReferences: "1000",
-          price: "50",
-          countryDyeing: "France",
-          countryFabric: "France",
-          countryMaking: "France",
-          countrySpinning: "France",
-          airTransportRatio: "0.1",
-          upcycled: "false",
-          impression: "none",
-          impressionPercentage: "0.0",
-          fading: "true",
-        },
-      },
-    }
+    testUploadId = upload.id
   })
 
   afterAll(async () => {
@@ -179,5 +166,283 @@ describe("Score DB integration", () => {
     expect(createdScore?.product?.product?.upload.type).toBe(UploadType.API)
     expect(createdScore?.product?.product?.status).toBe(Status.Done)
     expect(createdScore?.product?.product?.internalReference).toBe("REF-123")
+  })
+
+  describe("getMeanScores", () => {
+    it("returns batch score when confidence level is High", async () => {
+      const product = {
+        id: "product-1",
+        internalReference: "REF-1",
+        confidenceLevel: ConfidenceLevel.High,
+        score: 120,
+        meanScore: 120,
+        standardized: 90,
+        meanStandardized: 90,
+        gtins: ["GTIN-001"],
+        createdAt: new Date(),
+        informations: [
+          {
+            categorySlug: "tshirt",
+            mainComponent: true,
+            score: {
+              acd: 0.05,
+              cch: 0.06,
+              etf: 0.07,
+              fru: 0.08,
+              fwe: 0.09,
+              ior: 0.1,
+              ldu: 0.11,
+              microfibers: 0.12,
+              mru: 0.13,
+              outOfEuropeEOL: 0.14,
+              ozd: 0.15,
+              pco: 0.16,
+              pma: 0.17,
+              swe: 0.18,
+              tre: 0.19,
+              wtu: 0.2,
+              materials: 0.21,
+              spinning: 0.22,
+              fabric: 0.23,
+              dyeing: 0.24,
+              making: 0.25,
+              usage: 0.26,
+              endOfLife: 0.27,
+              transport: 0.28,
+              trims: 0.29,
+              htc: 0.3,
+              htn: 0.31,
+              durability: 0.25,
+              score: 120,
+              standardized: 90,
+            },
+          },
+        ],
+        brand: null,
+        upload: { version: "test", createdBy: { id: "user-1", type: UserType.CITOYEN, organization: null } },
+      } satisfies ProductWithScoreBase
+
+      const result = await getMeanScores(product)
+
+      expect(result.score).toBe(product.score)
+      expect(result.standardized).toBe(product.standardized)
+      expect(result.durability).toBe(0.25)
+
+      expect(Object.keys(result).length).toBe(Object.keys(product.informations[0].score).length + 1)
+      Object.entries(product.informations[0].score).forEach(([key, value]) => {
+        expect(value).toBe((result as Record<string, number>)[key])
+      })
+    })
+
+    it("computes mean of scores from older products", async () => {
+      const product: ProductWithScoreBase = {
+        id: "product-1",
+        internalReference: "REF-1",
+        confidenceLevel: ConfidenceLevel.Low,
+        score: 100,
+        meanScore: 100,
+        standardized: 80,
+        meanStandardized: 80,
+        gtins: ["GTIN-001"],
+        createdAt: new Date(),
+        informations: [
+          {
+            categorySlug: "tshirt",
+            mainComponent: true,
+            score: {
+              acd: 0.05,
+              cch: 0.06,
+              etf: 0.07,
+              fru: 0.08,
+              fwe: 0.09,
+              ior: 0.1,
+              ldu: 0.11,
+              microfibers: 0.12,
+              mru: 0.13,
+              outOfEuropeEOL: 0.14,
+              ozd: 0.15,
+              pco: 0.16,
+              pma: 0.17,
+              swe: 0.18,
+              tre: 0.19,
+              wtu: 0.2,
+              materials: 0.21,
+              spinning: 0.22,
+              fabric: 0.23,
+              dyeing: 0.24,
+              making: 0.25,
+              usage: 0.26,
+              endOfLife: 0.27,
+              transport: 0.28,
+              trims: 0.29,
+              htc: 0.3,
+              htn: 0.31,
+              durability: 0.25,
+              score: 100,
+              standardized: 80,
+            },
+          },
+        ],
+        brand: null,
+        upload: { version: "test", createdBy: { id: "user-1", type: UserType.CITOYEN, organization: null } },
+      }
+
+      await mockPrismaTest.product.create({
+        data: {
+          id: "product-2",
+          internalReference: "REF-1",
+          confidenceLevel: ConfidenceLevel.Low,
+          status: Status.Done,
+          score: 200,
+          meanScore: 200,
+          standardized: 90,
+          meanStandardized: 90,
+          gtins: ["GTIN-001"],
+          createdAt: new Date("2023-01-01T00:00:00Z"),
+          informations: { create: { ...encryptProductFields(BASE_PRODUCT).product, id: "information-1" } },
+          hash: "hash",
+          uploadId: testUploadId,
+        },
+      })
+      await mockPrismaTest.product.create({
+        data: {
+          id: "product-3",
+          internalReference: "REF-1",
+          confidenceLevel: ConfidenceLevel.Medium,
+          status: Status.Done,
+          score: 200,
+          meanScore: 200,
+          standardized: 90,
+          meanStandardized: 90,
+          gtins: ["GTIN-001"],
+          createdAt: new Date("2023-01-01T00:00:00Z"),
+          informations: { create: { ...encryptProductFields(BASE_PRODUCT).product, id: "information-2" } },
+          hash: "hash",
+          uploadId: testUploadId,
+        },
+      })
+      await mockPrismaTest.product.create({
+        data: {
+          id: "product-4",
+          internalReference: "REF-1",
+          confidenceLevel: ConfidenceLevel.Low,
+          status: Status.Error,
+          score: 200,
+          meanScore: 200,
+          standardized: 90,
+          meanStandardized: 90,
+          gtins: ["GTIN-001"],
+          createdAt: new Date("2023-01-01T00:00:00Z"),
+          informations: { create: { ...encryptProductFields(BASE_PRODUCT).product, id: "information-3" } },
+          hash: "hash",
+          uploadId: testUploadId,
+        },
+      })
+      await mockPrismaTest.product.create({
+        data: {
+          id: "product-5",
+          internalReference: "REF-1",
+          confidenceLevel: ConfidenceLevel.Low,
+          status: Status.Done,
+          score: 200,
+          meanScore: 200,
+          standardized: 90,
+          meanStandardized: 90,
+          gtins: ["GTIN-001"],
+          createdAt: new Date("2099-01-01T00:00:00Z"),
+          informations: { create: { ...encryptProductFields(BASE_PRODUCT).product, id: "information-4" } },
+          hash: "hash",
+          uploadId: testUploadId,
+        },
+      })
+
+      const scores = {
+        acd: 0.1,
+        cch: 0.2,
+        etf: 0.3,
+        fru: 0.4,
+        fwe: 0.5,
+        ior: 0.6,
+        ldu: 0.7,
+        microfibers: 0.8,
+        mru: 0.9,
+        outOfEuropeEOL: 1.0,
+        ozd: 1.1,
+        pco: 1.2,
+        pma: 1.3,
+        swe: 1.4,
+        tre: 1.5,
+        wtu: 1.6,
+        materials: 1.7,
+        spinning: 1.8,
+        fabric: 1.9,
+        dyeing: 2.0,
+        making: 2.1,
+        usage: 2.2,
+        endOfLife: 2.3,
+        transport: 2.4,
+        trims: 2.5,
+        htc: 2.6,
+        htn: 2.7,
+        durability: 0.5,
+        score: 200,
+        standardized: 90,
+      }
+
+      await mockPrismaTest.score.createMany({
+        data: [
+          {
+            productId: "information-1",
+            ...scores,
+          },
+          {
+            productId: "information-2",
+            ...scores,
+          },
+          {
+            productId: "information-3",
+            ...scores,
+          },
+          {
+            productId: "information-4",
+            ...scores,
+          },
+        ],
+      })
+      const result = await getMeanScores(product)
+
+      expect(result).toStrictEqual({
+        acd: 0.07500000000000001,
+        cch: 0.13,
+        durability: 0.375,
+        dyeing: 1.12,
+        endOfLife: 1.285,
+        etf: 0.185,
+        fabric: 1.065,
+        fru: 0.24000000000000002,
+        fwe: 0.295,
+        htc: 1.45,
+        htn: 1.5050000000000001,
+        ior: 0.35,
+        ldu: 0.40499999999999997,
+        making: 1.175,
+        materials: 0.955,
+        microfibers: 0.46,
+        mru: 0.515,
+        outOfEuropeEOL: 0.5700000000000001,
+        ozd: 0.625,
+        pco: 0.6799999999999999,
+        pma: 0.735,
+        score: 150,
+        spinning: 1.01,
+        standardized: 85,
+        swe: 0.7899999999999999,
+        transport: 1.3399999999999999,
+        tre: 0.845,
+        trims: 1.395,
+        usage: 1.23,
+        wtu: 0.9,
+      })
+    })
   })
 })

@@ -1,11 +1,11 @@
-import { BatchScore } from "../../db/product"
 import Table from "../Table/Table"
 import styles from "./ProductScore.module.css"
 import { lifeCycleStages, ponderations } from "../../utils/product/impacts"
+import { MeanScores } from "../../db/score"
 
 type ScoreKey = keyof typeof ponderations
 
-const ProductLifeCycleImpacts = ({ score }: { score: Omit<BatchScore, "scoreWithoutDurability"> }) => (
+const ProductLifeCycleImpacts = ({ score }: { score: MeanScores }) => (
   <Table
     noCaption
     className='fr-mt-4w'

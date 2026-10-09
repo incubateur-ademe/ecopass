@@ -29,8 +29,10 @@ const Products = async ({ page, filters }: { page: number; filters: ProductFilte
     return null
   }
 
-  const products = await getOrganizationProductsByUserIdAndFilters(session.user.id, page - 1, 10, filters)
-  const productCount = await getOrganizationProductsCountByUserIdAndFilters(user, filters)
+  const [products, productCount] = await Promise.all([
+    getOrganizationProductsByUserIdAndFilters(user, page - 1, 10, filters),
+    getOrganizationProductsCountByUserIdAndFilters(user, filters),
+  ])
 
   const total = productCount.reduce((acc, { count }) => acc + count, 0)
   return (
