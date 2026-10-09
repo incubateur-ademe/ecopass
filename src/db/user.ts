@@ -7,6 +7,7 @@ const userSelect = {
   nom: true,
   prenom: true,
   type: true,
+  role: true,
   organizationRole: true,
   organization: {
     select: {

@@ -20,7 +20,7 @@ const DownloadExport = ({
     setError(false)
 
     const params = new URLSearchParams()
-    const fileType = exportType === ExportType.SVG ? "zip" : "csv"
+    const fileType = exportType === ExportType.SVG ? "zip" : exportType === ExportType.CSV ? "csv" : "admin"
     params.append("exportType", fileType)
     if (index !== undefined) {
       params.append("index", String(index))
@@ -33,7 +33,7 @@ const DownloadExport = ({
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = index ? `${name}-${index + 1}.${fileType}` : `${name}.${fileType}`
+      a.download = index ? `${name}-${index + 1}.${fileType}` : `${name}.${fileType === "admin" ? "csv" : fileType}`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)

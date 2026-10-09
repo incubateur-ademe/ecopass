@@ -3,61 +3,68 @@ import { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { tryAndGetSession } from "../../../services/auth/redirect"
 import AdminData from "../../../views/AdminData"
-import { countPublicProductsByBrandId, getPublicProductsByBrandId } from "../../../db/product"
+import {
+  getOrganizationProductsByUserIdAndFilters,
+  getOrganizationProductsCountByUserIdAndFilters,
+  getOrganizationProductsPageData,
+} from "../../../db/product"
 import { canAccessFullData } from "../../../utils/authorization/authorizations"
-
-type Props = {
-  searchParams: Promise<{ category?: string; organization?: string; from?: string; to?: string; page?: string }>
-}
+import { getExportsByUserId } from "../../../db/export"
+import { PageProps } from "../../../types/Next"
+import { getUser } from "../../../db/user"
 
 export const metadata: Metadata = {
   title: "Extraction des données - Affichage environnemental",
 }
 
-const AdminDataPage = async ({ searchParams }: Props) => {
+const AdminDataPage = async ({ searchParams }: PageProps) => {
   const session = await tryAndGetSession(true, true)
   if (!canAccessFullData(session.user.role)) {
     return redirect("/")
   }
 
-  const { page, category, organization, from, to } = await searchParams
-  const currentPage = parseInt(page || "1", 10)
-  const validCategory = category ? (category as string) : undefined
-  const validOrganization = organization ? (organization as string) : undefined
-  let validFrom = from ? new Date(from as string) : undefined
-  validFrom = Number.isNaN(validFrom?.getTime()) ? undefined : validFrom
-  let validTo = to ? new Date(to as string) : undefined
-  validTo = Number.isNaN(validTo?.getTime()) ? undefined : validTo
+  const user = await getUser(session.user.id)
+  if (!user) {
+    return null
+  }
 
-  const products = await getPublicProductsByBrandId(
-    undefined,
-    validCategory,
-    validOrganization,
-    validFrom,
-    validTo,
-    currentPage,
-  )
-  const productCount = await countPublicProductsByBrandId(
-    undefined,
-    validCategory,
-    validOrganization,
-    validFrom,
-    validTo,
-  )
+  const params = await searchParams
+  const page = params.page ? parseInt(params.page as string, 10) : 1
+  const search = params.search ? (params.search as string) : undefined
+  const brand = params.brand ? (params.brand as string) : undefined
+  const category = params.category ? (params.category as string) : undefined
+  const declarant = params.declarant ? (params.declarant as string) : undefined
+  const dateFrom = params.dateFrom ? new Date(params.dateFrom as string) : undefined
+  const dateTo = params.dateTo ? new Date(params.dateTo as string) : undefined
+
+  const filters = {
+    brandId: brand,
+    category,
+    declarant,
+    dateFrom,
+    dateTo,
+    search,
+  }
+
+  const [{ brands, categories, declarants }, exports, products, productCount] = await Promise.all([
+    getOrganizationProductsPageData(session.user.id),
+    getExportsByUserId(session.user.id, true),
+    getOrganizationProductsByUserIdAndFilters(user, page - 1, 10, filters),
+    getOrganizationProductsCountByUserIdAndFilters(user, filters),
+  ])
 
   return (
     <>
       <StartDsfrOnHydration />
       <AdminData
-        currentPage={currentPage}
+        currentPage={page}
         products={products}
-        productCount={productCount}
-        filter={{
-          category: validCategory,
-          organization: validOrganization,
-          from: validFrom ? from : undefined,
-          to: validTo ? to : undefined,
-        }}
+        productCount={productCount.reduce((acc, { count }) => acc + count, 0)}
+        filters={filters}
+        brands={brands}
+        declarants={declarants}
+        categories={categories}
+        exports={exports}
       />
     </>
   )

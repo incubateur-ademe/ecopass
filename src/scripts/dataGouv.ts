@@ -3,8 +3,8 @@ import { prismaClient } from "../db/prismaClient"
 import { stringify } from "csv-stringify/sync"
 import fs from "fs"
 import path from "path"
-import { computeBatchScore } from "../utils/ecobalyse/batches"
 import { getProductCategory } from "../utils/product/category"
+import { getMeanScores } from "../db/score"
 
 const getDataGouvCSV = async () => {
   console.log("Fetching all Done products...")
@@ -54,44 +54,46 @@ const getDataGouvCSV = async () => {
 
   console.log(`Unique products by GTIN: ${uniqueProducts.size}`)
 
-  const csvData = Array.from(uniqueProducts.entries()).map(([gtin, product]) => {
-    const totalScore = computeBatchScore(product)
-    return [
-      product.brand?.name ?? "",
-      getProductCategory(product.informations),
-      gtin,
-      product.internalReference,
-      totalScore.score ?? "",
-      totalScore.standardized ?? "",
-      totalScore.durability ?? "",
-      totalScore.acd ?? "",
-      totalScore.cch ?? "",
-      totalScore.etf ?? "",
-      totalScore.fru ?? "",
-      totalScore.fwe ?? "",
-      totalScore.ior ?? "",
-      totalScore.ldu ?? "",
-      totalScore.mru ?? "",
-      totalScore.ozd ?? "",
-      totalScore.pco ?? "",
-      totalScore.pma ?? "",
-      totalScore.swe ?? "",
-      totalScore.tre ?? "",
-      totalScore.wtu ?? "",
-      totalScore.microfibers ?? "",
-      totalScore.outOfEuropeEOL ?? "",
-      totalScore.trims ?? "",
-      totalScore.materials ?? "",
-      totalScore.spinning ?? "",
-      totalScore.fabric ?? "",
-      totalScore.dyeing ?? "",
-      totalScore.making ?? "",
-      totalScore.transport ?? "",
-      totalScore.usage ?? "",
-      totalScore.endOfLife ?? "",
-      product.createdAt.toISOString(),
-    ]
-  })
+  const csvData = await Promise.all(
+    Array.from(uniqueProducts.entries()).map(async ([gtin, product]) => {
+      const totalScore = await getMeanScores(product)
+      return [
+        product.brand?.name ?? "",
+        getProductCategory(product.informations),
+        gtin,
+        product.internalReference,
+        totalScore.score ?? "",
+        totalScore.standardized ?? "",
+        totalScore.durability ?? "",
+        totalScore.acd ?? "",
+        totalScore.cch ?? "",
+        totalScore.etf ?? "",
+        totalScore.fru ?? "",
+        totalScore.fwe ?? "",
+        totalScore.ior ?? "",
+        totalScore.ldu ?? "",
+        totalScore.mru ?? "",
+        totalScore.ozd ?? "",
+        totalScore.pco ?? "",
+        totalScore.pma ?? "",
+        totalScore.swe ?? "",
+        totalScore.tre ?? "",
+        totalScore.wtu ?? "",
+        totalScore.microfibers ?? "",
+        totalScore.outOfEuropeEOL ?? "",
+        totalScore.trims ?? "",
+        totalScore.materials ?? "",
+        totalScore.spinning ?? "",
+        totalScore.fabric ?? "",
+        totalScore.dyeing ?? "",
+        totalScore.making ?? "",
+        totalScore.transport ?? "",
+        totalScore.usage ?? "",
+        totalScore.endOfLife ?? "",
+        product.createdAt.toISOString(),
+      ]
+    }),
+  )
 
   const csvContent = stringify(csvData, {
     header: true,

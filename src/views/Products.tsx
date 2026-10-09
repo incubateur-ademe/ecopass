@@ -24,9 +24,9 @@ const ProductsPage = ({
 }: {
   page: number
   productsCount: { count: number; slug: ProductCategory }[]
-  brands: { name: string; id: string }[]
   filters: ProductFilters
   organizationType?: OrganizationType
+  brands: { name: string; id: string }[]
   categories: string[]
   declarants: string[]
   exports: Export[]
@@ -62,7 +62,13 @@ const ProductsPage = ({
       </Block>
       {total > 0 && (
         <Block>
-          <FiltersBar brands={brands} categories={categories} declarants={declarants} filters={filters} />
+          <FiltersBar
+            brands={brands}
+            categories={categories}
+            declarants={declarants}
+            filters={filters}
+            withBrandFilter
+          />
           <ExportProducts filters={filters} exports={exports} />
           <Suspense>
             <Products page={page} filters={filters} />

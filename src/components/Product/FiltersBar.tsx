@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Select from "@codegouvfr/react-dsfr/Select"
 import Input from "@codegouvfr/react-dsfr/Input"
 import styles from "./FiltersBar.module.css"
@@ -12,13 +12,16 @@ const FiltersBar = ({
   categories,
   declarants,
   filters,
+  withBrandFilter,
 }: {
   brands: { name: string; id: string }[]
   categories: string[]
   declarants: string[]
   filters: ProductFilters
+  withBrandFilter?: boolean
 }) => {
   const router = useRouter()
+  const pathName = usePathname()
 
   const [searchQuery, setSearchQuery] = useState(filters.search || "")
   const [selectedBrand, setSelectedBrand] = useState(filters.brandId || "")
@@ -49,7 +52,7 @@ const FiltersBar = ({
       params.set("dateTo", dateTo.toISOString())
     }
 
-    router.push(`/produits?${params.toString()}`)
+    router.push(`${pathName}?${params.toString()}`)
   }
 
   const handleReset = () => {
@@ -60,7 +63,7 @@ const FiltersBar = ({
     setDateFrom(undefined)
     setDateTo(undefined)
 
-    router.push("/produits")
+    router.push(pathName)
   }
 
   return (
@@ -108,19 +111,21 @@ const FiltersBar = ({
           ))}
         </Select>
 
-        <Select
-          label='Marque'
-          nativeSelectProps={{
-            value: selectedBrand,
-            onChange: (e) => setSelectedBrand(e.target.value),
-          }}>
-          <option value=''>Toutes les marques</option>
-          {brands.map((brand) => (
-            <option key={brand.id} value={brand.id}>
-              {brand.name}
-            </option>
-          ))}
-        </Select>
+        {withBrandFilter && (
+          <Select
+            label='Marque'
+            nativeSelectProps={{
+              value: selectedBrand,
+              onChange: (e) => setSelectedBrand(e.target.value),
+            }}>
+            <option value=''>Toutes les marques</option>
+            {brands.map((brand) => (
+              <option key={brand.id} value={brand.id}>
+                {brand.name}
+              </option>
+            ))}
+          </Select>
+        )}
         <div>
           <p className='fr-label'>Filtrer par période de dernier dépôt</p>
           <div className={styles.dateInputs}>

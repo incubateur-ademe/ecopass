@@ -5,6 +5,10 @@ import { getSVG } from "../label/simple"
 import { uploadFileToS3 } from "../s3/bucket"
 import { ExportType } from "@prisma/enums"
 import { stringify } from "csv-stringify/sync"
+import { exportDgccrfBrandProducts } from "./dgccrf"
+import { encryptAndZipFile } from "../encryption/encryption"
+import { canExportFullProducts } from "../authorization/authorizations"
+import { getMeanScores } from "../../db/score"
 
 const renderLabelSVG = (product: ProductWithScore) => {
   if (!product.score || !product.standardized) {
@@ -15,6 +19,17 @@ const renderLabelSVG = (product: ProductWithScore) => {
 }
 
 const size = 1000
+
+const getExportFilters = (exportToProcess: NonNullable<Awaited<ReturnType<typeof getFirstExport>>>) => {
+  return {
+    brandId: exportToProcess.brand || undefined,
+    category: exportToProcess.category || undefined,
+    declarant: exportToProcess.declarant || undefined,
+    dateFrom: exportToProcess.dateFrom || undefined,
+    dateTo: exportToProcess.dateTo || exportToProcess.createdAt,
+    search: exportToProcess.search || undefined,
+  }
+}
 
 const processExportWithStrategy = async (
   exportToProcess: NonNullable<Awaited<ReturnType<typeof getFirstExport>>>,
@@ -27,14 +42,7 @@ const processExportWithStrategy = async (
   let products: ProductWithScore[] = []
   let page = 0
 
-  const baseWhere = await getProductsBaseWhere(exportToProcess.user, {
-    brandId: exportToProcess.brand || undefined,
-    category: exportToProcess.category || undefined,
-    declarant: exportToProcess.declarant || undefined,
-    dateFrom: exportToProcess.dateFrom || undefined,
-    dateTo: exportToProcess.dateTo || exportToProcess.createdAt,
-    search: exportToProcess.search || undefined,
-  })
+  const baseWhere = await getProductsBaseWhere(exportToProcess.user, getExportFilters(exportToProcess))
   while (page === 0 || products.length > 0) {
     products = await getProducts(baseWhere, size * page, size)
 
@@ -87,11 +95,74 @@ const createCSVExportStrategy = (exportName: string) => {
   return {
     async onBatch(products: ProductWithScore[]) {
       for (const product of products) {
-        data.push([product.internalReference, product.score !== null ? Math.round(product.score) : ""])
+        const meanScores = await getMeanScores(product)
+        data.push([
+          product.gtins.join(";"),
+          product.internalReference,
+          meanScores.score ?? "",
+          meanScores.standardized ?? "",
+          meanScores.durability ?? "",
+          meanScores.acd ?? "",
+          meanScores.cch ?? "",
+          meanScores.etf ?? "",
+          meanScores.fru ?? "",
+          meanScores.fwe ?? "",
+          meanScores.ior ?? "",
+          meanScores.ldu ?? "",
+          meanScores.mru ?? "",
+          meanScores.ozd ?? "",
+          meanScores.pco ?? "",
+          meanScores.pma ?? "",
+          meanScores.swe ?? "",
+          meanScores.tre ?? "",
+          meanScores.wtu ?? "",
+          meanScores.microfibers ?? "",
+          meanScores.outOfEuropeEOL ?? "",
+          meanScores.trims ?? "",
+          meanScores.materials ?? "",
+          meanScores.spinning ?? "",
+          meanScores.fabric ?? "",
+          meanScores.dyeing ?? "",
+          meanScores.making ?? "",
+          meanScores.transport ?? "",
+          meanScores.usage ?? "",
+          meanScores.endOfLife ?? "",
+        ])
       }
     },
     async onFinalize() {
-      const headers = ["Référence interne", "Score"]
+      const headers = [
+        "GTIN",
+        "Référence interne",
+        "Score",
+        "Score standardisé",
+        "Durabilité",
+        "Impact - Acidification",
+        "Impact - Changement climatique",
+        "Impact - Écotoxicité de l'eau douce, corrigée",
+        "Impact - Utilisation de ressources fossiles",
+        "Impact - Eutrophisation eaux douces",
+        "Impact - Radiations ionisantes",
+        "Impact - Utilisation des sols",
+        "Impact - Utilisation de ressources minérales et métalliques",
+        "Impact - Appauvrissement de la couche d'ozone",
+        "Impact - Formation d'ozone photochimique",
+        "Impact - Particules",
+        "Impact - Eutrophisation marine",
+        "Impact - Eutrophisation terrestre",
+        "Impact - Utilisation de ressources en eau",
+        "Impact - Complément microfibres",
+        "Impact - Complément export hors-Europe",
+        "Cycle de vie - Accessoires",
+        "Cycle de vie - Matières premières",
+        "Cycle de vie - Filature",
+        "Cycle de vie - Tissage & Tricotage",
+        "Cycle de vie - Ennoblissement",
+        "Cycle de vie - Confection",
+        "Cycle de vie - Transport",
+        "Cycle de vie - Utilisation",
+        "Cycle de vie - Fin de vie",
+      ]
       const csv = stringify(data, {
         header: true,
         columns: headers,
@@ -115,22 +186,48 @@ const exportCSVs = async (exportToProcess: NonNullable<Awaited<ReturnType<typeof
   await processExportWithStrategy(exportToProcess, strategy)
 }
 
+const exportAdmins = async (exportToProcess: NonNullable<Awaited<ReturnType<typeof getFirstExport>>>) => {
+  const result = await exportDgccrfBrandProducts(exportToProcess.user.id, getExportFilters(exportToProcess))
+  if (typeof result !== "string") {
+    await failExport(exportToProcess.id)
+    return
+  }
+  const csvBuffer = Buffer.from(result, "utf-8")
+  const zip = await encryptAndZipFile(csvBuffer, `${exportToProcess.name}.csv`)
+
+  await uploadFileToS3(`${exportToProcess.name}.zip`, zip, "export")
+  await completeExport(exportToProcess.id, 1)
+}
+
 export const processExportsQueue = async () => {
   const exportToProcess = await getFirstExport()
   if (!exportToProcess) {
     return
   }
 
+  console.log(`Processing export ${exportToProcess.name}`)
   if (!exportToProcess.user.organization?.id) {
     await failExport(exportToProcess.id)
     return
   }
 
-  console.log(`Processing export ${exportToProcess.name}`)
+  if (
+    exportToProcess.type === ExportType.ADMIN &&
+    !(exportToProcess.user.role && canExportFullProducts(exportToProcess.user.role, exportToProcess.brand || undefined))
+  ) {
+    await failExport(exportToProcess.id)
+    return
+  }
 
-  if (exportToProcess.type === ExportType.SVG) {
-    await exportSVGs(exportToProcess)
-  } else {
-    await exportCSVs(exportToProcess)
+  switch (exportToProcess.type) {
+    case ExportType.SVG:
+      await exportSVGs(exportToProcess)
+      break
+    case ExportType.CSV:
+      await exportCSVs(exportToProcess)
+      break
+    case ExportType.ADMIN:
+      await exportAdmins(exportToProcess)
+      break
   }
 }

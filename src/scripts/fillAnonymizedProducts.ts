@@ -1,7 +1,6 @@
 import "dotenv/config"
 import { prismaClient } from "../db/prismaClient"
 import { decryptProductFields } from "../utils/encryption/encryption"
-import { computeBatchScore } from "../utils/ecobalyse/batches"
 import { getValue } from "../utils/parsing/parsing"
 import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../types/Product"
 import { businesses } from "../utils/types/business"
@@ -10,6 +9,7 @@ import { impressions } from "../utils/types/impression"
 import { materials } from "../utils/types/material"
 import { accessories } from "../utils/types/accessory"
 import { productCategories } from "../utils/types/productCategory"
+import { getMeanScores } from "../db/score"
 
 const getLatestProductIds = async () => {
   const result = await prismaClient.$queryRaw<Array<{ id: string }>>`
@@ -65,7 +65,7 @@ const main = async (batchSize: number, concurrency: number) => {
 
       await Promise.all(
         productsChunk.map(async (product) => {
-          const batchScore = computeBatchScore(product)
+          const batchScore = await getMeanScores(product)
 
           await prismaClient.anonymizedProduct.create({
             data: {

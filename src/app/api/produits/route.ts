@@ -24,7 +24,7 @@ export async function GET(req: Request) {
   }
 
   const products = await getOrganizationProductsByUserIdAndFilters(
-    api.user.id,
+    api.user,
     validationResult.data.page,
     validationResult.data.size,
     { brandId: validationResult.data.brandId },
