@@ -24,61 +24,64 @@ const HomeBanner = ({
 }) => {
   const isOtherOrganization =
     organizationType === OrganizationType.Other || organizationType === OrganizationType.Distributor
+  const isTest = isTestEnvironment()
   return (
     <Block
       large
       type='yellow'
-      className={isPro || connected ? "" : styles.background}
+      className={isTest || isPro || connected ? "" : styles.background}
       containerClassName={isPro && !connected ? styles.proBackground : ""}>
       <div
         className={classNames(styles.banner, {
-          [styles.bannerTest]: isTestEnvironment(),
           [styles.bannerPro]: isPro && !connected,
           [styles.bannerConnected]: connected,
+          [styles.bannerTest]: isTest,
         })}>
-        {isTestEnvironment() ? (
-          <Alert
-            className={styles.alert}
-            title='Bienvenue sur ce serveur bac à sable'
-            severity='info'
-            description={
-              <>
-                <span>Ici, vous pourrez :</span>
-                <br />
-                <span>
-                  <span className='fr-icon-arrow-right-s-fill' aria-hidden='true' /> comprendre le fonctionnement du
-                  portail avec des fichiers d’exemple,
-                </span>
-                <br />
-                <span>
-                  <span className='fr-icon-arrow-right-s-fill' aria-hidden='true' /> tester la qualité de vos futures
-                  déclarations.
-                </span>
-                <br />
-                <br />
-                <span>
-                  <b>Aucune de vos saisies ne sera transférée sur le serveur de production.</b>
-                </span>
-                <br />
-                <span>
-                  <b>Vos données de test seront automatiquement supprimées sous 7 jours</b>
-                </span>
-              </>
-            }
-          />
-        ) : (
-          !isPro &&
-          !connected && <Image className={styles.image} src='/images/etiquette.svg' alt='' width={378} height={188} />
-        )}
+        {isTest
+          ? !connected && (
+              <Alert
+                className={styles.alert}
+                title='Bienvenue sur ce serveur bac à sable'
+                severity='info'
+                description={
+                  <>
+                    <span>Ici, vous pourrez :</span>
+                    <br />
+                    <span>
+                      <span className='fr-icon-arrow-right-s-fill' aria-hidden='true' /> comprendre le fonctionnement du
+                      portail avec des fichiers d’exemple,
+                    </span>
+                    <br />
+                    <span>
+                      <span className='fr-icon-arrow-right-s-fill' aria-hidden='true' /> tester la qualité de vos
+                      futures déclarations.
+                    </span>
+                    <br />
+                    <br />
+                    <span>
+                      <b>Aucune de vos saisies ne sera transférée sur le serveur de production.</b>
+                    </span>
+                    <br />
+                    <span>
+                      <b>Vos données de test seront automatiquement supprimées sous 7 jours</b>
+                    </span>
+                  </>
+                }
+              />
+            )
+          : !isPro &&
+            !connected && (
+              <Image className={styles.image} src='/images/etiquette.svg' alt='' width={378} height={188} />
+            )}
         <div>
           <h1>
-            {isTestEnvironment()
+            {isTest
               ? "Serveur de test pour la déclaration du coût environnemental de produits textiles"
               : isPro
                 ? "Déclarer le coût environnemental de vos produits textiles"
                 : "Affichage environnemental"}
           </h1>
-          {!isTestEnvironment() &&
+          {!isTest &&
             (isPro ? (
               !connected && (
                 <>

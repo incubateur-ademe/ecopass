@@ -52,10 +52,8 @@
 }
 
 .bannerTest {
-  @media screen and (max-width: 62rem) {
-    flex-direction: column-reverse;
-    flex-wrap: wrap;
-  }
+  margin: 0;
+  flex-direction: column-reverse;
 }
 
 .cards {
