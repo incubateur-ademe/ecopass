@@ -1,7 +1,7 @@
 "use server"
 import axios from "axios"
 import { getProductCountByCategory, getDistinctBrandCount, getBrandsInformations } from "../../db/product"
-import { getDoneTypeUploadCount } from "../../db/upload"
+import { getDoneUploadCount } from "../../db/upload"
 import { auth } from "../auth/auth"
 import { canAccessAdminSpace } from "../../utils/authorization/authorizations"
 import { UploadType } from "@prisma/enums"
@@ -29,22 +29,20 @@ const getVisits = async () => {
 }
 
 export const computeStats = async () => {
-  const [visits, products, fileUploads, apiUploads, distinctBrands, simplifiedUploads] = await Promise.all([
+  const [visits, products, uploadsCount, distinctBrands] = await Promise.all([
     getVisits(),
     getProductCountByCategory(),
-    getDoneTypeUploadCount(UploadType.FILE),
-    getDoneTypeUploadCount(UploadType.API),
+    getDoneUploadCount(),
     getDistinctBrandCount(),
-    getDoneTypeUploadCount(UploadType.SIMPLIFIED),
   ])
 
   return {
     visits: visits[0]?.nb_visits,
     products,
-    fileUploads,
-    apiUploads,
     distinctBrands,
-    simplifiedUploads,
+    fileUploads: uploadsCount.find((upload) => upload.type === UploadType.FILE)?._count.id || 0,
+    apiUploads: uploadsCount.find((upload) => upload.type === UploadType.API)?._count.id || 0,
+    simplifiedUploads: uploadsCount.find((upload) => upload.type === UploadType.SIMPLIFIED)?._count.id || 0,
   }
 }
 
