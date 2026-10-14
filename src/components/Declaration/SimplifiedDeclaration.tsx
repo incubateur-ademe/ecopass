@@ -77,6 +77,7 @@ const SimplifiedDeclaration = ({ brands, gtin }: { brands: { id: string; name: s
               data={data}
               brands={brands}
               setData={handleChange}
+              setAllData={(newData) => setData((current) => ({ ...current, ...newData }))}
               goToNextStep={() => {
                 setStep(2)
                 ref.current?.scrollIntoView({ behavior: "smooth", block: "start" })

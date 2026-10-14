@@ -8,12 +8,14 @@ import { isValidGtin } from "../../utils/validation/gtin"
 import BrandAutocomplete from "./BrandAutocomplete"
 import { isGTINAlreadyDeclared } from "../../serverFunctions/product"
 import { ProductCheckResult } from "../../services/validation/productCheckResult"
+import { scrapeProductFromUrl, SimplifiedDeclarationData } from "../../serverFunctions/upload"
 import BarcodeScanner from "../Search/BarcodeScanner"
 
 const Identification = ({
   data,
   brands,
   setData,
+  setAllData,
   goToNextStep,
 }: {
   data: {
@@ -25,17 +27,21 @@ const Identification = ({
   }
   brands: { id: string; name: string }[]
   setData: (key: keyof typeof data, value: string) => void
+  setAllData: (data: Partial<SimplifiedDeclarationData>) => void
   goToNextStep: () => void
 }) => {
   const [errors, setErrors] = useState<{ [key in keyof typeof data]?: ReactNode }>({})
   const [scanError, setScannError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const brandNameRef = useRef<HTMLInputElement>(null)
   const gtinRef = useRef<HTMLInputElement>(null)
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     let success = true
     const newErrors: { [key in keyof typeof data]?: ReactNode } = {}
+
     if (!data.gtin) {
       newErrors.gtin = "Le code barre (GTIN) est requis"
       if (success) {
@@ -82,6 +88,7 @@ const Identification = ({
     if (success) {
       goToNextStep()
     }
+    setIsLoading(false)
   }
   return (
     <>
@@ -93,6 +100,21 @@ const Identification = ({
       />
       <form onSubmit={submit} noValidate>
         <p className='fr-hint-text fr-mb-4w'>Les champs marqués d'un * sont obligatoires</p>
+        <Input
+          label='URL du produit'
+          nativeInputProps={{
+            value: data.url,
+            onChange: (e) => setData("url", e.target.value),
+            onBlur: async () => {
+              if (data.url && data.url.trim()) {
+                const scrapedData = await scrapeProductFromUrl(data.url)
+                if (scrapedData) {
+                  setAllData(scrapedData)
+                }
+              }
+            },
+          }}
+        />
         <BrandAutocomplete
           required
           hintText='Veillez à correctement orthographier la marque du produit que vous déclarez afin que nous puissions l’interpeller'
@@ -128,13 +150,6 @@ const Identification = ({
             onChange: (e) => setData("internalReference", e.target.value),
           }}
         />
-        <Input
-          label='URL du produit'
-          nativeInputProps={{
-            value: data.url,
-            onChange: (e) => setData("url", e.target.value),
-          }}
-        />
         <Alert
           severity='info'
           small
@@ -152,8 +167,13 @@ const Identification = ({
           className='fr-mb-4w'
         />
         <div className={styles.button}>
-          <Button type='submit' priority='secondary' iconId='ri-arrow-right-line' iconPosition='right'>
-            Étape suivante
+          <Button
+            type='submit'
+            priority='secondary'
+            iconId='ri-arrow-right-line'
+            iconPosition='right'
+            disabled={isLoading}>
+            {isLoading ? "Chargement..." : "Étape suivante"}
           </Button>
         </div>
       </form>

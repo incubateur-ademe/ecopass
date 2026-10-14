@@ -21,6 +21,7 @@ import { createUpload } from "../db/upload"
 import { getMassByAudience } from "../utils/product/audienceMassMapping"
 import { ProductCategory } from "../types/Product"
 import { productMapping } from "../utils/ecobalyse/mappings"
+import { scrapeProduct } from "../utils/scrapers/scraper"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -265,5 +266,19 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
     }
+  }
+}
+
+export const scrapeProductFromUrl = async (url: string) => {
+  if (!url || !url.trim()) {
+    return null
+  }
+
+  const result = await scrapeProduct(url)
+  return {
+    ...result,
+    materials: result.materials
+      ? result.materials.map((material) => ({ id: material.id, share: Math.round(material.share * 100) }))
+      : [],
   }
 }
