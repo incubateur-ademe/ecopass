@@ -16,13 +16,13 @@ const steps: Record<number, string> = {
   3: "Validation",
 }
 
-const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string }[] }) => {
+const SimplifiedDeclaration = ({ brands, gtin }: { brands: { id: string; name: string }[]; gtin?: string }) => {
   const ref = useRef<HTMLDivElement>(null)
   const [step, setStep] = useState(1)
   const [data, setData] = useState<SimplifiedDeclarationData>({
     brandName: "",
     brandId: "",
-    gtin: "",
+    gtin: gtin || "",
     internalReference: "",
     url: "",
     product: "",
@@ -77,6 +77,7 @@ const SimplifiedDeclaration = ({ brands }: { brands: { id: string; name: string 
               data={data}
               brands={brands}
               setData={handleChange}
+              setAllData={(newData) => setData((current) => ({ ...current, ...newData }))}
               goToNextStep={() => {
                 setStep(2)
                 ref.current?.scrollIntoView({ behavior: "smooth", block: "start" })

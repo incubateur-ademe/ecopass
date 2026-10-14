@@ -1,7 +1,10 @@
 "use client"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
+import BarcodeScanner from "./BarcodeScanner"
 import styles from "./SearchInput.module.css"
+import { useState } from "react"
+import { Alert } from "@codegouvfr/react-dsfr/Alert"
 
 const SearchInput = ({
   label,
@@ -17,13 +20,15 @@ const SearchInput = ({
   placeholder?: string
   value: string
   onChange: (value: string) => void
-  onSearch?: () => void
+  onSearch?: (value?: string) => void
   buttonLabel?: string
   stateRelatedMessage?: string
   searchButtonHref?: string
   advancedSearchHref?: string
   advancedSearchLabel?: string
 }) => {
+  const [error, setError] = useState("")
+
   const handleSearch = () => {
     if (onSearch) {
       onSearch()
@@ -32,24 +37,29 @@ const SearchInput = ({
 
   return (
     <div className={styles.box}>
-      <div className={styles.input}>
-        <Input
-          label={label}
-          stateRelatedMessage={stateRelatedMessage}
-          state={stateRelatedMessage ? "info" : undefined}
-          nativeInputProps={{
-            value,
-            onChange: (event) => onChange(event.target.value),
-            placeholder,
-            onKeyDown: (event) => {
-              if (event.key === "Enter") {
-                event.preventDefault()
-                handleSearch()
-              }
-            },
-          }}
-        />
+      <div className={styles.content}>
+        <div className={styles.input}>
+          <Input
+            label={label}
+            stateRelatedMessage={stateRelatedMessage}
+            state={stateRelatedMessage ? "info" : undefined}
+            nativeInputProps={{
+              value,
+              onChange: (event) => onChange(event.target.value),
+              placeholder,
+              onKeyDown: (event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault()
+                  handleSearch()
+                }
+              },
+            }}
+          />
+        </div>
+        {onSearch && <BarcodeScanner onScan={onSearch} setError={setError} />}
       </div>
+
+      {error && <Alert severity='error' small description={error} className='fr-mt-2w' />}
       {(searchButtonHref || advancedSearchHref) && (
         <ul className={styles.buttons}>
           {searchButtonHref && (

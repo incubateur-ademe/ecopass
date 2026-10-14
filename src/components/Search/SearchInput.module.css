@@ -2,14 +2,24 @@
   border: 1px solid var(--brown-cafe-creme-sun-383-moon-885);
   background-color: white;
   padding: 1.875rem;
+}
+
+.content {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   align-items: flex-end;
+  align-items: center;
+
+  @media screen and (max-width: 37.5rem) {
+    flex-direction: row;
+    margin-bottom: 2rem;
+  }
 }
 
 .buttons {
   display: flex;
+  padding: 0;
   gap: 1rem;
   height: fit-content;
   width: 100%;
@@ -19,5 +29,5 @@
 
 .input {
   flex: 1;
-  min-width: 15rem;
+  min-width: min(100%, 15rem);
 }

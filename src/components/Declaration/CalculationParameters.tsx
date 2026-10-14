@@ -13,14 +13,7 @@ import styles from "./CalculationParameters.module.css"
 import LoadingButton from "../Button/LoadingButton"
 import { Audience } from "@prisma/enums"
 import Link from "next/link"
-
-export const AUDIENCE_LABELS: Record<Audience, string> = {
-  Man: "Homme",
-  Mixed: "Mixte",
-  Woman: "Femme",
-  Kid: "Enfant",
-  Baby: "Bébé",
-}
+import { audiencelabels } from "../../utils/product/audience"
 
 const CalculationParameters = ({
   data,
@@ -137,7 +130,7 @@ const CalculationParameters = ({
       <RadioButtons
         legend='Gamme *'
         orientation='horizontal'
-        options={Object.entries(AUDIENCE_LABELS).map(([key, label]) => ({
+        options={Object.entries(audiencelabels).map(([key, label]) => ({
           label: label,
           nativeInputProps: {
             checked: data.audience === key,

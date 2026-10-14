@@ -45,7 +45,7 @@ const ProductPage = async (props: Props) => {
           }}
         />
       ) : (
-        <EmptyProduct />
+        <EmptyProduct gtin={params.gtin} />
       )}
     </>
   )
