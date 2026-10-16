@@ -1,9 +1,18 @@
+import { OrganizationType } from "@prisma/enums"
 import Block from "../components/Block/Block"
-import Contact from "../components/Organization/Contact"
+import HelpBanner from "../components/Help/HelpBanner"
 import Upload from "../components/Upload/Upload"
 import Uploads from "../components/Upload/Uploads"
 
-const Declarations = ({ page, canDeclare }: { page: number; canDeclare?: boolean }) => {
+const Declarations = ({
+  page,
+  canDeclare,
+  organizationType,
+}: {
+  page: number
+  canDeclare?: boolean
+  organizationType?: OrganizationType
+}) => {
   return (
     <>
       <Block>
@@ -14,9 +23,7 @@ const Declarations = ({ page, canDeclare }: { page: number; canDeclare?: boolean
         <h2>Mes fichiers de résultats</h2>
         <Uploads page={page} />
       </Block>
-      <Block type='yellow'>
-        <Contact />
-      </Block>
+      <HelpBanner organizationType={organizationType} />
     </>
   )
 }
