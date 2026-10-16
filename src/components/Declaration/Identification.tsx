@@ -28,7 +28,7 @@ const Identification = ({
   goToNextStep: () => void
 }) => {
   const [errors, setErrors] = useState<{ [key in keyof typeof data]?: ReactNode }>({})
-  const [scanError, setScannError] = useState("")
+  const [scanError, setScanError] = useState("")
   const brandNameRef = useRef<HTMLInputElement>(null)
   const gtinRef = useRef<HTMLInputElement>(null)
 
@@ -118,7 +118,7 @@ const Identification = ({
               onChange: (e) => setData("gtin", e.target.value),
             }}
           />
-          <BarcodeScanner onScan={(code) => setData("gtin", code)} setError={setScannError} />
+          <BarcodeScanner onScan={(code) => setData("gtin", code)} setError={setScanError} />
         </div>
         {scanError && <Alert small description={scanError} severity='error' className='fr-mb-3w' />}
         <Input

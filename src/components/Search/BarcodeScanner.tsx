@@ -148,6 +148,7 @@ const BarcodeScanner = ({
             children: "Fermer",
             priority: "secondary",
             onClick: stopScanning,
+            type: "button",
           },
         ]}>
         <div id='barcode-scanner-video' ref={videoContainerRef} className={styles.videoContainer} />
