@@ -2,7 +2,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import styles from "./ProductNotFound.module.css"
 import Image from "next/image"
 
-const ProductNotFound = ({ fromSearch }: { fromSearch?: boolean }) => {
+const ProductNotFound = ({ fromSearch, gtin }: { fromSearch?: boolean; gtin?: string }) => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -10,7 +10,9 @@ const ProductNotFound = ({ fromSearch }: { fromSearch?: boolean }) => {
           {fromSearch ? "Vous ne trouvez pas le produit que vous cherchez ?" : "Vous ne trouvez pas ce produit ?"}
         </h3>
         <p>Contribuez à enrichir la base de données en ajoutant vous-même les références encore absentes.</p>
-        <Button linkProps={{ href: "/declaration-simplifiee" }}>Ajouter une référence</Button>
+        <Button linkProps={{ href: `/declaration-simplifiee${gtin ? `?gtin=${gtin}` : ""}` }}>
+          Ajouter une référence
+        </Button>
         {!fromSearch && (
           <>
             <div className={styles.line} />
