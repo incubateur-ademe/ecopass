@@ -1,4 +1,5 @@
 "use client"
+
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import SearchInput from "../Search/SearchInput"
@@ -12,7 +13,7 @@ const Search = ({ withoutHint }: { withoutHint?: boolean }) => {
       stateRelatedMessage={withoutHint ? undefined : "Tous les produits ne sont pas encore disponibles."}
       value={gtin}
       onChange={setGTIN}
-      onSearch={() => router.push(`/produits/${gtin}`)}
+      onSearch={(code) => router.push(`/produits/${code || gtin}`)}
       searchButtonHref={`/produits/${gtin}`}
       advancedSearchHref={`/recherche?search=${gtin}`}
     />

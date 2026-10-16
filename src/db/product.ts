@@ -995,6 +995,7 @@ export const getLastBrands = async () => {
     where: {
       status: Status.Done,
       brandId: { not: null },
+      confidenceLevel: ConfidenceLevel.High,
     },
     _max: { createdAt: true },
     orderBy: { _max: { createdAt: "desc" } },

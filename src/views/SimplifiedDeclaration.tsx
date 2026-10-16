@@ -3,14 +3,14 @@ import Contact from "../components/Organization/Contact"
 import SimplifiedDeclaration from "../components/Declaration/SimplifiedDeclaration"
 import { getAllAvailableBrands } from "../db/brands"
 
-const SimplifiedDeclarationView = async () => {
+const SimplifiedDeclarationView = async ({ gtin }: { gtin?: string }) => {
   const brands = await getAllAvailableBrands()
 
   return (
     <>
       <Block>
         <h1>Nouvelle déclaration : via formulaire simplifié</h1>
-        <SimplifiedDeclaration brands={brands} />
+        <SimplifiedDeclaration brands={brands} gtin={gtin} />
       </Block>
       <Block type='yellow'>
         <Contact />
