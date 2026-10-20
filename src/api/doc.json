@@ -1113,7 +1113,7 @@
       "ProductQuery": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["gtins", "internalReference", "mass", "materials", "product", "countryMaking"],
+        "required": ["gtins", "internalReference", "brandId", "mass", "materials", "product", "countryMaking"],
         "properties": {
           "gtins": {
             "type": "array",
@@ -1285,7 +1285,7 @@
       "ProductBatchQuery": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["gtins", "internalReference", "products"],
+        "required": ["gtins", "internalReference", "brandId", "products"],
         "properties": {
           "gtins": {
             "type": "array",
@@ -1452,7 +1452,7 @@
       "MultiComponentProductQuery": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["gtins", "internalReference", "product", "components"],
+        "required": ["gtins", "internalReference", "brandId", "product", "components"],
         "properties": {
           "gtins": {
             "type": "array",
