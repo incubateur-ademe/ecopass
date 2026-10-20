@@ -1,39 +1,49 @@
 import { Suspense } from "react"
 import Block from "../components/Block/Block"
 import Products from "../components/Product/Products"
-import BrandSelection from "../components/Product/BrandSelection"
+import ProductsList from "../components/Product/ProductsList"
 import ExportProducts from "../components/Product/Export/ExportProducts"
+import FiltersBar from "../components/Product/FiltersBar"
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import Link from "next/link"
+import { OrganizationType } from "@prisma/enums"
+import { type ProductFilters } from "../db/product"
+import { Export } from "@prisma/client"
+import ExportsTable from "../components/Product/Export/ExportsTable"
+import { ProductCategory } from "../types/Product"
 
 const ProductsPage = ({
   page,
   productsCount,
   brands,
-  brand,
+  filters,
+  organizationType,
+  categories,
+  declarants,
+  exports,
 }: {
   page: number
-  productsCount: number
+  productsCount: { count: number; slug: ProductCategory }[]
   brands: { name: string; id: string }[]
-  brand?: string
+  filters: ProductFilters
+  organizationType?: OrganizationType
+  categories: string[]
+  declarants: string[]
+  exports: Export[]
 }) => {
+  const total = productsCount.reduce((sum, item) => sum + item.count, 0)
   return (
     <>
-      <Block>
-        <h1>Mes produits</h1>
-        {brands.length > 1 && <BrandSelection brands={brands} brand={brand} />}
-        {productsCount > 0 ? (
-          <p>
-            Vous avez <b>{productsCount}</b>{" "}
-            {productsCount > 1 ? <span>références produit déclarées</span> : <span>référence produit déclarée</span>}
-            {brand && (
-              <span>
-                {" "}
-                pour la marque <b>{brands.find((b) => b.id === brand)?.name}</b>
-              </span>
-            )}
-            .
-          </p>
+      <Block type='yellow'>
+        <h1>Mes produits déclarés</h1>
+        {total > 0 ? (
+          <>
+            <p className='fr-mb-3w'>
+              Vous avez {total}{" "}
+              {total > 1 ? <span>références produit déclarées</span> : <span>référence produit déclarée</span>}
+            </p>
+            <ProductsList productsByCategory={productsCount} />
+          </>
         ) : (
           <Alert
             severity='info'
@@ -41,8 +51,8 @@ const ProductsPage = ({
             description={
               <>
                 Rendez-vous sur la page{" "}
-                <Link className='fr-link' href='/declarations'>
-                  Mes déclarations
+                <Link className='fr-link' href={organizationType ? "/declarations" : "/declaration-simplifiee"}>
+                  {organizationType ? "Mes déclarations" : "Déclaration simplifiée"}
                 </Link>{" "}
                 pour enregistrer un produit.
               </>
@@ -50,19 +60,19 @@ const ProductsPage = ({
           />
         )}
       </Block>
-      {productsCount > 0 && (
+      {total > 0 && (
         <Block>
-          <ExportProducts brand={brand} />
+          <FiltersBar brands={brands} categories={categories} declarants={declarants} filters={filters} />
+          <ExportProducts filters={filters} exports={exports} />
+          <Suspense>
+            <Products page={page} filters={filters} />
+          </Suspense>
         </Block>
       )}
-      {productsCount > 0 && (
+      {exports.length > 0 && (
         <Block>
-          <>
-            <h2>Mes produits déclarés</h2>
-            <Suspense>
-              <Products page={page} productsCount={productsCount} brand={brand} />
-            </Suspense>
-          </>
+          <h2 id='exports'>Vos exports de données</h2>
+          <ExportsTable exports={exports} />
         </Block>
       )}
     </>

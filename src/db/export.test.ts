@@ -5,7 +5,7 @@ jest.mock("./prismaClient", () => ({
   prismaClient: mockPrismaTest,
 }))
 
-import { createExport, getExportsByUserIdAndBrand, getFirstExport, completeExport, getExportByName } from "./export"
+import { createExport, getExportsByUserId, getFirstExport, completeExport, getExportByName } from "./export"
 import { cleanDB } from "./testUtils"
 
 describe("Export DB", () => {
@@ -43,7 +43,7 @@ describe("Export DB", () => {
 
   describe("createExport", () => {
     it("should create an export without brand", async () => {
-      const result = await createExport(testUserId, undefined, ExportType.SVG)
+      const result = await createExport(testUserId, {}, ExportType.SVG)
 
       expect(result).toBeDefined()
       expect(result.userId).toBe(testUserId)
@@ -56,7 +56,7 @@ describe("Export DB", () => {
 
     it("should create an export with brand", async () => {
       const brand = "Test Brand"
-      const result = await createExport(testUserId, brand, ExportType.CSV)
+      const result = await createExport(testUserId, { brandId: brand }, ExportType.CSV)
 
       expect(result).toBeDefined()
       expect(result.userId).toBe(testUserId)
@@ -67,10 +67,10 @@ describe("Export DB", () => {
     })
   })
 
-  describe("getExportsByUserIdAndBrand", () => {
-    it("should return exports from the last 30 days without brand filter", async () => {
-      const export1 = await createExport(testUserId, undefined, ExportType.SVG)
-      const export2 = await createExport(testUserId, undefined, ExportType.SVG)
+  describe("getExportsByUserId", () => {
+    it("should return exports from the last 30 days", async () => {
+      const export1 = await createExport(testUserId, {}, ExportType.SVG)
+      const export2 = await createExport(testUserId, {}, ExportType.SVG)
 
       const oldDate = new Date()
       oldDate.setDate(oldDate.getDate() - 35)
@@ -84,50 +84,25 @@ describe("Export DB", () => {
         },
       })
 
-      const result = await getExportsByUserIdAndBrand(testUserId, undefined, ExportType.SVG)
+      const result = await getExportsByUserId(testUserId)
 
       expect(result).toHaveLength(2)
       expect(result.map((e) => e.id)).toContain(export1.id)
       expect(result.map((e) => e.id)).toContain(export2.id)
     })
 
-    it("should return exports filtered by brand", async () => {
-      const brand1 = "Brand 1"
-      const brand2 = "Brand 2"
-
-      const export1 = await createExport(testUserId, brand1, ExportType.SVG)
-      await createExport(testUserId, brand2, ExportType.SVG)
-      const export3 = await createExport(testUserId, brand1, ExportType.SVG)
-
-      const result = await getExportsByUserIdAndBrand(testUserId, brand1, ExportType.SVG)
-
-      expect(result).toHaveLength(2)
-      expect(result.map((e) => e.id)).toContain(export1.id)
-      expect(result.map((e) => e.id)).toContain(export3.id)
-    })
-
     it("should return empty array when no exports found", async () => {
-      const result = await getExportsByUserIdAndBrand("non-existent-user", undefined, ExportType.SVG)
+      const result = await getExportsByUserId("non-existent-user")
 
       expect(result).toHaveLength(0)
-    })
-
-    it("should return exports without brand when brand filter is null", async () => {
-      await createExport(testUserId, undefined, ExportType.SVG)
-      await createExport(testUserId, "Some Brand", ExportType.SVG)
-
-      const result = await getExportsByUserIdAndBrand(testUserId, undefined, ExportType.SVG)
-
-      expect(result).toHaveLength(1)
-      expect(result[0].brand).toBeNull()
     })
   })
 
   describe("getFirstExport", () => {
     it("should return the oldest pending export with user organization", async () => {
-      const export1 = await createExport(testUserId, undefined, ExportType.SVG)
+      const export1 = await createExport(testUserId, {}, ExportType.SVG)
       await new Promise((resolve) => setTimeout(resolve, 10))
-      const export2 = await createExport(testUserId, undefined, ExportType.SVG)
+      const export2 = await createExport(testUserId, {}, ExportType.SVG)
 
       await mockPrismaTest.export.update({
         where: { id: export2.id },
@@ -140,11 +115,11 @@ describe("Export DB", () => {
       expect(result?.id).toBe(export1.id)
       expect(result?.status).toBe(Status.Pending)
       expect(result?.user).toBeDefined()
-      expect(result?.user.organizationId).toBe(testOrganizationId)
+      expect(result?.user.organization?.id).toBe(testOrganizationId)
     })
 
     it("should return null when no pending exports exist", async () => {
-      const export1 = await createExport(testUserId, undefined, ExportType.SVG)
+      const export1 = await createExport(testUserId, {}, ExportType.SVG)
 
       await mockPrismaTest.export.update({
         where: { id: export1.id },
@@ -165,7 +140,7 @@ describe("Export DB", () => {
 
   describe("completeExport", () => {
     it("should update export status to Done", async () => {
-      const export1 = await createExport(testUserId, undefined, ExportType.SVG)
+      const export1 = await createExport(testUserId, {}, ExportType.SVG)
       expect(export1.status).toBe(Status.Pending)
 
       await completeExport(export1.id, 3)
