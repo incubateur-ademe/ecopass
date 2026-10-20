@@ -10,7 +10,15 @@ import { useRouter } from "next/navigation"
 import { useCallback, useState } from "react"
 import { exportProducts } from "../../../serverFunctions/export"
 
-const ExportProducts = ({ filters, exports }: { filters: ProductFilters; exports: Export[] }) => {
+const ExportProducts = ({
+  filters,
+  exports,
+  admin,
+}: {
+  filters: ProductFilters
+  exports: Export[]
+  admin?: boolean
+}) => {
   const router = useRouter()
   const [success, setSuccess] = useState(false)
   const onClick = useCallback(
@@ -36,20 +44,31 @@ const ExportProducts = ({ filters, exports }: { filters: ProductFilters; exports
           <b>Faire un export de données</b> (vous pouvez y appliquer les filtres) :
         </p>
         <ButtonsGroup
-          buttons={[
-            {
-              priority: "secondary",
-              iconId: "fr-icon-file-download-fill",
-              children: "Exporter les données .csv",
-              onClick: () => onClick(ExportType.CSV),
-            },
-            {
-              priority: "secondary",
-              iconId: "fr-icon-file-download-fill",
-              children: "Exporter les étiquettes .svg",
-              onClick: () => onClick(ExportType.SVG),
-            },
-          ]}
+          buttons={
+            admin
+              ? [
+                  {
+                    priority: "secondary",
+                    iconId: "fr-icon-file-download-fill",
+                    children: "Exporter le CSV",
+                    onClick: () => onClick(ExportType.ADMIN),
+                  },
+                ]
+              : [
+                  {
+                    priority: "secondary",
+                    iconId: "fr-icon-file-download-fill",
+                    children: "Exporter les données .csv",
+                    onClick: () => onClick(ExportType.CSV),
+                  },
+                  {
+                    priority: "secondary",
+                    iconId: "fr-icon-file-download-fill",
+                    children: "Exporter les étiquettes .svg",
+                    onClick: () => onClick(ExportType.SVG),
+                  },
+                ]
+          }
           inlineLayoutWhen='always'
         />
       </div>

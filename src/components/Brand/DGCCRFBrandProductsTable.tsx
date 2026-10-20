@@ -2,39 +2,41 @@
 import Badge from "@codegouvfr/react-dsfr/Badge"
 import Image from "next/image"
 import Table from "../Table/Table"
-import { Products } from "../../db/product"
+import { ProductFilters, Products } from "../../db/product"
 import { formatDate, formatNumber } from "../../services/format"
 import styles from "./BrandProductsTable.module.css"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import ProductLink from "../Product/ProductLink"
-import DGCCRFExport from "./DGCCRFExportButton"
-import DGCCRFFilter from "./DGCCRFFilter"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { getProductCategory, getProductIcon } from "../../utils/product/category"
+import FiltersBar from "../Product/FiltersBar"
+import { Export } from "@prisma/client"
+import ExportProducts from "../Product/Export/ExportProducts"
+import { usePathname, useSearchParams } from "next/navigation"
 
 const DGCCRFBrandProductsTable = ({
   products,
   brandId,
   currentPage,
   productCount,
-  filter,
-  organizations,
+  filters,
+  brands,
+  categories,
+  declarants,
+  exports,
 }: {
   products: Products
   brandId?: string
   currentPage: number
   productCount: number
-  filter: {
-    category?: string
-    organization?: string
-    from?: string
-    to?: string
-  }
-  organizations?: {
-    key: string
-    value: string
-  }[]
+  filters: ProductFilters
+  brands: { name: string; id: string }[]
+  categories: string[]
+  declarants: string[]
+  exports: Export[]
 }) => {
+  const pathName = usePathname()
+  const searchParams = useSearchParams()
   const totalPages = Math.ceil(productCount / 10) || 1
 
   const tableRows = products.map((product) => {
@@ -66,17 +68,19 @@ const DGCCRFBrandProductsTable = ({
   return (
     <>
       <h2>Explorer les données produits</h2>
-      <DGCCRFFilter filter={filter} organizations={organizations} />
+      <FiltersBar
+        brands={brands}
+        categories={categories}
+        declarants={declarants}
+        filters={filters}
+        withBrandFilter={!brandId}
+      />
+      <ExportProducts filters={filters} exports={exports} admin />
       {productCount > 0 ? (
         <>
-          <div className={styles.tableHeader} id='produits'>
-            <h2>Liste complète des produits déclarés</h2>
-          </div>
-          <DGCCRFExport brandId={brandId} productCount={productCount} filter={filter} />
           <Table
             fixed
-            caption='Liste des produits de la marque'
-            noCaption
+            caption='Liste des produits'
             headers={[
               "Référence marque",
               "Catégorie",
@@ -92,9 +96,13 @@ const DGCCRFBrandProductsTable = ({
             <Pagination
               count={totalPages}
               defaultPage={currentPage}
-              getPageLinkProps={(page) => ({
-                href: `/marques/${brandId}?page=${page}&${filter.category ? `category=${filter.category}&` : ""}${filter.organization ? `organization=${filter.organization}&` : ""}#produits`,
-              })}
+              getPageLinkProps={(pageNum) => {
+                const params = new URLSearchParams(searchParams)
+                params.set("page", pageNum.toString())
+                return {
+                  href: `${pathName}?${params.toString()}`,
+                }
+              }}
               showFirstLast
             />
           )}

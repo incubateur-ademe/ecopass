@@ -19,11 +19,11 @@ export const createExport = async (userId: string, filter: ProductFilters, type:
     },
   })
 
-export const getExportsByUserId = async (userId: string) => {
+export const getExportsByUserId = async (userId: string, admin?: boolean) => {
   const date = new Date()
   date.setDate(date.getDate() - 30)
   return prismaClient.export.findMany({
-    where: { userId, createdAt: { gte: date } },
+    where: { userId, createdAt: { gte: date }, type: admin ? ExportType.ADMIN : { not: ExportType.ADMIN } },
     orderBy: { createdAt: "desc" },
   })
 }
