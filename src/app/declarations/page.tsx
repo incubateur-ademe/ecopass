@@ -22,7 +22,11 @@ const DeclarationsPage = async ({ searchParams }: PageProps) => {
   return (
     <>
       <StartDsfrOnHydration />
-      <Declarations page={page} canDeclare={user.organizationRole === OrganizationRole.ADMIN} />
+      <Declarations
+        page={page}
+        canDeclare={user.organizationRole === OrganizationRole.ADMIN}
+        organizationType={user.organization?.type || undefined}
+      />
     </>
   )
 }

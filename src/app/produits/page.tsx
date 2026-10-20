@@ -4,6 +4,8 @@ import { PageProps } from "../../types/Next"
 import { Metadata } from "next"
 import { getOrganizationProductsByUserId, getOrganizationProductsCountByUserIdAndBrand } from "../../db/product"
 import { tryAndGetSession } from "../../services/auth/redirect"
+import HelpBanner from "../../components/Help/HelpBanner"
+import { getUserOrganizationType } from "../../db/user"
 
 export const metadata: Metadata = {
   title: "Mes produits - Affichage environnemental",
@@ -11,6 +13,7 @@ export const metadata: Metadata = {
 
 const ProductsPage = async ({ searchParams }: PageProps) => {
   const session = await tryAndGetSession(true, false)
+  const organizationType = await getUserOrganizationType(session.user.id)
 
   const params = await searchParams
   const page = params.page ? parseInt(params.page as string, 10) : 1
@@ -25,6 +28,7 @@ const ProductsPage = async ({ searchParams }: PageProps) => {
     <>
       <StartDsfrOnHydration />
       <Products page={page} productsCount={productsCount} brands={brands} brand={brand} />
+      <HelpBanner organizationType={organizationType || undefined} />
     </>
   )
 }
