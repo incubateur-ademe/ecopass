@@ -15,3 +15,9 @@
   padding: 1.25rem 1.875rem;
   border: 1px solid var(--brown-cafe-creme-sun-383-moon-885);
 }
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}

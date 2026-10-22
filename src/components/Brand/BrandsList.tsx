@@ -27,10 +27,12 @@ const BrandsList = ({
   brands,
   defaultSearch,
   defaultPage,
+  isDGCCRF,
 }: {
   brands: BrandWithStats[]
   defaultSearch: string
   defaultPage: number
+  isDGCCRF: boolean
 }) => {
   const router = useRouter()
   const [search, setSearch] = useState(defaultSearch)
@@ -78,9 +80,10 @@ const BrandsList = ({
           <div className={styles.content}>
             <SearchInput
               label='Rechercher une marque'
-              placeholder='Rechercher une marque'
+              placeholder='Nom de la marque...'
               value={search}
               onChange={handleSearchChange}
+              canDownload={isDGCCRF}
             />
             {filteredBrands.length === 0 && (
               <Alert
