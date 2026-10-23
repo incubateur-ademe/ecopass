@@ -10,6 +10,11 @@ declare module "next-auth" {
     agentconnect_info?: {
       siret: string
     }
+    siret?: string
+  }
+
+  interface Profile {
+    siret: string
   }
 
   interface Session {

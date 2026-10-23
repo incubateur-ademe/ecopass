@@ -14,6 +14,7 @@ const userSelect = {
       id: true,
       name: true,
       type: true,
+      siret: true,
       authorizedBy: {
         select: {
           from: {

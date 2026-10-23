@@ -1,6 +1,7 @@
 import { getHtmlAttributes, DsfrHead } from "../dsfr-bootstrap/server-only-index"
 import { DsfrProvider } from "../dsfr-bootstrap"
 import Header from "../components/Header/Header"
+import SiretMismatchAlert from "../components/Header/SiretMismatchAlert"
 import { AuthProvider } from "../components/Provider/AuthProvider"
 import { Metadata } from "next"
 import Footer from "../components/Footer/Footer"
@@ -23,9 +24,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const lang = "fr"
 
   const session = await auth()
-
   const user = session ? await getUser(session.user.id) : null
   const displayName = user && user.nom && user.prenom ? `${user.prenom} ${user.nom}` : user?.email
+  const mismatchSiret = session && user?.organization?.siret && user.organization.siret !== session.user.siret
 
   return (
     <html lang={lang} {...getHtmlAttributes({ lang })}>
@@ -37,6 +38,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <DsfrProvider lang={lang}>
           <AuthProvider session={session}>
             <Header session={session} userType={user?.type} displayName={displayName} />
+            {mismatchSiret && <SiretMismatchAlert organization={user?.organization?.name || ""} />}
             <main id='contenu' role='main' tabIndex={-1}>
               {isTestEnvironment() && <TestBanner />}
               {children}
