@@ -66,6 +66,7 @@ describe("Score DB integration", () => {
             id: true,
             name: true,
             type: true,
+            siret: true,
             authorizedBy: {
               select: {
                 from: { select: { id: true, name: true, siret: true, brands: { select: { id: true, name: true } } } },
