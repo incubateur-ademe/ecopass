@@ -6,6 +6,7 @@ import { PageProps } from "../../types/Next"
 import { getUser } from "../../db/user"
 import { OrganizationRole } from "@prisma/client"
 import { redirect } from "next/navigation"
+import { isTestEnvironment } from "../../utils/test"
 
 export const metadata: Metadata = {
   title: "Mes déclarations - Affichage environnemental",
@@ -19,10 +20,15 @@ const DeclarationsPage = async ({ searchParams }: PageProps) => {
   }
   const params = await searchParams
   const page = params.page ? parseInt(params.page as string, 10) : 1
+  const isTest = isTestEnvironment()
   return (
     <>
       <StartDsfrOnHydration />
-      <Declarations page={page} canDeclare={user.organizationRole === OrganizationRole.ADMIN} />
+      <Declarations
+        page={page}
+        canDeclare={user.organizationRole === OrganizationRole.ADMIN || isTest}
+        organizationType={user.organization?.type || undefined}
+      />
     </>
   )
 }

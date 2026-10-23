@@ -91,10 +91,12 @@ describe("handleProductPOST", () => {
       nom: "user",
       prenom: "john",
       email: "user-1@example.com",
+      role: null,
       type: UserType.PROFESSIONNEL,
       organizationRole: OrganizationRole.ADMIN,
       organization: {
         id: "org-1",
+        siret: "12345678901234",
         name: "Org 1",
         type: OrganizationType.Brand,
         brands: [{ id: "brand-1", name: "Brand 1", active: true, default: true }],

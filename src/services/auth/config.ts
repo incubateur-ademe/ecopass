@@ -2,10 +2,10 @@ import { v4 as uuid } from "uuid"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcrypt"
 import { AuthOptions } from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prismaClient } from "../../db/prismaClient"
 import { OrganizationRole, UserRole, UserType } from "@prisma/enums"
 import { createOrganization } from "../../db/organization"
+import { PrismaAdapter } from "@auth/prisma-adapter"
 
 export const authOptions = {
   adapter: PrismaAdapter(prismaClient),
@@ -231,7 +231,7 @@ export const authOptions = {
 
       return true
     },
-    async jwt({ token, account, user }) {
+    async jwt({ token, account, user, profile }) {
       if (user) {
         token.id = user.id
         token.type = user.type
@@ -242,6 +242,10 @@ export const authOptions = {
         token.provider = account.provider
         token.idToken = account.id_token
       }
+
+      if (profile) {
+        token.siret = profile.siret
+      }
       return token
     },
     async session({ session, token }) {
@@ -249,6 +253,7 @@ export const authOptions = {
         session.user.id = token.id as string
         session.user.role = token.role as UserRole
         session.user.type = token.type as UserType
+        session.user.siret = token.siret as string
         session.provider = token.provider as string
         session.idToken = token.idToken as string
       }

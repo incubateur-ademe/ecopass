@@ -7,12 +7,14 @@ const userSelect = {
   nom: true,
   prenom: true,
   type: true,
+  role: true,
   organizationRole: true,
   organization: {
     select: {
       id: true,
       name: true,
       type: true,
+      siret: true,
       authorizedBy: {
         select: {
           from: {
@@ -20,13 +22,13 @@ const userSelect = {
               id: true,
               name: true,
               siret: true,
-              brands: { select: { active: true, id: true, name: true }, where: { active: true } },
+              brands: { select: { active: true, id: true, name: true } },
             },
           },
         },
         where: { active: true },
       },
-      brands: { select: { active: true, id: true, name: true, default: true }, where: { active: true } },
+      brands: { select: { active: true, id: true, name: true, default: true } },
     },
   },
 } satisfies UserSelect

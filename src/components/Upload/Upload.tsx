@@ -3,6 +3,7 @@ import { CallOut } from "@codegouvfr/react-dsfr/CallOut"
 import styles from "./Upload.module.css"
 import Link from "next/link"
 import UploadPanel from "./UploadPanel"
+import { Alert } from "@codegouvfr/react-dsfr/Alert"
 
 const Upload = ({ canDeclare }: { canDeclare?: boolean }) => {
   return (
@@ -31,7 +32,22 @@ const Upload = ({ canDeclare }: { canDeclare?: boolean }) => {
           </Link>
           .
         </CallOut>
-        {canDeclare && <UploadPanel />}
+        {canDeclare ? (
+          <UploadPanel />
+        ) : (
+          <Alert
+            title="Vous n'avez pas les droits pour effectuer une déclaration."
+            severity='error'
+            description={
+              <>
+                Veuillez vous rapprocher de l'administrateur de{" "}
+                <Link href='/organisation' className='fr-link'>
+                  votre organisation
+                </Link>
+              </>
+            }
+          />
+        )}
       </div>
       <aside className={styles.aside}>
         <Tile

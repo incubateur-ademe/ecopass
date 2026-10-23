@@ -1,10 +1,10 @@
-import Image from "next/image"
 import styles from "./BrandHeader.module.css"
 import Link from "next/link"
 import { BrandInformation } from "../../db/brands"
-import { getProductIcon } from "../../utils/product/category"
+import ProductsList from "../Product/ProductsList"
 
-const BrandHeader = ({ productCount, brand }: { brand: BrandInformation; productCount: number }) => {
+const BrandHeader = ({ brand }: { brand: BrandInformation }) => {
+  const productCount = brand.productsByCategory.reduce((acc, category) => acc + category.count, 0)
   return (
     <div className={styles.hero}>
       <div className={styles.header}>
@@ -40,23 +40,7 @@ const BrandHeader = ({ productCount, brand }: { brand: BrandInformation; product
           </>
         )}
       </div>
-      {brand.productsByCategory.length > 0 && (
-        <div className={styles.categoriesPreview}>
-          {brand.productsByCategory.map((category) => (
-            <div className={styles.categoryPreviewItem} key={category.slug}>
-              <Image
-                src={`/icons/${getProductIcon(category.slug)}.svg`}
-                alt=''
-                width={40}
-                height={40}
-                className={styles.categoryPreviewIcon}
-              />
-              <p className={styles.categoryPreviewLabel}>{category.slug}</p>
-              <p className={styles.categoryPreviewCount}>{category.count.toLocaleString("fr-FR")}</p>
-            </div>
-          ))}
-        </div>
-      )}
+      {brand.productsByCategory.length > 0 && <ProductsList productsByCategory={brand.productsByCategory} />}
     </div>
   )
 }

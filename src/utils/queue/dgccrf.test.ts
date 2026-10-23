@@ -1,27 +1,26 @@
 import { v4 as uuid } from "uuid"
-import { UserRole } from "@prisma/enums"
+import { ConfidenceLevel, UserRole } from "@prisma/enums"
 import { parse } from "csv-parse/sync"
-import { auth } from "../services/auth/auth"
-import { forEachLatestProductsByBrandIdForExport } from "../db/product"
-import { encryptProductFields } from "../utils/encryption/encryption"
-import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../types/Product"
-import { BATCH_CATEGORY } from "../utils/product/category"
 import { exportDgccrfBrandProducts } from "./dgccrf"
-import { Session } from "next-auth"
+import { forEachLatestProductsByBrandIdForExport } from "../../db/product"
+import { encryptProductFields } from "../encryption/encryption"
+import { FullUser, getUser } from "../../db/user"
+import { AccessoryType, Business, Country, Impression, MaterialType, ProductCategory } from "../../types/Product"
+import { BATCH_CATEGORY } from "../product/category"
 
-jest.mock("../services/auth/auth", () => ({
-  auth: jest.fn(),
-}))
-
-jest.mock("../db/product", () => ({
+jest.mock("../../db/product", () => ({
   forEachLatestProductsByBrandIdForExport: jest.fn(),
 }))
 
-jest.mock("../db/prismaClient", () => ({
+jest.mock("../../db/user", () => ({
+  getUser: jest.fn(),
+}))
+
+jest.mock("../../db/prismaClient", () => ({
   prismaClient: {},
 }))
 
-const mockedAuth = auth as jest.MockedFunction<typeof auth>
+const mockedGetUser = getUser as jest.MockedFunction<typeof getUser>
 const mockedGetProducts = forEachLatestProductsByBrandIdForExport as jest.MockedFunction<
   typeof forEachLatestProductsByBrandIdForExport
 >
@@ -33,11 +32,12 @@ const mockExportProducts = (products: any[]) => {
   })
 }
 
-const mockSession = async (role: UserRole | string) =>
+const getMockedUser = async (role: UserRole | string) =>
   ({
-    user: { id: "user-1", email: "test@example.com", role },
-    expires: "2099-01-01",
-  }) as Session
+    id: "user-1",
+    email: "test@example.com",
+    role,
+  }) as FullUser
 
 const makeInfo = (
   product: Parameters<typeof encryptProductFields>[0],
@@ -78,6 +78,7 @@ const makeProduct = (overrides: Record<string, unknown> = {}) => ({
   score: null,
   standardized: null,
   informations: [],
+  confidenceLevel: ConfidenceLevel.High,
   ...overrides,
 })
 
@@ -91,34 +92,38 @@ describe("exportDgccrfBrandProducts", () => {
 
   describe("contrôles d'accès", () => {
     it("retourne une erreur si non authentifié", async () => {
-      mockedAuth.mockResolvedValue(null as any)
-      const result = await exportDgccrfBrandProducts("brand-1")
+      mockedGetUser.mockResolvedValue(null)
+      const result = await exportDgccrfBrandProducts("user-1", {})
       expect(result).toEqual({ error: "Utilisateur non authentifié" })
+      expect(mockedGetUser).toHaveBeenCalledWith("user-1")
     })
 
     it("retourne une erreur si le rôle n'est pas DGCCRF ou ADMIN", async () => {
-      mockedAuth.mockResolvedValue(mockSession("Brand"))
-      const result = await exportDgccrfBrandProducts("brand-1")
+      mockedGetUser.mockResolvedValue(getMockedUser(""))
+      const result = await exportDgccrfBrandProducts("user-1", { brandId: "brand-1" })
       expect(result).toEqual({ error: "Vous n'êtes pas autorisé à exporter ces produits" })
+      expect(mockedGetUser).toHaveBeenCalledWith("user-1")
     })
 
     it("retourne une erreur si pas de brandId et rôle non ADMIN", async () => {
-      mockedAuth.mockResolvedValue(mockSession(UserRole.DGCCRF))
-      const result = await exportDgccrfBrandProducts()
+      mockedGetUser.mockResolvedValue(getMockedUser(UserRole.DGCCRF))
+      const result = await exportDgccrfBrandProducts("user-1", {})
       expect(result).toEqual({ error: "Marque invalide" })
+      expect(mockedGetUser).toHaveBeenCalledWith("user-1")
     })
 
     it("retourne une erreur si aucun produit trouvé", async () => {
-      mockedAuth.mockResolvedValue(mockSession(UserRole.DGCCRF))
+      mockedGetUser.mockResolvedValue(getMockedUser(UserRole.DGCCRF))
       mockExportProducts([])
-      const result = await exportDgccrfBrandProducts("brand-1")
+      const result = await exportDgccrfBrandProducts("user-1", { brandId: "brand-1" })
       expect(result).toEqual({ error: "Aucun produit trouvé pour cette marque" })
+      expect(mockedGetUser).toHaveBeenCalledWith("user-1")
     })
   })
 
   describe("produit simple (1 seule information)", () => {
     it("exporte une ligne avec toutes les colonnes correctement remplies", async () => {
-      mockedAuth.mockResolvedValue(mockSession(UserRole.DGCCRF))
+      mockedGetUser.mockResolvedValue(getMockedUser(UserRole.DGCCRF))
 
       const info = makeInfo({
         product: ProductCategory.Jean,
@@ -155,7 +160,8 @@ describe("exportDgccrfBrandProducts", () => {
         }),
       ])
 
-      const result = await exportDgccrfBrandProducts("brand-1")
+      const result = await exportDgccrfBrandProducts("user-1", { brandId: "brand-1" })
+      expect(mockedGetUser).toHaveBeenCalledWith("user-1")
       expect(typeof result).toBe("string")
 
       const rows = parseCSV(result as string)
@@ -194,7 +200,7 @@ describe("exportDgccrfBrandProducts", () => {
 
   describe("produit multi-composant (avec main component)", () => {
     it("place le main component en premier et numérote 1/2 et 2/2", async () => {
-      mockedAuth.mockResolvedValue(mockSession(UserRole.DGCCRF))
+      mockedGetUser.mockResolvedValue(getMockedUser(UserRole.DGCCRF))
 
       const mainInfo = makeInfo(
         {
@@ -237,7 +243,8 @@ describe("exportDgccrfBrandProducts", () => {
         }),
       ])
 
-      const result = await exportDgccrfBrandProducts("brand-1")
+      const result = await exportDgccrfBrandProducts("user-1", { brandId: "brand-1" })
+      expect(mockedGetUser).toHaveBeenCalledWith("user-1")
       const rows = parseCSV(result as string)
 
       expect(rows).toHaveLength(2)
@@ -260,7 +267,7 @@ describe("exportDgccrfBrandProducts", () => {
 
   describe("lot (plusieurs informations sans main component)", () => {
     it("affiche la catégorie 'Lot de produits' et numérote 1/2 et 2/2", async () => {
-      mockedAuth.mockResolvedValue(mockSession(UserRole.DGCCRF))
+      mockedGetUser.mockResolvedValue(getMockedUser(UserRole.DGCCRF))
 
       const info1 = makeInfo({
         product: ProductCategory.Pull,
@@ -300,7 +307,8 @@ describe("exportDgccrfBrandProducts", () => {
         }),
       ])
 
-      const result = await exportDgccrfBrandProducts("brand-1")
+      const result = await exportDgccrfBrandProducts("user-1", { brandId: "brand-1" })
+      expect(mockedGetUser).toHaveBeenCalledWith("user-1")
       const rows = parseCSV(result as string)
 
       expect(rows).toHaveLength(2)

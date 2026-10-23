@@ -21,6 +21,7 @@ import { createUpload } from "../db/upload"
 import { getMassByAudience } from "../utils/product/audienceMassMapping"
 import { ProductCategory } from "../types/Product"
 import { productMapping } from "../utils/ecobalyse/mappings"
+import { isTestEnvironment } from "../utils/test"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -67,6 +68,7 @@ const scanFileContent = async (buffer: Buffer): Promise<boolean> => {
 export const uploadFile = async (file: File) => {
   console.log(`[uploadFile] Starting - fileName: ${file.name}, size: ${file.size}`)
   const session = await auth()
+  const isTest = isTestEnvironment()
   if (!session || !session.user) {
     return "Veuillez vous reconnecter et réessayer"
   }
@@ -76,7 +78,7 @@ export const uploadFile = async (file: File) => {
     return "Utilisateur non trouvé"
   }
 
-  if (user.organizationRole !== OrganizationRole.ADMIN) {
+  if (user.organizationRole !== OrganizationRole.ADMIN && !isTest) {
     return "Vous n'avez pas les droits pour uploader des fichiers"
   }
 

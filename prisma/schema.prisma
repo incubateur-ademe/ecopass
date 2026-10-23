@@ -396,6 +396,7 @@ model APIKey {
 enum ExportType {
   CSV
   SVG
+  ADMIN
 }
 
 model Export {
@@ -403,9 +404,15 @@ model Export {
   status    Status   @default(Pending)
   createdAt DateTime @default(now()) @map("created_at")
 
-  name  String
-  brand String?
-  type  ExportType
+  name      String
+  brand     String?
+  category  String?
+  declarant String?
+  dateFrom  DateTime?
+  dateTo    DateTime?
+  search    String?
+
+  type ExportType
 
   count Int?
 

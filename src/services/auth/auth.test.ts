@@ -30,10 +30,12 @@ describe("getApiUser", () => {
           nom: "test",
           prenom: "john",
           email: "test@example.com",
+          role: null,
           type: UserType.PROFESSIONNEL,
           organizationRole: OrganizationRole.ADMIN,
           organization: {
             id: "org-123",
+            siret: "12345678901234",
             name: "Test Organization",
             type: OrganizationType.Brand,
             brands: [{ name: "Test Brand", active: true, default: false, id: "brand-1" }],
@@ -148,10 +150,12 @@ describe("getApiUser", () => {
           nom: "user",
           prenom: "john",
           email: "user@test.com",
+          role: null,
           type: UserType.PROFESSIONNEL,
           organizationRole: OrganizationRole.ADMIN,
           organization: {
             id: "org-id",
+            siret: "12345678901234",
             name: "Organization Name",
             type: OrganizationType.Brand,
             brands: [

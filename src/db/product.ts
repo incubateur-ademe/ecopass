@@ -5,11 +5,22 @@ import { decryptProductFields } from "../utils/encryption/encryption"
 import { productCategories } from "../utils/types/productCategory"
 import { prismaClient } from "./prismaClient"
 import { checkOldProduct, ProductDeclarationContext } from "../services/validation/oldProduct"
-import { BATCH_CATEGORY, getProductCategory } from "../utils/product/category"
-import { computeBatchScore } from "../utils/ecobalyse/batches"
+import { BATCH_CATEGORY, countProductsByCategory, getProductCategory } from "../utils/product/category"
 import { ProductCheckResult } from "../services/validation/productCheckResult"
 import { simplifyValue } from "../utils/parsing/parsing"
 import { getBrandById } from "./brands"
+import { FullUser, getUser } from "./user"
+import { canExportFullProducts } from "../utils/authorization/authorizations"
+import { getMeanScores, MeanScores } from "./score"
+
+export type ProductFilters = {
+  brandId?: string
+  category?: string
+  declarant?: string
+  dateFrom?: Date
+  dateTo?: Date
+  search?: string
+}
 
 export const createProducts = async (
   {
@@ -188,7 +199,7 @@ export const getProductsToProcess = async (take: number) => {
   }))
 }
 
-const productWithScoreSelect = {
+export const productWithScoreSelect = {
   id: true,
   gtins: true,
   internalReference: true,
@@ -254,9 +265,6 @@ const productWithScoreSelect = {
 } satisfies Prisma.ProductSelect
 
 export type ProductWithScoreBase = Prisma.ProductGetPayload<{ select: typeof productWithScoreSelect }>
-export type BatchScore = ReturnType<typeof computeBatchScore>
-
-export type MeanScores = Omit<{ [K in keyof BatchScore]: number }, "scoreWithoutDurability">
 
 export type ProductWithScore = ProductWithScoreBase & {
   meanScores: MeanScores
@@ -390,131 +398,54 @@ export const countPublicProductsByBrandId = async (
   return result.length
 }
 
-export const getPublicProductsByBrandId = async (
-  brandId: string | undefined,
-  category: string | undefined,
-  organization: string | undefined,
-  from: Date | undefined,
-  to: Date | undefined,
-  page: number,
-) => {
-  const baseWhere = {
-    status: Status.Done,
-    brandId,
-    upload: organization ? { organizationId: organization } : undefined,
-    createdAt: {
-      gte: from,
-      lte: to,
+export const getPublicProductsByBrandId = async (brandId: string, page: number) => {
+  return getProducts(
+    {
+      status: Status.Done,
+      brandId,
     },
-  } as Prisma.ProductWhereInput
-
-  const where = await applyBatchCategoryFilter(baseWhere, category)
-  return getProducts(where, (page - 1) * 10, 10)
+    (page - 1) * 10,
+    10,
+  )
 }
 
-export const getOrganizationProductsCountByUserIdAndBrand = async (userId: string, brandId?: string) => {
-  const user = await prismaClient.user.findUnique({
-    where: { id: userId },
-    select: {
-      type: true,
-      organization: {
-        select: {
-          id: true,
-          brands: { select: { id: true } },
-          authorizedBy: {
-            select: { from: { select: { brands: { select: { id: true } } } } },
-            where: { active: true },
-          },
-        },
-      },
-    },
-  })
-
-  if (!user) {
-    return 0
-  }
-  const authorizedBrandIds = user.organization
-    ? [
-        ...user.organization.brands.map((brand) => brand.id),
-        ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
-      ]
-    : []
-
-  const where =
-    user.type === UserType.CITOYEN || !user.organization
-      ? { status: Status.Done, upload: { createdById: userId } }
-      : {
-          OR: [
-            {
-              brandId: { in: authorizedBrandIds },
-              status: Status.Done,
-            },
-            {
-              upload: { organizationId: user.organization.id },
-              status: Status.Done,
-            },
-          ],
-        }
-
-  const products = await prismaClient.product.groupBy({
-    by: ["internalReference"],
-    where: brandId ? { AND: [where, { brandId }] } : where,
-    _count: { internalReference: true },
-  })
-  return products.length
-}
-
-export const getOrganizationProductsByUserIdAndBrandId = async (
-  userId: string,
-  page: number,
-  size: number | undefined,
-  brandId?: string,
+export const getOrganizationProductsCountByUserIdAndFilters = async (
+  user: FullUser | null,
+  filters?: ProductFilters,
 ) => {
-  const user = await prismaClient.user.findUnique({
-    where: { id: userId },
-    select: {
-      type: true,
-      organization: {
-        select: {
-          id: true,
-          brands: { select: { id: true } },
-          authorizedBy: {
-            select: { from: { select: { brands: { select: { id: true } } } } },
-            where: { active: true },
-          },
-        },
-      },
-    },
-  })
   if (!user) {
     return []
   }
 
-  const authorizedBrandIds = user.organization
-    ? [
-        ...user.organization.brands.map((brand) => brand.id),
-        ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
-      ]
-    : []
-  const where =
-    user.type === UserType.CITOYEN || !user.organization
-      ? { status: Status.Done, upload: { createdById: userId } }
-      : {
-          OR: [
-            {
-              brandId: { in: authorizedBrandIds },
-              status: Status.Done,
-            },
-            {
-              upload: { organizationId: user.organization.id },
-              status: Status.Done,
-            },
-          ],
-        }
+  const where = await getProductsBaseWhere(user, filters)
+  const uniqueGtins = await prismaClient.product.findMany({
+    where,
+    select: { id: true },
+    distinct: ["internalReference"],
+    orderBy: [{ createdAt: "desc" }, { internalReference: "asc" }],
+  })
 
-  return size
-    ? getProducts(brandId ? { AND: [where, { brandId }] } : where, (page || 0) * size, size)
-    : getProducts(brandId ? { AND: [where, { brandId }] } : where)
+  const products = await prismaClient.product.findMany({
+    where: { ...where, id: { in: uniqueGtins.map((p) => p.id) } },
+    select: { informations: { select: { categorySlug: true, mainComponent: true } } },
+    orderBy: { createdAt: "desc" },
+  })
+
+  return countProductsByCategory(products)
+}
+
+export const getOrganizationProductsByUserIdAndFilters = async (
+  user: FullUser | null,
+  page: number,
+  size: number | undefined,
+  filters?: ProductFilters,
+) => {
+  if (!user) {
+    return []
+  }
+
+  const where = await getProductsBaseWhere(user, filters)
+  return size ? getProducts(where, (page || 0) * size, size) : getProducts(where)
 }
 export const getProductsByUploadId = async (uploadId: string) => {
   const upload = await prismaClient.upload.findFirst({
@@ -848,39 +779,12 @@ export const getDistinctBrandCount = async () => {
   return brands.length
 }
 
-export const getOrganizationProductsByUserId = async (userId: string) => {
-  const user = await prismaClient.user.findUnique({
-    where: { id: userId },
-    select: {
-      type: true,
-      organization: {
-        select: {
-          id: true,
-          brands: true,
-        },
-      },
-    },
-  })
-
+const getOrganizationProductsByUserId = async (user: FullUser | null, filters?: ProductFilters) => {
   if (!user) {
     return []
   }
 
-  const where =
-    user.type === UserType.CITOYEN || !user.organization
-      ? { status: Status.Done, upload: { createdById: userId } }
-      : {
-          OR: [
-            {
-              brandId: { in: user.organization.brands.map((brand) => brand.id) },
-              status: Status.Done,
-            },
-            {
-              upload: { organizationId: user.organization.id },
-              status: Status.Done,
-            },
-          ],
-        }
+  const where = await getProductsBaseWhere(user, filters)
 
   const products = await prismaClient.product.findMany({
     where,
@@ -1010,38 +914,34 @@ export const getLastBrands = async () => {
   return brands.map((brand) => brandsDetails.find((b) => b.id === brand.brandId)).filter((brand) => brand !== undefined)
 }
 
-export const forEachLatestProductsByBrandIdForExport = async (
-  onBatch: (
-    products: Prisma.ProductGetPayload<{
-      include: {
-        brand: { select: { id: true; name: true } }
-        informations: {
-          include: {
-            materials: true
-            accessories: true
-            score: true
-          }
-        }
-      }
-    }>[],
-  ) => Promise<void> | void,
-  brandId?: string,
-  category?: string,
-  organization?: string,
-) => {
-  const latest = await prismaClient.product.findMany({
-    where: {
-      status: Status.Done,
-      brandId,
-      informations: category
-        ? {
-            some: {
-              categorySlug: productCategories[category],
-            },
-          }
-        : undefined,
-      upload: organization ? { organizationId: organization } : undefined,
+const getPayload = {
+  include: {
+    brand: { select: { id: true, name: true } },
+    upload: {
+      select: {
+        organization: {
+          select: { siret: true },
+        },
+      },
     },
+    informations: {
+      include: {
+        materials: true,
+        accessories: true,
+        score: true,
+      },
+    },
+  },
+}
+
+export const forEachLatestProductsByBrandIdForExport = async (
+  onBatch: (products: Prisma.ProductGetPayload<typeof getPayload>[]) => Promise<void> | void,
+  user: FullUser,
+  filters: ProductFilters,
+) => {
+  const where = await getProductsBaseWhere(user, filters)
+  const latest = await prismaClient.product.findMany({
+    where,
     select: { id: true, internalReference: true, createdAt: true },
     distinct: ["internalReference"],
     orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
@@ -1062,16 +962,7 @@ export const forEachLatestProductsByBrandIdForExport = async (
       where: {
         id: { in: batchIds },
       },
-      include: {
-        brand: { select: { id: true, name: true } },
-        informations: {
-          include: {
-            materials: true,
-            accessories: true,
-            score: true,
-          },
-        },
-      },
+      ...getPayload,
       orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
     })
 
@@ -1080,39 +971,6 @@ export const forEachLatestProductsByBrandIdForExport = async (
   }
 
   return processedProducts
-}
-
-const mean = (values: (number | null | undefined)[]) => {
-  const numbers = values.filter((value) => value !== null && value !== undefined)
-  return numbers.length > 0 ? numbers.reduce((sum, value) => sum + value, 0) / numbers.length : null
-}
-
-export const getMeanScores = async (product: ProductWithScoreBase) => {
-  if (product.confidenceLevel === ConfidenceLevel.High) {
-    return computeBatchScore(product)
-  }
-
-  const oldProducts = await prismaClient.product.findMany({
-    where: {
-      gtins: { hasSome: product.gtins },
-      status: Status.Done,
-      confidenceLevel: product.confidenceLevel,
-      createdAt: { lt: product.createdAt },
-    },
-    select: productWithScoreSelect,
-  })
-
-  const products = [product, ...oldProducts]
-  const scores: BatchScore[] = products.map((item) => computeBatchScore(item))
-  const detailedScoreKeys = Object.keys(scores[0] || {}).filter(
-    (key) => key !== "scoreWithoutDurability" && typeof scores[0][key as keyof BatchScore] === "number",
-  )
-
-  const meanDetailedScores = Object.fromEntries(
-    detailedScoreKeys.map((key) => [key, mean(scores.map((score) => score[key as keyof BatchScore]))]),
-  )
-
-  return meanDetailedScores as MeanScores
 }
 
 export const applyMeanScoreToProduct = async (productId: string) => {
@@ -1147,5 +1005,193 @@ const withMeanScores = async (product: ProductWithScoreBase | null) => {
   return {
     ...product,
     meanScores,
+  }
+}
+
+const getOrganizationProductCategories = async (user: FullUser | null, filters?: ProductFilters) => {
+  if (!user) {
+    return []
+  }
+
+  const where = await getProductsBaseWhere(user, filters)
+  const products = await prismaClient.product.findMany({
+    where,
+    select: {
+      informations: {
+        select: {
+          categorySlug: true,
+          mainComponent: true,
+        },
+      },
+      internalReference: true,
+    },
+    distinct: ["internalReference"],
+  })
+  const categories = new Set<string>()
+
+  for (const product of products) {
+    const category = getProductCategory(product.informations)
+    if (category) {
+      categories.add(category)
+    }
+  }
+
+  return Array.from(categories).sort()
+}
+
+const getOrganizationProductDeclarants = async (user: FullUser | null, filters?: ProductFilters) => {
+  if (!user) {
+    return []
+  }
+
+  const where = await getProductsBaseWhere(user, filters)
+  const products = await prismaClient.product.findMany({
+    where,
+    select: {
+      upload: {
+        select: {
+          createdBy: {
+            select: {
+              id: true,
+              type: true,
+              organization: {
+                select: {
+                  displayName: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    distinct: ["uploadId"],
+  })
+
+  const declarants = new Set<string>()
+
+  for (const product of products) {
+    const declarant = product.upload.createdBy
+    if (declarant.type === UserType.PROFESSIONNEL) {
+      if (declarant.organization?.displayName) {
+        declarants.add(declarant.organization.displayName)
+      }
+    } else if (declarant.id === user.id) {
+      declarants.add("Moi")
+    } else {
+      declarants.add("Citoyen")
+    }
+  }
+
+  return Array.from(declarants)
+}
+
+export const getProductsBaseWhere = async (user: FullUser, filters?: ProductFilters) => {
+  const authorizedBrandIds = user.organization
+    ? [
+        ...user.organization.brands.map((brand) => brand.id),
+        ...user.organization.authorizedBy.flatMap((auth) => auth.from.brands.map((brand) => brand.id)),
+      ]
+    : []
+
+  const baseWhere: Prisma.ProductWhereInput = canExportFullProducts(user.role, filters?.brandId)
+    ? { status: Status.Done }
+    : user.type === UserType.CITOYEN || !user.organization
+      ? { status: Status.Done, upload: { createdById: user.id } }
+      : {
+          OR: [
+            {
+              brandId: { in: authorizedBrandIds },
+              status: Status.Done,
+            },
+            {
+              upload: { organizationId: user.organization.id },
+              status: Status.Done,
+            },
+          ],
+        }
+
+  if (!filters || Object.keys(filters).length === 0) {
+    return baseWhere
+  }
+
+  const andConditions = [baseWhere]
+
+  if (filters.brandId) {
+    andConditions.push({ brandId: filters.brandId })
+  }
+
+  if (filters.declarant) {
+    let createdByFilter: Prisma.UserWhereInput
+
+    switch (filters.declarant) {
+      case "Moi":
+        createdByFilter = { id: user.id }
+        break
+      case "Citoyen":
+        createdByFilter = { type: UserType.CITOYEN, organization: null }
+        break
+      default:
+        createdByFilter = { organization: { displayName: filters.declarant } }
+    }
+
+    andConditions.push({
+      upload: {
+        createdBy: createdByFilter,
+      },
+    })
+  }
+
+  if (filters.dateFrom || filters.dateTo) {
+    const createdAtFilter: Prisma.DateTimeFilter = {}
+    if (filters.dateFrom) {
+      createdAtFilter.gte = filters.dateFrom
+    }
+    if (filters.dateTo) {
+      createdAtFilter.lte = filters.dateTo
+    }
+    andConditions.push({
+      createdAt: createdAtFilter,
+    })
+  }
+
+  if (filters.search) {
+    andConditions.push({
+      OR: [
+        {
+          gtins: {
+            hasSome: [filters.search],
+          },
+        },
+        {
+          internalReference: {
+            contains: filters.search,
+            mode: "insensitive",
+          },
+        },
+      ],
+    })
+  }
+
+  return applyBatchCategoryFilter(
+    andConditions.length > 1 ? { AND: andConditions } : andConditions[0],
+    filters?.category,
+  )
+}
+
+export const getOrganizationProductsPageData = async (userId: string, filters?: ProductFilters) => {
+  const user = await getUser(userId)
+
+  const [brands, productsCount, categories, declarants] = await Promise.all([
+    getOrganizationProductsByUserId(user, filters),
+    getOrganizationProductsCountByUserIdAndFilters(user, filters),
+    getOrganizationProductCategories(user, filters),
+    getOrganizationProductDeclarants(user, filters),
+  ])
+
+  return {
+    brands,
+    productsCount,
+    categories,
+    declarants,
   }
 }

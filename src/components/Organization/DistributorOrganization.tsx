@@ -1,5 +1,5 @@
 import Card from "@codegouvfr/react-dsfr/Card"
-import Contact from "./Contact"
+import Contact from "../Help/Contact"
 
 const DistributorOrganization = () => {
   return (
