@@ -54,3 +54,5 @@ s3/
 src/utils/ecobalyse/processes_impacts.json
 
 prisma/generated/prisma/
+
+.vscode/

@@ -101,7 +101,6 @@ const Dropdown = (
       e.preventDefault()
       setOpen(false)
       setSearch("")
-      onSelect("")
     }
   }
 
@@ -125,10 +124,9 @@ const Dropdown = (
         stateRelatedMessage={stateRelatedMessage}
         nativeInputProps={{
           placeholder: placeholder || "Rechercher…",
-          value: displayValue,
+          value: open ? search : displayValue,
           onChange: (e) => {
             setSearch(e.target.value)
-            onSelect("")
             setOpen(true)
             setCurrent(0)
           },
