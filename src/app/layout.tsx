@@ -26,7 +26,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const session = await auth()
   const user = session ? await getUser(session.user.id) : null
   const displayName = user && user.nom && user.prenom ? `${user.prenom} ${user.nom}` : user?.email
-  const mismatchSiret = session && user?.organization?.siret && user.organization.siret !== session.user.siret
+  const mismatchSiret =
+    session && session.user.siret && user?.organization?.siret && user.organization.siret !== session.user.siret
 
   return (
     <html lang={lang} {...getHtmlAttributes({ lang })}>
