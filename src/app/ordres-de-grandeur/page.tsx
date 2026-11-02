@@ -16,7 +16,7 @@ const DGCCRFStatsPage = async () => {
     redirect("/")
   }
 
-  const token = getMetabaseToken(53)
+  const token = getMetabaseToken("question", 53)
   return (
     <>
       <StartDsfrOnHydration />

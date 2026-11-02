@@ -1,0 +1,8 @@
+.metabase {
+  metabase-dashboard {
+    height: 55rem;
+    @media screen and (max-width: 54rem) {
+      height: 100rem;
+    }
+  }
+}
