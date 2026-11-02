@@ -3,8 +3,9 @@ import { Metadata } from "next"
 import Admin from "../../../views/Admin"
 import { computeAdminStats } from "../../../services/stats/stats"
 import { tryAndGetSession } from "../../../services/auth/redirect"
-import { redirect } from "next/navigation"
 import { canAccessAdminSpace } from "../../../utils/authorization/authorizations"
+import { redirect } from "next/navigation"
+import { getMetabaseToken } from "../../../serverFunctions/metabase"
 
 export const metadata: Metadata = {
   title: "Admin - Affichage environnemental",
@@ -16,10 +17,11 @@ const AdminPage = async () => {
   }
 
   const stats = await computeAdminStats()
+  const token = getMetabaseToken("dashboard", 4)
   return (
     <>
       <StartDsfrOnHydration />
-      <Admin stats={stats} />
+      <Admin stats={stats} token={token} />
     </>
   )
 }

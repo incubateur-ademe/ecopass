@@ -7,7 +7,7 @@ const DGCCRFStats = ({ token }: { token: string }) => {
     <>
       <Block type='yellow'>
         <h1>Les ordres de grandeur</h1>
-        <Metabase token={token} />
+        <Metabase token={token} type='question' />
       </Block>
       <Block type='yellow'>
         <Informations />
