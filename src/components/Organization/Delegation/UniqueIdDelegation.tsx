@@ -1,6 +1,6 @@
 "use client"
 import Input from "@codegouvfr/react-dsfr/Input"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import { Organization } from "@prisma/client"
 import { authorizeOrganizationById, getOrganizationByUniqueId } from "../../../serverFunctions/organization"
 import { useRouter } from "next/navigation"
@@ -20,13 +20,11 @@ const UniqueIdDelegation = ({
   const [uniqueId, setUniqueId] = useState("")
   const [searching, setSearching] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [uniqueIdOrganization, setUniqueIdOrganization] = useState<
+  const [localUniqueIdOrganization, setLocalUniqueIdOrganization] = useState<
     Pick<Organization, "name" | "id"> | null | undefined
-  >(organization)
+  >()
 
-  useEffect(() => {
-    setUniqueIdOrganization(organization)
-  }, [organization])
+  const uniqueIdOrganization = organization || localUniqueIdOrganization
 
   const authorizeUniqueIdOrganization = useCallback(() => {
     if (uniqueIdOrganization) {
@@ -34,7 +32,7 @@ const UniqueIdDelegation = ({
       authorizeOrganizationById(uniqueIdOrganization.id).then(() => {
         setLoading(false)
         setUniqueId("")
-        setUniqueIdOrganization(undefined)
+        setLocalUniqueIdOrganization(undefined)
         onOrganizationChange?.(undefined)
         router.refresh()
       })
@@ -45,14 +43,14 @@ const UniqueIdDelegation = ({
     (uniqueId: string) => {
       setUniqueId(uniqueId)
       setSearching(false)
-      setUniqueIdOrganization(undefined)
+      setLocalUniqueIdOrganization(undefined)
       onOrganizationChange?.(undefined)
       const trimmedUniqueId = uniqueId.trim().toLowerCase()
       if (uniqueIdRegex.test(trimmedUniqueId)) {
         setSearching(true)
         getOrganizationByUniqueId(trimmedUniqueId)
           .then((data) => {
-            setUniqueIdOrganization(data ?? null)
+            setLocalUniqueIdOrganization(data ?? null)
             onOrganizationChange?.(data ?? null)
           })
           .finally(() => {

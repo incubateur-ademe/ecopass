@@ -78,8 +78,13 @@ export const generateAPIKey = async (name: string) => {
 
 export const deleteAPIKey = async (id: string) => {
   console.log(`[deleteAPIKey] Starting - id: ${id}`)
+  const session = await auth()
+  if (!session || !session.user) {
+    return "Utilisateur non authentifié"
+  }
+
   const result = await prismaClient.aPIKey.delete({
-    where: { id },
+    where: { id, userId: session.user.id },
   })
   console.log(`[deleteAPIKey] Completed - id: ${id}`)
   return result

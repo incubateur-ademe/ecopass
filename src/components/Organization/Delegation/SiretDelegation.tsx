@@ -1,7 +1,7 @@
 "use client"
 import Input from "@codegouvfr/react-dsfr/Input"
 import Link from "next/link"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import { SiretAPI } from "../../../types/Siret"
 import { authorizeOrganization } from "../../../serverFunctions/organization"
 import { useRouter } from "next/navigation"
@@ -22,11 +22,9 @@ const SiretDelegation = ({
   const [siret, setSiret] = useState("")
   const [searching, setSearching] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [siretOrganization, setSiretOrganization] = useState<SiretAPI["etablissement"] | undefined>(organization)
+  const [localSiretOrganization, setLocalSiretOrganization] = useState<SiretAPI["etablissement"] | undefined>()
 
-  useEffect(() => {
-    setSiretOrganization(organization)
-  }, [organization])
+  const siretOrganization = organization || localSiretOrganization
 
   const authorizeSiretOrganization = useCallback(() => {
     if (siretOrganization) {
@@ -34,7 +32,7 @@ const SiretDelegation = ({
       authorizeOrganization(siretOrganization.siret).then(() => {
         setLoading(false)
         setSiret("")
-        setSiretOrganization(undefined)
+        setLocalSiretOrganization(undefined)
         onOrganizationChange?.(undefined)
         router.refresh()
       })
@@ -45,7 +43,7 @@ const SiretDelegation = ({
     (siret: string) => {
       setSiret(siret)
       setSearching(false)
-      setSiretOrganization(undefined)
+      setLocalSiretOrganization(undefined)
       onOrganizationChange?.(undefined)
       const trimmedSiret = siret.replace(/\s+/g, "")
       if (siretRegex.test(trimmedSiret)) {
@@ -53,7 +51,7 @@ const SiretDelegation = ({
         getSiretInfo(trimmedSiret)
           .then((data) => {
             if (data) {
-              setSiretOrganization(data.etablissement)
+              setLocalSiretOrganization(data.etablissement)
               onOrganizationChange?.(data.etablissement)
             }
           })
