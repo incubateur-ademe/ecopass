@@ -1,6 +1,6 @@
 import Script from "next/script"
 
-const Metabase = ({ token }: { token?: string }) => {
+const Metabase = ({ token, type }: { token?: string; type: "question" | "dashboard" }) => {
   return (
     <>
       <Script
@@ -15,9 +15,18 @@ const Metabase = ({ token }: { token?: string }) => {
   instanceUrl: "https://ecobalyse-ecopass-metabase.osc-fr1.scalingo.io"
 };`}
       </Script>
-      <h2>Statistiques par catégorie de produit</h2>
-      {/* @ts-expect-error custom element from Metabase embed */}
-      <metabase-question token={token} with-title='false' with-downloads='false'></metabase-question>
+      {type === "question" && (
+        <>
+          {/* @ts-expect-error custom element from Metabase embed */}
+          <metabase-question token={token} with-title='false' with-downloads='false' />
+        </>
+      )}
+      {type === "dashboard" && (
+        <>
+          {/* @ts-expect-error custom element from Metabase embed */}
+          <metabase-dashboard token={token} with-title='false' with-downloads='false' />
+        </>
+      )}
     </>
   )
 }

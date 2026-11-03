@@ -1,52 +1,8 @@
 "use server"
-import axios from "axios"
-import { getProductCountByCategory, getDistinctBrandCount, getBrandsInformations } from "../../db/product"
-import { getDoneUploadCount } from "../../db/upload"
-import { auth } from "../auth/auth"
+
+import { getBrandsInformations } from "../../db/product"
 import { canAccessAdminSpace } from "../../utils/authorization/authorizations"
-import { UploadType } from "@prisma/enums"
-
-const getVisits = async () => {
-  const token = process.env.MATOMO_API_TOKEN as string
-  if (!token) {
-    return [{ nb_visits: Math.floor(Math.random() * 10000) + 1000 }]
-  }
-
-  const params = new URLSearchParams()
-  params.append("token_auth", token)
-  return axios
-    .post<[{ nb_visits: number }]>(
-      `${process.env.NEXT_PUBLIC_MATOMO_SITE_URL}?idSite=${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}&method=VisitsSummary.get&format=JSON&module=API&period=year&date=today&showColumns=nb_visits&filter_limit=-1&flat=1`,
-      params,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      },
-    )
-    .then((response) => response.data)
-    .catch(() => [])
-}
-
-export const computeStats = async () => {
-  const [visits, products, uploadsCount, distinctBrands] = await Promise.all([
-    getVisits(),
-    getProductCountByCategory(),
-    getDoneUploadCount(),
-    getDistinctBrandCount(),
-  ])
-
-  return {
-    visits: visits[0]?.nb_visits,
-    products,
-    distinctBrands,
-    fileUploads: uploadsCount.find((upload) => upload.type === UploadType.FILE)?._count.id || 0,
-    apiUploads: uploadsCount.find((upload) => upload.type === UploadType.API)?._count.id || 0,
-    simplifiedUploads: uploadsCount.find((upload) => upload.type === UploadType.SIMPLIFIED)?._count.id || 0,
-  }
-}
-
-export type Stats = Awaited<ReturnType<typeof computeStats>>
+import { auth } from "../auth/auth"
 
 export const computeAdminStats = async () => {
   const session = await auth()
@@ -57,4 +13,4 @@ export const computeAdminStats = async () => {
   return getBrandsInformations()
 }
 
-export type AdminStats = Awaited<ReturnType<typeof computeAdminStats>>
+export type AdminStats = NonNullable<Awaited<ReturnType<typeof computeAdminStats>>>

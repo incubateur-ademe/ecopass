@@ -1,5 +1,5 @@
 import { Accessory, Material, Prisma, Product, ProductInformation } from "@prisma/client"
-import { ConfidenceLevel, Status, UploadType, UserType } from "@prisma/enums"
+import { ConfidenceLevel, Status, UserType } from "@prisma/enums"
 import { ParsedProductValidation } from "../services/validation/product"
 import { decryptProductFields } from "../utils/encryption/encryption"
 import { productCategories } from "../utils/types/productCategory"
@@ -12,6 +12,7 @@ import { getBrandById } from "./brands"
 import { FullUser, getUser } from "./user"
 import { canExportFullProducts } from "../utils/authorization/authorizations"
 import { getMeanScores, MeanScores } from "./score"
+import { displayOrganisationFullName } from "../utils/organization/name"
 
 export type ProductFilters = {
   brandId?: string
@@ -725,6 +726,16 @@ export const getAllProducts = async () =>
     _min: { createdAt: true },
   })
 
+export const getProductCount = async () => {
+  const distinctCount = await prismaClient.$queryRaw<[{ count: number }]>`
+  SELECT COUNT(DISTINCT "internal_reference") as count 
+  FROM "products" 
+  WHERE status = ${Status.Done}
+`
+
+  return distinctCount[0].count
+}
+
 export const getProductCountByCategory = async () => {
   const allProducts = await prismaClient.product.findMany({
     where: {
@@ -801,27 +812,23 @@ const getOrganizationProductsByUserId = async (user: FullUser | null, filters?: 
 }
 
 export const getBrandsInformations = async () => {
-  const organizations = await prismaClient.organization.findMany({
+  const products = await prismaClient.product.findMany({
+    where: {
+      status: Status.Done,
+    },
     select: {
-      id: true,
-      name: true,
-      siret: true,
-      effectif: true,
-      naf: true,
-      users: { select: { email: true } },
+      internalReference: true,
+      createdAt: true,
+      brand: {
+        select: { id: true, name: true, organization: { select: { id: true, name: true, displayName: true } } },
+      },
       upload: {
         select: {
-          id: true,
-          type: true,
-          status: true,
-          products: {
-            where: {
-              status: Status.Done,
-            },
+          organization: {
             select: {
-              brandId: true,
-              internalReference: true,
-              createdAt: true,
+              id: true,
+              name: true,
+              displayName: true,
             },
           },
         },
@@ -829,68 +836,57 @@ export const getBrandsInformations = async () => {
     },
   })
 
-  const brandsNames = await prismaClient.brand.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-  })
-
-  return organizations.map((organization) => {
-    const userCount = organization.users.length
-    const apiUploads = organization.upload.filter((upload) => upload.type === UploadType.API)
-    const fileUploads = organization.upload.filter((upload) => upload.type === UploadType.FILE)
-
-    const brands = organization.upload
-      .flatMap((upload) => upload.products)
-      .reduce(
-        (acc, product) => {
-          if (product.brandId !== null) {
-            const brand = acc[product.brandId]
-            if (!brand) {
-              acc[product.brandId] = {
-                id: product.brandId,
-                references: new Set<string>([product.internalReference]),
-                firstDepositDate: product.createdAt,
-                lastDepositDate: product.createdAt,
-              }
-            } else {
-              brand.references.add(product.internalReference)
-              if (product.createdAt < brand.firstDepositDate) {
-                brand.firstDepositDate = product.createdAt
-              }
-              if (product.createdAt > brand.lastDepositDate) {
-                brand.lastDepositDate = product.createdAt
-              }
-            }
-          }
-          return acc
-        },
-        {} as Record<string, { id: string; references: Set<string>; firstDepositDate: Date; lastDepositDate: Date }>,
-      )
-
-    return {
-      name: organization.name,
-      siret: organization.siret,
-      effectif: organization.effectif,
-      naf: organization.naf,
-      userCount,
-      uploads: {
-        api: apiUploads.length,
-        file: fileUploads.length,
-        fileDone: fileUploads.filter((upload) => upload.status === Status.Done).length,
-      },
-      brands: Object.entries(brands).map(([brandName, brand]) => ({
-        name: brandsNames.find((brand) => brand.id === brandName)?.name || brandName,
-        brandId: brand.id,
-        organization: organization.name,
-        organizationId: organization.id,
-        totalProducts: brand.references.size,
-        firstDepositDate: brand.firstDepositDate,
-        lastDepositDate: brand.lastDepositDate,
-      })),
+  const aggregated = new Map<
+    string,
+    {
+      brandId: string
+      brandName: string
+      declarant: string
+      organizationId: string | null
+      organizationName: string | null
+      references: Set<string>
+      firstDepositDate: Date
+      lastDepositDate: Date
     }
-  })
+  >()
+
+  for (const product of products) {
+    if (!product.brand) {
+      continue
+    }
+
+    const declarant = product.upload.organization ? displayOrganisationFullName(product.upload.organization) : "Citoyen"
+
+    const key = `${product.upload.organization?.id || "unknown"}::${product.brand.id}::${declarant}`
+    const existing = aggregated.get(key)
+
+    if (!existing) {
+      aggregated.set(key, {
+        brandId: product.brand.id,
+        brandName: product.brand.name,
+        declarant,
+        organizationId: product.brand.organization ? product.brand.organization.id : null,
+        organizationName: product.brand.organization ? displayOrganisationFullName(product.brand.organization) : null,
+        references: new Set([product.internalReference]),
+        firstDepositDate: product.createdAt,
+        lastDepositDate: product.createdAt,
+      })
+    } else {
+      existing.references.add(product.internalReference)
+      if (product.createdAt < existing.firstDepositDate) {
+        existing.firstDepositDate = product.createdAt
+      }
+      if (product.createdAt > existing.lastDepositDate) {
+        existing.lastDepositDate = product.createdAt
+      }
+    }
+  }
+
+  return Array.from(aggregated.values()).map((info) => ({
+    ...info,
+    references: undefined,
+    totalProducts: info.references.size,
+  }))
 }
 
 export const getLastBrands = async () => {

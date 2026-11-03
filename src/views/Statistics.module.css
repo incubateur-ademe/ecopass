@@ -1,0 +1,26 @@
+.metabaseGeneral {
+  metabase-dashboard {
+    height: 20rem;
+    @media screen and (max-width: 54rem) {
+      height: 40rem;
+    }
+  }
+}
+
+.metabaseBrands {
+  metabase-dashboard {
+    height: 60rem;
+    @media screen and (max-width: 54rem) {
+      height: 50rem;
+    }
+  }
+}
+
+.metabaseProducts {
+  metabase-dashboard {
+    height: 50rem;
+    @media screen and (max-width: 54rem) {
+      height: 65rem;
+    }
+  }
+}

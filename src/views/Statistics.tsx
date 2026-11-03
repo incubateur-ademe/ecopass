@@ -1,78 +1,61 @@
-import Link from "next/link"
 import Block from "../components/Block/Block"
-import { Stats } from "../services/stats/stats"
-import { ProductCategory } from "../types/Product"
-import StatsList from "../components/Statistics/StatsList"
+import { Badge } from "@codegouvfr/react-dsfr/Badge"
+import { Card } from "@codegouvfr/react-dsfr/Card"
+import Metabase from "../components/Stats/Metabase"
+import styles from "./Statistics.module.css"
 
-const plural: Record<ProductCategory, string> = {
-  [ProductCategory.Chemise]: "Chemises",
-  [ProductCategory.Jean]: "Jeans",
-  [ProductCategory.JupeRobe]: "Jupes / Robes",
-  [ProductCategory.ManteauVeste]: "Manteaux / Vestes",
-  [ProductCategory.PantalonShort]: "Pantalons / Shorts",
-  [ProductCategory.Pull]: "Pulls",
-  [ProductCategory.TShirtPolo]: "T-shirts / Polos",
-  [ProductCategory.Chaussettes]: "Chaussettes",
-  [ProductCategory.CaleçonTissé]: "Caleçons (tissés)",
-  [ProductCategory.BoxerSlipTricoté]: "Boxers / Slips (tricotés)",
-  [ProductCategory.MaillotDeBain]: "Maillots de bain",
+type Token = {
+  type: "dashboard" | "question"
+  token: string
 }
 
-const getPlural = (count: number, category: string) => {
-  if (count > 1) {
-    const pluralCategory = plural[category as ProductCategory]
-    if (pluralCategory) {
-      return pluralCategory
-    }
-  }
-  return category
-}
-
-const Statistics = ({ stats }: { stats: Stats }) => {
+const Statistics = ({
+  total,
+  tokens,
+}: {
+  total: number
+  tokens: { general: Token; brands: Token; products: Token }
+}) => {
   return (
     <>
-      <Block>
-        <h1>Statistiques</h1>
-        <StatsList>
-          {stats.visits && (
-            <li>
-              <b>{stats.visits.toLocaleString("fr-FR")}</b> visites
-            </li>
-          )}
-          <li>
-            <b>{stats.fileUploads.toLocaleString("fr-FR")}</b> fichiers déposés
-          </li>
-          <li>
-            <b>{stats.apiUploads.toLocaleString("fr-FR")}</b> déclarations via l'API
-          </li>
-          <li>
-            <b>{stats.simplifiedUploads.toLocaleString("fr-FR")}</b> déclarations par des citoyens
-          </li>
-          <li>
-            <b>
-              {Object.values(stats.products)
-                .reduce((acc, count) => acc + count, 0)
-                .toLocaleString("fr-FR")}
-            </b>{" "}
-            références produits déposées par <b>{stats.distinctBrands.toLocaleString("fr-FR")}</b> marques :
-            <StatsList small>
-              {Object.entries(stats.products)
-                .sort(([, countA], [, countB]) => countB - countA)
-                .map(([category, count]) => (
-                  <li key={category}>
-                    <b>{count.toLocaleString("fr-FR")}</b> {getPlural(count, category)}
-                  </li>
-                ))}
-            </StatsList>
-          </li>
-        </StatsList>
-        <Link
-          className='fr-link'
-          href='https://stats.beta.gouv.fr/index.php?module=CoreHome&action=index&idSite=226&period=day&date=yesterday'
-          target='_blank'
-          rel='noopener noreferrer'>
-          Découvrez toutes les statistiques du site sur le tableau de bord de notre outil de suivi Matomo
-        </Link>
+      <Block
+        breadCrumbs={{
+          currentPageLabel: "Statistiques",
+          segments: [{ linkProps: { href: "/" }, label: "Accueil" }],
+        }}>
+        <h1>Statistiques du coût environnemental des produits textiles</h1>
+        <p>Suivez le nombre de produits et de marques déclarés sur le portail.</p>
+        <h2 className='fr-mt-4w'>Chiffres généraux</h2>
+        <div className={styles.metabaseGeneral}>
+          <Metabase token={tokens.general.token} type={tokens.general.type} />
+        </div>
+        <h2 className='fr-mt-4w'>Évolution du catalogue</h2>
+        <div className={styles.metabaseBrands}>
+          <Metabase token={tokens.brands.token} type={tokens.brands.type} />
+        </div>
+        <h2 className='fr-mt-4w'>Représentation de la typologie de produit actuelle</h2>
+        <p>
+          Sur un total de{" "}
+          <Badge severity='info' noIcon as='span'>
+            {total} produits
+          </Badge>
+        </p>
+        <div className={styles.metabaseProducts}>
+          <Metabase token={tokens.products.token} type={tokens.products.type} />
+        </div>
+        {/*<h2 className='fr-mt-4w'>Impact des produits selon les paramètres de fabrication</h2>*/}
+        <h2 className='fr-mt-4w'>Aller plus loin avec la donnée</h2>
+        <Card
+          title='Télécharger les données publiques du catalogue, accédez aux scores et à leur décomposition'
+          horizontal
+          imageUrl='/images/datagouv.png'
+          imageAlt=''
+          endDetail='Consulter les données sur datagouv.fr'
+          linkProps={{
+            href: "https://www.data.gouv.fr/datasets/affichage-environnemental-des-vetements",
+          }}
+          enlargeLink
+        />
       </Block>
     </>
   )
