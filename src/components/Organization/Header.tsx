@@ -25,7 +25,9 @@ const Header = ({ organization, isAdmin }: { organization: Organization; isAdmin
         )}
         {isAdmin && organization.noGTIN && <p data-testid='organization-no-gtin'>Organisation sans GTIN</p>}
       </div>
-      {isAdmin && <AdminForm id={organization.id} type={organization.type} noGTIN={organization.noGTIN} />}
+      {isAdmin && (
+        <AdminForm mode='organization' id={organization.id} type={organization.type} noGTIN={organization.noGTIN} />
+      )}
     </div>
   )
 }

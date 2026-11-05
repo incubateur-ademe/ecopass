@@ -22,6 +22,7 @@ import { UploadType } from "@prisma/client"
 import { getProductConfidenceLevel } from "../product/confidence"
 import { ProductCheckResult } from "../../services/validation/productCheckResult"
 import { isTestEnvironment } from "../test"
+import { shouldBrandUseNoGTIN } from "../organization/brands"
 
 type ProductAndInformations = {
   product: ProductMetadataAPI & { gtins: string[] }
@@ -204,7 +205,8 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
       return NextResponse.json({ error: "La marque spécifiée n'existe pas." }, { status: 400 })
     }
 
-    if (brand.organization && brand.organization.noGTIN && body.gtins) {
+    const noGTIN = shouldBrandUseNoGTIN(brand)
+    if (noGTIN && body.gtins) {
       return NextResponse.json(
         { error: "La marque n'utilise pas de GTIN, le champ 'gtins' ne doit pas être renseigné." },
         { status: 400 },
@@ -212,7 +214,7 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
     }
 
     const gtins =
-      brand.organization && brand.organization.noGTIN
+      noGTIN && brand.organization
         ? {
             success: true,
             error: {
@@ -287,7 +289,7 @@ export async function handleProductPOST(req: Request, type: "single" | "batch" |
     await createScore(api.user, product, informations, scores, hash, UploadType.API, confidenceLevel)
     return NextResponse.json({ result: "success" }, { status: 201 })
   } catch (error) {
-    console.error("Erreur lors de la création du produit :", error)
+    console.log("Erreur lors de la création du produit :", error)
     return NextResponse.json({ error: "Erreur lors de la création du produit." }, { status: 500 })
   }
 }

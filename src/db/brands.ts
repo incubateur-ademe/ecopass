@@ -91,6 +91,7 @@ export const getBrandsByIds = async (ids: string[]) =>
         where: { id: { in: ids } },
         select: {
           id: true,
+          noGTIN: true,
           organization: {
             select: {
               id: true,
@@ -109,6 +110,7 @@ export const getBrandById = async (id: string) =>
     select: {
       id: true,
       name: true,
+      noGTIN: true,
       organization: {
         select: {
           id: true,

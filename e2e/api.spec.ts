@@ -403,6 +403,7 @@ test("declare my products by API", async ({ page }) => {
       Authorization: `Bearer ${apiKey}`,
     },
   })
+  expect(await response.json()).toEqual({ error: "Unauthorized" })
   expect(response.status()).toBe(401)
 
   response = await page.request.get("http://localhost:3000/api/produits", {

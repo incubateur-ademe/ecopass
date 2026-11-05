@@ -10,3 +10,20 @@ export const getAuthorizedBrands = (organization: {
       authorization.from.brands.filter((brand) => brand.active).map(({ id }) => id),
     ),
   ] as [string, ...string[]]
+
+export const shouldBrandUseNoGTIN = (
+  brand?: {
+    noGTIN?: boolean | null
+    organization?: { noGTIN?: boolean | null } | null
+  } | null,
+) => {
+  if (!brand) {
+    return false
+  }
+
+  if (brand.noGTIN !== null && brand.noGTIN !== undefined) {
+    return brand.noGTIN
+  }
+
+  return brand.organization?.noGTIN ?? false
+}

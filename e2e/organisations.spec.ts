@@ -167,7 +167,7 @@ test("manage siret delegation", async ({ page }) => {
     expect(await response.json()).toEqual({
       name: "WARO",
       displayName: "WARO",
-      brands: [{ name: "WARO", id: expect.any(String), active: true, default: true }],
+      brands: [{ name: "WARO", id: expect.any(String), active: true, default: true, noGTIN: null }],
       authorizedBy: [
         {
           createdAt: expect.any(String),
@@ -242,7 +242,7 @@ test("manage siret delegation", async ({ page }) => {
     expect(await response.json()).toEqual({
       name: "WARO",
       displayName: "WARO",
-      brands: [{ name: "WARO", id: expect.any(String), active: true, default: true }],
+      brands: [{ name: "WARO", id: expect.any(String), active: true, default: true, noGTIN: null }],
       authorizedBy: [],
       authorizeOrganization: [],
     })
@@ -406,7 +406,7 @@ test("manage unique id delegation", async ({ page }) => {
   expect(await response.json()).toEqual({
     name: "Textile Premium",
     displayName: "Textile Premium",
-    brands: [{ name: "Premium Wear", id: expect.any(String), active: true, default: true }],
+    brands: [{ name: "Premium Wear", id: expect.any(String), active: true, default: true, noGTIN: null }],
     authorizedBy: [
       {
         createdAt: expect.any(String),
@@ -559,7 +559,7 @@ test("manage unique id delegation", async ({ page }) => {
   expect(await response.json()).toEqual({
     name: "Textile Premium",
     displayName: "Textile Premium",
-    brands: [{ name: "Premium Wear", id: expect.any(String), active: true, default: true }],
+    brands: [{ name: "Premium Wear", id: expect.any(String), active: true, default: true, noGTIN: null }],
     authorizedBy: [],
     authorizeOrganization: [],
   })

@@ -29,9 +29,13 @@ jest.mock("../../db/user", () => ({
   updateAPIUse: jest.fn(),
 }))
 
-jest.mock("../organization/brands", () => ({
-  getAuthorizedBrands: jest.fn(),
-}))
+jest.mock("../organization/brands", () => {
+  const actual = jest.requireActual("../organization/brands")
+  return {
+    getAuthorizedBrands: jest.fn(),
+    shouldBrandUseNoGTIN: actual.shouldBrandUseNoGTIN,
+  }
+})
 
 jest.mock("../validation/score", () => ({
   scoreIsValid: jest.fn(),
@@ -99,7 +103,7 @@ describe("handleProductPOST", () => {
         siret: "12345678901234",
         name: "Org 1",
         type: OrganizationType.Brand,
-        brands: [{ id: "brand-1", name: "Brand 1", active: true, default: true }],
+        brands: [{ id: "brand-1", name: "Brand 1", active: true, default: true, noGTIN: null }],
         authorizedBy: [],
       },
     },
@@ -108,6 +112,7 @@ describe("handleProductPOST", () => {
   const validBrand = {
     id: "brand-1",
     name: "Brand 1",
+    noGTIN: null,
     organization: {
       id: "org-1",
       siret: "12345678",

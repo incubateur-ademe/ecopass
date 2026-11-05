@@ -210,6 +210,23 @@ export const changeOrganizationSettings = async (
   return result
 }
 
+export const changeBrandSettings = async (brandId: string, settings: { noGTIN: boolean }) => {
+  console.log(`[changeBrandSettings] Starting - brandId: ${brandId}, settings:`, settings)
+  const session = await auth()
+  if (!session || !session.user || !canAccessAdminSpace(session.user.role)) {
+    return { error: "Unauthorized" }
+  }
+
+  const result = await prismaClient.brand.update({
+    where: { id: brandId },
+    data: {
+      noGTIN: settings.noGTIN,
+    },
+  })
+  console.log(`[changeBrandSettings] Completed - brandId: ${brandId}`)
+  return result
+}
+
 export const changeOrganizationMemberRole = async (
   organizationId: string,
   memberId: string,
