@@ -22,13 +22,13 @@ const userSelect = {
               id: true,
               name: true,
               siret: true,
-              brands: { select: { active: true, id: true, name: true } },
+              brands: { select: { active: true, id: true, name: true, noGTIN: true } },
             },
           },
         },
         where: { active: true },
       },
-      brands: { select: { active: true, id: true, name: true, default: true } },
+      brands: { select: { active: true, id: true, name: true, default: true, noGTIN: true } },
     },
   },
 } satisfies UserSelect
@@ -108,7 +108,7 @@ export const getUserOrganization = async (userId: string) => {
           uniqueId: true,
           noGTIN: true,
           gtinPrefixes: { select: { id: true, prefix: true } },
-          brands: { select: { id: true, name: true, default: true, active: true } },
+          brands: { select: { id: true, name: true, default: true, active: true, noGTIN: true } },
           followedBrands: { select: { id: true, brand: { select: { id: true, name: true, active: true } } } },
           authorizedOrganizations: {
             select: {
@@ -129,7 +129,7 @@ export const getUserOrganization = async (userId: string) => {
                   name: true,
                   siret: true,
                   uniqueId: true,
-                  brands: { select: { id: true, name: true, default: true, active: true } },
+                  brands: { select: { id: true, name: true, default: true, active: true, noGTIN: true } },
                 },
               },
             },

@@ -2,7 +2,7 @@ import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import { getBrandById, getBrandWithProducts } from "../../../db/brands"
 import { Metadata } from "next"
 import { tryAndGetSession } from "../../../services/auth/redirect"
-import { canViewAsDgccrf } from "../../../utils/authorization/authorizations"
+import { canAccessAdminSpace, canViewAsDgccrf } from "../../../utils/authorization/authorizations"
 import { PageProps } from "../../../types/Next"
 import { notFound } from "next/navigation"
 import Block from "../../../components/Block/Block"
@@ -82,7 +82,7 @@ const BrandPage = async ({ params, searchParams }: PageProps) => {
                   { linkProps: { href: "/marques" }, label: "Marques" },
                 ],
         }}>
-        <BrandHeader brand={brandData} />
+        <BrandHeader brand={brandData} isAdmin={canAccessAdminSpace(role)} />
       </Block>
     </>
   )

@@ -6,6 +6,7 @@ import { gtinsValidation } from "../../services/validation/gtins"
 import { productValidation } from "../../services/validation/product"
 import { saveEcobalyseResults } from "../ecobalyse/api"
 import { getDefaultGTINs } from "../validation/gtin"
+import { shouldBrandUseNoGTIN } from "../organization/brands"
 
 const batchSize = parseInt(process.env.BATCH_SIZE || "10", 10)
 
@@ -36,10 +37,11 @@ export const processProductsQueue = async () => {
 
       const brand = product.brandId ? brandsMap.get(product.brandId) : null
 
+      const shouldUseNoGTIN = shouldBrandUseNoGTIN(brand)
       const result = {
         product: productValidation.safeParse(product),
         gtins:
-          brand && brand.organization && brand.organization.noGTIN
+          shouldUseNoGTIN && brand?.organization
             ? product.gtins.filter((gtin) => gtin).length > 0
               ? {
                   success: false as const,
@@ -56,7 +58,7 @@ export const processProductsQueue = async () => {
         id: product.id,
       }
 
-      if (brand && brand.organization && brand.organization.noGTIN && result.gtins.success) {
+      if (shouldUseNoGTIN && brand?.organization && result.gtins.success) {
         await prismaClient.product.update({
           where: { id: product.id },
           data: {
