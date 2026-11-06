@@ -171,6 +171,7 @@ describe("Brands DB", () => {
     expect(brand).toEqual({
       id: brandA.id,
       name: brandA.name,
+      noGTIN: null,
       organization: {
         noGTIN: false,
         siret: "12345678901234",
@@ -194,6 +195,7 @@ describe("Brands DB", () => {
     expect(brands).toEqual([
       {
         id: brandA.id,
+        noGTIN: null,
         organization: {
           id: "55e4c3f8-5dec-4416-94cf-00156996ee4d",
           noGTIN: false,
@@ -203,6 +205,7 @@ describe("Brands DB", () => {
       },
       {
         id: brandB.id,
+        noGTIN: null,
         organization: {
           id: "55e4c3f8-5dec-4416-94cf-00156996ee4d",
           noGTIN: false,

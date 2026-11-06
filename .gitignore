@@ -56,3 +56,9 @@ src/utils/ecobalyse/processes_impacts.json
 prisma/generated/prisma/
 
 .vscode/
+
+.agents/
+.claude/
+.windsurf/
+
+skills-lock.json

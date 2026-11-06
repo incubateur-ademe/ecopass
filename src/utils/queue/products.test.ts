@@ -120,6 +120,7 @@ describe("processProductsQueue", () => {
     mockedGetBrandsByIds.mockResolvedValue([
       {
         id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        noGTIN: null,
         organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: false },
       },
     ])
@@ -184,6 +185,7 @@ describe("processProductsQueue", () => {
     mockedGetBrandsByIds.mockResolvedValue([
       {
         id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        noGTIN: null,
         organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: true },
       },
     ])
@@ -253,6 +255,7 @@ describe("processProductsQueue", () => {
     mockedGetBrandsByIds.mockResolvedValue([
       {
         id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        noGTIN: null,
         organization: { id: "organization-id", siret: null, uniqueId: "unique-id", noGTIN: true },
       },
     ])
@@ -360,6 +363,7 @@ describe("processProductsQueue", () => {
     mockedGetBrandsByIds.mockResolvedValue([
       {
         id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        noGTIN: null,
         organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: true },
       },
     ])
@@ -384,6 +388,7 @@ describe("processProductsQueue", () => {
     mockedGetBrandsByIds.mockResolvedValue([
       {
         id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        noGTIN: null,
         organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: false },
       },
     ])
@@ -406,6 +411,7 @@ describe("processProductsQueue", () => {
     mockedGetBrandsByIds.mockResolvedValue([
       {
         id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        noGTIN: null,
         organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: false },
       },
     ])
@@ -431,6 +437,7 @@ describe("processProductsQueue", () => {
     mockedGetBrandsByIds.mockResolvedValue([
       {
         id: "2c3be047-4388-459a-80e1-0ce2bbd0e9d4",
+        noGTIN: null,
         organization: { id: "organization-id", siret: "123456789", uniqueId: "unique-id", noGTIN: false },
       },
     ])
