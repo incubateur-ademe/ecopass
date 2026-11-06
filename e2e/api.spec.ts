@@ -397,6 +397,8 @@ test("declare my products by API", async ({ page }) => {
   await expect(page.getByTestId("api-keys-table").locator("table tbody tr")).toHaveCount(1)
   await page.getByTestId("api-keys-table").locator("table tbody tr").getByRole("button", { name: "Supprimer" }).click()
 
+  await expect(page.getByTestId("api-keys-table").locator("table tbody tr")).toHaveCount(0)
+
   response = await page.request.post("http://localhost:3000/api/produits", {
     data: product,
     headers: {
