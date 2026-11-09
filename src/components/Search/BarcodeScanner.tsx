@@ -3,9 +3,9 @@
 import { useRef, useState, useEffect, useCallback } from "react"
 import { createModal } from "@codegouvfr/react-dsfr/Modal"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode"
 import styles from "./BarcodeScanner.module.css"
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen"
+import type { Html5Qrcode } from "html5-qrcode"
 
 const modal = createModal({
   id: "barcode-scanner-modal",
@@ -58,6 +58,7 @@ const BarcodeScanner = ({
 
     const initializeScanner = async () => {
       try {
+        const { Html5Qrcode, Html5QrcodeSupportedFormats } = await import("html5-qrcode")
         const scanner = new Html5Qrcode("barcode-scanner-video", {
           verbose: false,
           formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8],

@@ -1,10 +1,12 @@
 import "dotenv/config"
 import { prismaClient } from "../db/prismaClient"
-import { stringify } from "csv-stringify/sync"
+import { stringify } from "csv-stringify"
 import fs from "fs"
 import path from "path"
 import { getProductCategory } from "../utils/product/category"
 import { getMeanScores } from "../db/score"
+
+const BATCH_SIZE = 100_000
 
 const getDataGouvCSV = async () => {
   console.log("Fetching all Done products...")
@@ -54,48 +56,16 @@ const getDataGouvCSV = async () => {
 
   console.log(`Unique products by GTIN: ${uniqueProducts.size}`)
 
-  const csvData = await Promise.all(
-    Array.from(uniqueProducts.entries()).map(async ([gtin, product]) => {
-      const totalScore = await getMeanScores(product)
-      return [
-        product.brand?.name ?? "",
-        getProductCategory(product.informations),
-        gtin,
-        product.internalReference,
-        totalScore.score ?? "",
-        totalScore.standardized ?? "",
-        totalScore.durability ?? "",
-        totalScore.acd ?? "",
-        totalScore.cch ?? "",
-        totalScore.etf ?? "",
-        totalScore.fru ?? "",
-        totalScore.fwe ?? "",
-        totalScore.ior ?? "",
-        totalScore.ldu ?? "",
-        totalScore.mru ?? "",
-        totalScore.ozd ?? "",
-        totalScore.pco ?? "",
-        totalScore.pma ?? "",
-        totalScore.swe ?? "",
-        totalScore.tre ?? "",
-        totalScore.wtu ?? "",
-        totalScore.microfibers ?? "",
-        totalScore.outOfEuropeEOL ?? "",
-        totalScore.trims ?? "",
-        totalScore.materials ?? "",
-        totalScore.spinning ?? "",
-        totalScore.fabric ?? "",
-        totalScore.dyeing ?? "",
-        totalScore.making ?? "",
-        totalScore.transport ?? "",
-        totalScore.usage ?? "",
-        totalScore.endOfLife ?? "",
-        product.createdAt.toISOString(),
-      ]
-    }),
-  )
+  const exportDir = path.join(process.cwd(), "exports")
+  if (!fs.existsSync(exportDir)) {
+    fs.mkdirSync(exportDir, { recursive: true })
+  }
 
-  const csvContent = stringify(csvData, {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, -5)
+  const filePath = path.join(exportDir, `products-done-${timestamp}.csv`)
+
+  const output = fs.createWriteStream(filePath, "utf-8")
+  const stringifier = stringify({
     header: true,
     columns: [
       "Marque",
@@ -134,17 +104,71 @@ const getDataGouvCSV = async () => {
     ],
   })
 
-  const exportDir = path.join(process.cwd(), "exports")
-  if (!fs.existsSync(exportDir)) {
-    fs.mkdirSync(exportDir, { recursive: true })
+  stringifier.pipe(output)
+
+  const entries = Array.from(uniqueProducts.entries())
+  let processed = 0
+
+  for (let i = 0; i < entries.length; i += BATCH_SIZE) {
+    const batch = entries.slice(i, i + BATCH_SIZE)
+    const csvDataBatch = await Promise.all(
+      batch.map(async ([gtin, product]) => {
+        const totalScore = await getMeanScores(product)
+        return [
+          product.brand?.name ?? "",
+          getProductCategory(product.informations),
+          gtin,
+          product.internalReference,
+          totalScore.score ?? "",
+          totalScore.standardized ?? "",
+          totalScore.durability ?? "",
+          totalScore.acd ?? "",
+          totalScore.cch ?? "",
+          totalScore.etf ?? "",
+          totalScore.fru ?? "",
+          totalScore.fwe ?? "",
+          totalScore.ior ?? "",
+          totalScore.ldu ?? "",
+          totalScore.mru ?? "",
+          totalScore.ozd ?? "",
+          totalScore.pco ?? "",
+          totalScore.pma ?? "",
+          totalScore.swe ?? "",
+          totalScore.tre ?? "",
+          totalScore.wtu ?? "",
+          totalScore.microfibers ?? "",
+          totalScore.outOfEuropeEOL ?? "",
+          totalScore.trims ?? "",
+          totalScore.materials ?? "",
+          totalScore.spinning ?? "",
+          totalScore.fabric ?? "",
+          totalScore.dyeing ?? "",
+          totalScore.making ?? "",
+          totalScore.transport ?? "",
+          totalScore.usage ?? "",
+          totalScore.endOfLife ?? "",
+          product.createdAt.toISOString(),
+        ]
+      }),
+    )
+
+    for (const row of csvDataBatch) {
+      stringifier.write(row)
+    }
+
+    processed += batch.length
+    console.log(`Processed ${processed}/${entries.length} products`)
   }
 
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, -5)
-  const filePath = path.join(exportDir, `products-done-${timestamp}.csv`)
-
-  fs.writeFileSync(filePath, csvContent, "utf-8")
-
-  console.log(`✅ Export completed: ${filePath}`)
+  return new Promise<void>((resolve, reject) => {
+    stringifier.on("finish", () => {
+      console.log(`✅ Export completed: ${filePath}`)
+      resolve()
+    })
+    stringifier.on("error", reject)
+    output.on("error", reject)
+    stringifier.end()
+  })
 }
 
 getDataGouvCSV()

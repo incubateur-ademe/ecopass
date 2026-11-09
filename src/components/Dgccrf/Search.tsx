@@ -4,11 +4,12 @@ import classNames from "classnames"
 import Input from "@codegouvfr/react-dsfr/Input"
 import { useEffect, useRef, useState } from "react"
 import searchStyles from "../Product/Search/SearchContainer.module.css"
-import { OrganizationAndBrands } from "../../serverFunctions/dgccrf"
 import Block from "../Block/Block"
 import SearchResult from "./SearchResult"
 import { useRouter } from "next/navigation"
 import LoadingButton from "../Button/LoadingButton"
+import { Button } from "@codegouvfr/react-dsfr/Button"
+import { OrganizationAndBrands } from "../../serverFunctions/dgccrf"
 
 const Search = ({ organizationsAndBrands }: { organizationsAndBrands: OrganizationAndBrands | null }) => {
   const [search, setSearch] = useState("")
@@ -37,7 +38,7 @@ const Search = ({ organizationsAndBrands }: { organizationsAndBrands: Organizati
   return (
     <>
       <Block large type='yellow'>
-        <h1>Bienvenue sur le portail de déclaration de l’affichage environnemental</h1>
+        <h1>Bienvenue sur le portail de déclaration de l'affichage environnemental</h1>
         <div className={searchStyles.filter}>
           <div>
             <h2>Rechercher un etablissement</h2>
@@ -52,9 +53,14 @@ const Search = ({ organizationsAndBrands }: { organizationsAndBrands: Organizati
                       placeholder: "ex: SIRET, etablissement, Kiabi...",
                     }}
                   />
-                  <LoadingButton loading={loading} iconId='ri-search-line' type='submit'>
-                    Rechercher
-                  </LoadingButton>
+                  <div className={searchStyles.buttons}>
+                    <LoadingButton loading={loading} iconId='ri-search-line' type='submit'>
+                      Rechercher
+                    </LoadingButton>
+                    <Button linkProps={{ href: "/recherche" }} priority='secondary' iconId='ri-settings-line'>
+                      Recherche avancée
+                    </Button>
+                  </div>
                 </div>
               </form>
             </div>
