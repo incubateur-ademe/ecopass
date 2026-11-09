@@ -44,6 +44,7 @@ export const exportOrganizationsData = async () => {
           },
         },
       },
+      orderBy: [{ brandId: "asc" }, { internalReference: "asc" }, { createdAt: "desc" }],
       distinct: ["brandId", "internalReference"],
     }),
   ])
