@@ -30,6 +30,7 @@ export const exportOrganizationsData = async () => {
         confidenceLevel: ConfidenceLevel.High,
       },
       select: {
+        brandId: true,
         internalReference: true,
         brand: {
           select: {
@@ -43,7 +44,7 @@ export const exportOrganizationsData = async () => {
           },
         },
       },
-      distinct: ["internalReference"],
+      distinct: ["brandId", "internalReference"],
     }),
   ])
 
