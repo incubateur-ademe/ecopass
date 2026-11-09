@@ -3,7 +3,7 @@ import { Header as HeaderDSFR } from "@codegouvfr/react-dsfr/Header"
 import { Session } from "next-auth"
 import { usePathname } from "next/navigation"
 import { isTestEnvironment } from "../../utils/test"
-import { UserType } from "@prisma/enums"
+import { UserRole, UserType } from "@prisma/enums"
 import { canAccessAdminSpace, canAccessFullData } from "../../utils/authorization/authorizations"
 
 const Header = ({
@@ -17,6 +17,7 @@ const Header = ({
 }) => {
   const role = session?.user?.role
   const canAccessAdmin = canAccessAdminSpace(role)
+  const isDGCCRF = role === UserRole.DGCCRF
   const canAccessData = canAccessFullData(role)
   const pathname = usePathname()
 
@@ -38,33 +39,53 @@ const Header = ({
       ? { linkProps: { href: "/admin/donnees" }, text: "Données", isActive: pathname === "/admin/donnees" }
       : null
 
-  const connectedNavigation = [
-    { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
-    userType === UserType.PROFESSIONNEL
-      ? {
-          linkProps: { href: "/declarations" },
-          text: "Déclarations",
-          isActive: pathname.startsWith("/declarations"),
-        }
-      : {
-          linkProps: { href: "/declaration-simplifiee" },
-          text: "Déclaration simplifiée",
-          isActive: pathname.startsWith("/declaration-simplifiee"),
+  const DGCCRFNavigationItem = isDGCCRF
+    ? [
+        {
+          linkProps: { href: "/marques" },
+          text: "Marques déclarantes",
+          isActive: pathname.startsWith("/marques"),
         },
-    { linkProps: { href: "/produits" }, text: "Produits déclarés", isActive: pathname.startsWith("/produits") },
-    userType === UserType.PROFESSIONNEL
-      ? { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") }
-      : null,
-    userType === UserType.PROFESSIONNEL
-      ? {
+        {
           linkProps: { href: "/organisation" },
           text: "Organisation",
           isActive: pathname.startsWith("/organisation"),
-        }
-      : null,
-    userType === UserType.CITOYEN
-      ? { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" }
-      : null,
+        },
+      ]
+    : []
+
+  const proNavigationItem =
+    userType === UserType.PROFESSIONNEL
+      ? isDGCCRF
+        ? []
+        : [
+            {
+              linkProps: { href: "/declarations" },
+              text: "Déclarations",
+              isActive: pathname.startsWith("/declarations"),
+            },
+            { linkProps: { href: "/produits" }, text: "Produits déclarés", isActive: pathname.startsWith("/produits") },
+            { linkProps: { href: "/api" }, text: "API", isActive: pathname.startsWith("/api") },
+            {
+              linkProps: { href: "/organisation" },
+              text: "Organisation",
+              isActive: pathname.startsWith("/organisation"),
+            },
+          ]
+      : [
+          {
+            linkProps: { href: "/declaration-simplifiee" },
+            text: "Déclaration simplifiée",
+            isActive: pathname.startsWith("/declaration-simplifiee"),
+          },
+          { linkProps: { href: "/produits" }, text: "Produits déclarés", isActive: pathname.startsWith("/produits") },
+          { linkProps: { href: "/informations" }, text: "Informez-vous", isActive: pathname === "/informations" },
+        ]
+
+  const connectedNavigation = [
+    { linkProps: { href: "/" }, text: "Accueil", isActive: pathname === "/" },
+    ...proNavigationItem,
+    ...DGCCRFNavigationItem,
     adminNavigationItem,
   ]
 

@@ -5,6 +5,9 @@ import BarcodeScanner from "./BarcodeScanner"
 import styles from "./SearchInput.module.css"
 import { useState } from "react"
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
+import { exportOrganizationsData } from "../../serverFunctions/dgccrf"
+import { downloadFile } from "../../services/download"
+import LoadingButton from "../Button/LoadingButton"
 
 const SearchInput = ({
   label,
@@ -15,6 +18,7 @@ const SearchInput = ({
   stateRelatedMessage,
   searchButtonHref,
   advancedSearchHref,
+  canDownload,
 }: {
   label: string
   placeholder?: string
@@ -26,12 +30,28 @@ const SearchInput = ({
   searchButtonHref?: string
   advancedSearchHref?: string
   advancedSearchLabel?: string
+  canDownload?: boolean
 }) => {
   const [error, setError] = useState("")
+  const [downloadLoading, setDownloadLoading] = useState(false)
 
   const handleSearch = () => {
     if (onSearch) {
       onSearch()
+    }
+  }
+
+  const handleDownloadCSV = async () => {
+    setDownloadLoading(true)
+    try {
+      const csv = await exportOrganizationsData()
+      if (typeof csv === "string") {
+        downloadFile(csv, "organisations_produits.csv")
+      }
+    } catch (error) {
+      console.error("Erreur lors du téléchargement:", error)
+    } finally {
+      setDownloadLoading(false)
     }
   }
 
@@ -60,29 +80,37 @@ const SearchInput = ({
       </div>
 
       {error && <Alert severity='error' small description={error} className='fr-mt-2w' />}
-      {(searchButtonHref || advancedSearchHref) && (
-        <ul className={styles.buttons}>
-          {searchButtonHref && (
-            <li>
-              <Button linkProps={{ href: searchButtonHref, prefetch: false }} iconId='ri-search-line'>
-                Rechercher
-              </Button>
-            </li>
+      <ul className={styles.buttons}>
+        <li>
+          {searchButtonHref ? (
+            <Button linkProps={{ href: searchButtonHref, prefetch: false }} iconId='ri-search-line'>
+              Rechercher
+            </Button>
+          ) : (
+            <Button iconId='fr-icon-search-line' onClick={handleSearch}>
+              Rechercher
+            </Button>
           )}
-          {advancedSearchHref && (
-            <li>
-              <Button linkProps={{ href: advancedSearchHref }} priority='secondary' iconId='ri-settings-line'>
-                Recherche avancée
-              </Button>
-            </li>
-          )}
-        </ul>
-      )}
-      {!searchButtonHref && !advancedSearchHref && (
-        <Button iconId='fr-icon-search-line' onClick={handleSearch} className={styles.searchButton}>
-          Rechercher
-        </Button>
-      )}
+        </li>
+        {advancedSearchHref && (
+          <li>
+            <Button linkProps={{ href: advancedSearchHref }} priority='secondary' iconId='ri-settings-line'>
+              Recherche avancée
+            </Button>
+          </li>
+        )}
+        {canDownload && (
+          <li>
+            <LoadingButton
+              loading={downloadLoading}
+              iconId='ri-download-line'
+              onClick={handleDownloadCSV}
+              priority='secondary'>
+              Télécharger les données (CSV)
+            </LoadingButton>
+          </li>
+        )}
+      </ul>
     </div>
   )
 }
