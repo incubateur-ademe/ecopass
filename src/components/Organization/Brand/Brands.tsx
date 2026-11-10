@@ -37,13 +37,6 @@ const Brands = ({
                 }
               }
 
-              if (a.default && !b.default) {
-                return -1
-              }
-              if (!a.default && b.default) {
-                return 1
-              }
-
               if (a.active && !b.active) {
                 return -1
               }
@@ -61,11 +54,7 @@ const Brands = ({
                       {brand.name}
                     </span>,
                     brand.id,
-                    brand.default ? (
-                      <Badge key={brand.id} severity='info'>
-                        Défaut
-                      </Badge>
-                    ) : brand.active ? (
+                    brand.active ? (
                       <Badge key={brand.id} severity='success'>
                         Marque active
                       </Badge>
@@ -80,11 +69,7 @@ const Brands = ({
                       {brand.name}
                     </span>,
                     brand.id,
-                    brand.default ? (
-                      <Badge key={brand.id} severity='info'>
-                        Défaut
-                      </Badge>
-                    ) : brand.active ? (
+                    brand.active ? (
                       <Badge key={brand.id} severity='success'>
                         Marque active
                       </Badge>
@@ -94,7 +79,7 @@ const Brands = ({
                       </Badge>
                     ),
                     <div key={brand.id} data-testid='brand-row-action'>
-                      {brand.default ? "" : <UpdateBrand key={brand.id} brand={brand} />}
+                      <UpdateBrand key={brand.id} brand={brand} />
                     </div>,
                   ],
             )}

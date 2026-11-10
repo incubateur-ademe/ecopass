@@ -46,7 +46,7 @@ const users = async () => {
             data: [
               { name: "Emmaus Solidarité", id: "26ed7820-ebca-4235-b1d3-dbeab02b1768" },
               { name: "Emmaus Connect", id: "175570b3-59e4-40b4-89be-08a185685f78" },
-              { name: "Emmaus", default: true, id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56" },
+              { name: "Emmaus", id: "6abd8a2b-8fee-4c54-8d23-17e1f8c27b56" },
             ],
           },
         },
@@ -60,7 +60,7 @@ const users = async () => {
         type: OrganizationType.Other,
         brands: {
           createMany: {
-            data: [{ name: "DGCCRF", default: true, id: "9b4cf6b0-9eb0-4b57-9b6c-03a1e37c7064" }],
+            data: [{ name: "DGCCRF", id: "9b4cf6b0-9eb0-4b57-9b6c-03a1e37c7064" }],
           },
         },
       },
@@ -75,7 +75,7 @@ const users = async () => {
         noGTIN: true,
         brands: {
           createMany: {
-            data: [{ name: "NO GTIN", default: true, id: "56c27d6a-a879-406a-9ab3-17c439772e57" }],
+            data: [{ name: "NO GTIN", id: "56c27d6a-a879-406a-9ab3-17c439772e57" }],
           },
         },
       },
@@ -94,7 +94,7 @@ const users = async () => {
         uniqueId: "350b9fc6-0d05-496b-b429-cc66064e98e8",
         brands: {
           createMany: {
-            data: [{ name: "Premium Wear", id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d", default: true }],
+            data: [{ name: "Premium Wear", id: "a1b2c3d4-e5f6-4a5b-9c8d-7e6f5a4b3c2d" }],
           },
         },
       },

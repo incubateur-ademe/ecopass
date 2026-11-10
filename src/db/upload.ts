@@ -171,7 +171,7 @@ export const getFirstFileUpload = async () =>
             select: {
               id: true,
               name: true,
-              brands: { select: { default: true, name: true, id: true, active: true } },
+              brands: { select: { name: true, id: true, active: true } },
               authorizedBy: {
                 select: {
                   from: {

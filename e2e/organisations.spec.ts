@@ -36,7 +36,7 @@ test("manage brands", async ({ page }) => {
 
   await expect(page.getByTestId("brand-row-name")).toHaveCount(3)
   await expect(page.getByTestId("brand-row-name").nth(0)).toHaveText("Emmaus")
-  await expect(page.getByTestId("brand-row-action").nth(0)).toHaveText("")
+  await expect(page.getByTestId("brand-row-action").nth(0).getByRole("button")).toHaveText("Modifier")
   await expect(page.getByTestId("brand-row-name").nth(1)).toHaveText("Emmaus Connect")
   await expect(page.getByTestId("brand-row-action").nth(1).getByRole("button")).toHaveText("Modifier")
   await expect(page.getByTestId("brand-row-name").nth(2)).toHaveText("Emmaus Solidarité")
@@ -167,7 +167,7 @@ test("manage siret delegation", async ({ page }) => {
     expect(await response.json()).toEqual({
       name: "WARO",
       displayName: "WARO",
-      brands: [{ name: "WARO", id: expect.any(String), active: true, default: true, noGTIN: null }],
+      brands: [{ name: "WARO", id: expect.any(String), active: true, noGTIN: null }],
       authorizedBy: [
         {
           createdAt: expect.any(String),
@@ -242,7 +242,7 @@ test("manage siret delegation", async ({ page }) => {
     expect(await response.json()).toEqual({
       name: "WARO",
       displayName: "WARO",
-      brands: [{ name: "WARO", id: expect.any(String), active: true, default: true, noGTIN: null }],
+      brands: [{ name: "WARO", id: expect.any(String), active: true, noGTIN: null }],
       authorizedBy: [],
       authorizeOrganization: [],
     })
@@ -406,7 +406,7 @@ test("manage unique id delegation", async ({ page }) => {
   expect(await response.json()).toEqual({
     name: "Textile Premium",
     displayName: "Textile Premium",
-    brands: [{ name: "Premium Wear", id: expect.any(String), active: true, default: true, noGTIN: null }],
+    brands: [{ name: "Premium Wear", id: expect.any(String), active: true, noGTIN: null }],
     authorizedBy: [
       {
         createdAt: expect.any(String),
@@ -559,7 +559,7 @@ test("manage unique id delegation", async ({ page }) => {
   expect(await response.json()).toEqual({
     name: "Textile Premium",
     displayName: "Textile Premium",
-    brands: [{ name: "Premium Wear", id: expect.any(String), active: true, default: true, noGTIN: null }],
+    brands: [{ name: "Premium Wear", id: expect.any(String), active: true, noGTIN: null }],
     authorizedBy: [],
     authorizeOrganization: [],
   })

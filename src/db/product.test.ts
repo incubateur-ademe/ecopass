@@ -62,7 +62,7 @@ describe("Product DB integration", () => {
         brands: {
           createMany: {
             data: [
-              { name: "TestOrg", id: DEFAULT_BRAND_ID, default: true },
+              { name: "TestOrg", id: DEFAULT_BRAND_ID },
               { name: "TestBrand", id: BRAND_ID_1 },
               { name: "TestBrand2", id: BRAND_ID_2 },
               { name: "TestBrand3", id: BRAND_ID_3 },
