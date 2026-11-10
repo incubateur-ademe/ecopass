@@ -15,7 +15,7 @@ import { getMeanScores, MeanScores } from "./score"
 import { displayOrganisationFullName } from "../utils/organization/name"
 import { ProductCategory } from "../types/Product"
 
-const batchSize = 50_000
+const batchSize = 25_000
 export type ProductFilters = {
   brandId?: string
   category?: string
