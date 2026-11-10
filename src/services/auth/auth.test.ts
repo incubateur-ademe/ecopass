@@ -38,7 +38,7 @@ describe("getApiUser", () => {
             siret: "12345678901234",
             name: "Test Organization",
             type: OrganizationType.Brand,
-            brands: [{ name: "Test Brand", active: true, default: false, id: "brand-1", noGTIN: null }],
+            brands: [{ name: "Test Brand", active: true, id: "brand-1", noGTIN: null }],
             authorizedBy: [],
           },
         },
@@ -159,8 +159,8 @@ describe("getApiUser", () => {
             name: "Organization Name",
             type: OrganizationType.Brand,
             brands: [
-              { name: "Brand 1", active: true, default: false, id: "brand-1", noGTIN: null },
-              { name: "Brand 2", active: true, default: false, id: "brand-2", noGTIN: null },
+              { name: "Brand 1", active: true, id: "brand-1", noGTIN: null },
+              { name: "Brand 2", active: true, id: "brand-2", noGTIN: null },
             ],
             authorizedBy: [
               {
@@ -168,7 +168,7 @@ describe("getApiUser", () => {
                   id: "auth-org-id",
                   name: "Auth Org",
                   siret: "1234567890128",
-                  brands: [{ id: "brand-id", name: "Auth Brand", active: true, default: false, noGTIN: null }],
+                  brands: [{ id: "brand-id", name: "Auth Brand", active: true, noGTIN: null }],
                 },
               },
             ],

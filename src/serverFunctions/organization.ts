@@ -348,7 +348,6 @@ export const followBrand = async (brand: { brandName: string; brandId: string })
       data: {
         name: brand.brandName,
         active: true,
-        default: false,
       },
     })
     brandId = createdBrand.id

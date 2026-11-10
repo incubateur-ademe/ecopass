@@ -31,8 +31,8 @@ describe("parseCSV", () => {
           },
         ],
         brands: [
-          { name: "TestBrand", id: "781c0fcd-372e-4032-8088-d83e103726f2", active: true, default: false },
-          { name: "DefaultBrand", id: "7a96793c-6017-42df-812a-6e2422fc215a", active: true, default: true },
+          { name: "TestBrand", id: "781c0fcd-372e-4032-8088-d83e103726f2", active: true },
+          { name: "DefaultBrand", id: "7a96793c-6017-42df-812a-6e2422fc215a", active: true },
         ],
       },
     },

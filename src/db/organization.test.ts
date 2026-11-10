@@ -85,7 +85,6 @@ describe("organization", () => {
       expect(dbOrganization?.type).toBe(OrganizationType.Distributor)
       expect(dbOrganization?.brands).toHaveLength(1)
       expect(dbOrganization?.brands[0].name).toBe("Test Company")
-      expect(dbOrganization?.brands[0].default).toBe(true)
       expect(dbOrganization?.brands[0].active).toBe(true)
     })
 
@@ -300,7 +299,6 @@ describe("organization", () => {
           name: "Empty Brand",
           organizationId: org.id,
           active: true,
-          default: true,
         },
       })
 

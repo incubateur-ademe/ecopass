@@ -21,7 +21,6 @@ export const createOrganization = async (siret: string) => {
       brands: {
         create: {
           name: result.etablissement.uniteLegale.denominationUniteLegale,
-          default: true,
         },
       },
     },
