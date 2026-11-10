@@ -13,7 +13,9 @@ import { FullUser, getUser } from "./user"
 import { canExportFullProducts } from "../utils/authorization/authorizations"
 import { getMeanScores, MeanScores } from "./score"
 import { displayOrganisationFullName } from "../utils/organization/name"
+import { ProductCategory } from "../types/Product"
 
+const batchSize = 50_000
 export type ProductFilters = {
   brandId?: string
   category?: string
@@ -426,13 +428,35 @@ export const getOrganizationProductsCountByUserIdAndFilters = async (
     orderBy: [{ createdAt: "desc" }, { internalReference: "asc" }],
   })
 
-  const products = await prismaClient.product.findMany({
-    where: { ...where, id: { in: uniqueGtins.map((p) => p.id) } },
-    select: { informations: { select: { categorySlug: true, mainComponent: true } } },
-    orderBy: { createdAt: "desc" },
-  })
+  const categoryCounts: Record<
+    string,
+    {
+      slug: ProductCategory
+      count: number
+    }
+  > = {}
 
-  return countProductsByCategory(products)
+  for (let index = 0; index < uniqueGtins.length; index += batchSize) {
+    const batchIds = uniqueGtins.slice(index, index + batchSize).map((p) => p.id)
+    const products = await prismaClient.product.findMany({
+      where: { ...where, id: { in: batchIds } },
+      select: { informations: { select: { categorySlug: true, mainComponent: true } } },
+      orderBy: { createdAt: "desc" },
+    })
+
+    const batchCounts = countProductsByCategory(products)
+    for (const item of batchCounts) {
+      if (!categoryCounts[item.slug]) {
+        categoryCounts[item.slug] = {
+          slug: item.slug,
+          count: 0,
+        }
+      }
+      categoryCounts[item.slug].count += item.count
+    }
+  }
+
+  return Object.values(categoryCounts).sort((a, b) => b.count - a.count || a.slug.localeCompare(b.slug))
 }
 
 export const getOrganizationProductsByUserIdAndFilters = async (
@@ -948,7 +972,6 @@ export const forEachLatestProductsByBrandIdForExport = async (
   }
 
   const latestIds = latest.map((row) => row.id)
-  const batchSize = parseInt(process.env.QUERY_PARAMETER_BATCH_SIZE || "50000", 10)
   let processedProducts = 0
 
   for (let index = 0; index < latestIds.length; index += batchSize) {
