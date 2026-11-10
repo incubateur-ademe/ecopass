@@ -77,7 +77,6 @@ export const createUserAndOrganization = async (
           brands: {
             create: {
               name: organizationName,
-              default: true,
             },
           },
         },

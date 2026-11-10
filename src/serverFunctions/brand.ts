@@ -82,7 +82,6 @@ export const updateBrand = async (id: string, data: { name: string; active: bool
     where: {
       id: id,
       organizationId: user.organization.id,
-      default: false,
     },
     data: {
       name: trimmedBrand,

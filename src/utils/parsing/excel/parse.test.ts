@@ -31,7 +31,7 @@ describe("parseExcel", () => {
             },
           },
         ],
-        brands: [{ name: "TestBrand", id: "781c0fcd-372e-4032-8088-d83e103726f2", active: true, default: true }],
+        brands: [{ name: "TestBrand", id: "781c0fcd-372e-4032-8088-d83e103726f2", active: true }],
       },
     },
     reUploadProducts: [],

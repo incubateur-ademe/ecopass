@@ -369,8 +369,7 @@ model Brand {
   id   String @id @default(uuid())
   name String
 
-  default Boolean  @default(false)
-  active  Boolean  @default(true)
+  active  Boolean @default(true)
   noGTIN  Boolean? @map("no_gtin")
 
   organization   Organization?   @relation(fields: [organizationId], references: [id])

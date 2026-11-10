@@ -103,7 +103,7 @@ describe("handleProductPOST", () => {
         siret: "12345678901234",
         name: "Org 1",
         type: OrganizationType.Brand,
-        brands: [{ id: "brand-1", name: "Brand 1", active: true, default: true, noGTIN: null }],
+        brands: [{ id: "brand-1", name: "Brand 1", active: true, noGTIN: null }],
         authorizedBy: [],
       },
     },
