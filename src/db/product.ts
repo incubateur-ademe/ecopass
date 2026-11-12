@@ -90,7 +90,8 @@ export const createProducts = async (
           })
           continue
         }
-        productsToCreate.push(product)
+        const category = getProductCategory(informations.filter((i) => i.productId === product.id))
+        productsToCreate.push({ ...product, category })
         ids.add(product.id)
       }
 
@@ -205,6 +206,7 @@ export const getProductsToProcess = async (take: number) => {
 export const productWithScoreSelect = {
   id: true,
   gtins: true,
+  category: true,
   internalReference: true,
   brand: { select: { id: true, name: true, organization: { select: { displayName: true, id: true } } } },
   createdAt: true,
@@ -440,7 +442,7 @@ export const getOrganizationProductsCountByUserIdAndFilters = async (
     const batchIds = uniqueGtins.slice(index, index + batchSize).map((p) => p.id)
     const products = await prismaClient.product.findMany({
       where: { ...where, id: { in: batchIds } },
-      select: { informations: { select: { categorySlug: true, mainComponent: true } } },
+      select: { category: true },
       orderBy: { createdAt: "desc" },
     })
 
@@ -767,12 +769,7 @@ export const getProductCountByCategory = async () => {
     },
     select: {
       internalReference: true,
-      informations: {
-        select: {
-          categorySlug: true,
-          mainComponent: true,
-        },
-      },
+      category: true,
     },
     orderBy: [{ internalReference: "asc" }, { createdAt: "desc" }],
   })
@@ -789,7 +786,7 @@ export const getProductCountByCategory = async () => {
 
   return uniqueProducts.reduce(
     (acc, product) => {
-      const category = getProductCategory(product.informations)
+      const category = product.category
       if (!category) {
         return acc
       }

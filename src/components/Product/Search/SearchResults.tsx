@@ -12,7 +12,7 @@ import Image from "next/image"
 import { formatNumber } from "../../../services/format"
 import Table from "../../Table/Table"
 import ProductLink from "../ProductLink"
-import { getProductCategory, getProductIcon } from "../../../utils/product/category"
+import { getProductIcon } from "../../../utils/product/category"
 import ProductNotFound from "../../Home/ProductNotFound"
 import { getDeclarant } from "../../../utils/product/declarant"
 
@@ -63,8 +63,7 @@ const SearchResults = ({
             "Détails",
           ]}
           data={products.map((product) => {
-            const categorySlug = getProductCategory(product.informations)
-            const icon = getProductIcon(categorySlug)
+            const icon = getProductIcon(product.category)
             return [
               product.gtins.join(", "),
               product.internalReference,
@@ -72,7 +71,7 @@ const SearchResults = ({
               getDeclarant(product, session.data?.user.id || ""),
               <div className={styles.category} key={product.id}>
                 {icon && <Image src={`/icons/${icon}.svg`} alt='' width={32} height={32} />}
-                {categorySlug || "Non renseignée"}
+                {product.category || "Non renseignée"}
               </div>,
               <Badge severity='info' noIcon key={product.id}>
                 {product.score ? formatNumber(product.score) : "-"}

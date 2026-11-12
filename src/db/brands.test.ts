@@ -223,7 +223,7 @@ describe("Brands DB", () => {
 
   it("getBrandWithProducts returns brand with total product count by category", async () => {
     const encrypted = encryptProductFields({
-      product: ProductCategory.Pull,
+      product: ProductCategory.TShirtPolo,
       business: Business.Small,
       numberOfReferences: 9000,
       mass: 1,
@@ -239,6 +239,7 @@ describe("Brands DB", () => {
       mockPrismaTest.product.create({
         data: {
           status: Status.Done,
+          category: ProductCategory.TShirtPolo,
           hash: "h-tshirt-1",
           gtins: ["TSH001"],
           internalReference: "TSHIRT-001",
@@ -259,6 +260,7 @@ describe("Brands DB", () => {
       mockPrismaTest.product.create({
         data: {
           status: Status.Done,
+          category: ProductCategory.TShirtPolo,
           hash: "h-tshirt-2",
           gtins: ["TSH002"],
           internalReference: "TSHIRT-001",
@@ -279,6 +281,7 @@ describe("Brands DB", () => {
       mockPrismaTest.product.create({
         data: {
           status: Status.Error,
+          category: ProductCategory.TShirtPolo,
           hash: "h-tshirt-3",
           gtins: ["TSH003"],
           internalReference: "TSHIRT-003",
@@ -299,6 +302,7 @@ describe("Brands DB", () => {
       mockPrismaTest.product.create({
         data: {
           status: Status.Done,
+          category: ProductCategory.Jean,
           hash: "h-jeans-1",
           gtins: ["JEANS001"],
           internalReference: "JEANS-001",
@@ -319,6 +323,7 @@ describe("Brands DB", () => {
       mockPrismaTest.product.create({
         data: {
           status: Status.Done,
+          category: ProductCategory.Jean,
           hash: "h-jeans-2",
           gtins: ["JEANS002"],
           internalReference: "JEANS-002",
@@ -339,6 +344,7 @@ describe("Brands DB", () => {
       mockPrismaTest.product.create({
         data: {
           status: Status.Done,
+          category: ProductCategory.ManteauVeste,
           hash: "h-jacket-1",
           gtins: ["JACKET001"],
           internalReference: "JACKET-001",
@@ -359,6 +365,7 @@ describe("Brands DB", () => {
       mockPrismaTest.product.create({
         data: {
           status: Status.Done,
+          category: BATCH_CATEGORY,
           hash: "h-lot-1",
           gtins: ["LOT-001"],
           internalReference: "LOT-001",
@@ -383,6 +390,7 @@ describe("Brands DB", () => {
       mockPrismaTest.product.create({
         data: {
           status: Status.Done,
+          category: ProductCategory.BoxerSlipTricoté,
           hash: "h-mc-1",
           gtins: ["MC-001"],
           internalReference: "MC-001",

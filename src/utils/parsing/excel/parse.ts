@@ -138,6 +138,7 @@ export const parseExcel = async (buffer: Buffer, upload: NonNullable<FileUpload>
     const product = {
       error: mainComponentError ? "Composant principal doit valoir 'Oui' ou 'Non'" : null,
       url: null,
+      category: null,
       id: productId,
       score: null,
       standardized: null,
