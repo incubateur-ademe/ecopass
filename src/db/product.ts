@@ -1214,3 +1214,64 @@ export const getOrganizationProductsPageData = async (userId: string, filters?: 
     declarants,
   }
 }
+
+export type CostDistribution = {
+  min: number
+  max: number
+  average: number
+  values: number[]
+}
+
+export const getCostPer100gDistribution = async (category: string, numberOfQuantiles: number) => {
+  const result = await prismaClient.$queryRaw<
+    Array<{
+      meanStandardized: number
+    }>
+  >(
+    Prisma.sql`
+      SELECT DISTINCT ON (p.internal_reference)
+        p."meanStandardized"
+      FROM "products" p
+      INNER JOIN "product_informations" pi ON pi.product_id = p.id
+      WHERE p.status = 'Done'
+        AND pi.category_slug = ${category} 
+        AND p."meanStandardized" IS NOT NULL
+      ORDER BY p.internal_reference, p.created_at DESC
+    `,
+  )
+
+  if (!result || result.length === 0) {
+    return null
+  }
+
+  const costs = result.map((row) => row.meanStandardized).sort((a, b) => a - b)
+
+  const min = costs[0]
+  const max = costs[costs.length - 1]
+  const average = costs.reduce((a, b) => a + b, 0) / costs.length
+
+  const quantiles = Array.from({ length: numberOfQuantiles }).map(
+    (_, i) => min + (i / (numberOfQuantiles - 1)) * (max - min),
+  )
+  let averageQuantileIndex = 0
+
+  const counts = [] as number[]
+  for (let i = 0; i < quantiles.length - 1; i++) {
+    const lowerBound = quantiles[i]
+    const upperBound = quantiles[i + 1]
+    counts.push(costs.filter((value) => value >= lowerBound && value < upperBound).length)
+    if (lowerBound <= average && average < upperBound) {
+      averageQuantileIndex = i
+    }
+  }
+
+  return {
+    min,
+    max,
+    averageQuantileIndex,
+    average,
+    counts,
+  }
+}
+
+export type Distribution = Awaited<ReturnType<typeof getCostPer100gDistribution>>

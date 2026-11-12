@@ -1,9 +1,15 @@
-import { getOldProductWithScore, getProductWithScore, getProductByGtin } from "../../../../db/product"
+import {
+  getOldProductWithScore,
+  getProductWithScore,
+  getProductByGtin,
+  getCostPer100gDistribution,
+} from "../../../../db/product"
 import Product from "../../../../views/Product"
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import EmptyProduct from "../../../../views/EmptyProduct"
 import { Metadata } from "next"
 import { tryAndGetSession } from "../../../../services/auth/redirect"
+import { getProductCategory } from "../../../../utils/product/category"
 
 type Props = {
   params: Promise<{ gtin: string; version: string }>
@@ -32,6 +38,9 @@ const OldProductPage = async (props: Props) => {
     getOldProductWithScore(params.gtin, params.version),
   ])
 
+  const category = product ? getProductCategory(product.informations) : ""
+  const values = category ? await getCostPer100gDistribution(category, 25) : null
+
   return (
     <>
       <StartDsfrOnHydration />
@@ -41,6 +50,7 @@ const OldProductPage = async (props: Props) => {
           gtin={params.gtin}
           isOld={!!product && product.id !== oldProduct.id}
           isPro={!!session}
+          distribution={values}
           breadCrumbs={{
             currentPageLabel: oldProduct.internalReference,
             segments: [

@@ -1,6 +1,6 @@
 import { BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
 import Product from "../components/Product/Product"
-import { ProductWithScore } from "../db/product"
+import { Distribution, ProductWithScore } from "../db/product"
 
 const ProductPage = ({
   product,
@@ -8,6 +8,7 @@ const ProductPage = ({
   isOld,
   isPro,
   brandId,
+  distribution,
   breadCrumbs,
 }: {
   product: ProductWithScore
@@ -15,10 +16,19 @@ const ProductPage = ({
   isOld?: boolean
   isPro: boolean
   brandId?: string
+  distribution: Distribution | null
   breadCrumbs?: BreadcrumbProps
 }) => {
   return (
-    <Product product={product} gtin={gtin} isOld={isOld} isPro={isPro} brandId={brandId} breadCrumbs={breadCrumbs} />
+    <Product
+      product={product}
+      gtin={gtin}
+      isOld={isOld}
+      isPro={isPro}
+      brandId={brandId}
+      breadCrumbs={breadCrumbs}
+      distribution={distribution}
+    />
   )
 }
 

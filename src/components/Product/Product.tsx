@@ -1,4 +1,4 @@
-import { ProductWithScore } from "../../db/product"
+import { Distribution, ProductWithScore } from "../../db/product"
 import { formatDate } from "../../services/format"
 import Block from "../Block/Block"
 import styles from "./Product.module.css"
@@ -10,6 +10,7 @@ import InformationBanner from "../Home/InformationBanner"
 import DownloadScore from "./DownloadScore"
 import ProductScoreImpacts from "./ProductScoreImpacts"
 import DurabilityBadge from "./DurabilityBadge"
+import DistributionChart from "./DistributionChart"
 import { BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
 import Link from "next/link"
 import { getProductCategory, getProductIcon } from "../../utils/product/category"
@@ -21,6 +22,7 @@ const Product = ({
   isPro,
   isOld,
   brandId,
+  distribution,
   breadCrumbs,
 }: {
   product: ProductWithScore
@@ -28,6 +30,7 @@ const Product = ({
   isPro?: boolean
   isOld?: boolean
   brandId?: string
+  distribution: Distribution | null
   breadCrumbs?: BreadcrumbProps
 }) => {
   const totalScore = {
@@ -97,6 +100,7 @@ const Product = ({
           </p>
         </div>
         <ConfidenceLevelBadge confidenceLevel={product.confidenceLevel} />
+        {distribution && <DistributionChart distribution={distribution} value={totalScore.standardized} />}
       </Block>
       <Block>
         <ProductScoreImpacts score={totalScore} isPro={isPro} />
