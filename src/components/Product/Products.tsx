@@ -13,7 +13,7 @@ import styles from "./Search/SearchResults.module.css"
 import { formatDate, formatNumber } from "../../services/format"
 import Table from "../Table/Table"
 import ProductLink from "./ProductLink"
-import { getProductCategory, getProductIcon } from "../../utils/product/category"
+import { getProductIcon } from "../../utils/product/category"
 import { getDeclarant } from "../../utils/product/declarant"
 import { confidencesLevel } from "../../utils/product/confidence"
 import { ProductsPagination } from "./ProductsPagination"
@@ -55,15 +55,14 @@ const Products = async ({ page, filters }: { page: number; filters: ProductFilte
             fixed
             caption={total > 1 ? `${total} produits` : total === 1 ? "1 produit" : "Aucun produit"}
             data={products.map((product) => {
-              const categorySlug = getProductCategory(product.informations)
-              const icon = getProductIcon(categorySlug)
+              const icon = getProductIcon(product.category)
               return [
                 <b key={`${product.id}-reference`}>{product.internalReference}</b>,
                 product.brand?.name || "-",
                 getDeclarant(product, session.user.id),
                 <div className={styles.category} key={`cat-${product.id}`}>
                   {icon && <Image src={`/icons/${icon}.svg`} alt='' width={32} height={32} />}
-                  {categorySlug || "Non renseignée"}
+                  {product.category || "Non renseignée"}
                 </div>,
                 <Badge severity='info' noIcon key={`score-${product.id}`}>
                   {product.score ? formatNumber(product.score) : "-"}

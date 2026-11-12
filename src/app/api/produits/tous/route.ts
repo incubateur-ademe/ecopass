@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { prismaClient } from "../../../../db/prismaClient"
-import { getProductCategory } from "../../../../utils/product/category"
 import { getMeanScores } from "../../../../db/score"
 
 export async function GET(req: Request) {
@@ -104,7 +103,7 @@ export async function GET(req: Request) {
         internalReference: product.internalReference,
         brand: product.brand,
         createdAt: product.createdAt,
-        category: getProductCategory(product.informations),
+        category: product.category,
         score: totalScore,
         upload: {
           version: product.upload.version,

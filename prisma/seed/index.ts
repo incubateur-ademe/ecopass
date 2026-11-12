@@ -322,6 +322,7 @@ const defaultProduct = async () => {
   await prismaClient.product.create({
     data: {
       hash: "default-product-hash",
+      category: ProductCategory.MaillotDeBain,
       gtins: ["0000000000000"],
       internalReference: "MAILLOT-001",
       brandName: "Premium Wear",

@@ -16,7 +16,6 @@ import {
   countPublicProductsByBrandId,
   getPublicProductsByBrandId,
   forEachLatestProductsByBrandIdForExport,
-  ProductWithScoreBase,
   getOrganizationProductsCountByUserIdAndFilters,
 } from "./product"
 import { AccessoryType, Business, MaterialType, ProductCategory } from "../types/Product"
@@ -115,6 +114,7 @@ describe("Product DB integration", () => {
       brand: { connect: { id: BRAND_ID_2 } },
       declaredScore: 3000.5,
       confidenceLevel: ConfidenceLevel.High,
+      category: ProductCategory.Pull,
       informations: {
         create: encryptProductFields(BASE_PRODUCT).product,
       },
@@ -153,6 +153,7 @@ describe("Product DB integration", () => {
           {
             error: null,
             url: null,
+            category: null,
             hash: "test-hash",
             id: productId,
             createdAt: new Date(),
@@ -228,6 +229,7 @@ describe("Product DB integration", () => {
           {
             error: null,
             url: null,
+            category: null,
             hash: "new-hash",
             id: newId,
             createdAt: new Date(),
@@ -584,6 +586,7 @@ describe("Product DB integration", () => {
             {
               error: null,
               url: null,
+              category: null,
               hash: "unique-hash-001",
               id: newProductId,
               createdAt: new Date(),
@@ -675,6 +678,7 @@ describe("Product DB integration", () => {
             {
               error: null,
               url: null,
+              category: null,
               hash: existingHash,
               id: newProductId,
               createdAt: new Date(),
@@ -770,6 +774,7 @@ describe("Product DB integration", () => {
             {
               error: null,
               url: null,
+              category: null,
               hash: newHash,
               id: newProductId,
               createdAt: new Date(),
@@ -868,6 +873,7 @@ describe("Product DB integration", () => {
             {
               error: null,
               url: null,
+              category: null,
               hash: "new-hash",
               id: newProductId,
               createdAt: new Date(),
@@ -957,6 +963,7 @@ describe("Product DB integration", () => {
             {
               error: null,
               url: null,
+              category: null,
               hash: "new-hash",
               id: newProductId,
               createdAt: new Date(),
@@ -1060,6 +1067,7 @@ describe("Product DB integration", () => {
             {
               error: null,
               url: null,
+              category: null,
               hash: "new-hash",
               id: newProductId,
               createdAt: new Date(),
@@ -1162,6 +1170,7 @@ describe("Product DB integration", () => {
             {
               error: null,
               url: null,
+              category: null,
               hash: "new-hash",
               id: newProductId,
               createdAt: new Date(),
@@ -1243,6 +1252,7 @@ describe("Product DB integration", () => {
             {
               error: null,
               url: null,
+              category: null,
               hash: "new-hash",
               id: newProductId,
               createdAt: new Date(),
@@ -1345,6 +1355,7 @@ describe("Product DB integration", () => {
             {
               error: null,
               url: null,
+              category: null,
               hash: oldHash,
               id: newProductId,
               createdAt: new Date(),
@@ -1446,6 +1457,7 @@ describe("Product DB integration", () => {
             {
               error: null,
               url: null,
+              category: null,
               hash: oldHash,
               id: newProductId,
               createdAt: new Date(),

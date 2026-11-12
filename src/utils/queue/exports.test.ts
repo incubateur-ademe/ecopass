@@ -6,6 +6,7 @@ import { ConfidenceLevel, ExportType, Status, UserType } from "@prisma/enums"
 import JSZip from "jszip"
 import { getProducts, getProductsBaseWhere } from "../../db/product"
 import { FullUser } from "../../db/user"
+import { ProductCategory } from "../../types/Product"
 
 jest.mock("../../db/export")
 jest.mock("../../db/product")
@@ -55,6 +56,7 @@ describe("processExportsQueue", () => {
 
   const mockProduct = {
     id: "product-1",
+    category: ProductCategory.TShirtPolo,
     internalReference: "REF001",
     brand: { id: "brand-1", name: "Test Brand", organization: { displayName: "Test Organization", id: "orga-1" } },
     gtins: ["1234567890123"],
@@ -100,7 +102,7 @@ describe("processExportsQueue", () => {
     informations: [
       {
         category: "T-shirt",
-        categorySlug: "t-shirt",
+        categorySlug: ProductCategory.TShirtPolo,
         mainComponent: false,
         countryDyeing: "FR",
         countryFabric: "CN",

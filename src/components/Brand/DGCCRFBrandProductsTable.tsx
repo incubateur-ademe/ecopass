@@ -8,7 +8,7 @@ import styles from "./BrandProductsTable.module.css"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import ProductLink from "../Product/ProductLink"
 import Alert from "@codegouvfr/react-dsfr/Alert"
-import { getProductCategory, getProductIcon } from "../../utils/product/category"
+import { getProductIcon } from "../../utils/product/category"
 import FiltersBar from "../Product/FiltersBar"
 import { Export } from "@prisma/client"
 import ExportProducts from "../Product/Export/ExportProducts"
@@ -40,8 +40,7 @@ const DGCCRFBrandProductsTable = ({
   const totalPages = Math.ceil(productCount / 10) || 1
 
   const tableRows = products.map((product) => {
-    const categorySlug = getProductCategory(product.informations)
-    const icon = getProductIcon(categorySlug)
+    const icon = getProductIcon(product.category)
 
     return [
       <span className={styles.productRef} key={`${product.id}-reference`}>
@@ -49,7 +48,7 @@ const DGCCRFBrandProductsTable = ({
       </span>,
       <div className={styles.categoryCell} key={`${product.id}-category`}>
         {icon && <Image src={`/icons/${icon}.svg`} alt='' width={32} height={32} className={styles.categoryIcon} />}
-        <span>{categorySlug || "Non renseignée"}</span>
+        <span>{product.category || "Non renseignée"}</span>
       </div>,
       product.score !== null && product.score !== undefined ? (
         <Badge key={`${product.id}-score`} severity='info' noIcon>

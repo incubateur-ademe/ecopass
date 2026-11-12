@@ -27,15 +27,13 @@ export const getProductIcon = (categorySlug: string | null) => {
   return productMapping[categorySlug as ProductCategory]
 }
 
-export const countProductsByCategory = (
-  products: { informations: { categorySlug: string | null; mainComponent: boolean | null }[] }[],
-) =>
+export const countProductsByCategory = (products: { category: string | null }[]) =>
   Object.values(
     products
       .filter((product) => product !== null)
       .reduce(
         (acc, product) => {
-          const slug = getProductCategory(product.informations) as ProductCategory | null
+          const slug = product.category as ProductCategory | null
           if (slug === null) {
             return acc
           }

@@ -3,7 +3,6 @@ import { prismaClient } from "../db/prismaClient"
 import { stringify } from "csv-stringify"
 import fs from "fs"
 import path from "path"
-import { getProductCategory } from "../utils/product/category"
 import { getMeanScores } from "../db/score"
 
 const BATCH_SIZE = 100_000
@@ -116,7 +115,7 @@ const getDataGouvCSV = async () => {
         const totalScore = await getMeanScores(product)
         return [
           product.brand?.name ?? "",
-          getProductCategory(product.informations),
+          product.category,
           gtin,
           product.internalReference,
           totalScore.score ?? "",
