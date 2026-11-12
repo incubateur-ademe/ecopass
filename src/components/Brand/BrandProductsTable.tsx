@@ -6,7 +6,7 @@ import { formatNumber } from "../../services/format"
 import styles from "./BrandProductsTable.module.css"
 import Pagination from "@codegouvfr/react-dsfr/Pagination"
 import ProductLink from "../Product/ProductLink"
-import { getProductCategory, getProductIcon } from "../../utils/product/category"
+import { getProductIcon } from "../../utils/product/category"
 
 const BrandProductsTable = ({
   products,
@@ -21,8 +21,7 @@ const BrandProductsTable = ({
 }) => {
   const totalPages = Math.ceil(productCount / 10)
   const tableRows = products.map((product) => {
-    const categorySlug = getProductCategory(product.informations)
-    const icon = getProductIcon(categorySlug)
+    const icon = getProductIcon(product.category)
 
     return [
       <span className={styles.productRef} key={`${product.id}-reference`}>
@@ -30,7 +29,7 @@ const BrandProductsTable = ({
       </span>,
       <div className={styles.categoryCell} key={`${product.id}-category`}>
         {icon && <Image src={`/icons/${icon}.svg`} alt='' width={32} height={32} className={styles.categoryIcon} />}
-        <span>{categorySlug || "Non renseignée"}</span>
+        <span>{product.category || "Non renseignée"}</span>
       </div>,
       product.gtins.join(", "),
       product.score !== null && product.score !== undefined ? (

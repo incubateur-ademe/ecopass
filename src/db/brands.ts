@@ -145,7 +145,7 @@ export const getBrandWithProducts = async (id: string) => {
 
   const products = await prismaClient.product.findMany({
     where: { id: { in: uniqueGtins.map((p) => p.id) }, brandId: id, status: Status.Done },
-    select: { informations: { select: { categorySlug: true, mainComponent: true } } },
+    select: { category: true },
     orderBy: { createdAt: "desc" },
   })
   return {

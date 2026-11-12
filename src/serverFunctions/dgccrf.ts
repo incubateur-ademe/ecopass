@@ -5,7 +5,7 @@ import { stringify } from "csv-stringify/sync"
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
 import { canViewAsDgccrf } from "../utils/authorization/authorizations"
-import { BATCH_CATEGORY, countProductsByCategory } from "../utils/product/category"
+import { countProductsByCategory } from "../utils/product/category"
 import { ProductCategory } from "../types/Product"
 
 export const exportOrganizationsData = async () => {
@@ -37,12 +37,7 @@ export const exportOrganizationsData = async () => {
             organizationId: true,
           },
         },
-        informations: {
-          select: {
-            categorySlug: true,
-            mainComponent: true,
-          },
-        },
+        category: true,
       },
       orderBy: [{ brandId: "asc" }, { internalReference: "asc" }, { createdAt: "desc" }],
       distinct: ["brandId", "internalReference"],
@@ -70,7 +65,6 @@ export const exportOrganizationsData = async () => {
     "SIRET organisation",
     "Nb de référence produit déclarées",
     ...categories.map((value) => `Nb de référence ${value}`),
-    `Nb de référence ${BATCH_CATEGORY}`,
   ]
 
   const data = organizations
@@ -90,8 +84,6 @@ export const exportOrganizationsData = async () => {
       for (const value of categories) {
         row[`Nb de référence ${value}`] = productsByCategory.find((catergory) => catergory.slug === value)?.count || 0
       }
-      row[`Nb de référence ${BATCH_CATEGORY}`] =
-        productsByCategory.find((catergory) => catergory.slug === (BATCH_CATEGORY as ProductCategory))?.count || 0
 
       return row
     })

@@ -188,6 +188,7 @@ enum ConfidenceLevel {
 
 model Product {
   id        String   @id @default(uuid())
+  category  String?
   createdAt DateTime @default(now()) @map("created_at")
   status    Status   @default(Pending)
   error     String?
@@ -198,8 +199,8 @@ model Product {
   score        Float?
   standardized Float?
 
-  meanScore        Float?
-  meanStandardized Float?
+  meanScore        Float? @map("mean_score")
+  meanStandardized Float? @map("mean_standardized")
 
   gtins             String[] @map("gtins")
   internalReference String   @map("internal_reference")
@@ -369,8 +370,8 @@ model Brand {
   id   String @id @default(uuid())
   name String
 
-  active  Boolean @default(true)
-  noGTIN  Boolean? @map("no_gtin")
+  active Boolean  @default(true)
+  noGTIN Boolean? @map("no_gtin")
 
   organization   Organization?   @relation(fields: [organizationId], references: [id])
   organizationId String?         @map("organization_id")

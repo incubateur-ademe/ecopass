@@ -12,7 +12,7 @@ import ProductScoreImpacts from "./ProductScoreImpacts"
 import DurabilityBadge from "./DurabilityBadge"
 import { BreadcrumbProps } from "@codegouvfr/react-dsfr/Breadcrumb"
 import Link from "next/link"
-import { getProductCategory, getProductIcon } from "../../utils/product/category"
+import { getProductIcon } from "../../utils/product/category"
 import ConfidenceLevelBadge from "./ConfidenceLevelBadge"
 
 const Product = ({
@@ -37,8 +37,7 @@ const Product = ({
     durability: product.meanScores.durability ?? 0,
   }
 
-  const categorySlug = getProductCategory(product.informations)
-  const icon = getProductIcon(categorySlug)
+  const icon = getProductIcon(product.category)
   return (
     <>
       <Block type='yellow' breadCrumbs={breadCrumbs}>

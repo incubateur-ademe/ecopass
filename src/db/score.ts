@@ -6,6 +6,7 @@ import { encryptProductFields } from "../utils/encryption/encryption"
 import { applyMeanScoreToProduct, productWithScoreSelect, ProductWithScore } from "./product"
 import { prismaClient } from "./prismaClient"
 import { FullUser } from "./user"
+import { getProductCategory } from "../utils/product/category"
 
 export const createScore = async (
   user: FullUser,
@@ -22,9 +23,13 @@ export const createScore = async (
         const score = scores.reduce((acc, value) => acc + value.score, 0)
         const mass = informations.map((info) => info.mass).reduce((acc, value) => acc + value, 0)
 
+        const encryptedInformations = informations.map((information) => encryptProductFields(information))
+        const category = getProductCategory(encryptedInformations.map((information) => information.product))
+
         const createdBatch = await transaction.product.create({
           data: {
             status: Status.Done,
+            category,
             confidenceLevel,
             hash,
             brand: { connect: { id: product.brandId } },
@@ -48,7 +53,7 @@ export const createScore = async (
 
         await Promise.all(
           informations.map((product, index) => {
-            const encrypted = encryptProductFields(product)
+            const encrypted = encryptedInformations[index]
             const score = scores[index]
             return transaction.productInformation.create({
               data: {

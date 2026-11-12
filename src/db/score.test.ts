@@ -181,9 +181,10 @@ describe("Score DB integration", () => {
         meanStandardized: 90,
         gtins: ["GTIN-001"],
         createdAt: new Date(),
+        category: ProductCategory.TShirtPolo,
         informations: [
           {
-            categorySlug: "tshirt",
+            categorySlug: ProductCategory.TShirtPolo,
             mainComponent: true,
             score: {
               acd: 0.05,
@@ -246,9 +247,10 @@ describe("Score DB integration", () => {
         meanStandardized: 80,
         gtins: ["GTIN-001"],
         createdAt: new Date(),
+        category: ProductCategory.TShirtPolo,
         informations: [
           {
-            categorySlug: "tshirt",
+            categorySlug: ProductCategory.TShirtPolo,
             mainComponent: true,
             score: {
               acd: 0.05,
