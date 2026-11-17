@@ -142,6 +142,6 @@ test("Search", async ({ page }) => {
   await page.getByRole("textbox", { name: "Rechercher une marque" }).clear()
   await page.getByRole("link", { name: "Emmaus Solidarité" }).click()
 
-  await expect(page.locator("#contenu")).toContainText("Cette marque a déclaré 1 référence produit.")
+  await expect(page.locator("#contenu")).toContainText("1 référence produit déclarée.")
   await expect(page.locator("#contenu")).toContainText("Emmaus Solidarité")
 })

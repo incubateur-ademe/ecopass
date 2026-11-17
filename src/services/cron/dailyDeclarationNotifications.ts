@@ -42,6 +42,11 @@ const getProductsDoneDuringPeriod = async (start: Date, end: Date) =>
       confidenceLevel: true,
       internalReference: true,
       gtins: true,
+      brand: {
+        select: {
+          organizationId: true,
+        },
+      },
       upload: {
         select: {
           organizationId: true,
@@ -243,6 +248,12 @@ export const runDailyDeclarationNotifications = async (date: Date) => {
           ownerAlertsByOrganization.set(ownerOrganizationId, [...existing, item])
           relatedOrganizationIds.add(ownerOrganizationId)
         }
+
+        if (product.brand?.organizationId) {
+          const existing = ownerAlertsByOrganization.get(product.brand.organizationId) || []
+          ownerAlertsByOrganization.set(product.brand.organizationId, [...existing, item])
+          relatedOrganizationIds.add(product.brand.organizationId)
+        }
       }
 
       const previousDeclarants = previousByGtin.get(gtin) || []
@@ -264,6 +275,7 @@ export const runDailyDeclarationNotifications = async (date: Date) => {
 
   const adminEmailsByOrganization = await getAdminEmailsByOrganization(Array.from(relatedOrganizationIds))
 
+  console.log(relatedOrganizationIds, ownerAlertsByOrganization)
   let ownerAlertsCount = 0
   for (const [organizationId, items] of ownerAlertsByOrganization.entries()) {
     const emails = adminEmailsByOrganization.get(organizationId)
