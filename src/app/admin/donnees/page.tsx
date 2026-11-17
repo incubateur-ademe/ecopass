@@ -57,6 +57,7 @@ const AdminDataPage = async ({ searchParams }: PageProps) => {
     <>
       <StartDsfrOnHydration />
       <AdminData
+        userId={session.user.id}
         currentPage={page}
         products={products}
         productCount={productCount.reduce((acc, { count }) => acc + count, 0)}

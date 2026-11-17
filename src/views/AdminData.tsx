@@ -5,6 +5,7 @@ import { ProductFilters, Products } from "../db/product"
 import ExportsTable from "../components/Product/Export/ExportsTable"
 
 const AdminData = ({
+  userId,
   filters,
   currentPage,
   productCount,
@@ -14,6 +15,7 @@ const AdminData = ({
   declarants,
   exports,
 }: {
+  userId: string
   products: Products
   productCount: number
   currentPage: number
@@ -28,6 +30,7 @@ const AdminData = ({
       <Block>
         <h1>Extraction des données</h1>
         <DGCCRFBrandProductsTable
+          userId={userId}
           products={products}
           currentPage={currentPage}
           productCount={productCount}

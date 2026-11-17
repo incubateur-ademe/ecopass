@@ -60,6 +60,7 @@ const BrandPage = async ({ params, searchParams }: PageProps) => {
   if (!brandData) {
     return notFound()
   }
+
   const isDGCCRF = canViewAsDgccrf(role)
   const Layout = (
     <>
@@ -99,6 +100,7 @@ const BrandPage = async ({ params, searchParams }: PageProps) => {
         {Layout}
         <Block>
           <DGCCRFBrandProductsTable
+            userId={session.user.id}
             products={products}
             currentPage={page}
             brandId={brandData.id}
