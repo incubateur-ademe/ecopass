@@ -13,8 +13,8 @@ const BrandHeader = ({ brand, isAdmin }: { brand: BrandInformation; isAdmin: boo
           <h1 className={styles.title}>{brand.name}</h1>
           {productCount > 0 ? (
             <p className={styles.subtitle}>
-              Cette marque a déclaré <strong>{productCount.toLocaleString("fr-FR")}</strong> référence
-              {productCount > 1 ? "s" : ""} produit.
+              <strong>{productCount.toLocaleString("fr-FR")}</strong> référence
+              {productCount > 1 ? "s" : ""} produit déclaré{productCount > 1 ? "s" : ""}.
             </p>
           ) : (
             <p className={styles.subtitle}>Cette marque n'a déclaré aucun produit.</p>
@@ -41,13 +41,13 @@ const BrandHeader = ({ brand, isAdmin }: { brand: BrandInformation; isAdmin: boo
               )}
             </>
           )}
-          {isAdmin && (
+          {isAdmin && brand.organization && (
             <p className={styles.subtitle}>
               {brand.noGTIN === true
                 ? "Cette marque est sans GTIN."
                 : brand.noGTIN === false
                   ? "Cette marque utilise des GTIN."
-                  : brand.organization?.noGTIN
+                  : brand.organization.noGTIN
                     ? "Cette marque fait partie d'organisation sans GTIN."
                     : "Cette marque fait partie d'organisation avec GTIN."}
             </p>

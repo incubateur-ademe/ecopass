@@ -12,20 +12,43 @@ import Fuse from "fuse.js"
 const StatsTable = ({ stats }: { stats: AdminStats }) => {
   const [searchQuery, setSearchQuery] = useState("")
 
+  const normalizedStats = useMemo(() => {
+    return stats
+      .sort((a, b) => {
+        if (b.lastDepositDate && a.lastDepositDate) {
+          return b.lastDepositDate.getTime() - a.lastDepositDate.getTime()
+        } else if (b.lastDepositDate) {
+          return 1
+        } else if (a.lastDepositDate) {
+          return -1
+        } else {
+          return a.brandName.localeCompare(b.brandName)
+        }
+      })
+      .map((item) => ({
+        ...item,
+        firstDepositDate: item.firstDepositDate ? formatDateTime(item.firstDepositDate) : "",
+        lastDepositDate: item.lastDepositDate ? formatDateTime(item.lastDepositDate) : "",
+      }))
+  }, [stats])
+
   const fuse = useMemo(
     () =>
-      new Fuse(stats, {
+      new Fuse(normalizedStats, {
         keys: ["organizationName", "brandName", "declarant"],
         threshold: 0.3,
         minMatchCharLength: 1,
+        includeScore: true,
       }),
-    [stats],
+    [normalizedStats],
   )
 
   const filteredStats = useMemo(() => {
-    if (!searchQuery) return stats
+    if (!searchQuery) {
+      return normalizedStats
+    }
     return fuse.search(searchQuery).map((result) => result.item)
-  }, [stats, searchQuery, fuse])
+  }, [searchQuery, fuse, normalizedStats])
 
   return (
     <>
@@ -44,37 +67,25 @@ const StatsTable = ({ stats }: { stats: AdminStats }) => {
         caption='Statistiques'
         noCaption
         headers={["Organisation", "Marque", "Déclarant", "Produits", "Premier upload", "Dernier upload"]}
-        data={filteredStats
-          .sort((a, b) => {
-            if (b.lastDepositDate && a.lastDepositDate) {
-              return b.lastDepositDate.getTime() - a.lastDepositDate.getTime()
-            } else if (b.lastDepositDate) {
-              return 1
-            } else if (a.lastDepositDate) {
-              return -1
-            } else {
-              return a.brandName.localeCompare(b.brandName)
-            }
-          })
-          .map((info) => {
-            const key = `${info.brandId}-${info.organizationId}-${info.declarant}`
-            return [
-              info.organizationId && info.organizationName ? (
-                <Link className={styles.link} href={`/organisations/${info.organizationId}`} key={key}>
-                  {info.organizationName} <span className='fr-icon-arrow-right-line' aria-hidden='true' />
-                </Link>
-              ) : (
-                "(non connu)"
-              ),
-              <Link className={styles.link} href={`/marques/${info.brandId}`} key={key}>
-                {info.brandName} <span className='fr-icon-arrow-right-line' aria-hidden='true' />
-              </Link>,
-              info.declarant,
-              info.totalProducts,
-              info.firstDepositDate ? formatDateTime(info.firstDepositDate) : "",
-              info.lastDepositDate ? formatDateTime(info.lastDepositDate) : "",
-            ]
-          })}
+        data={filteredStats.map((info) => {
+          const key = `${info.brandId}-${info.organizationId}-${info.declarant}`
+          return [
+            info.organizationId && info.organizationName ? (
+              <Link className={styles.link} href={`/organisations/${info.organizationId}`} key={key}>
+                {info.organizationName} <span className='fr-icon-arrow-right-line' aria-hidden='true' />
+              </Link>
+            ) : (
+              "(non connu)"
+            ),
+            <Link className={styles.link} href={`/marques/${info.brandId}`} key={key}>
+              {info.brandName} <span className='fr-icon-arrow-right-line' aria-hidden='true' />
+            </Link>,
+            info.declarant,
+            info.totalProducts,
+            info.firstDepositDate,
+            info.lastDepositDate,
+          ]
+        })}
       />
     </>
   )
