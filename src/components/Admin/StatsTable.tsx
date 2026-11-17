@@ -13,7 +13,7 @@ const StatsTable = ({ stats }: { stats: AdminStats }) => {
   const [searchQuery, setSearchQuery] = useState("")
 
   const normalizedStats = useMemo(() => {
-    return stats
+    return [...stats]
       .sort((a, b) => {
         if (b.lastDepositDate && a.lastDepositDate) {
           return b.lastDepositDate.getTime() - a.lastDepositDate.getTime()

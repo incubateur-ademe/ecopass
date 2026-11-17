@@ -14,7 +14,7 @@ const BrandHeader = ({ brand, isAdmin }: { brand: BrandInformation; isAdmin: boo
           {productCount > 0 ? (
             <p className={styles.subtitle}>
               <strong>{productCount.toLocaleString("fr-FR")}</strong> référence
-              {productCount > 1 ? "s" : ""} produit déclaré{productCount > 1 ? "s" : ""}.
+              {productCount > 1 ? "s" : ""} produit déclarée{productCount > 1 ? "s" : ""}.
             </p>
           ) : (
             <p className={styles.subtitle}>Cette marque n'a déclaré aucun produit.</p>
