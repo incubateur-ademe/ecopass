@@ -13,8 +13,10 @@ import FiltersBar from "../Product/FiltersBar"
 import { Export } from "@prisma/client"
 import ExportProducts from "../Product/Export/ExportProducts"
 import { usePathname, useSearchParams } from "next/navigation"
+import { getDeclarant } from "../../utils/product/declarant"
 
 const DGCCRFBrandProductsTable = ({
+  userId,
   products,
   brandId,
   currentPage,
@@ -25,6 +27,7 @@ const DGCCRFBrandProductsTable = ({
   declarants,
   exports,
 }: {
+  userId: string
   products: Products
   brandId?: string
   currentPage: number
@@ -59,7 +62,7 @@ const DGCCRFBrandProductsTable = ({
       ),
       product.gtins.join(", "),
       formatDate(product.createdAt),
-      product.upload.createdBy.organization?.displayName || "N/A",
+      getDeclarant(product, userId),
       <ProductLink product={product} brandId={brandId} key={`${product.id}-cta`} />,
     ]
   })
