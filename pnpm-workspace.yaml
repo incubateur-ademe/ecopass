@@ -11,3 +11,6 @@ allowBuilds:
   tree-sitter: true
   tree-sitter-json: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@aws-sdk/client-s3@3.1170.0'
+  - baseline-browser-mapping@2.11.38
