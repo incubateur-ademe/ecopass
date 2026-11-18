@@ -275,7 +275,6 @@ export const runDailyDeclarationNotifications = async (date: Date) => {
 
   const adminEmailsByOrganization = await getAdminEmailsByOrganization(Array.from(relatedOrganizationIds))
 
-  console.log(relatedOrganizationIds, ownerAlertsByOrganization)
   let ownerAlertsCount = 0
   for (const [organizationId, items] of ownerAlertsByOrganization.entries()) {
     const emails = adminEmailsByOrganization.get(organizationId)
