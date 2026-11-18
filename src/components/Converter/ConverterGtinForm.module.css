@@ -1,0 +1,28 @@
+.form {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.form > div:first-child {
+  flex: 1;
+  min-width: 250px;
+  margin-bottom: 0;
+}
+
+.form button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form button {
+    width: 100%;
+  }
+}
