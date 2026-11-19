@@ -33,6 +33,7 @@ const Header = ({
             isActive: pathname === "/admin/nouvel-utilisateur",
           },
           { linkProps: { href: "/admin/donnees" }, text: "Données", isActive: pathname === "/admin/donnees" },
+          { linkProps: { href: "/convertisseur" }, text: "Convertisseur", isActive: pathname === "/convertisseur" },
         ],
       }
     : canAccessData
