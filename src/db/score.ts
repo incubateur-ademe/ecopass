@@ -80,11 +80,19 @@ export const createScore = async (
           }),
         )
 
-        return createdBatch.id
+        return createdBatch
       },
       { timeout: 180000 },
     )
-    .then((productId) => applyMeanScoreToProduct(productId))
+    .then(async (product) => {
+      const meanScores = await applyMeanScoreToProduct(product.id)
+      return {
+        ...product,
+        meanScore: meanScores?.score || 0,
+        meanStandardized: meanScores?.standardized || 0,
+        meanScores,
+      }
+    })
 
 const computeBatchScore = (product: Pick<ProductWithScore, "informations" | "score" | "standardized">) => {
   const scores = product.informations.reduce(

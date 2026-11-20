@@ -9,6 +9,7 @@ import styles from "./SimplifiedDeclaration.module.css"
 import { Tile } from "@codegouvfr/react-dsfr/Tile"
 import { createProductFromSimplifiedDeclaration, SimplifiedDeclarationData } from "../../serverFunctions/upload"
 import { Audience } from "@prisma/enums"
+import { Distribution } from "../../db/product"
 
 const steps: Record<number, string> = {
   1: "Identification du produit",
@@ -35,6 +36,7 @@ const SimplifiedDeclaration = ({ brands, gtin }: { brands: { id: string; name: s
   })
   const [loading, setLoading] = useState(false)
   const [score, setScore] = useState({ score: 0, standardized: 0, durability: 0 })
+  const [distribution, setDistribution] = useState<Distribution | null>(null)
   const [error, setError] = useState<string>("")
 
   const handleChange = (field: keyof typeof data, value: string | number | typeof data.materials) => {
@@ -57,6 +59,7 @@ const SimplifiedDeclaration = ({ brands, gtin }: { brands: { id: string; name: s
       })
       if (response.success) {
         setScore(response.score || { score: 0, standardized: 0, durability: 0 })
+        setDistribution(response.distribution || null)
         setStep(3)
       } else {
         setError(response.error || "Une erreur est survenue lors de la création du produit")
@@ -99,9 +102,9 @@ const SimplifiedDeclaration = ({ brands, gtin }: { brands: { id: string; name: s
           {step === 3 && (
             <Validation
               data={data}
+              distribution={distribution}
               score={score.score}
               standardized={score.standardized}
-              durability={score.durability}
               gtin={data.gtin}
               reset={() => {
                 setScore({ score: 0, standardized: 0, durability: 0 })

@@ -22,6 +22,7 @@ export default async function HomePage({ searchParams }: PageProps) {
     canViewAsDgccrf(role) && typeof params.search === "string" && params.search
       ? await searchOrganizationsAndBrands(params.search)
       : null
+
   return (
     <>
       <StartDsfrOnHydration />

@@ -1,17 +1,7 @@
-.container {
-  display: flex;
-  gap: 4rem;
-
-  @media screen and (max-width: 50rem) {
-    flex-direction: column;
-    gap: 2rem;
-  }
-}
-
 .buttons {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: stretch;
   gap: 1rem;
 }
 
@@ -19,30 +9,87 @@
   height: auto;
   width: 20rem;
   display: block;
+
+  @media (max-width: 600px) {
+    width: 15rem;
+  }
+}
+
+.info {
+  margin: 2rem 0;
+  padding: 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem 1rem;
+  border-top: 1px solid #bcbbbb;
+  border-bottom: 1px solid #bcbbbb;
+
+  @media (max-width: 825px) {
+    flex-direction: column;
+  }
+}
+
+.name {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.values {
+  display: flex;
+  justify-content: space-between;
+  gap: 2.5rem;
+
+  @media (max-width: 825px) {
+    font-size: 2.5rem;
+    line-height: 2.75rem;
+  }
+}
+
+.value {
+  color: #161616;
+  font-size: 3.75rem;
+  font-weight: 800;
+  line-height: 2.75rem;
+
+  @media (max-width: 600px) {
+    font-size: 2.5rem;
+    line-height: 2.75rem;
+  }
+}
+
+.description {
+  display: block;
+  color: #666;
+  font-size: 0.875rem;
+  font-weight: 400;
+  width: fit-content;
+
+  @media (max-width: 600px) {
+    font-size: 0.75rem;
+  }
+}
+
+.product {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 2rem;
+  text-decoration-line: underline;
+  margin-bottom: 1rem;
 }
 
 .box {
+  margin-top: 2rem;
   border: 1px solid var(--border-default-grey);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   padding: 1rem;
   color: var(--blue-france-sun-113-625);
   font-weight: bold;
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  height: fit-content;
-}
-
-.info {
-  margin: 2rem 0;
-  display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
-  flex-wrap: wrap-reverse;
-}
-
-.name {
-  font-size: 1.5rem;
-  line-height: 2rem;
+  height: fit-content;
 }
