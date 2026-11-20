@@ -152,6 +152,7 @@ const getPreviousDeclarantsByGtin = async (gtins: string[], before: Date) => {
   const previousProducts = await prismaClient.product.findMany({
     where: {
       status: Status.Done,
+      confidenceLevel: { not: ConfidenceLevel.High },
       gtins: { hasSome: gtins },
       createdAt: { lt: before },
     },
@@ -258,13 +259,13 @@ export const runDailyDeclarationNotifications = async (date: Date) => {
 
       const previousDeclarants = previousByGtin.get(gtin) || []
       for (const declarant of previousDeclarants) {
-        if (declarant.type === UserType.CITOYEN) {
+        if (declarant.type === UserType.CITOYEN && declarant.userId !== product.upload.createdBy.id) {
           const existing = changedForCitizen.get(declarant.email.toLowerCase()) || []
           changedForCitizen.set(declarant.email.toLowerCase(), [...existing, item])
           continue
         }
 
-        if (declarant.organizationId) {
+        if (declarant.organizationId && declarant.organizationId !== product.upload.createdBy.organizationId) {
           const existing = changedForOrganization.get(declarant.organizationId) || []
           changedForOrganization.set(declarant.organizationId, [...existing, item])
           relatedOrganizationIds.add(declarant.organizationId)
