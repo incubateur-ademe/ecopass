@@ -193,7 +193,7 @@ describe("handleProductPOST", () => {
     mockedComputeEcobalyseScore.mockResolvedValue({ score: 42 } as any)
     mockedScoreIsValid.mockReturnValue(true)
     mockedUpdateAPIUse.mockResolvedValue()
-    mockedCreateScore.mockResolvedValue(null)
+    mockedCreateScore.mockResolvedValue({} as any)
   })
 
   it("returns 401 when api user is missing", async () => {

@@ -22,6 +22,7 @@ import { getMassByAudience } from "../utils/product/audienceMassMapping"
 import { ProductCategory } from "../types/Product"
 import { productMapping } from "../utils/ecobalyse/mappings"
 import { isTestEnvironment } from "../utils/test"
+import { getCostPer100gDistribution } from "../db/product"
 
 const ALLOWED_MIME_TYPES = [
   "text/csv",
@@ -243,7 +244,7 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
     }
 
     const scores = await Promise.all(informations.map((information) => computeEcobalyseScore(information)))
-    const computedScores = await createScore(
+    const finalProduct = await createScore(
       user,
       product,
       informations,
@@ -253,13 +254,15 @@ export const createProductFromSimplifiedDeclaration = async (data: SimplifiedDec
       confidenceLevel,
     )
 
+    const distribution = await getCostPer100gDistribution(finalProduct, 25)
     return {
       success: true,
       score: {
-        score: computedScores?.score || 0,
-        standardized: computedScores?.standardized || 0,
-        durability: computedScores?.durability || 0,
+        score: finalProduct.meanScores?.score || 0,
+        standardized: finalProduct.meanScores?.standardized || 0,
+        durability: finalProduct.meanScores?.durability || 0,
       },
+      distribution,
       message: "Produit créé avec succès",
     }
   } catch (error) {
