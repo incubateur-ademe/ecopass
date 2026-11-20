@@ -9,6 +9,8 @@ import { exportDgccrfBrandProducts } from "./dgccrf"
 import { encryptAndZipFile } from "../encryption/encryption"
 import { canExportFullProducts } from "../authorization/authorizations"
 import { getMeanScores } from "../../db/score"
+import { formatDate } from "../../services/format"
+import { getDeclarant } from "../product/declarant"
 
 const renderLabelSVG = (product: ProductWithScore) => {
   if (!product.score || !product.standardized) {
@@ -89,7 +91,7 @@ const createSVGExportStrategy = (exportName: string) => {
   }
 }
 
-const createCSVExportStrategy = (exportName: string) => {
+const createCSVExportStrategy = (exportName: string, userId: string) => {
   const data: (string | number)[][] = []
 
   return {
@@ -99,6 +101,8 @@ const createCSVExportStrategy = (exportName: string) => {
         data.push([
           product.gtins.join(";"),
           product.internalReference,
+          getDeclarant(product, userId),
+          formatDate(product.createdAt),
           meanScores.score ?? "",
           meanScores.standardized ?? "",
           meanScores.durability ?? "",
@@ -134,6 +138,8 @@ const createCSVExportStrategy = (exportName: string) => {
       const headers = [
         "GTIN",
         "Référence interne",
+        "Déclarant",
+        "Date de dépôt",
         "Score",
         "Score standardisé",
         "Durabilité",
@@ -182,7 +188,7 @@ const exportSVGs = async (exportToProcess: NonNullable<Awaited<ReturnType<typeof
 }
 
 const exportCSVs = async (exportToProcess: NonNullable<Awaited<ReturnType<typeof getFirstExport>>>) => {
-  const strategy = createCSVExportStrategy(exportToProcess.name)
+  const strategy = createCSVExportStrategy(exportToProcess.name, exportToProcess.userId)
   await processExportWithStrategy(exportToProcess, strategy)
 }
 
