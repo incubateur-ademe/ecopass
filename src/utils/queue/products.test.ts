@@ -52,6 +52,7 @@ describe("processProductsQueue", () => {
       organizationId: "org-1",
       createdBy: {
         id: "user-1",
+        tokenVersion: 1,
         email: "test@test.fr",
         emailVerified: null,
         nom: "Jane",

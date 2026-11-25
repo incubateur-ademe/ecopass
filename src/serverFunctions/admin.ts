@@ -1,7 +1,7 @@
 "use server"
 import { prismaClient } from "../db/prismaClient"
 import { auth } from "../services/auth/auth"
-import { OrganizationRole, OrganizationType, UserType } from "@prisma/client"
+import { OrganizationRole, OrganizationType, UserRole, UserType } from "@prisma/client"
 import jwt from "jsonwebtoken"
 import { v4 as uuid } from "uuid"
 import { sendWelcomeEmail } from "../services/emails/email"
@@ -238,11 +238,18 @@ export const changeOrganizationMemberRole = async (
     }
 
     const currentUser = await prismaClient.user.findFirst({
-      where: { id: session.user.id, organizationId },
-      select: { id: true, organizationId: true, organizationRole: true },
+      where: { id: session.user.id },
+      select: { id: true, organizationId: true, organizationRole: true, role: true },
     })
 
-    if (!currentUser || currentUser.organizationRole !== OrganizationRole.ADMIN) {
+    if (!currentUser) {
+      return { error: "Unauthorized" }
+    }
+
+    if (
+      currentUser.role !== UserRole.ADMIN &&
+      (currentUser.organizationId !== organizationId || currentUser.organizationRole !== OrganizationRole.ADMIN)
+    ) {
       return { error: "Unauthorized" }
     }
 
@@ -275,6 +282,28 @@ export const changeOrganizationMemberRole = async (
       },
     })
 
+    return true
+  } catch {
+    return { error: "Erreur lors de la mise à jour des droits" }
+  }
+}
+
+export const changeMemberRole = async (memberId: string, role: UserRole) => {
+  console.log(`[changeMemberRole] Starting - memberId: ${memberId}, role:`, role)
+  try {
+    const session = await auth()
+    if (!session || !session.user || session.user.role !== UserRole.ADMIN) {
+      return { error: "Unauthorized" }
+    }
+
+    await prismaClient.user.update({
+      where: { id: memberId },
+      data: {
+        role: role || null,
+        tokenVersion: { increment: 1 },
+      },
+    })
+    console.log(`[changeMemberRole] Completed - memberId: ${memberId}, role:`, role)
     return true
   } catch {
     return { error: "Erreur lors de la mise à jour des droits" }

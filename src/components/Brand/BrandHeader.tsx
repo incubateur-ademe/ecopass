@@ -2,7 +2,7 @@ import styles from "./BrandHeader.module.css"
 import Link from "next/link"
 import { BrandInformation } from "../../db/brands"
 import ProductsList from "../Product/ProductsList"
-import AdminForm from "../Organization/AdminForm"
+import AdminForm from "../Organization/Admin/AdminForm"
 
 const BrandHeader = ({ brand, isAdmin }: { brand: BrandInformation; isAdmin: boolean }) => {
   const productCount = brand.productsByCategory.reduce((acc, category) => acc + category.count, 0)

@@ -240,4 +240,27 @@ export const getOrganizationMembers = async (organizationId: string) =>
 
 export type OrganizationMember = Awaited<ReturnType<typeof getOrganizationMembers>>[number]
 
+export const getAdminOrganizationMembers = async (organizationId: string) =>
+  prismaClient.user.findMany({
+    where: {
+      organizationId,
+    },
+    select: {
+      id: true,
+      email: true,
+      nom: true,
+      prenom: true,
+      organizationRole: true,
+      role: true,
+      accounts: {
+        select: {
+          provider: true,
+        },
+      },
+    },
+    orderBy: [{ nom: "asc" }, { prenom: "asc" }, { email: "asc" }],
+  })
+
+export type AdminOrganizationMember = Awaited<ReturnType<typeof getAdminOrganizationMembers>>[number]
+
 export type Organization = NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>

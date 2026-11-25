@@ -3,11 +3,11 @@
 import Select from "@codegouvfr/react-dsfr/Select"
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { organizationTypes } from "../../utils/organization/types"
+import { organizationTypes } from "../../../utils/organization/types"
 import { useState } from "react"
 import { OrganizationType } from "@prisma/enums"
 import { useRouter } from "next/navigation"
-import { changeOrganizationSettings, changeBrandSettings } from "../../serverFunctions/admin"
+import { changeOrganizationSettings, changeBrandSettings } from "../../../serverFunctions/admin"
 import styles from "./AdminForm.module.css"
 
 const AdminForm = ({

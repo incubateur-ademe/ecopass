@@ -55,6 +55,7 @@ const OrganizationMembers = ({
               key={member.id}
               label=''
               nativeSelectProps={{
+                "aria-label": "Rôle de l'utilisateur",
                 value: member.organizationRole || "",
                 disabled: loading,
                 onChange: (event) => onRoleChange(member.id, event.currentTarget.value as OrganizationRole),

@@ -236,6 +236,7 @@ export const authOptions = {
         token.id = user.id
         token.type = user.type
         token.role = user.role
+        token.tokenVersion = user.tokenVersion
       }
 
       if (account) {
@@ -256,6 +257,7 @@ export const authOptions = {
         session.user.siret = token.siret as string
         session.provider = token.provider as string
         session.idToken = token.idToken as string
+        session.user.tokenVersion = token.tokenVersion as number
       }
       return session
     },
