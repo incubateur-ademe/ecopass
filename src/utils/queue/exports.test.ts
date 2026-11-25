@@ -149,10 +149,11 @@ describe("processExportsQueue", () => {
       createdBy: {
         id: "user-1",
         type: UserType.PROFESSIONNEL,
-        organization: {
-          displayName: "Test Organization",
-          id: "orga-1",
-        },
+      },
+      organization: {
+        name: "TestOrg",
+        displayName: "Test Organization",
+        id: "orga-1",
       },
     },
   }

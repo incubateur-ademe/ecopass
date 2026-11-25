@@ -262,9 +262,9 @@ export const productWithScoreSelect = {
         select: {
           id: true,
           type: true,
-          organization: { select: { displayName: true, id: true } },
         },
       },
+      organization: { select: { name: true, displayName: true, id: true } },
     },
   },
 } satisfies Prisma.ProductSelect
@@ -933,11 +933,26 @@ export const getLastBrands = async () => {
 
 const getPayload = {
   include: {
-    brand: { select: { id: true, name: true } },
+    brand: {
+      select: {
+        id: true,
+        name: true,
+        organization: {
+          select: { name: true, displayName: true, siret: true },
+        },
+      },
+    },
     upload: {
       select: {
+        version: true,
+        createdBy: {
+          select: {
+            id: true,
+            type: true,
+          },
+        },
         organization: {
-          select: { siret: true },
+          select: { id: true, name: true, displayName: true, siret: true },
         },
       },
     },

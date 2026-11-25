@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid"
-import { ConfidenceLevel, UserRole } from "@prisma/enums"
+import { ConfidenceLevel, UserRole, UserType } from "@prisma/enums"
 import { parse } from "csv-parse/sync"
 import { exportDgccrfBrandProducts } from "./dgccrf"
 import { forEachLatestProductsByBrandIdForExport } from "../../db/product"
@@ -66,10 +66,31 @@ const makeProduct = (overrides: Record<string, unknown> = {}) => ({
   status: "Done" as const,
   error: null,
   uploadId: uuid(),
+  upload: {
+    id: uuid(),
+    createdBy: {
+      type: UserType.PROFESSIONNEL,
+    },
+    organization: {
+      id: "org-1",
+      siret: "12345678901234",
+      name: "TestOrg",
+      displayName: "Test Organization",
+    },
+  },
   uploadOrder: 1,
   brandName: "TestBrand",
   brandId: "brand-1",
-  brand: { id: "brand-1", name: "TestBrand" },
+  brand: {
+    id: "brand-1",
+    name: "TestBrand",
+    organization: {
+      id: "org-2",
+      siret: "1111",
+      name: "Org",
+      displayName: "Organization",
+    },
+  },
   reUploads: [],
   createdAt: new Date("2026-01-15"),
   gtins: ["1234567890123"],
@@ -170,7 +191,11 @@ describe("exportDgccrfBrandProducts", () => {
       const row = rows[0]
       expect(row["GTINs/EANs"]).toBe("1234567890123")
       expect(row["Référence interne"]).toBe("REF-001")
-      expect(row["Marque déclarée"]).toBe("TestBrand")
+      expect(row["Organisation"]).toBe("Org (Organization)")
+      expect(row["SIRET organisation"]).toBe("1111")
+      expect(row["Marque"]).toBe("TestBrand")
+      expect(row["Déclarant"]).toBe("TestOrg (Test Organization)")
+      expect(row["SIRET déclarant"]).toBe("12345678901234")
       expect(row["Score déclaré par la marque"]).toBe("43")
       expect(row["Score calculé pour la marque"]).toBe("38")
       expect(row["Score standardisé"]).toBe("50")
