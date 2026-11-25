@@ -7,6 +7,8 @@ import { BATCH_CATEGORY } from "../../utils/product/category"
 import { canExportFullProducts } from "../../utils/authorization/authorizations"
 import { getUser } from "../../db/user"
 import { getMeanScores } from "../../db/score"
+import { displayOrganisationFullName } from "../organization/name"
+import { getDeclarant } from "../product/declarant"
 
 const formatBoolean = (value: boolean | string | undefined) => {
   if (value === undefined || value === null || value === "") {
@@ -49,8 +51,11 @@ const headers = [
   "Date de la dernière déclaration",
   "GTINs/EANs",
   "Référence interne",
-  "Marque déclarée",
-  "SIRET",
+  "Organisation",
+  "SIRET organisation",
+  "Marque",
+  "Déclarant",
+  "SIRET déclarant",
   "Score déclaré par la marque",
   "Score calculé pour la marque",
   "Score standardisé",
@@ -160,7 +165,10 @@ export const exportDgccrfBrandProducts = async (userId: string, filters: Product
               formatDate(product.createdAt),
               product.gtins.join(";"),
               product.internalReference,
+              product.brand?.organization ? displayOrganisationFullName(product.brand.organization) : "",
+              product.brand?.organization?.siret || "",
               product.brand?.name || "",
+              getDeclarant(product, userId),
               product.upload?.organization?.siret || "",
               formatNumber(product.declaredScore !== null ? Math.round(product.declaredScore) : ""),
               formatNumber(Math.round(totalScore.score)),

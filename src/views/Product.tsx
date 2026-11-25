@@ -9,6 +9,7 @@ const ProductPage = ({
   isPro,
   brandId,
   breadCrumbs,
+  userId,
 }: {
   product: ProductWithScore
   gtin: string
@@ -16,9 +17,18 @@ const ProductPage = ({
   isPro: boolean
   brandId?: string
   breadCrumbs?: BreadcrumbProps
+  userId?: string
 }) => {
   return (
-    <Product product={product} gtin={gtin} isOld={isOld} isPro={isPro} brandId={brandId} breadCrumbs={breadCrumbs} />
+    <Product
+      product={product}
+      gtin={gtin}
+      isOld={isOld}
+      isPro={isPro}
+      brandId={brandId}
+      breadCrumbs={breadCrumbs}
+      userId={userId}
+    />
   )
 }
 

@@ -7,6 +7,7 @@ import { auth } from "../services/auth/auth"
 import { canViewAsDgccrf } from "../utils/authorization/authorizations"
 import { countProductsByCategory } from "../utils/product/category"
 import { ProductCategory } from "../types/Product"
+import { displayOrganisationFullName } from "../utils/organization/name"
 
 export const exportOrganizationsData = async () => {
   const session = await auth()
@@ -76,7 +77,7 @@ export const exportOrganizationsData = async () => {
         return null
       }
       const row: Record<string, string | number> = {
-        Organisation: `${org.name}${org.displayName === org.name ? "" : ` (${org.displayName})`}`,
+        Organisation: displayOrganisationFullName(org),
         "SIRET organisation": org.siret || "",
         "Nb de référence produit déclarées": organizationProducts.length,
       }

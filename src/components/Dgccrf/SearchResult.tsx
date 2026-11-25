@@ -57,7 +57,7 @@ const SearchResult = ({ organizations, brands }: OrganizationAndBrands) => {
                 brand.name,
                 "-",
                 "-",
-                "Marque déclarée",
+                "Marque",
                 <Badge key={brand.id} severity='info' noIcon>
                   {brand.references}
                 </Badge>,

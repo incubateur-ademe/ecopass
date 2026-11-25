@@ -22,6 +22,7 @@ const Product = ({
   isOld,
   brandId,
   breadCrumbs,
+  userId,
 }: {
   product: ProductWithScore
   gtin: string
@@ -29,6 +30,7 @@ const Product = ({
   isOld?: boolean
   brandId?: string
   breadCrumbs?: BreadcrumbProps
+  userId?: string
 }) => {
   const totalScore = {
     ...product.meanScores,
@@ -86,9 +88,9 @@ const Product = ({
           </p>
           <p>
             Par :{" "}
-            {product.upload.createdBy.organization ? (
-              <Link href={`/organisations/${product.upload.createdBy.organization.id}`}>
-                <b>{product.upload.createdBy.organization.displayName}</b>
+            {product.upload.organization ? (
+              <Link href={`/organisations/${product.upload.organization.id}`}>
+                <b>{product.upload.organization.displayName}</b>
               </Link>
             ) : (
               <b>Un citoyen</b>
@@ -99,7 +101,7 @@ const Product = ({
       </Block>
       <Block>
         <ProductScoreImpacts score={totalScore} isPro={isPro} />
-        <ProductHistory gtin={gtin} brandId={brandId} />
+        <ProductHistory gtin={gtin} brandId={brandId} userId={userId} />
       </Block>
       {!isPro && (
         <Block type='yellow'>

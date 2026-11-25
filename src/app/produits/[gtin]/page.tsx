@@ -1,4 +1,4 @@
-import { getCostPer100gDistribution, getProductByGtin, getProductWithScore } from "../../../db/product"
+import { getProductByGtin, getProductWithScore } from "../../../db/product"
 import Product from "../../../views/Product"
 import { StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import EmptyProduct from "../../../views/EmptyProduct"
@@ -34,6 +34,7 @@ const ProductPage = async (props: Props) => {
       <StartDsfrOnHydration />
       {product ? (
         <Product
+          userId={session?.user?.id}
           product={product}
           gtin={params.gtin}
           isPro={!!session}

@@ -35,6 +35,7 @@ const ProductPage = async (props: Props) => {
       <StartDsfrOnHydration />
       {product ? (
         <Product
+          userId={session?.user?.id}
           product={product}
           gtin={params.gtin}
           isPro={!!session}
