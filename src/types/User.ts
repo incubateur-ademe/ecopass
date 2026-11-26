@@ -11,6 +11,7 @@ declare module "next-auth" {
       siret: string
     }
     siret?: string
+    tokenVersion?: number
   }
 
   interface Profile {
